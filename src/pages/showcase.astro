@@ -1,0 +1,10 @@
+---
+import LandingLayout from '../layouts/LandingLayout.astro';
+import PageShell from '../components/PageShell.tsx';
+import ShowcasePage from '../app/showcase/page.tsx';
+---
+<LandingLayout title="Showcase — AuthMS" description="">
+  <PageShell client:load>
+    <ShowcasePage />
+  </PageShell>
+</LandingLayout>

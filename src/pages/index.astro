@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/LandingLayout.astro';
+---
+<Layout title="AuthMS — Enterprise Identity & Access Management" description="Enterprise IAM platform. SSO, MFA, RBAC, Multi-Tenant, GDPR Compliance. Open-core, integrate in 10 minutes.">
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 lg:py-36 text-center">
+    <h1 class="text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl leading-tight">Identity &amp;<br/> <span class="text-primary-600">Access Management</span></h1>
+    <p class="mx-auto mt-8 max-w-2xl text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed">AuthMS provides enterprise-grade IAM infrastructure — SSO, MFA, OAuth 2.0 / OIDC, RBAC, multi-tenant isolation, GDPR compliance tools. Open-core, integrate in 10 minutes.</p>
+    <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+      <a href="/features" class="rounded-lg bg-primary-600 px-8 py-3 text-sm font-semibold text-white hover:bg-primary-700 shadow-lg shadow-primary-600/25">Explore Features</a>
+      <a href="/docs" class="rounded-lg border border-neutral-300 dark:border-neutral-700 px-8 py-3 text-sm font-semibold hover:bg-neutral-50 dark:hover:bg-slate-900">Read Docs</a>
+      <a href="/pricing" class="text-sm text-neutral-500 hover:text-primary-600">View Pricing &rarr;</a>
+    </div>
+  </section>
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-neutral-200 dark:border-neutral-800">
+    <div class="text-center mb-16"><h2 class="text-3xl font-bold sm:text-4xl">Why AuthMS</h2></div>
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      {[['SSO','SAML 2.0 / OAuth 2.0 / OIDC / CAS'],['MFA','TOTP / Passkey / WebAuthn / SMS / Email'],['RBAC','NIST RBAC, role hierarchy, SoD'],['Multi-Tenant','Per-tenant data isolation, compliance-ready'],['Audit & Compliance','GDPR / HIPAA / PCI-DSS, full audit trail'],['Developer API','RESTful + gRPC, Swagger docs, SDK support']].map(([title,desc]) => (
+        <div class="rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 hover:shadow-md transition-shadow">
+          <h3 class="font-semibold text-lg mb-2">{title}</h3><p class="text-sm text-neutral-500">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,14 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@authms/shared": ["../../packages/shared/src"],
+      "@authms/ui": ["../../packages/ui/src"]
+    }
+  },
+  "include": ["src", "../landing-site-astro/src/app", "../landing-site-astro/src/components", "../landing-site-astro/src/hooks", "../landing-site-astro/src/lib"]
+}

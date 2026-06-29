@@ -1,0 +1,64 @@
+---
+import ClientShell from '../components/ClientShell.tsx';
+export interface Props { title: string; description?: string; }
+const { title, description = 'AuthMS — Enterprise Identity & Access Management' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title><meta name="description" content={description} />
+  <link rel="canonical" href={canonical.href} /><link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta property="og:title" content={title} /><meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical.href} /><meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="alternate" hreflang="en" href={canonical.href} />
+  <link rel="alternate" hreflang="x-default" href={canonical.href} />
+</head>
+<body class="min-h-screen antialiased bg-white dark:bg-slate-950 text-neutral-900 dark:text-white flex flex-col">
+  <header class="sticky top-0 z-50 border-b border-neutral-200 bg-white/80 backdrop-blur-md dark:border-neutral-800 dark:bg-slate-900/80">
+    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <a href="/" class="flex items-center gap-2 text-primary-600">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+        <span class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">AuthMS</span>
+      </a>
+      <nav class="hidden items-center gap-6 md:flex">
+        <a href="/features" class="text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white transition-colors">Features</a>
+        <a href="/pricing" class="text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white transition-colors">Pricing</a>
+        <a href="/docs" class="text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white transition-colors">Docs</a>
+        <a href="/blog" class="text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white transition-colors">Blog</a>
+        <a href="/contact" class="text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white transition-colors">Contact</a>
+      </nav>
+      <ClientShell client:load />
+    </div>
+  </header>
+  <main class="flex-1" id="main-content"><slot /></main>
+  <footer class="border-t border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-slate-900">
+    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 gap-8 md:grid-cols-5">
+        <div class="col-span-2"><a href="/" class="flex items-center gap-2 text-primary-600"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg><span class="text-lg font-bold text-neutral-900 dark:text-white">AuthMS</span></a>
+        <p class="mt-3 text-sm text-neutral-500">Enterprise Identity & Access Management.</p></div>
+        <div><h3 class="text-sm font-semibold">Platform</h3><ul class="mt-3 space-y-2">
+          <li><a href="/features" class="text-sm text-neutral-500 hover:text-primary-600">Features</a></li>
+          <li><a href="/pricing" class="text-sm text-neutral-500 hover:text-primary-600">Pricing</a></li>
+          <li><a href="/docs" class="text-sm text-neutral-500 hover:text-primary-600">Docs</a></li>
+          <li><a href="/changelog" class="text-sm text-neutral-500 hover:text-primary-600">Changelog</a></li>
+          <li><a href="/roadmap" class="text-sm text-neutral-500 hover:text-primary-600">Roadmap</a></li>
+        </ul></div>
+        <div><h3 class="text-sm font-semibold">Resources</h3><ul class="mt-3 space-y-2">
+          <li><a href="/blog" class="text-sm text-neutral-500 hover:text-primary-600">Blog</a></li>
+          <li><a href="/showcase" class="text-sm text-neutral-500 hover:text-primary-600">Showcase</a></li>
+          <li><a href="/trust" class="text-sm text-neutral-500 hover:text-primary-600">Trust &amp; Compliance</a></li>
+          <li><a href="/about" class="text-sm text-neutral-500 hover:text-primary-600">About</a></li>
+          <li><a href="/faq" class="text-sm text-neutral-500 hover:text-primary-600">FAQ</a></li>
+        </ul></div>
+        <div><h3 class="text-sm font-semibold">Legal</h3><ul class="mt-3 space-y-2">
+          <li><a href="/privacy" class="text-sm text-neutral-500 hover:text-primary-600">Privacy</a></li>
+          <li><a href="/terms" class="text-sm text-neutral-500 hover:text-primary-600">Terms</a></li>
+          <li><a href="/contact" class="text-sm text-neutral-500 hover:text-primary-600">Contact</a></li>
+        </ul></div>
+      </div>
+      <div class="mt-8 border-t border-neutral-200 pt-8 text-center text-sm text-neutral-400 dark:border-neutral-800 dark:text-neutral-500">&copy; 2026 AuthMS. All rights reserved.</div>
+    </div>
+  </footer>
+</body></html>

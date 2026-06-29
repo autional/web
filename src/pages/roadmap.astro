@@ -1,0 +1,10 @@
+---
+import LandingLayout from '../layouts/LandingLayout.astro';
+import PageShell from '../components/PageShell.tsx';
+import RoadmapPage from '../app/roadmap/page.tsx';
+---
+<LandingLayout title="Roadmap — AuthMS" description="">
+  <PageShell client:load>
+    <RoadmapPage />
+  </PageShell>
+</LandingLayout>
