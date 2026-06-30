@@ -25,3 +25,6 @@ export const AUTH_PAGES_URL = 'https://auth.aotional.com';
 export function extractApiError(_err: unknown): string {
   return 'An error occurred';
 }
+
+// Mock generated API — not needed on standalone landing site
+export const statusSubscriptionsPost = (_body: any) => Promise.resolve({});
