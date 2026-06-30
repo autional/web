@@ -1,36 +1,178 @@
 ---
-import LandingLayout from '../layouts/LandingLayout.astro';
-const cats = [
-  { icon: '🔐', title: 'Authentication for AI-Generated Apps', items: ['Email/Password sign-up & login', 'Social login (Google, GitHub, WeChat)', 'Magic link / passwordless', 'Multi-step registration flows', 'Customizable UI components'], desc: 'Give your AI-generated app a complete user registration and login system. Works with any frontend — React, Vue, or vanilla HTML.' },
-  { icon: '🛡️', title: 'MFA & Passkey', items: ['TOTP time-based codes', 'SMS and email OTP', 'Passkey / WebAuthn / FIDO2', 'Adaptive MFA (risk-based)', 'Recovery codes'], desc: 'From basic TOTP to phishing-resistant passkeys. Your AI-generated app gets enterprise-grade security without writing security code.' },
-  { icon: '🏢', title: 'SSO & Federation', items: ['SAML 2.0 identity provider', 'OpenID Connect (OIDC)', 'OAuth 2.0 authorization', 'LDAP / Active Directory sync', 'Custom IdP integration'], desc: 'Enterprise SSO with a single click. Configure SAML or OIDC once — every customer IdP just works.' },
-  { icon: '👥', title: 'Multi-Tenancy Built for AI SaaS', items: ['Per-tenant data isolation', 'Custom domains & white-label', 'Tenant-level branding', 'Organization management', 'Delegated administration'], desc: 'B2B multi-tenancy from day one. Each tenant gets isolated data, custom branding, and independent configuration.' },
-  { icon: '📊', title: 'Audit & Compliance', items: ['Immutable hash-chain audit logs', 'GDPR DSAR automation', 'Regulatory compliance mapping', 'Audit report export', 'Data retention policies'], desc: 'Built-in compliance for AI-shipped products. Meet GDPR, SOX, and SOC 2 requirements without a compliance team.' },
-  { icon: '🔑', title: 'Authorization (RBAC & ABAC)', items: ['Role-based access control (RBAC)', 'Role hierarchy & inheritance', 'Attribute-based policies (ABAC)', 'Separation of duties (SoD)', 'Privileged Identity Management (PIM)'], desc: 'Fine-grained access control that scales from a 3-person startup to a 1000-employee enterprise.' },
-  { icon: '⚡', title: 'Developer Platform', items: ['544+ RESTful API endpoints', 'gRPC service mesh', 'TypeScript SDK (auto-generated)', 'Webhook event delivery', 'Swagger/OpenAPI docs'], desc: 'API-first design with auto-generated TypeScript types. Every endpoint has interactive Swagger documentation.' },
-  { icon: '🏗️', title: 'Architecture: 24 Microservices', items: ['24 independently deployable services', 'PostgreSQL + MongoDB + MinIO', 'Prometheus/Grafana monitoring', 'Docker + Kubernetes ready', 'API gateway with rate limiting'], desc: 'Cloud-native from the ground up. Each service scales independently, built in Go for production performance.' },
+import Layout from '../layouts/LandingLayout.astro';
+
+const sections = [
+  {
+    title: 'Authentication & Registration',
+    icon: '🔐',
+    desc: 'Complete user identity lifecycle — from sign-up to enterprise SSO, from basic auth to passwordless.',
+    items: [
+      'Email/password with configurable password policy (min length, complexity, history)',
+      'Password transmission encryption: plain, hash, symmetric (ECDH+AES-256-GCM), asymmetric (RSA-OAEP)',
+      'Social login: Google, GitHub, WeChat, Apple, Microsoft, DingTalk, Lark',
+      'Passwordless: Magic Link, SMS OTP, email OTP, QR code login, anonymous login',
+      'Password lifecycle: expiry, forced reset, N-previous history, per-tenant policy',
+      'Account recovery: forgot/reset password, phone/email verification, recovery codes',
+      'CAPTCHA: reCAPTCHA, Turnstile, Proof-of-Work — configurable per tenant',
+      'Password strength evaluation (zxcvbn, OWASP ASVS V6.2.8)',
+    ],
+  },
+  {
+    title: 'Multi-Factor Authentication',
+    icon: '🛡️',
+    desc: 'From TOTP to phishing-resistant passkeys. Enterprise-grade MFA with risk-based adaptation.',
+    items: [
+      'TOTP (RFC 6238) — time-based one-time passwords',
+      'SMS and email OTP — via configurable provider backends',
+      'WebAuthn / FIDO2 / Passkey — platform and roaming authenticators',
+      'Push notification MFA — challenge/response with approve/deny',
+      'Adaptive MFA — risk engine: 7 signals (device/IP/geo/behavior/velocity/leak/hijack)',
+      'Backup and recovery codes — generate, verify, revoke, admin reset',
+      'Step-up authentication — re-authenticate for sensitive operations',
+    ],
+  },
+  {
+    title: 'Enterprise SSO & Federation',
+    icon: '🏢',
+    desc: 'Connect with any identity provider. Standards-compliant SAML, OIDC, OAuth implementations.',
+    items: [
+      'SAML 2.0 — SP-initiated SSO, IdP management, SLO, metadata endpoints',
+      'OpenID Connect — full provider with Discovery, UserInfo, ID Token',
+      'OAuth 2.1 — Authorization Code + PKCE (RFC 7636), refresh tokens, device code (RFC 8628)',
+      'OAuth Token Exchange (RFC 8693) — service-to-service delegation, NHI token exchange',
+      'DPoP — bind tokens to client keys, prevent replay attacks',
+      'JARM — JWT-signed authorization responses for financial-grade security',
+      'Dynamic Client Registration (RFC 7591) — self-service OAuth client provisioning',
+      'Rich Authorization Request (RFC 9396) — structured authorization scopes',
+      'private_key_jwt — JWT-based client authentication',
+      'Social OAuth: GitHub, Google, Facebook, Discord, LinkedIn, WeChat, Apple',
+      'LDAP / Active Directory — bind authentication, user sync, group mapping',
+      'SCIM 2.0 — /scim/v2/Users and /Groups for enterprise user provisioning',
+    ],
+  },
+  {
+    title: 'Multi-Tenancy & Organizations',
+    icon: '👥',
+    desc: 'Built for B2B SaaS. Every feature is tenant-aware by design.',
+    items: [
+      'Per-tenant data isolation — tenant_id on every query, 3-layer enforcement',
+      'Custom domains & white-label — per-tenant branding, custom login pages',
+      'Organization hierarchy — departments, org charts, delegated administration',
+      'Member management — invitations, approvals, role assignments, bulk import',
+      'Application and role management — per-tenant app CRUD, app-level roles',
+      'Tenant security policies — password policy, MFA, session timeout per tenant',
+      'Feature gates — plan-based enablement with per-tenant overrides',
+    ],
+  },
+  {
+    title: 'Authorization & Access Control',
+    icon: '🔑',
+    desc: 'From roles to attributes to relationships. Four authorization models in one platform.',
+    items: [
+      'RBAC (NIST standard) — role hierarchy, inheritance, pre-defined super_admin/admin/security_admin',
+      'ABAC — expr-lang/expr policy engine, OPA/Rego bridge, JWT/GeoIP/DeviceTrust resolvers',
+      'ReBAC — BFS relationship graph, per-tenant cache with invalidation',
+      'PIM/JIT — time-bound role activation (max 24h), approval workflow, scheduled expiry',
+      'Separation of Duties (SoD) — conflict pair detection, enforcement on all assignments',
+      'PermissionRequired middleware — fine-grained endpoint-level access control',
+      'Approval workflow — sensitive operations require multi-party approval',
+    ],
+  },
+  {
+    title: 'NHI — Non-Human Identity',
+    icon: '🤖',
+    desc: 'Identity for AI agents, robots, and IoT devices. Because AI needs its own identity.',
+    items: [
+      'AI Agent lifecycle: provisioning → active → rotating → revoked → deleted',
+      'Robot lifecycle: commissioning → active → degraded → decommissioned → deleted',
+      'IoT Device lifecycle: unpaired → active → transferring → revoked → deleted',
+      'Auth methods: client_credentials, api_key, device_code, intent_token',
+      'Delegation middleware — OnBehalfOf + Chain-ID headers for AI agent chains',
+      'Ed25519 intent token signing — signed operation scopes for delegated AI actions',
+      'Token exchange — OAuth token-exchange grant for NHI service-to-service auth',
+    ],
+  },
+  {
+    title: 'Audit & Compliance',
+    icon: '📊',
+    desc: 'Tamper-proof audit trails with Merkle hash chain verification. Enterprise compliance frameworks.',
+    items: [
+      'Merkle hash chain audit logs — cryptographic integrity verification',
+      'GDPR DSAR automation — 7-service erasure orchestration, hash-chain audit trail',
+      'Two-level deletion — soft-delete (reversible) → anonymization (irreversible), scheduler-driven',
+      'Compliance frameworks: ISO 27001, PCI DSS, HIPAA, SOX, PSD2, PIPL, Dengbao 2.0',
+      'Data classification — Public / Internal / Confidential / Restricted',
+      'Cross-border data transfer management',
+      'Data retention policies — configurable TTL, archive triggers',
+      'Breach notification and vendor risk assessment management',
+      'Penetration test and audit finding tracking with evidence linking',
+    ],
+  },
+  {
+    title: 'National Cryptography (GM/T)',
+    icon: '🇨🇳',
+    desc: 'Chinese national standard cryptography. Required for government and regulated industry deployments.',
+    items: [
+      'SM2 — elliptic curve key exchange and digital signature',
+      'SM3 — cryptographic hash algorithm (256-bit)',
+      'SM4 — block cipher (CBC/PKCS7) for data encryption',
+      'Ed25519 — high-performance signature algorithm',
+      'Per-tenant crypto profile — tenant-level algorithm selection (SM vs standard)',
+      '14 integration points across the system, needs-rehash auto-detection',
+    ],
+  },
+  {
+    title: 'Developer Platform',
+    icon: '⚡',
+    desc: '1,400+ APIs, 30+ SDK packages, gRPC mesh, auto-generated TypeScript types.',
+    items: [
+      '1,400+ RESTful API endpoints across 24 microservices, versioned and documented',
+      'gRPC service mesh — 9 microservices with gRPC interfaces',
+      'SDK: 30+ npm packages — React, Vue, Next.js, Svelte, React Native, MiniApp, Node.js + 19 api-*',
+      'Auto-generated TypeScript types — from OpenAPI specs (38K+ lines)',
+      '600+ webhook event types — HMAC-signed delivery across all services',
+      'Swagger/OpenAPI — interactive docs for every endpoint',
+      'TanStack Query hooks — auto-generated for all endpoints',
+    ],
+  },
+  {
+    title: 'Infrastructure & Integrations',
+    icon: '🏗️',
+    desc: 'Multi-provider, cloud-native. Run anywhere — your infrastructure, your control.',
+    items: [
+      'PostgreSQL + PgBouncer, MongoDB, Redis, RabbitMQ, Kafka, ZooKeeper',
+      'Object storage: MinIO, S3, Alibaba OSS, Tencent COS, SeaweedFS',
+      'SMS: Aliyun, Tencent, SMS4Dev (dev) | Email: SMTP',
+      'Identity verification: Aliyun OCR, Baidu, Tencent, CTID',
+      'Field-level AES-256-GCM encryption with key rotation, SM4-GCM',
+      'Prometheus + Grafana + OpenTelemetry + Jaeger + Loki + Alertmanager',
+      'Docker + Podman compose, Kubernetes-ready',
+    ],
+  },
 ];
 ---
-<LandingLayout title="Features — Autional" description="Complete identity features for AI-generated applications: authentication, MFA, SSO, multi-tenancy, audit, and developer tools.">
-  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
+<Layout title="Features — Autional" description="Complete identity platform. Authentication, MFA, SSO, Multi-Tenancy, NHI, Authorization, Audit, Compliance, SM Crypto, SDKs — open source under AGPL.">
+  <section class="mx-auto max-w-7xl px-4 py-20">
     <div class="text-center mb-16">
-      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Everything Your AI-Generated App Needs</h1>
-      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">From sign-up to enterprise SSO, from single-user to multi-tenant — Autional is the identity layer for your AI-born application.</p>
+      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl text-balance">Enterprise Identity Infrastructure.<br/>Open Source.</h1>
+      <p class="mx-auto mt-4 max-w-3xl text-lg text-neutral-500">24 microservices, 1,400+ APIs, 30+ SDK packages, 15+ compliance frameworks — everything your AI-generated app needs for identity.</p>
     </div>
-    <div class="space-y-16">
-      {cats.map((c,i) => (
-        <div class="grid gap-8 lg:grid-cols-2 items-center">
-          <div class={i % 2 === 0 ? 'order-first' : 'order-first lg:order-last'}>
-            <div class="text-4xl mb-4">{c.icon}</div>
-            <h2 class="text-2xl font-bold">{c.title}</h2>
-            <p class="mt-3 text-neutral-500 leading-relaxed">{c.desc}</p>
-            <ul class="mt-4 space-y-2">{c.items.map(item => <li class="flex items-center gap-2 text-sm"><span class="text-primary-500">✓</span>{item}</li>)}</ul>
+    <div class="space-y-20">
+      {sections.map((s, i) => (
+        <div class="grid gap-8 lg:grid-cols-2 items-start">
+          <div class={i % 2 === 0 ? '' : 'lg:order-last'}>
+            <div class="text-4xl mb-4">{s.icon}</div>
+            <h2 class="text-2xl font-bold mb-3">{s.title}</h2>
+            <p class="text-neutral-500 leading-relaxed mb-4">{s.desc}</p>
+            <ul class="space-y-2">
+              {s.items.map(item => <li class="flex items-start gap-2 text-sm"><span class="text-primary-500 mt-0.5 shrink-0">✓</span><span>{item}</span></li>)}
+            </ul>
           </div>
-          <div class="rounded-2xl bg-neutral-50 dark:bg-slate-900 p-8 min-h-[200px] flex items-center justify-center border border-neutral-200 dark:border-neutral-800">
-            <span class="text-sm text-neutral-400">[ Architecture diagram placeholder ]</span>
+          <div class="rounded-2xl bg-neutral-50 dark:bg-slate-900 p-16 min-h-[200px] border border-neutral-200 dark:border-neutral-800 flex items-center justify-center">
+            <span class="text-sm text-neutral-400">[ Diagram illustration ]</span>
           </div>
         </div>
       ))}
     </div>
   </section>
-</LandingLayout>
+</Layout>

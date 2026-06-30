@@ -35,12 +35,13 @@ import Layout from '../layouts/LandingLayout.astro';
   <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-neutral-200 dark:border-neutral-800">
     <div class="text-center mb-16"><h2 class="text-3xl font-bold sm:text-4xl">Enterprise Identity,<br/>Open Source</h2><p class="mt-4 text-neutral-500 max-w-xl mx-auto">24 microservices, 1,400+ APIs, and enterprise compliance features — all open source under AGPL.</p></div>
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {[['🔐','Authentication','Email/password, social login, magic link, passkey. Complete user registration and login system.'],
-        ['🛡️','MFA & Passkey','TOTP, SMS, email OTP, WebAuthn/FIDO2, adaptive MFA. Enterprise-grade security.'],
-        ['🏢','Enterprise SSO','SAML 2.0, OIDC, OAuth 2.0, LDAP/AD. Self-service IdP configuration.'],
-        ['👥','Multi-Tenancy','Per-tenant data isolation, custom domains, white-label. Built for B2B SaaS.'],
-        ['📊','Audit & Compliance','Hash-chain audit logs, GDPR DSAR automation, SOX/ISO27001 mapping.'],
-        ['⚡','Developer API','1,400+ REST endpoints, gRPC, webhooks. Auto-generated TypeScript SDKs.'],
+      {[['🔐','Authentication','Email/password, social login, magic link, passkey. 4-mode password transmission encryption.'],
+        ['🛡️','MFA & Passkey','TOTP, SMS, email OTP, WebAuthn/FIDO2, adaptive MFA. 7-signal risk engine.'],
+        ['🏢','Enterprise SSO','SAML 2.0, OIDC, OAuth 2.1, DPoP, JARM, LDAP/AD, SCIM 2.0.'],
+        ['👥','Multi-Tenancy','Per-tenant data isolation, custom domains, white-label, delegated admin, feature gates.'],
+        ['📊','Audit & Compliance','Merkle hash chain audit. 15 frameworks (PCI/HIPAA/SOX/GDPR/ISO/Dengbao).'],
+        ['⚡','Developer API','1,400+ REST endpoints, gRPC mesh, 30+ SDK packages, webhooks.'],
+        ['🤖','NHI — AI Agent Identity','OAuth token exchange, Ed25519 intent tokens, Agent/Robot/Device lifecycle.'],
       ].map(([icon,title,desc]) => (
         <div class="rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 hover:shadow-md transition-shadow">
           <div class="text-3xl mb-4">{icon}</div>
