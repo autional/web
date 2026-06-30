@@ -6,8 +6,8 @@ import { ArrowRight, Code2, Package, Cpu, Blocks, Building2 } from 'lucide-react
 import { getAllCustomerCases, type CustomerCase } from '@/lib/content';
 
 const highlights = [
-  { icon: Code2, key: 'api', label: '544+ REST API' },
-  { icon: Package, key: 'services', label: '21 微服务' },
+  { icon: Code2, key: 'api', label: '1,400+ REST API' },
+  { icon: Package, key: 'services', label: '24 Microservices' },
   { icon: Cpu, key: 'tech', label: 'Go / React / Vite' },
   { icon: Blocks, key: 'oss', label: 'Apache 2.0 开源' },
 ];
