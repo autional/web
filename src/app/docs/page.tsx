@@ -19,8 +19,8 @@ const docCategoryDefs = [
     titleKey: 'docs.apiRef',
     descKey: 'docs.apiRefDesc',
     links: [
-      { labelKey: 'docs.linkAuth', href: 'https://wiki.iam.tianv.com/api/identity-service/' },
-      { labelKey: 'docs.linkMFA', href: 'https://wiki.iam.tianv.com/api/mfa-service/' },
+      { labelKey: 'docs.linkAuth', href: 'https://docs.autional.com/' },
+      { labelKey: 'docs.linkMFA', href: 'https://docs.autional.com/' },
     ],
   },
   {
@@ -93,7 +93,7 @@ export default function DocsPage() {
             {t('docs.swaggerDesc')}
           </p>
           <div className="mt-6 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a href="https://wiki.iam.tianv.com/api/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-md bg-primary-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+            <a href="https://docs.autional.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-md bg-primary-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700">
               {t('docs.apiRefBtn')}
               <ExternalLink className="h-4 w-4" />
             </a>
