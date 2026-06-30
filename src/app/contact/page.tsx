@@ -4,7 +4,7 @@ import { Mail, Send, CheckCircle2, MessageSquare, Loader2, AlertCircle, RefreshC
 import { useTranslation } from 'react-i18next';
 import { usePageTitle, usePageMeta } from '@/lib/authms-shared';
 import { extractApiError } from '@/lib/authms-shared';
-import { statusSubscriptionsPost } from '@authms/shared/generated/api';
+import { statusSubscriptionsPost } from '@/lib/authms-shared';
 
 export default function ContactPage() {
   const { t } = useTranslation();
