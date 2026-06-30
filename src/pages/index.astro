@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
+const codeSample = `// app.tsx — one import\nimport { AuthProvider } from '@autional/react';\n\nfunction App() {\n  return (\n    <AuthProvider>\n      <YourApp />\n    </AuthProvider>\n  );\n}`;
 ---
 <Layout title="Autional — Identity for AI-Generated Applications" description="Open-source identity infrastructure. Authentication, accounts, multi-tenancy, and access control. Build with AI, ship with confidence.">
   <!-- Hero -->
@@ -30,6 +31,32 @@ import Layout from '../layouts/LandingLayout.astro';
       <div class="p-8"><div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary-600 text-lg font-bold">3</div><h3 class="mt-4 text-lg font-semibold">Ship</h3><p class="mt-2 text-sm text-neutral-500">From MVP to enterprise without migration. Start with email/password, add enterprise SSO when your customers need it. Same codebase, zero rewrites.</p></div>
     </div>
   </section>
+
+  <!-- Code Sample -->
+  <section class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-20 border-t border-neutral-200 dark:border-neutral-800">
+    <div class="grid gap-8 lg:grid-cols-2 items-center">
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">One Line. <span class="text-primary-600">Full Identity.</span></h2>
+        <p class="mt-4 text-neutral-500 leading-relaxed">Add authentication, user management, and enterprise SSO to your app with a single import. No boilerplate. No config files. Just one provider wrapping your app.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          {['React','Vue','Next.js','Node.js'].map(f => <span class="rounded-full bg-primary-50 dark:bg-primary-900/30 px-3 py-1 text-xs font-medium text-primary-700 dark:text-primary-300">{f}</span>)}
+        </div>
+      </div>
+      <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-6 overflow-x-auto">
+        <pre class="text-sm text-green-400 font-mono leading-relaxed" set:html={codeSample}></pre>
+        <p class="mt-3 text-xs text-neutral-500 font-mono border-t border-neutral-700 pt-3">$ npm install @autional/react @autional/core</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Docker One-Liner
+  <section class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 border-t border-neutral-200 dark:border-neutral-800">
+    <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-6 text-center">
+      <p class="text-sm text-neutral-400">Self-host the entire platform:</p>
+      <p class="mt-2 text-lg text-green-400 font-mono">git clone https://github.com/autional/authms && docker compose up</p>
+    </div>
+  </section>
+  Commented out until Docker one-liner is verified -->
 
   <!-- Features Grid -->
   <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-neutral-200 dark:border-neutral-800">

@@ -1,0 +1,70 @@
+---
+import Layout from '../layouts/LandingLayout.astro';
+const packages = [
+  { cat: 'Core', pkgs: [{ name: '@autional/core', desc: 'Token management, API client, auth flows', install: 'npm install @autional/core', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/core' }] },
+  { cat: 'Frameworks', pkgs: [
+    { name: '@autional/react', desc: 'React — AuthProvider, useAuth, RequireAuth', install: 'npm install @autional/react @autional/core', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/react' },
+    { name: '@autional/vue', desc: 'Vue 3 — plugin, composables, guards', install: 'npm install @autional/vue @autional/core', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/vue' },
+    { name: '@autional/next', desc: 'Next.js App Router — middleware, server components', install: 'npm install @autional/next @autional/core', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/next' },
+    { name: '@autional/node', desc: 'Node.js server middleware, token verification', install: 'npm install @autional/node', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/node' },
+  ]},
+  { cat: 'Mobile', pkgs: [
+    { name: '@autional/miniapp', desc: 'WeChat Mini Program adapter', install: 'npm install @autional/miniapp @autional/core', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/miniapp' },
+    { name: '@autional/react-native', desc: 'React Native — secure token storage, biometric', install: 'npm install @autional/react-native @autional/core', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/react-native' },
+  ]},
+  { cat: 'Plugins', pkgs: [
+    { name: '@autional/plugin-mfa', desc: 'MFA setup flows, device management', install: 'npm install @autional/plugin-mfa', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/plugin-mfa' },
+    { name: '@autional/plugin-passkey', desc: 'Passkey registration and assertion', install: 'npm install @autional/plugin-passkey', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/plugin-passkey' },
+    { name: '@autional/plugin-tenant', desc: 'Multi-tenant organization management', install: 'npm install @autional/plugin-tenant', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/plugin-tenant' },
+  ]},
+  { cat: 'API Clients (auto-generated)', pkgs: [
+    { name: '@autional/api-identity', desc: 'Identity service TypeScript client', install: 'npm install @autional/api-identity', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-identity' },
+    { name: '@autional/api-mfa', desc: 'MFA / WebAuthn / adaptive auth', install: 'npm install @autional/api-mfa', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-mfa' },
+    { name: '@autional/api-oauth', desc: 'OAuth / OIDC authorization server', install: 'npm install @autional/api-oauth', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-oauth' },
+    { name: '@autional/api-session', desc: 'Session and token management', install: 'npm install @autional/api-session', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-session' },
+    { name: '@autional/api-profile', desc: 'User profile, privacy, preferences', install: 'npm install @autional/api-profile', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-profile' },
+    { name: '@autional/api-tenant', desc: 'Tenant, organization, department CRUD', install: 'npm install @autional/api-tenant', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-tenant' },
+    { name: '@autional/api-rbac', desc: 'RBAC roles, permissions, assignments', install: 'npm install @autional/api-rbac', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-rbac' },
+    { name: '@autional/api-billing', desc: 'Subscription billing, plans, metering', install: 'npm install @autional/api-billing', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-billing' },
+    { name: '+11 more', desc: 'audit, compliance, wallet, point, pay, storage, etc.', install: '', repo: 'https://github.com/autional/authms/tree/main/sdk/packages' },
+  ]},
+];
+const quickstarts = [
+  { lang: 'React', code: 'import { AuthProvider } from \'@autional/react\';\n\nfunction App() {\n  return (\n    <AuthProvider>\n      <YourApp />\n    </AuthProvider>\n  );\n}', install: 'npm install @autional/react @autional/core' },
+  { lang: 'Vue', code: 'import { createApp } from \'vue\'\nimport AutionalPlugin from \'@autional/vue\'\n\nconst app = createApp(App)\napp.use(AutionalPlugin)\napp.mount(\'#app\')', install: 'npm install @autional/vue @autional/core' },
+  { lang: 'Node.js', code: 'import { verifyToken } from \'@autional/node\';\n\napp.use(async (req, res, next) => {\n  const user = await verifyToken(req);\n  req.user = user;\n  next();\n});', install: 'npm install @autional/node' },
+];
+---
+<Layout title="SDK — Autional" description="Autional SDK: 30+ packages for React, Vue, Next.js, Node.js, and more.">
+  <section class="mx-auto max-w-6xl px-4 py-20">
+    <div class="text-center mb-16">
+      <h1 class="text-4xl font-bold sm:text-5xl">SDK</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">30+ npm packages. One line to add identity to your app. React, Vue, Next.js, Node.js, and 19 auto-generated API clients.</p>
+    </div>
+
+    <!-- Quickstarts -->
+    <div class="mb-20"><h2 class="text-2xl font-bold mb-8 text-center">One-Line Quickstart</h2>
+      {quickstarts.map(q => (
+        <div class="mb-6"><div class="flex items-center gap-3 mb-2"><span class="rounded-full bg-primary-50 text-primary-700 px-3 py-0.5 text-xs font-medium">{q.lang}</span></div>
+          <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-5 overflow-x-auto">
+            <pre class="text-sm text-green-400 font-mono leading-relaxed">{q.code}</pre>
+            <p class="mt-3 text-xs text-neutral-500 font-mono border-t border-neutral-700 pt-3"><span class="text-green-400">$</span> {q.install}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- All Packages -->
+    <h2 class="text-2xl font-bold mb-8">All Packages</h2>
+    {packages.map(g => (
+      <div class="mb-12"><h3 class="text-lg font-semibold text-primary-600 mb-4">{g.cat}</h3>
+        <div class="grid gap-3 sm:grid-cols-2">{g.pkgs.map(p => (
+          <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 flex flex-col justify-between">
+            <div><code class="text-sm font-mono font-semibold text-primary-700 dark:text-primary-300">{p.name}</code><p class="mt-1 text-sm text-neutral-500">{p.desc}</p></div>
+            <div class="mt-3 flex items-center gap-2 text-xs">{p.install && <code class="text-neutral-400 bg-neutral-50 dark:bg-slate-900 px-2 py-1 rounded">{p.install}</code>}<a href={p.repo} class="text-primary-600 hover:underline ml-auto">Source →</a></div>
+          </div>
+        ))}</div>
+      </div>
+    ))}
+  </section>
+</Layout>
