@@ -21,6 +21,7 @@ export function useSEO(
 
 export const DEVELOPER_PORTAL_URL = 'https://developer.aotional.com';
 export const AUTH_PAGES_URL = 'https://auth.aotional.com';
+export const TRUST_CENTER_URL = 'https://www.aotional.com/trust';
 
 export function extractApiError(_err: unknown): string {
   return 'An error occurred';
