@@ -154,8 +154,8 @@ export default function RoadmapPage() {
             <a href="/contact" className="inline-flex items-center gap-2 rounded-md bg-primary-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700">
               {t('roadmap.ctaBtn')} <ArrowRight className="h-4 w-4" />
             </a>
-            <a href="mailto:tianv@tianv.com" className="inline-flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-200 dark:hover:bg-slate-700">
-              tianv@tianv.com
+            <a href="mailto:support@autional.com" className="inline-flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-200 dark:hover:bg-slate-700">
+              support@autional.com
             </a>
           </div>
         </div>
