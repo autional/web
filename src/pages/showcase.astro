@@ -1,10 +1,18 @@
 ---
-import LandingLayout from '../layouts/LandingLayout.astro';
-import PageShell from '../components/PageShell.tsx';
-import ShowcasePage from '../app/showcase/page.tsx';
+import Layout from '../layouts/LandingLayout.astro';
 ---
-<LandingLayout title="Showcase — Autional" description="">
-  <PageShell client:load>
-    <ShowcasePage />
-  </PageShell>
-</LandingLayout>
+<Layout title="Showcase — Autional" description="Real-world technical showcase of Autional identity platform capabilities.">
+  <section class="mx-auto max-w-5xl px-4 py-20 text-center">
+    <h1 class="text-4xl font-bold sm:text-5xl">Technical Showcase</h1>
+    <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">Real-world capabilities and feature demonstrations of the Autional identity platform.</p>
+    <div class="mt-12 grid grid-cols-2 gap-6 md:grid-cols-4">
+      {[['1,400+','API Endpoints'],['24','Microservices'],['Go / TypeScript','Tech Stack'],['AGPL-3.0','Open Source']].map(([v,l]) => (
+        <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-slate-900 p-6 shadow-sm"><div class="text-3xl font-bold text-primary-600">{v}</div><div class="mt-1 text-sm text-neutral-500">{l}</div></div>
+      ))}
+    </div>
+    <div class="mt-16 grid gap-6 sm:grid-cols-2 text-left">
+      <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-6"><h3 class="font-semibold">Developer Docs</h3><p class="mt-2 text-sm text-neutral-500">1,400+ REST API endpoints, gRPC support, interactive Swagger documentation with auto-generated TypeScript types.</p><a href="/docs" class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700">View Docs →</a></div>
+      <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-6"><h3 class="font-semibold">Feature Overview</h3><p class="mt-2 text-sm text-neutral-500">SSO, MFA, Passkey, RBAC, NHI, Multi-Tenancy, Audit, Compliance — comprehensive identity management.</p><a href="/features" class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700">Browse Features →</a></div>
+    </div>
+  </section>
+</Layout>

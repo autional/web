@@ -1,10 +1,14 @@
 ---
-import LandingLayout from '../layouts/LandingLayout.astro';
-import PageShell from '../components/PageShell.tsx';
-import DocsPage from '../app/docs/page.tsx';
+import Layout from '../layouts/LandingLayout.astro';
 ---
-<LandingLayout title="Docs — Autional" description="">
-  <PageShell client:load>
-    <DocsPage />
-  </PageShell>
-</LandingLayout>
+<Layout title="Documentation — Autional" description="Autional documentation and API references.">
+  <section class="mx-auto max-w-4xl px-4 py-20 text-center">
+    <h1 class="text-4xl font-bold sm:text-5xl">Documentation</h1>
+    <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">Comprehensive documentation for Autional's 24 microservices, 1,400+ APIs, SDKs, and deployment guides.</p>
+    <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 text-left">
+      <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-6"><h3 class="font-semibold">Quick Start</h3><p class="mt-2 text-sm text-neutral-500">Set up Autional locally with Docker compose. 10 minutes to a running identity system.</p><a href="https://github.com/autional/authms" class="mt-3 inline-block text-sm text-primary-600 hover:underline">GitHub →</a></div>
+      <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-6"><h3 class="font-semibold">API Reference</h3><p class="mt-2 text-sm text-neutral-500">Interactive Swagger docs for all 24 services. Auto-generated TypeScript types.</p><a href="https://docs.autional.com" class="mt-3 inline-block text-sm text-primary-600 hover:underline">docs.autional.com →</a></div>
+      <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-6"><h3 class="font-semibold">SDK Documentation</h3><p class="mt-2 text-sm text-neutral-500">TypeScript SDK for React, Vue, Next.js, Node.js, and more. Auto-generated API packages.</p><a href="https://github.com/autional/authms/tree/main/sdk" class="mt-3 inline-block text-sm text-primary-600 hover:underline">SDK Reference →</a></div>
+    </div>
+  </section>
+</Layout>
