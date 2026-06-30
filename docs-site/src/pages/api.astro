@@ -1,0 +1,43 @@
+---
+import DocLayout from '../layouts/DocLayout.astro';
+---
+<DocLayout title="API Reference — Autional Docs">
+  <h1 class="text-3xl font-bold mb-6">API Reference</h1>
+  <p class="mb-6 text-neutral-600 dark:text-neutral-300">All 24 microservices have <a href="https://swagger.io" class="text-primary-600 underline">OpenAPI 3.0</a> specifications. Browse the interactive docs, or download the raw specs.</p>
+  <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 mb-8">
+    <h2 class="text-lg font-bold mb-2">Interactive API Docs</h2>
+    <p class="text-sm text-neutral-600 dark:text-neutral-300 mb-4">Each service has its own Swagger UI served by the API gateway:</p>
+    <pre class="rounded-lg bg-slate-900 text-green-400 p-4 text-sm overflow-x-auto"># Browse all services:
+http://localhost:11080/docs/
+
+# Direct spec:
+http://localhost:11080/docs/specs/identity-service
+http://localhost:11080/docs/specs/mfa-service</pre>
+  </div>
+  <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 mb-8">
+    <h2 class="text-lg font-bold mb-2">Key Endpoints</h2>
+    <table class="w-full text-sm mt-4">
+      <thead><tr class="border-b border-neutral-200 dark:border-neutral-700"><th class="text-left font-medium py-2 px-2">Service</th><th class="text-left font-medium py-2 px-2">Port</th><th class="text-left font-medium py-2 px-2">Base Path</th></tr></thead>
+      <tbody class="text-neutral-600 dark:text-neutral-300">
+        <tr class="border-b border-neutral-100 dark:border-neutral-800"><td class="py-2 px-2">Gateway</td><td class="py-2 px-2 font-mono">11080</td><td class="py-2 px-2 font-mono">/bff/{service}/api/v1/</td></tr>
+        <tr class="border-b border-neutral-100 dark:border-neutral-800"><td class="py-2 px-2">Identity</td><td class="py-2 px-2 font-mono">11001</td><td class="py-2 px-2 font-mono">/api/v1/auth/</td></tr>
+        <tr class="border-b border-neutral-100 dark:border-neutral-800"><td class="py-2 px-2">MFA</td><td class="py-2 px-2 font-mono">11005</td><td class="py-2 px-2 font-mono">/api/v1/mfa/</td></tr>
+        <tr class="border-b border-neutral-100 dark:border-neutral-800"><td class="py-2 px-2">OAuth</td><td class="py-2 px-2 font-mono">11006</td><td class="py-2 px-2 font-mono">/oauth/</td></tr>
+        <tr class="border-b border-neutral-100 dark:border-neutral-800"><td class="py-2 px-2">Tenant</td><td class="py-2 px-2 font-mono">11003</td><td class="py-2 px-2 font-mono">/api/v1/tenants/</td></tr>
+        <tr class="border-b border-neutral-100 dark:border-neutral-800"><td class="py-2 px-2">Audit</td><td class="py-2 px-2 font-mono">11013</td><td class="py-2 px-2 font-mono">/api/v1/audit-logs/</td></tr>
+        <tr class="border-b border-neutral-100 dark:border-neutral-800"><td class="py-2 px-2">Session</td><td class="py-2 px-2 font-mono">11004</td><td class="py-2 px-2 font-mono">/api/v1/sessions/</td></tr>
+        <tr class="border-b border-neutral-100 dark:border-neutral-800"><td class="py-2 px-2">RBAC</td><td class="py-2 px-2 font-mono">11025</td><td class="py-2 px-2 font-mono">/api/v1/admin/roles</td></tr>
+        <tr><td class="py-2 px-2">+16 more</td><td class="py-2 px-2 font-mono">—</td><td class="py-2 px-2">See full docs</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-6">
+    <h2 class="text-lg font-bold mb-2">Raw OpenAPI Specs</h2>
+    <p class="text-sm text-neutral-600 dark:text-neutral-300">Download individual service specs:</p>
+    <pre class="mt-4 rounded-lg bg-slate-900 text-green-400 p-4 text-sm overflow-x-auto"># GitHub: docker/specs/
+https://github.com/autional/authms/tree/main/docker/specs
+
+# Aggregated spec (gateway):
+http://localhost:11080/docs/openapi.json</pre>
+  </div>
+</DocLayout>

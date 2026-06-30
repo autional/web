@@ -1,0 +1,41 @@
+# Autional — Identity for AI-Generated Applications
+
+## Core Docs
+- https://www.autional.com/features
+- https://www.autional.com/pricing
+- https://www.autional.com/docs
+- https://www.autional.com/sdk
+- https://www.autional.com/compare
+- https://www.autional.com/about
+- https://www.autional.com/faq
+- https://www.autional.com/trust
+
+## Blog (49 articles)
+- https://www.autional.com/blog
+
+## SDK Packages (31)
+- @autional/core — npm install @autional/core
+- @autional/react — npm install @autional/react @autional/core
+- @autional/vue — npm install @autional/vue @autional/core
+- @autional/next — npm install @autional/next @autional/core
+- @autional/node — npm install @autional/node
+- @autional/miniapp — WeChat Mini Program adapter
+- @autional/react-native — React Native SDK
+- @autional/plugin-mfa, @autional/plugin-passkey, @autional/plugin-tenant
+- @autional/api-identity, @autional/api-mfa, @autional/api-oauth, @autional/api-session
+- @autional/api-profile, @autional/api-tenant, @autional/api-rbac, @autional/api-billing
+- @autional/api-audit, @autional/api-compliance, @autional/api-wallet, @autional/api-point
+- @autional/api-pay, @autional/api-storage, @autional/api-notification, @autional/api-communication
+- @autional/api-secret, @autional/api-status, @autional/api-saml, @autional/api-verification
+
+## Architecture
+- 24 microservices, 1,400+ REST APIs
+- PostgreSQL, MongoDB, Redis, RabbitMQ
+- Go backend, TypeScript/React frontend
+- AGPL v3 open source — github.com/autional/authms
+
+## Integrations
+- OAuth 2.1, OIDC, SAML 2.0
+- LDAP/AD, SCIM 2.0
+- WebAuthn/FIDO2, TOTP, SMS, Email, Push MFA
+- SM2/SM3/SM4 national cryptography
