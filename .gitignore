@@ -22,3 +22,7 @@ dist/
 .DS_Store
 Thumbs.db
 pnpm-workspace.yaml
+
+# Separate portal projects (deployed independently)
+/docs-site/
+/dev-site/
