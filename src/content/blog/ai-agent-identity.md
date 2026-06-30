@@ -4,7 +4,7 @@ date: "2026-06-07"
 category: "Tech"
 tags: ["AI Agent", "AI Security", "Future"]
 readTime: "9 min"
-excerpt: "When an AI Agent sends emails, approves purchases, and commits code on your behalf, identity systems face a thorny question: who actually completed the authentication — the AI or the human? This article explores the frontier challenges of Non-Human Identity (NHI) management and AuthMS's approach."
+excerpt: "When an AI Agent sends emails, approves purchases, and commits code on your behalf, identity systems face a thorny question: who actually completed the authentication — the AI or the human? This article explores the frontier challenges of Non-Human Identity (NHI) management and Autional's approach."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -61,7 +61,7 @@ User logs in → obtains access token (scope: procurement.*)
 
 Key distinction: the agent's token scope is explicitly limited by the user — the user has `procurement.*` but only grants the agent `procurement.create` + `procurement.read`, not `procurement.approve`.
 
-AuthMS's `oauth-service` supports this delegated authorization model through the Token Exchange protocol (RFC 8693):
+Autional's `oauth-service` supports this delegated authorization model through the Token Exchange protocol (RFC 8693):
 - User token → exchanged for a limited-scope agent token
 - The agent token includes the `act` claim (actor), indicating "this operation was performed by the agent on behalf of the user"
 - Audit logs simultaneously record `user_id` (delegator) and `actor_id` (Agent ID)
@@ -93,7 +93,7 @@ When the `audit-service` receives an operation record with this token, it record
 
 Human operations have a natural ceiling — at most a few button clicks per minute. An AI Agent can complete 1,000 operations in the same minute. If the identity infrastructure isn't designed for NHI at this speed, it will be rate-limited or locked out as an attack.
 
-AuthMS's rate limiting needs to distinguish between "high-frequency operations by the same user, same device but initiated by an AI Agent" and "abnormally high-frequency operations impossible for a human":
+Autional's rate limiting needs to distinguish between "high-frequency operations by the same user, same device but initiated by an AI Agent" and "abnormally high-frequency operations impossible for a human":
 
 - **Standard Rate Limit**: 60 API calls per user per minute (human ceiling)
 - **Agent Rate Limit**: Dynamic limit per Agent per minute (based on Agent's permission level and historical behavior)
@@ -107,11 +107,11 @@ When an AI Agent makes a wrong decision (e.g., incorrectly approving a purchase 
 - The complete timeline of the decision (input → processing → output)
 - The Agent's model version and configuration snapshot
 
-Traditional audit logs ("user X did Y at time Z") are insufficient to capture this information. AuthMS's `audit-service` needs to extend the audit model: from "who did what when" to "who, through whom, when, based on what, did what."
+Traditional audit logs ("user X did Y at time Z") are insufficient to capture this information. Autional's `audit-service` needs to extend the audit model: from "who did what when" to "who, through whom, when, based on what, did what."
 
-## AuthMS's NHI Roadmap
+## Autional's NHI Roadmap
 
-Facing the rise of AI Agents, AuthMS is preparing on multiple fronts:
+Facing the rise of AI Agents, Autional is preparing on multiple fronts:
 
 ### Near Term (2026)
 
@@ -151,4 +151,4 @@ If you're building a product that will leverage AI Agents in 2026-2027, here's w
 
 AI Agents are not a "future feature" for identity systems — they are a reality unfolding now. As AI performs more and more digital operations on behalf of humans, identity infrastructure must answer a fundamental question: **in a mixed human-AI operational chain, who is the responsible entity?**
 
-The answer will influence the entire identity technology stack — from authentication protocols and authorization models to auditing standards. AuthMS is systematically addressing this challenge from four directions: Token Exchange, the `act` claim, Agent identity types, and decision provenance.
+The answer will influence the entire identity technology stack — from authentication protocols and authorization models to auditing standards. Autional is systematically addressing this challenge from four directions: Token Exchange, the `act` claim, Agent identity types, and decision provenance.

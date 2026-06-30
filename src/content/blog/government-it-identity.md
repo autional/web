@@ -4,13 +4,13 @@ date: "2026-06-01"
 category: "Compliance"
 tags: ["Government", "Xinchuang", "SM Algorithms"]
 readTime: "10 min"
-excerpt: "Government information systems have unique technical requirements for identity authentication: Level 3 Classified Protection is the baseline, SM2/SM3/SM4 algorithms are mandatory, and Xinchuang environment adaptation is a deployment prerequisite. This article analyzes the strategy for building identity systems in government scenarios and how AuthMS supports these requirements."
+excerpt: "Government information systems have unique technical requirements for identity authentication: Level 3 Classified Protection is the baseline, SM2/SM3/SM4 algorithms are mandatory, and Xinchuang environment adaptation is a deployment prerequisite. This article analyzes the strategy for building identity systems in government scenarios and how Autional supports these requirements."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Compliance Notice**: The technical capabilities described in this article—SM algorithms, Level 3 Classified Protection, Xinchuang adaptation—represent the design goals of the AuthMS platform and do not constitute Classified Protection certification or Xinchuang product certification. The ultimate compliance responsibility for government systems lies with the system operator based on specific project requirements. Compliant use of SM algorithms must follow the latest specifications from the State Cryptography Administration.
+> **Compliance Notice**: The technical capabilities described in this article—SM algorithms, Level 3 Classified Protection, Xinchuang adaptation—represent the design goals of the Autional platform and do not constitute Classified Protection certification or Xinchuang product certification. The ultimate compliance responsibility for government systems lies with the system operator based on specific project requirements. Compliant use of SM algorithms must follow the latest specifications from the State Cryptography Administration.
 
 ## The Uniqueness of Government IT
 
@@ -38,7 +38,7 @@ For the identity system, this means:
 - Each piece of data must be bound to a classification label (Public / Internal / Secret / Confidential / Top Secret)
 - Access decisions are based on the Bell-LaPadula model (no read up, no write down) or equivalent implementation
 
-AuthMS provides enhanced access control for this:
+Autional provides enhanced access control for this:
 - User security level labels are implemented through RBAC role attributes
 - Resource security labels are implemented through database metadata fields
 - Access decisions are enforced in the identity-service permission check engine
@@ -65,9 +65,9 @@ AuthMS provides enhanced access control for this:
 - Encrypted transmission of authentication information during communication
 - Use of cryptographic techniques to ensure integrity and confidentiality of communication data
 
-AuthMS coverage of these requirements:
+Autional coverage of these requirements:
 
-| Classified Protection Requirement | AuthMS Implementation |
+| Classified Protection Requirement | Autional Implementation |
 |---------|----------------------|
 | Two or more authentication methods | password + SM2 certificate + TOTP, or password + USB Key (FIDO2) |
 | Mandatory Access Control | RBAC + security label binding |
@@ -88,7 +88,7 @@ SM2 replaces RSA and ECDSA, applied in:
 - **Key Agreement**: Key exchange during TLS handshake
 - **Certificate System**: SM2-based PKI system
 
-In AuthMS, SM2 application scenarios include:
+In Autional, SM2 application scenarios include:
 - identity-service JWT signing: using SM2 signatures instead of HS256/RS256
 - mfa-service Passkey: leveraging SM2's signature mechanism for passwordless authentication
 - Service-to-service communication: mutual authentication via SM2 certificates
@@ -111,11 +111,11 @@ SM4 replaces AES, applied in:
 
 Migrating from international algorithms (RSA/AES/SHA) to SM algorithms is a systemic engineering challenge:
 
-**Challenge 1: Algorithm Performance Differences**. SM2 signing is 2-3x slower than ECDSA due to differences in elliptic curve parameters and protocol details. Solution: AuthMS performs batch pre-signing during JWT generation and pools identity tokens for reuse.
+**Challenge 1: Algorithm Performance Differences**. SM2 signing is 2-3x slower than ECDSA due to differences in elliptic curve parameters and protocol details. Solution: Autional performs batch pre-signing during JWT generation and pools identity tokens for reuse.
 
-**Challenge 2: Cryptographic Library Dependency**. The Go standard library does not include SM algorithms, requiring third-party libraries like `tjfoc/gmsm` or `emmansun/gmsm`. The maintainers and maturity of these libraries need assessment. AuthMS uses independently security-audited versions of SM libraries with continuous CI verification.
+**Challenge 2: Cryptographic Library Dependency**. The Go standard library does not include SM algorithms, requiring third-party libraries like `tjfoc/gmsm` or `emmansun/gmsm`. The maintainers and maturity of these libraries need assessment. Autional uses independently security-audited versions of SM libraries with continuous CI verification.
 
-**Challenge 3: TLS Adaptation**. Standard TLS handshake uses ECDHE + RSA/AES, while SM TLS should use ECDHE + SM2/SM4. However, the SM TLS implementation (GM/T 0024 SSL VPN Technical Specification) is not fully compatible with international TLS 1.3. AuthMS adopts a dual-protocol-stack approach: intranet communication uses SM TLS, extranet communication uses standard TLS 1.3.
+**Challenge 3: TLS Adaptation**. Standard TLS handshake uses ECDHE + RSA/AES, while SM TLS should use ECDHE + SM2/SM4. However, the SM TLS implementation (GM/T 0024 SSL VPN Technical Specification) is not fully compatible with international TLS 1.3. Autional adopts a dual-protocol-stack approach: intranet communication uses SM TLS, extranet communication uses standard TLS 1.3.
 
 ## Xinchuang Adaptation: From "Runnable" to "Usable"
 
@@ -125,7 +125,7 @@ Xinchuang (Information Technology Application Innovation) aims to achieve indepe
 - **OS**: Windows → Kylin / Tongxin UOS
 - **Database**: SQL Server/Oracle → DM (DaMeng) / Kingbase / GaussDB
 
-For AuthMS, the core work of Xinchuang adaptation includes:
+For Autional, the core work of Xinchuang adaptation includes:
 
 ### Build Adaptation
 
@@ -136,7 +136,7 @@ GOOS=linux GOARCH=arm64 go build -o identity-service-linux-arm64 ./cmd/server
 
 ### Database Adaptation
 
-AuthMS supports database driver switching through the infra-client/gorm factory pattern. Adapting to DaMeng database requires only:
+Autional supports database driver switching through the infra-client/gorm factory pattern. Adapting to DaMeng database requires only:
 1. Importing DaMeng's GORM driver
 2. Configuring the database connection string
 3. Verifying SQL syntax compatibility of AutoMigrate output
@@ -159,7 +159,7 @@ Many government systems require fully offline operation (no internet connection)
 - Using SM2-based hardware keys (similar to USB tokens) via USB/NFC connection
 - Fully local facial recognition without relying on cloud APIs
 
-**Software Updates**: Software updates in offline environments must use secure offline media (e.g., encrypted discs, signed USB drives). AuthMS needs to provide offline patch verification and installation mechanisms.
+**Software Updates**: Software updates in offline environments must use secure offline media (e.g., encrypted discs, signed USB drives). Autional needs to provide offline patch verification and installation mechanisms.
 
 **Time Synchronization**: JWT tokens, TOTP codes, and session timeouts all depend on accurate time. Offline environments must ensure time consistency through local NTP servers or GPS timing.
 
@@ -167,4 +167,4 @@ Many government systems require fully offline operation (no internet connection)
 
 Building identity authentication for government systems is a "dance in chains" engineering challenge—constructing secure and practical identity infrastructure under the multiple constraints of Classified Protection regulations, SM standards, and Xinchuang catalog requirements.
 
-AuthMS provides an out-of-the-box identity solution for government IT modernization through complete SM algorithm support (SM2/SM3/SM4), multi-CPU architecture compilation adaptation, domestic database and middleware integration, offline deployment capabilities, and enhanced audit and access control—without requiring "building from scratch."
+Autional provides an out-of-the-box identity solution for government IT modernization through complete SM algorithm support (SM2/SM3/SM4), multi-CPU architecture compilation adaptation, domestic database and middleware integration, offline deployment capabilities, and enhanced audit and access control—without requiring "building from scratch."

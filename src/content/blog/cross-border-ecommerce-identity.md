@@ -10,7 +10,7 @@ reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Compliance Disclaimer**: The multi-country compliance framework described in this article represents the technical capability design objectives of the AuthMS platform. The compliance requirements of GDPR, PIPL, CCPA, LGPD, APPI, and other regulations vary. Customers must conduct independent legal assessments and compliance configurations based on their own business jurisdictions.
+> **Compliance Disclaimer**: The multi-country compliance framework described in this article represents the technical capability design objectives of the Autional platform. The compliance requirements of GDPR, PIPL, CCPA, LGPD, APPI, and other regulations vary. Customers must conduct independent legal assessments and compliance configurations based on their own business jurisdictions.
 
 ## One Identity, Multiple Legal Systems
 
@@ -36,7 +36,7 @@ GDPR requires collecting only personal data that is "necessary for the purposes 
 
 - Registration should not ask for unnecessary personal information (e.g., gender, date of birth — unless the business actually requires it)
 - Third-party login (Google/Apple Sign-In) is an effective means of reducing data collection
-- AuthMS's identity-service supports minimal registration: core requirement is only email or phone number + password
+- Autional's identity-service supports minimal registration: core requirement is only email or phone number + password
 
 ### Purpose Limitation (Article 5(1)(b))
 
@@ -48,13 +48,13 @@ Collected personal data may only be used for the purposes explicitly communicate
 
 GDPR grants data subjects a series of rights that have direct technical requirements for identity systems:
 
-**Right of Access (Article 15)**: Users can request a copy of all data you hold about them. AuthMS's compliance-service has built-in DSAR (Data Subject Access Request) automation that can automatically aggregate user data from multiple services — identity-service, profile-service, session-service, etc. — and generate a structured data report.
+**Right of Access (Article 15)**: Users can request a copy of all data you hold about them. Autional's compliance-service has built-in DSAR (Data Subject Access Request) automation that can automatically aggregate user data from multiple services — identity-service, profile-service, session-service, etc. — and generate a structured data report.
 
-**Right to Erasure / Right to be Forgotten (Article 17)**: Users can request deletion of their personal data. AuthMS supports soft delete + hard delete dual mode: soft delete deactivates the account but retains records needed for auditing; hard delete completely removes data. Both modes can be triggered via API.
+**Right to Erasure / Right to be Forgotten (Article 17)**: Users can request deletion of their personal data. Autional supports soft delete + hard delete dual mode: soft delete deactivates the account but retains records needed for auditing; hard delete completely removes data. Both modes can be triggered via API.
 
-**Right to Data Portability (Article 20)**: Users can transfer their data to another service provider. AuthMS supports exporting user data in a structured, machine-readable format (JSON).
+**Right to Data Portability (Article 20)**: Users can transfer their data to another service provider. Autional supports exporting user data in a structured, machine-readable format (JSON).
 
-**Right to Restrict Processing (Article 18)**: Users can request restriction of processing their data (e.g., suspending an account while retaining data). AuthMS's account status mechanism supports multiple states including `active`, `suspended`, `restricted`, and `deleted`.
+**Right to Restrict Processing (Article 18)**: Users can request restriction of processing their data (e.g., suspending an account while retaining data). Autional's account status mechanism supports multiple states including `active`, `suspended`, `restricted`, and `deleted`.
 
 ## PIPL: China's Personal Information Protection Law
 
@@ -64,7 +64,7 @@ China's *Personal Information Protection Law* (PIPL) took effect on November 1, 
 
 For specific types of personal information processing activities (such as providing personal information to third parties, publicly disclosing personal information, and processing sensitive personal information), PIPL requires obtaining the user's "separate consent" — it cannot be hidden in a lengthy privacy policy but must be presented as an independent pop-up or checkbox.
 
-AuthMS supports fine-grained scope splitting in the OAuth 2.0 authorization flow. Scopes requiring separate consent (e.g., `profile:sensitive`, `data:share_with_third_party`) are presented as independent modules on the authorization page, with the user's specific consent options and timestamp recorded and stored in the audit-service.
+Autional supports fine-grained scope splitting in the OAuth 2.0 authorization flow. Scopes requiring separate consent (e.g., `profile:sensitive`, `data:share_with_third_party`) are presented as independent modules on the authorization page, with the user's specific consent options and timestamp recorded and stored in the audit-service.
 
 ### Data Localization
 
@@ -95,7 +95,7 @@ For cross-border e-commerce identity systems, the key CCPA requirements are:
 
 Faced with multi-country data residency requirements, the most common technical approach is "regional deployment" — deploying independent service clusters for each legal jurisdiction.
 
-AuthMS's architecture natively supports this deployment model:
+Autional's architecture natively supports this deployment model:
 
 ```
 Global Load Balancer
@@ -157,7 +157,7 @@ This tagging enables the compliance-service to automatically identify PII fields
 
 ### 2. Shift Left: Bring Compliance into the Development Phase
 
-Compliance is not something you check only before going live. AuthMS's CI/CD check scripts can verify:
+Compliance is not something you check only before going live. Autional's CI/CD check scripts can verify:
 - Whether new API endpoints correctly handle user deletion requests
 - Whether audit logs cover all sensitive operations
 - Whether encryption settings in configuration files are correct
@@ -173,4 +173,4 @@ Even when the system is running normally, regular (quarterly or semi-annual) com
 
 Cross-border e-commerce identity systems face the compliance challenge of "one system, multiple legal frameworks." GDPR emphasizes user rights and data minimization, PIPL adds separate consent and data localization requirements, and CCPA focuses on transparency around data sales.
 
-AuthMS addresses these challenges through a "regional deployment + unified management" architectural model. The compliance-service elevates compliance capabilities from "manual response when needed" to "automated system execution" — from data transfer records, DSAR automation, to data classification tagging, an identity system's compliance capabilities should be as reliable and automated as authentication itself.
+Autional addresses these challenges through a "regional deployment + unified management" architectural model. The compliance-service elevates compliance capabilities from "manual response when needed" to "automated system execution" — from data transfer records, DSAR automation, to data classification tagging, an identity system's compliance capabilities should be as reliable and automated as authentication itself.

@@ -4,7 +4,7 @@ date: "2026-05-17"
 category: "Security"
 tags: ["API Key", "Key Management", "Security Practices"]
 readTime: "7 minutes"
-excerpt: "Hardcoded API keys are a goldmine for attackers. From GitHub leaks to production compromise, a single compromised key can collapse your entire security boundary. Learn how AuthMS achieves zero-friction secure key management."
+excerpt: "Hardcoded API keys are a goldmine for attackers. From GitHub leaks to production compromise, a single compromised key can collapse your entire security boundary. Learn how Autional achieves zero-friction secure key management."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -87,7 +87,7 @@ At the most basic level, separate keys from code:
 - Use dedicated key management services (e.g., HashiCorp Vault, AWS Secrets Manager)
 - `.gitignore` strictly excludes any files containing keys
 
-AuthMS's `base/config` module enforces that all sensitive configuration is injected via environment variables, with compile-time static checks prohibiting hardcoded key patterns.
+Autional's `base/config` module enforces that all sensitive configuration is injected via environment variables, with compile-time static checks prohibiting hardcoded key patterns.
 
 ### Stage 2: Store Hashes, Not Plaintext
 
@@ -108,7 +108,7 @@ db.Where("key_hash = ?", hex.EncodeToString(providedHash[:])).Find(&apiKey)
 
 This way, even if the database is breached, attackers cannot recover the original API Key — they only see meaningless hash values.
 
-AuthMS's key model follows this principle:
+Autional's key model follows this principle:
 
 ```go
 type APIKey struct {
@@ -123,7 +123,7 @@ type APIKey struct {
 }
 ```
 
-**Key design**: The full key is returned once in the API response at creation time. After that, AuthMS does not store, recover, or display it. The `Prefix` field lets administrators identify keys (e.g., `tk_a1b2***`) without being able to reconstruct the full key.
+**Key design**: The full key is returned once in the API response at creation time. After that, Autional does not store, recover, or display it. The `Prefix` field lets administrators identify keys (e.g., `tk_a1b2***`) without being able to reconstruct the full key.
 
 ### Stage 3: Fine-Grained Permission Control
 
@@ -144,7 +144,7 @@ Not all keys are created equal. Create dedicated keys for each use case with lea
   ttl: 24h                                     # Auto-expires after 24 hours
 ```
 
-AuthMS supports multi-dimensional permission constraints:
+Autional supports multi-dimensional permission constraints:
 
 - **Scope restrictions**: Defines the specific API scope a key can call
 - **Resource restrictions**: Limits a key to specific tenants or resources
@@ -168,7 +168,7 @@ Key rotation should not be a "once a year" operation — it should be an automat
 └──────────────────────────────────────────────────┘
 ```
 
-AuthMS provides a complete rotation lifecycle:
+Autional provides a complete rotation lifecycle:
 
 - **Grace period**: Old and new keys active simultaneously for seamless client migration
 - **Usage monitoring**: Real-time tracking of call frequency and last-used time per key
@@ -185,14 +185,14 @@ Keys shouldn't just "sit there." Continuous monitoring of key usage patterns can
 - **Geographic anomaly**: A key with an IP whitelist configured receives requests from unknown IPs
 - **Failure rate anomaly**: A sudden spike in verification failures — possibly a brute-force attempt
 
-AuthMS's anomaly detection engine continuously monitors these metrics. When anomalies are detected:
+Autional's anomaly detection engine continuously monitors these metrics. When anomalies are detected:
 - Automatically notify the key owner
 - Impose temporary rate limits on suspicious keys
 - Auto-revoke keys in extreme cases
 
 ## Complete Key Lifecycle
 
-In AuthMS, an API Key goes through a complete lifecycle from birth to death:
+In Autional, an API Key goes through a complete lifecycle from birth to death:
 
 ```
 Create → Activate → Monitor → Expiry Warning → Rotate → Revoke → Archive
@@ -226,6 +226,6 @@ An API Key is the bridge connecting your system to the outside world. When that 
 
 From hardcoding to automated rotation, the evolution of API Key management is not just a technical upgrade — it's a fundamental shift in security mindset: **from "trusting keys won't be leaked" to "assuming keys will always be leaked, so minimize the blast radius of every leak."**
 
-AuthMS bakes this complete key lifecycle management directly into the platform. You don't need to integrate Vault separately, write your own rotation scripts, or worry about developers leaving `TODO: remove this key` in the codebase.
+Autional bakes this complete key lifecycle management directly into the platform. You don't need to integrate Vault separately, write your own rotation scripts, or worry about developers leaving `TODO: remove this key` in the codebase.
 
 Security shouldn't be an extra burden. It should be the default configuration that's on from the start.

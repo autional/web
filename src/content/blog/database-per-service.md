@@ -4,7 +4,7 @@ date: "2026-05-14"
 category: "Architecture"
 tags: ["Database Isolation", "Microservices", "Data Security"]
 readTime: "8 min"
-excerpt: "AuthMS's 16 microservices each have their own independent PostgreSQL database. This 'database-as-service-boundary' model delivers fault isolation, independent scaling, and hardened security boundaries."
+excerpt: "Autional's 16 microservices each have their own independent PostgreSQL database. This 'database-as-service-boundary' model delivers fault isolation, independent scaling, and hardened security boundaries."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -12,7 +12,7 @@ claims_reviewed: true
 
 In microservice architecture, one question keeps coming up: "Does every service really need its own database? Isn't sharing a single database simpler?"
 
-The answer is: for identity and authentication systems, database isolation isn't over-engineering — it's a **cornerstone of security and reliability**. AuthMS has strictly followed the Database-per-Service pattern from day one, with 16 microservices each having their own independent PostgreSQL database. Here are our design considerations and lessons learned.
+The answer is: for identity and authentication systems, database isolation isn't over-engineering — it's a **cornerstone of security and reliability**. Autional has strictly followed the Database-per-Service pattern from day one, with 16 microservices each having their own independent PostgreSQL database. Here are our design considerations and lessons learned.
 
 ## Why Can't We Share a Database?
 
@@ -44,7 +44,7 @@ This is the most critical problem. If the shared database instance goes down:
 
 That's real **fault isolation**.
 
-## AuthMS Database Isolation in Practice
+## Autional Database Isolation in Practice
 
 ### 16 Services, 16 Databases
 
@@ -122,7 +122,7 @@ type UserProfile struct {
 }
 ```
 
-This pattern is widely used in AuthMS:
+This pattern is widely used in Autional:
 
 - notification-service caches user `email` and `phone` (avoids calling profile API for every email)
 - compliance-service caches tenant `plan` info (avoids calling billing API for every compliance scan)
@@ -145,7 +145,7 @@ When a user registers, multiple services are involved:
 
 If step 3 fails, the event enters the Dead Letter Queue (DLQ), triggering an alert for retry.
 
-For operations requiring strong consistency (e.g., debit), AuthMS uses the **Transactional Outbox Pattern**:
+For operations requiring strong consistency (e.g., debit), Autional uses the **Transactional Outbox Pattern**:
 
 ```go
 func (s *WalletService) Withdraw(ctx context.Context, req *WithdrawRequest) error {
@@ -196,7 +196,7 @@ Database isolation creates one of the strongest security boundaries:
 
 ## Operational Cost and Mitigation
 
-Database isolation does increase operational overhead. AuthMS manages this through:
+Database isolation does increase operational overhead. Autional manages this through:
 
 ### Unified Schema Management
 
@@ -231,4 +231,4 @@ Database-per-service isn't a silver bullet, but in identity and authentication s
 | Schema independence | Each service evolves independently, lock-free changes |
 | Flexible backups | Custom backup policies per service granularity |
 
-If you're building a multi-tenant SaaS identity platform, adopt database isolation from day one. Splitting a shared database later is far more difficult than starting isolated — which is exactly why AuthMS made this choice.
+If you're building a multi-tenant SaaS identity platform, adopt database isolation from day one. Splitting a shared database later is far more difficult than starting isolated — which is exactly why Autional made this choice.

@@ -4,7 +4,7 @@ date: "2026-03-12"
 category: "Tech"
 tags: ["MFA", "Security", "AI"]
 readTime: "9 min"
-excerpt: "Traditional MFA strategies take a one-size-fits-all approach — either annoying users or leaving security gaps. AuthMS's Adaptive MFA engine evaluates 7 risk dimensions including device fingerprint, IP reputation, and behavioral patterns to dynamically determine authentication strength: silently pass low-risk logins, enforce hardware keys for high-risk ones. This article dives into the risk engine design and real-world applications."
+excerpt: "Traditional MFA strategies take a one-size-fits-all approach — either annoying users or leaving security gaps. Autional's Adaptive MFA engine evaluates 7 risk dimensions including device fingerprint, IP reputation, and behavioral patterns to dynamically determine authentication strength: silently pass low-risk logins, enforce hardware keys for high-risk ones. This article dives into the risk engine design and real-world applications."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -14,7 +14,7 @@ Multi-factor authentication (MFA) is the first line of defense against account t
 
 An employee logging in from the same laptop, same IP, same city every day faces the exact same TOTP challenge as a user suddenly logging in from a strange device and a remote IP. The former finds it annoying; the latter may not have enough protection.
 
-AuthMS's Adaptive MFA was built to solve this very contradiction.
+Autional's Adaptive MFA was built to solve this very contradiction.
 
 ## What Is Adaptive MFA?
 
@@ -33,9 +33,9 @@ The system computes a real-time risk score at each login attempt, then automatic
 
 This is not a static rule — it's dynamically computed. The same user logging in from the corporate network on a weekday morning might be low risk, but logging in from another country at weekend midnight becomes high risk.
 
-## AuthMS's Risk Assessment Engine: 7 Dimensions
+## Autional's Risk Assessment Engine: 7 Dimensions
 
-AuthMS's Adaptive MFA engine doesn't rely on a single signal but synthesizes information across 7 dimensions to build a risk profile:
+Autional's Adaptive MFA engine doesn't rely on a single signal but synthesizes information across 7 dimensions to build a risk profile:
 
 ### 1. Device Fingerprint (Weight: 25%)
 
@@ -44,7 +44,7 @@ Device Fingerprint: • Browser fingerprint  • OS version  • Screen resoluti
                      • WebGL renderer  • Canvas fingerprint  • Hardware concurrency
 ```
 
-First-time device → score +20. Device previously logged in successfully → score -10 (risk reduction). AuthMS embeds a lightweight JavaScript SDK on the login page that generates a device fingerprint and sends it with the request. Fingerprint hashes are stored in the `known_devices` table, protecting user privacy — we store hashes only, never raw fingerprint data.
+First-time device → score +20. Device previously logged in successfully → score -10 (risk reduction). Autional embeds a lightweight JavaScript SDK on the login page that generates a device fingerprint and sends it with the request. Fingerprint hashes are stored in the `known_devices` table, protecting user privacy — we store hashes only, never raw fingerprint data.
 
 ### 2. IP Reputation (Weight: 20%)
 
@@ -53,7 +53,7 @@ IP Reputation Query: → Known proxy/VPN? → Datacenter IP? → Tor exit node?
                       → Failed login count from this IP in last 24h → GeoIP database match
 ```
 
-AuthMS integrates an IP reputation database to query the risk labels of login IPs in real time. Proxy, VPN, and Tor exit nodes automatically receive risk score increases. It also maintains internal statistics: when failed login attempts from the same IP within 24 hours exceed a threshold, that IP's risk score continues to rise.
+Autional integrates an IP reputation database to query the risk labels of login IPs in real time. Proxy, VPN, and Tor exit nodes automatically receive risk score increases. It also maintains internal statistics: when failed login attempts from the same IP within 24 hours exceed a threshold, that IP's risk score continues to rise.
 
 ### 3. Geolocation (Weight: 15%)
 
@@ -63,7 +63,7 @@ Geolocation Analysis: • Current login city vs. historical cities
                       • Is the country on the admin-configured high-risk region list?
 ```
 
-If a user's last login was in Tokyo and they log in from New York 15 minutes later — physically impossible — the system automatically flags it as critical risk. AuthMS's GeoIP resolution reaches city-level accuracy, and admins can configure high-risk countries and whitelisted countries in MFA policies.
+If a user's last login was in Tokyo and they log in from New York 15 minutes later — physically impossible — the system automatically flags it as critical risk. Autional's GeoIP resolution reaches city-level accuracy, and admins can configure high-risk countries and whitelisted countries in MFA policies.
 
 ### 4. Behavioral Pattern (Weight: 15%)
 
@@ -73,7 +73,7 @@ Behavioral Analysis: • Keyboard input rhythm (typing speed, key intervals)
                       • Form filling order (Tab key usage, inter-field dwell time)
 ```
 
-This is one of the most subtle yet effective signals. Even if an attacker steals the correct password and TOTP seed, mimicking the user's typing rhythm and mouse movement patterns is extremely difficult. AuthMS's lightweight behavioral SDK collects these patterns in the background and establishes a baseline using simple statistical models (rather than complex machine learning). Deviations exceeding 2 standard deviations from the baseline → risk score increase.
+This is one of the most subtle yet effective signals. Even if an attacker steals the correct password and TOTP seed, mimicking the user's typing rhythm and mouse movement patterns is extremely difficult. Autional's lightweight behavioral SDK collects these patterns in the background and establishes a baseline using simple statistical models (rather than complex machine learning). Deviations exceeding 2 standard deviations from the baseline → risk score increase.
 
 ### 5. Time Factor (Weight: 10%)
 
@@ -83,7 +83,7 @@ Time Analysis: • Is the login time within the user's usual active hours?
                 • Time since last login (returning from vacation vs. abnormal activity spike)
 ```
 
-Most users have regular activity patterns — Monday through Friday, 8:00 - 22:00. A login at 3 AM may not be an attack, but it should raise a higher alert. AuthMS maintains a per-user UTC-based active hour model that automatically adapts to users in different time zones.
+Most users have regular activity patterns — Monday through Friday, 8:00 - 22:00. A login at 3 AM may not be an attack, but it should raise a higher alert. Autional maintains a per-user UTC-based active hour model that automatically adapts to users in different time zones.
 
 ### 6. Login Failure History (Weight: 10%)
 
@@ -95,7 +95,7 @@ This dimension uses linear weighting because brute-force attacks have a very cle
 
 Not all operations carry the same risk. Viewing a profile → low risk; changing a linked phone number → medium risk; deleting an account → high risk; transferring large funds → critical risk.
 
-AuthMS allows admins to configure different risk thresholds for different API endpoints. The same user in the same session may require different levels of authentication to access different features.
+Autional allows admins to configure different risk thresholds for different API endpoints. The same user in the same session may require different levels of authentication to access different features.
 
 ## Risk Scoring Algorithm
 
@@ -112,11 +112,11 @@ Key design decision: **the score leans conservative**. When data for a dimension
 
 If an attacker tries once → triggers medium risk → enters TOTP. Second attempt → same device → if the device fingerprint looks normal → risk might decrease.
 
-To prevent this kind of "slow probing" attack, AuthMS introduces an adversarial bonus: when multiple logins requiring MFA verification occur within a short time window (15 minutes), even if each individual risk score is below the threshold, the system accumulates a bonus score that gradually pushes the total higher.
+To prevent this kind of "slow probing" attack, Autional introduces an adversarial bonus: when multiple logins requiring MFA verification occur within a short time window (15 minutes), even if each individual risk score is below the threshold, the system accumulates a bonus score that gradually pushes the total higher.
 
 ## MFA Policy Configuration: Full Control for Admins
 
-AuthMS's Adaptive MFA is not a black box. Admins can see the following in the `mfa-service` management console:
+Autional's Adaptive MFA is not a black box. Admins can see the following in the `mfa-service` management console:
 
 1. **Policy Templates**: Three presets — "Loose" (UX-first), "Standard" (balanced), "Strict" (security-first)
 2. **Custom Risk Thresholds**: Score ranges for each risk level (low/medium/high/critical) are fully configurable
@@ -169,14 +169,14 @@ mfa_policy:
 ### Case 3: Global Remote Team
 
 - Challenge: Employees distributed worldwide with different time zones, fixed MFA policies had extremely high false-positive rates
-- Solution: Enabled behavioral pattern and time factor dimensions; AuthMS automatically learned each employee's active hours
+- Solution: Enabled behavioral pattern and time factor dimensions; Autional automatically learned each employee's active hours
 - Result: Precisely identified a social engineering attack — an attacker used the COO's publicly available travel itinerary to attempt login during "business trip overnight." The geolocation dimension detected an unusual city, triggering a high-risk assessment, and the attack failed
 
 ## User Experience: How to Avoid User Friction
 
 The ultimate enemy of security measures is not the attacker — it's the user. If MFA is too cumbersome, users will find ways around it — using simple passwords, disabling MFA (if optional), or even switching to competitors.
 
-AuthMS made three key design decisions for user experience:
+Autional made three key design decisions for user experience:
 
 **1. Progressive Introduction**
 Don't force all users to enable MFA suddenly. First, run in "Loose" mode for a week, recording risk assessments without blocking. In the second week, start triggering TOTP for high-risk logins while leaving medium and low risk unchanged. Users gradually adapt without the resistance of "suddenly being blocked."
@@ -189,7 +189,7 @@ Users can check "Trust this device for 30 days." During the trust period, the de
 
 ## Future Direction: AI-Driven Continuous Adaptive Authentication
 
-AuthMS's Adaptive MFA currently assesses risk **only at login time**. In the next phase, we are exploring **Continuous Adaptive Authentication**:
+Autional's Adaptive MFA currently assesses risk **only at login time**. In the next phase, we are exploring **Continuous Adaptive Authentication**:
 
 - **In-Session Behavior Monitoring**: After login, continuously analyze user operation patterns. If abnormal behavior suddenly appears (e.g., bulk data download, accessing never-before-used features), dynamically increase the risk score and require re-authentication.
 - **Multi-Modal Biometrics**: Combine keyboard/mouse behavior, touch gestures, and even signals from browser extensions to build a more accurate user profile.
@@ -197,4 +197,4 @@ AuthMS's Adaptive MFA currently assesses risk **only at login time**. In the nex
 
 The future of authentication is not "harder passwords" or "more CAPTCHAs" — it's making authentication invisible to legitimate users while making it impossible for attackers to get through. That is the core philosophy of Adaptive MFA.
 
-AuthMS's Adaptive MFA engine is open source. Visit our GitHub repository for implementation details and integration documentation.
+Autional's Adaptive MFA engine is open source. Visit our GitHub repository for implementation details and integration documentation.

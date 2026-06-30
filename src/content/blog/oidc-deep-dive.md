@@ -4,7 +4,7 @@ date: "2026-05-22"
 category: "Tech"
 tags: ["OIDC", "OpenID Connect", "OAuth"]
 readTime: "10 min"
-excerpt: "OIDC is an identity layer built on top of OAuth 2.0. This article provides an in-depth analysis of ID Token structure (JWT claims), the UserInfo endpoint's role, the differences between Authorization Code, Implicit, and Hybrid flows, and how AuthMS oauth-service delivers complete OIDC Provider capabilities."
+excerpt: "OIDC is an identity layer built on top of OAuth 2.0. This article provides an in-depth analysis of ID Token structure (JWT claims), the UserInfo endpoint's role, the differences between Authorization Code, Implicit, and Hybrid flows, and how Autional oauth-service delivers complete OIDC Provider capabilities."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -65,8 +65,8 @@ The ID Token is OIDC's core innovation. It's a JWT signed by the authorization s
   "locale": "zh-CN",
   "zoneinfo": "Asia/Shanghai",
   "updated_at": 1715600000,
-  "tenant_id": "tenant_abc123",                   // AuthMS extension: multi-tenant identifier
-  "roles": ["admin", "developer"]                 // AuthMS extension: role claims
+  "tenant_id": "tenant_abc123",                   // Autional extension: multi-tenant identifier
+  "roles": ["admin", "developer"]                 // Autional extension: role claims
 }
 ```
 
@@ -117,7 +117,7 @@ After receiving the ID Token, the client (RP) must perform the following verific
 
 Steps 7 and 8 — hash verification — are the most overlooked yet critical. They bind the ID Token to the Authorization Code or Access Token, preventing mixing attacks.
 
-AuthMS oauth-service automatically computes and embeds `c_hash` and `at_hash` when issuing ID Tokens. Client SDKs automatically verify these during validation.
+Autional oauth-service automatically computes and embeds `c_hash` and `at_hash` when issuing ID Tokens. Client SDKs automatically verify these during validation.
 
 ## The UserInfo Endpoint
 
@@ -135,7 +135,7 @@ Beyond the claims embedded in the ID Token, OIDC defines the UserInfo endpoint. 
 
 **Best practice**: Use the ID Token for authentication confirmation ("verify who this user is") and the UserInfo endpoint for detailed user information. Don't rely solely on the ID Token for sensitive or time-sensitive user attributes, as it may be cached.
 
-When a client requests `openid profile email` scopes, AuthMS includes the corresponding claims in the UserInfo endpoint response:
+When a client requests `openid profile email` scopes, Autional includes the corresponding claims in the UserInfo endpoint response:
 
 ```json
 {
@@ -156,7 +156,7 @@ OIDC inherits OAuth 2.0's authorization flows and adds identity information on t
 
 ### 1. Authorization Code Flow
 
-This is the most secure flow. The Authorization Code is passed through the frontend browser (not exposed to JavaScript), while the Token is retrieved via the backend channel. PKCE provides an extra layer of protection. AuthMS uses this flow by default.
+This is the most secure flow. The Authorization Code is passed through the frontend browser (not exposed to JavaScript), while the Token is retrieved via the backend channel. PKCE provides an extra layer of protection. Autional uses this flow by default.
 
 ### 2. Implicit Flow — Deprecated
 
@@ -166,7 +166,7 @@ OAuth 2.1 has officially removed the Implicit Flow. It returns the Token directl
 
 The Hybrid Flow is a combination of Authorization Code Flow and Implicit Flow — the frontend receives an ID Token (for immediate user display), while the backend exchanges the Authorization Code for an Access Token. Suitable for scenarios requiring both frontend instant display and backend secure access.
 
-AuthMS oauth-service supports all three flows, but for new client registrations in the admin console, only Authorization Code Flow (with PKCE) is allowed by default.
+Autional oauth-service supports all three flows, but for new client registrations in the admin console, only Authorization Code Flow (with PKCE) is allowed by default.
 
 ## Requesting Scopes and Claims
 
@@ -197,11 +197,11 @@ GET /authorize?
   }
 ```
 
-AuthMS oauth-service fully implements standard scope mapping and claims request parameter parsing, and supports configuring allowed scope ranges for each client in the admin console.
+Autional oauth-service fully implements standard scope mapping and claims request parameter parsing, and supports configuring allowed scope ranges for each client in the admin console.
 
-## AuthMS as an OIDC Provider
+## Autional as an OIDC Provider
 
-AuthMS oauth-service is a complete OIDC Provider, implementing the following endpoints:
+Autional oauth-service is a complete OIDC Provider, implementing the following endpoints:
 
 ```
 /.well-known/openid-configuration     # OIDC Discovery document
@@ -226,7 +226,7 @@ Each tenant's JWK key pair is managed independently, and key rotation happens at
 
 ### Custom Claims Mapping
 
-AuthMS allows tenant administrators to configure custom claims mapping:
+Autional allows tenant administrators to configure custom claims mapping:
 
 ```yaml
 # Tenant configuration
@@ -245,17 +245,17 @@ These templates are dynamically rendered at token issuance time, enabling each t
 
 ### Security Features
 
-1. **HTTPS enforced**: All endpoint URLs in the OIDC Discovery document must use HTTPS. AuthMS enforces HTTPS at the deployment layer through the nginx reverse proxy.
+1. **HTTPS enforced**: All endpoint URLs in the OIDC Discovery document must use HTTPS. Autional enforces HTTPS at the deployment layer through the nginx reverse proxy.
 
 2. **PKCE mandatory**: For public clients (SPAs and mobile apps), PKCE is mandatory and cannot be disabled. This follows OAuth 2.1 security best practices.
 
 3. **Token binding**: `c_hash` and `at_hash` are automatically computed and embedded, preventing mixing attacks.
 
-4. **Pairwise Subject Identifier**: For privacy-sensitive scenarios, AuthMS supports generating different `sub` values for different clients, preventing cross-client user tracking. Implementation based on `sub = SHA-256(client_id || user_id || sector_identifier_uri)`.
+4. **Pairwise Subject Identifier**: For privacy-sensitive scenarios, Autional supports generating different `sub` values for different clients, preventing cross-client user tracking. Implementation based on `sub = SHA-256(client_id || user_id || sector_identifier_uri)`.
 
 ## Client Integration Example
 
-Below is a standard OIDC client integration with AuthMS:
+Below is a standard OIDC client integration with Autional:
 
 ```javascript
 // 1. Discover OIDC Provider configuration
@@ -283,13 +283,13 @@ window.location.href = authUrl.toString();
 // 7. Extract user info
 ```
 
-AuthMS provides official OIDC client SDKs for Go, JavaScript, Python, and Java, encapsulating the complex logic of PKCE, JWT verification, and token management.
+Autional provides official OIDC client SDKs for Go, JavaScript, Python, and Java, encapsulating the complex logic of PKCE, JWT verification, and token management.
 
 ## Summary
 
 OIDC is the most widely adopted standardized identity protocol today. It elevates OAuth 2.0 from a pure authorization protocol to a complete identity authentication protocol, enabling cross-system user identity interoperability through the standardized claims format of the ID Token.
 
-AuthMS oauth-service, as a complete OIDC Provider, delivers:
+Autional oauth-service, as a complete OIDC Provider, delivers:
 - Full OIDC endpoints (Authorization, Token, UserInfo, JWK, Discovery)
 - Multi-tenant isolated domains and key management
 - Flexible custom claims mapping

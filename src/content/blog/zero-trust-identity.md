@@ -59,7 +59,7 @@ Users should never have more permissions than their current task requires:
 - **Role and Permission Separation**: A person can have multiple roles, but only the current active role's permissions are effective
 - **Data-Level Access Control**: It's not "you can access the customer database" — it's "you can access the region of the customer database you're responsible for"
 
-AuthMS's RBAC system implements dynamic role activation:
+Autional's RBAC system implements dynamic role activation:
 
 ```yaml
 # Developer normally has read-only permissions
@@ -90,7 +90,7 @@ A user logs in, gets a Session Token, and for the next 8 hours, the system uncon
 
 Zero trust requires **continuous verification** — dynamically assessing trust levels throughout the session's entire lifecycle:
 
-### AuthMS's Continuous Verification Engine
+### Autional's Continuous Verification Engine
 
 ```
 Session established: trust score 100
@@ -125,7 +125,7 @@ Zero trust isn't just about verifying who you are — it also verifies whether t
 - **Is the disk encrypted?** Devices without full-disk encryption are restricted from downloading data
 - **Is the enterprise certificate valid?** BYOD devices need enterprise MDM configuration
 
-AuthMS integrates with MDM/EDR systems to obtain device compliance status and feeds these signals into the continuous trust assessment.
+Autional integrates with MDM/EDR systems to obtain device compliance status and feeds these signals into the continuous trust assessment.
 
 ### Adaptive Step-Up Authentication
 
@@ -136,7 +136,7 @@ When the trust score falls below a threshold, access isn't immediately denied �
 - **Severe downgrade (trust score < 20)**: Session terminated + account temporarily restricted + security team notified
 
 ```yaml
-# AuthMS Step-Up authentication policy example
+# Autional Step-Up authentication policy example
 step_up_policies:
   - trigger: trust_score_below(50)
     action: require_webauthn
@@ -155,7 +155,7 @@ In a microservice architecture, zero trust isn't just a user-level concern — i
 
 In the traditional model, Service A calling Service B only needs a static internal API Key — once configured, it's valid forever. In the zero trust model:
 
-### AuthMS's Service-to-Service Authentication Architecture
+### Autional's Service-to-Service Authentication Architecture
 
 ```
 Service A wants to call Service B's internal API
@@ -172,7 +172,7 @@ Service A wants to call Service B's internal API
 Key design decisions:
 
 - **No implicit trust**: Even if two services run in the same Kubernetes cluster and the same namespace, they are not assumed to be able to communicate freely
-- **Automatic certificate rotation**: Service-to-service mTLS certificates are automatically issued and rotated by AuthMS infrastructure, no manual operation needed
+- **Automatic certificate rotation**: Service-to-service mTLS certificates are automatically issued and rotated by Autional infrastructure, no manual operation needed
 - **Unidirectional call chains**: Only predefined service call relationships are permitted. If compliance-service was never defined as a valid caller for session-service, the request will be denied even with a valid API Key
 - **Full auditing**: Every service-to-service call is recorded and protected by a hash chain
 
@@ -193,7 +193,7 @@ In the city model:
 
 ## A Gradual Path to Zero Trust Implementation
 
-Migrating from a traditional security architecture to zero trust is not a big-bang switch. AuthMS recommends a gradual migration path:
+Migrating from a traditional security architecture to zero trust is not a big-bang switch. Autional recommends a gradual migration path:
 
 ### Phase 1: Visualization (1-3 months)
 
@@ -227,8 +227,8 @@ Before restricting anything, understand the current state:
 
 ## Conclusion
 
-Zero trust is not a product, nor is it a feature — it is a security philosophy. It's not something you can "turn on" after deploying AuthMS; it's a mindset shift that AuthMS as a platform enables.
+Zero trust is not a product, nor is it a feature — it is a security philosophy. It's not something you can "turn on" after deploying Autional; it's a mindset shift that Autional as a platform enables.
 
 From trust but verify to never trust — this is not just the evolution of a security model, but an acknowledgment of this reality: **In the digital world of 2026, the perimeter has disappeared. The only reliable security assumption is: every request could be malicious, and every second must be verified.**
 
-And this continuous, unending verification is precisely what AuthMS exists for.
+And this continuous, unending verification is precisely what Autional exists for.

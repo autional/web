@@ -1,16 +1,16 @@
 ---
-title: "From Docker Compose to Kubernetes: AuthMS Containerization Best Practices"
+title: "From Docker Compose to Kubernetes: Autional Containerization Best Practices"
 date: "2026-06-10"
 category: "Architecture"
 tags: ["Docker", "Kubernetes", "Deployment"]
 readTime: "10 min"
-excerpt: "AuthMS's deployment journey started with docker-compose for local development and eventually reached production-grade Kubernetes clusters. This article documents key decisions along the way: how to design Dockerfiles for build-once-run-anywhere, managing stateful services in K8s, ConfigMap and Secrets best practices, and real-world results of horizontal autoscaling."
+excerpt: "Autional's deployment journey started with docker-compose for local development and eventually reached production-grade Kubernetes clusters. This article documents key decisions along the way: how to design Dockerfiles for build-once-run-anywhere, managing stateful services in K8s, ConfigMap and Secrets best practices, and real-world results of horizontal autoscaling."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-AuthMS established a principle from day one: **deployment method should never be a barrier to user adoption.** A startup might run docker-compose on a single 4-core 8GB cloud server; a mid-sized enterprise might use a Kubernetes cluster with 3 replicas; a large enterprise might need multi-AZ multi-cluster deployment. The same codebase, the same Docker images, must work across three dramatically different scenarios.
+Autional established a principle from day one: **deployment method should never be a barrier to user adoption.** A startup might run docker-compose on a single 4-core 8GB cloud server; a mid-sized enterprise might use a Kubernetes cluster with 3 replicas; a large enterprise might need multi-AZ multi-cluster deployment. The same codebase, the same Docker images, must work across three dramatically different scenarios.
 
 This article documents our complete journey from Docker Compose to Kubernetes — not for showmanship, but because at every stage we stepped into real pitfalls, some of which could have been entirely avoided with earlier planning.
 
@@ -18,7 +18,7 @@ This article documents our complete journey from Docker Compose to Kubernetes �
 
 Before writing any Dockerfile, the developer experience comes first. Developers should not have to wait for Docker builds just to see their code changes.
 
-AuthMS's development environment is entirely local:
+Autional's development environment is entirely local:
 
 ```powershell
 # Backend development
@@ -47,7 +47,7 @@ When deployment to a test environment or small production environment is needed,
 
 ### Unified Dockerfile: One Template for 15 Services
 
-AuthMS has 15 microservices but only **one Dockerfile** (at `docker/Dockerfile.service`). All differentiation is done via build args:
+Autional has 15 microservices but only **one Dockerfile** (at `docker/Dockerfile.service`). All differentiation is done via build args:
 
 ```dockerfile
 ARG SERVICE_NAME          # e.g., identity-service
@@ -82,7 +82,7 @@ Key optimizations:
 
 ### docker-compose.yml Structure
 
-AuthMS's `docker-compose.yml` uses YAML anchors to eliminate configuration duplication:
+Autional's `docker-compose.yml` uses YAML anchors to eliminate configuration duplication:
 
 ```yaml
 x-postgres-env: &postgres-env
@@ -140,7 +140,7 @@ The same applies to Redis — use K8s Redis + Sentinel for small deployments, ma
 
 ### ConfigMap & Secrets
 
-AuthMS configuration falls into two categories:
+Autional configuration falls into two categories:
 
 **ConfigMap (non-sensitive configuration)**:
 ```yaml
@@ -178,7 +178,7 @@ stringData:
 
 ### Horizontal Pod Autoscaler (HPA)
 
-Different AuthMS services have vastly different scaling requirements:
+Different Autional services have vastly different scaling requirements:
 
 | Service | Scaling Strategy | Target Metric | Min/Max Replicas |
 |---------|-----------------|---------------|-------------------|
@@ -258,7 +258,7 @@ This process ensures **zero traffic loss during rolling updates**.
 
 ## Migration Path: Docker Compose to K8s
 
-If you are already running AuthMS with Docker Compose, migrating to Kubernetes can be done in three steps:
+If you are already running Autional with Docker Compose, migrating to Kubernetes can be done in three steps:
 
 **Step 1: Generate initial manifests with Kompose**
 
@@ -283,10 +283,10 @@ Don't cut all traffic over to K8s at once. Deploy the full application in K8s fi
 
 1. **Resource limits are not "suggestions," they are "protections."** We once encountered a service that kept restarting due to OOM from a memory leak, but without CPU limits, each restart's compilation/initialization phase consumed all CPU on the node, slowing down co-located services. **Always set limits.**
 2. **Never use `latest` as a Docker image tag.** Use Git commit SHAs or semantic version numbers. With `imagePullPolicy: Always`, `latest` can cause Pods to pull different image versions on restart without you ever noticing.
-3. **Set `initialDelaySeconds` generously for health checks.** AuthMS's identity-service needs to connect to the database, run AutoMigrate, and preload caches on startup. If initialDelay is too short, K8s will start killing the Pod before it's ready (due to readiness probe failures), causing an infinite restart loop.
+3. **Set `initialDelaySeconds` generously for health checks.** Autional's identity-service needs to connect to the database, run AutoMigrate, and preload caches on startup. If initialDelay is too short, K8s will start killing the Pod before it's ready (due to readiness probe failures), causing an infinite restart loop.
 
 Containerization is not the goal — it's a means. Whether running single-machine with Docker Compose or a cluster with K8s, there is only one standard: **When the service goes down at 3 AM, can it recover automatically? If not, it's not properly deployed yet.**
 
 ---
 
-*AuthMS offers three deployment methods: Docker Compose, Kubernetes Helm Chart, and one-click cloud marketplace deployment. Get started by visiting the [Quick Start guide](/developer/docs/getting-started).*
+*Autional offers three deployment methods: Docker Compose, Kubernetes Helm Chart, and one-click cloud marketplace deployment. Get started by visiting the [Quick Start guide](/developer/docs/getting-started).*

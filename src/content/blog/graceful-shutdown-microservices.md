@@ -1,10 +1,10 @@
 ---
-title: "How to Gracefully Shutdown 16 Microservices? AuthMS's Unified Bootstrapper Revealed"
+title: "How to Gracefully Shutdown 16 Microservices? Autional's Unified Bootstrapper Revealed"
 date: "2026-05-12"
 category: "Architecture"
 tags: ["Graceful Shutdown", "Operations", "Reliability"]
 readTime: "7 min"
-excerpt: "When Kubernetes sends SIGTERM, does your microservice die immediately or gracefully wrap up within 30 seconds? AuthMS's unified Application bootstrapper ensures 16 services shut down gracefully—including HTTP request draining, MQ message completion, gRPC connection closure, and database pool release."
+excerpt: "When Kubernetes sends SIGTERM, does your microservice die immediately or gracefully wrap up within 30 seconds? Autional's unified Application bootstrapper ensures 16 services shut down gracefully—including HTTP request draining, MQ message completion, gRPC connection closure, and database pool release."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -17,7 +17,7 @@ Service restarts are the norm in production—Kubernetes rolling updates, node e
 - gRPC streams cut off mid-way, downstream services receiving `UNAVAILABLE` errors
 - Database connection pool violently closed, uncommitted transactions rolled back
 
-AuthMS's 16 microservices achieve **zero-downtime graceful shutdown** through the unified `micro-middleware/app` bootstrapper.
+Autional's 16 microservices achieve **zero-downtime graceful shutdown** through the unified `micro-middleware/app` bootstrapper.
 
 ## Wild Shutdown vs Graceful Shutdown
 
@@ -34,7 +34,7 @@ T+0s   gRPC stream disconnected → downstream retries (avalanche risk)
 
 This is the most common and most dangerous scenario—a simple `go run cmd/server/main.go` with no signal handling and no shutdown logic.
 
-### Graceful Shutdown (AuthMS Pattern)
+### Graceful Shutdown (Autional Pattern)
 
 ```
 Timeline:
@@ -51,7 +51,7 @@ T+12s  Process exits
 
 Consumers are unaware. Kubernetes `terminationGracePeriodSeconds` is set to 30 seconds, providing ample buffer time.
 
-## AuthMS Unified Bootstrapper Design
+## Autional Unified Bootstrapper Design
 
 ### Application Builder Pattern
 
@@ -97,7 +97,7 @@ type Server interface {
 }
 ```
 
-Common Server implementations in AuthMS:
+Common Server implementations in Autional:
 
 | Component | Implementation | Purpose |
 |------|------|------|
@@ -110,7 +110,7 @@ On shutdown, `app.Run` calls each Server's `Shutdown(ctx)` in reverse order, pas
 
 ### WithCloser vs WithCleanupNamed
 
-AuthMS distinguishes two cleanup methods:
+Autional distinguishes two cleanup methods:
 
 - `WithCloser(name, fn)` — simple `func() error` closure for single-step cleanup (close DB, close Redis)
 - `WithCleanupNamed(name, fn)` — same as Closer but semantically for "side-effect cleanup" (e.g., audit client flush buffer)
@@ -178,7 +178,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 ```
 
-In AuthMS's consumer architecture, messages are only acked after successful processing (manual acknowledgment mode). So even if the MQ consumer hasn't finished processing messages during process shutdown, messages are re-queued (not acked) and are not lost.
+In Autional's consumer architecture, messages are only acked after successful processing (manual acknowledgment mode). So even if the MQ consumer hasn't finished processing messages during process shutdown, messages are re-queued (not acked) and are not lost.
 
 For long-running messages (e.g., compliance report generation, potentially 30+ seconds), context cancellation interrupts processing, and the message returns to the queue to be picked up by another Pod.
 
@@ -255,11 +255,11 @@ Why set a timeout:
 
 - Kubernetes default `terminationGracePeriodSeconds` is 30 seconds
 - If graceful shutdown doesn't complete within 30 seconds, Kubernetes sends SIGKILL to force-kill the Pod
-- AuthMS's 30-second default aligns with this, but can be customized via `WithShutdownTimeout`
+- Autional's 30-second default aligns with this, but can be customized via `WithShutdownTimeout`
 
 ## Verified in Production
 
-AuthMS's graceful shutdown performance in production:
+Autional's graceful shutdown performance in production:
 
 **Scenario 1: Normal Rolling Update**
 
@@ -316,7 +316,7 @@ The complete shutdown sequence is recorded in logs. If a Pod consistently fails 
 
 ## Summary
 
-AuthMS's `micro-middleware/app` bootstrapper uses less than 300 lines of code to uniformly manage the lifecycle of 16 microservices:
+Autional's `micro-middleware/app` bootstrapper uses less than 300 lines of code to uniformly manage the lifecycle of 16 microservices:
 
 - **Declarative Registration**: Builder pattern with `WithServer` + `WithCloser`
 - **Signal-Driven**: Listens for SIGTERM/SIGINT, automatically triggers shutdown sequence

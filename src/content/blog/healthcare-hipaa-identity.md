@@ -4,13 +4,13 @@ date: "2026-06-04"
 category: "Compliance"
 tags: ["Healthcare", "HIPAA", "Data Protection"]
 readTime: "10 min"
-excerpt: "HIPAA imposes strict technical requirements on access control, audit trails, and transmission security for healthcare information. This article details each HIPAA Security Rule specification related to identity authentication and how AuthMS builds a HIPAA-compliant identity infrastructure."
+excerpt: "HIPAA imposes strict technical requirements on access control, audit trails, and transmission security for healthcare information. This article details each HIPAA Security Rule specification related to identity authentication and how Autional builds a HIPAA-compliant identity infrastructure."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Compliance Notice**: The technical capabilities related to the HIPAA Security Rule described herein represent the design goals of the AuthMS platform and do not constitute HIPAA compliance certification. HIPAA compliance requires administrative, physical, and technical safeguards—the ultimate compliance responsibility lies with the healthcare provider.
+> **Compliance Notice**: The technical capabilities related to the HIPAA Security Rule described herein represent the design goals of the Autional platform and do not constitute HIPAA compliance certification. HIPAA compliance requires administrative, physical, and technical safeguards—the ultimate compliance responsibility lies with the healthcare provider.
 
 ## Medical Data: The Most Valuable Attack Target
 
@@ -43,15 +43,15 @@ It includes four implementation specifications:
 
 **Unique User Identification (Required)**: Each user must have a unique identifier for tracking their access to ePHI. Shared accounts are explicitly prohibited—"shared nurse station accounts" are one of the most common violations in HIPAA audits.
 
-AuthMS's identity-service inherently guarantees unique user identification. Each user has a globally unique ULID, supporting multiple login methods (username, email, phone), but the internal identifier is always a single primary key. Every audit log entry is bound to a specific user ID.
+Autional's identity-service inherently guarantees unique user identification. Each user has a globally unique ULID, supporting multiple login methods (username, email, phone), but the internal identifier is always a single primary key. Every audit log entry is bound to a specific user ID.
 
 **Emergency Access Procedure (Required)** : In emergency situations (e.g., life-threatening condition), authorized personnel must be able to bypass normal access controls to obtain ePHI. The "Break Glass" procedure must have an independent audit trail.
 
-AuthMS can configure a specific emergency role (e.g., `emergency_access`) for this scenario. Authorization of this role triggers an independent audit event, recorded with prominent marking in audit-service. The role is automatically revoked after emergency access ends.
+Autional can configure a specific emergency role (e.g., `emergency_access`) for this scenario. Authorization of this role triggers an independent audit event, recorded with prominent marking in audit-service. The role is automatically revoked after emergency access ends.
 
 **Automatic Logoff (Addressable)** : Sessions must automatically terminate after a period of inactivity, preventing unauthorized individuals from accessing ePHI on a logged-in terminal.
 
-AuthMS's session-service supports:
+Autional's session-service supports:
 - Idle timeout: e.g., auto-logoff after 15 minutes of inactivity
 - Absolute timeout: e.g., forced re-login after 8 hours (even with continuous activity)
 - Concurrent session limits: maximum N active sessions per user simultaneously
@@ -70,7 +70,7 @@ HIPAA requires audit logs to cover:
 4. **What operation** was performed (read/modify/delete/export)
 5. **Whether the access was successful** (allowed/denied)
 
-AuthMS's audit-service fully covers these five dimensions. Based on MongoDB's document storage model, each audit record can flexibly carry contextual information—such as the department accessed, patient ID, and data category—which is critical for HIPAA audits.
+Autional's audit-service fully covers these five dimensions. Based on MongoDB's document storage model, each audit record can flexibly carry contextual information—such as the department accessed, patient ID, and data category—which is critical for HIPAA audits.
 
 More importantly, audit-service's hash chain verification mechanism ensures audit record immutability. Each log write computes a hash link to the previous entry, forming a chain structure. Any modification to historical logs would break the hash chain, immediately detected during audit verification. This provides powerful technical proof for HIPAA's "audit log integrity" requirements.
 
@@ -94,7 +94,7 @@ This is HIPAA's "who you are" verification requirement. Specific measures includ
 - Digital certificate + password
 - At least two factors combined
 
-In AuthMS, mfa-service provides all required authentication factors. For healthcare scenarios, the recommended configuration is:
+In Autional, mfa-service provides all required authentication factors. For healthcare scenarios, the recommended configuration is:
 - **Routine Access**: Password + TOTP
 - **Highly Sensitive Access** (e.g., viewing full diagnostic records): Password + Passkey (WebAuthn)
 - **Remote Access**: Password + TOTP + device certificate
@@ -108,7 +108,7 @@ Practical requirements:
 - Inter-microservice communication must use mTLS
 - Emails containing PHI must be encrypted
 
-AuthMS supports TLS 1.3 across the entire gateway-to-microservice chain. The gateway-service handles TLS termination for external requests, while service-to-service internal communication is encrypted via gRPC with mTLS. Email notifications sent by notification-service support S/MIME encryption.
+Autional supports TLS 1.3 across the entire gateway-to-microservice chain. The gateway-service handles TLS termination for external requests, while service-to-service internal communication is encrypted via gRPC with mTLS. Email notifications sent by notification-service support S/MIME encryption.
 
 ## Role Hierarchy in Healthcare: A Complex Personnel Access Model
 
@@ -130,7 +130,7 @@ Healthcare Organization
 └── External Parties (insurers, referral hospitals): restricted access, requires BAA agreement
 ```
 
-AuthMS's RBAC system supports this complexity through:
+Autional's RBAC system supports this complexity through:
 
 - **Hierarchical Roles**: `doctor.senior` inherits permissions from `doctor.base`, `doctor.base` inherits from `medical_staff`
 - **Attribute-Based Permissions (ABAC)** : The same user has different access permissions for patient data in different departments. Current scope is extracted from the request context.
@@ -141,7 +141,7 @@ AuthMS's RBAC system supports this complexity through:
 
 HIPAA does not mandate encryption of all data, but recommends encryption protection for ePHI. In practice, password hash storage is mandatory, while encryption of sensitive PHI fields (e.g., Social Security numbers, diagnosis codes) is strongly recommended.
 
-AuthMS's compliance-service provides field-level encryption:
+Autional's compliance-service provides field-level encryption:
 
 - Sensitive fields are encrypted with AES-256-GCM before database write
 - Encryption keys are managed through KMS, not stored in code or configuration files
@@ -157,10 +157,10 @@ HIPAA's enforcement body is the HHS Office for Civil Rights (OCR). When a data b
 3. Employee training records (security awareness and HIPAA training)
 4. Risk assessment reports (periodic assessments of ePHI risks)
 
-AuthMS's audit-service can provide all the data required for item 1. Export formats support CSV and JSON, suitable for submission to audit authorities.
+Autional's audit-service can provide all the data required for item 1. Export formats support CSV and JSON, suitable for submission to audit authorities.
 
 ## Summary
 
 HIPAA compliance is not something you achieve by "installing a piece of software"—it is an ongoing process involving multi-dimensional system building across technical controls, management processes, and personnel training. At the technical level, the identity authentication system is the cornerstone of HIPAA compliance: it determines who can access ePHI, which data was accessed, and whether access behavior is fully recorded.
 
-Through the coordinated work of identity-service (user management + RBAC), mfa-service (multi-factor authentication), session-service (session security), audit-service (audit tracking), and compliance-service (data encryption and masking), AuthMS provides a complete HIPAA-compliant identity infrastructure for healthcare scenarios.
+Through the coordinated work of identity-service (user management + RBAC), mfa-service (multi-factor authentication), session-service (session security), audit-service (audit tracking), and compliance-service (data encryption and masking), Autional provides a complete HIPAA-compliant identity infrastructure for healthcare scenarios.

@@ -16,7 +16,7 @@ claims_reviewed: true
 A separate database instance per tenant. Maximum security, highest cost.
 
 ### Logical Isolation  
-Shared database with tenant_id on every row. Balance of security and efficiency — the most common pattern in AuthMS.
+Shared database with tenant_id on every row. Balance of security and efficiency — the most common pattern in Autional.
 
 ### Hybrid
 Critical tenants get physical isolation; free-tier tenants share logically.

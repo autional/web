@@ -4,7 +4,7 @@ date: "2026-06-09"
 category: "Project"
 tags: ["Trends", "2026", "Industry Outlook"]
 readTime: "10 min"
-excerpt: "The identity landscape is undergoing a profound transformation. From the mainstream adoption of Passkey to the rise of AI identity, six forces are reshaping the future of digital identity. This article provides an in-depth analysis of the technical essence of each trend, the current ecosystem landscape, and their impact on the AuthMS product roadmap."
+excerpt: "The identity landscape is undergoing a profound transformation. From the mainstream adoption of Passkey to the rise of AI identity, six forces are reshaping the future of digital identity. This article provides an in-depth analysis of the technical essence of each trend, the current ecosystem landscape, and their impact on the Autional product roadmap."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -38,7 +38,7 @@ This article outlines six key trends in the identity space for 2026 and analyzes
 - Conditional Mediation allows the Passkey selector to automatically appear on page load — users don't even need to click
 - You still need fallback authentication methods (for device loss scenarios)
 
-**AuthMS's approach**: mfa-service has a built-in complete WebAuthn RP (Relying Party) implementation covering the full attestation (registration) and assertion (authentication) flow. Developers only need to enable the Passkey option in the admin console.
+**Autional's approach**: mfa-service has a built-in complete WebAuthn RP (Relying Party) implementation covering the full attestation (registration) and assertion (authentication) flow. Developers only need to enable the Passkey option in the admin console.
 
 ## Trend 2: AI-Generated Identity Attacks — What You Should Worry About
 
@@ -59,7 +59,7 @@ Defense thinking needs to evolve from "verify credentials" to "verify authentici
 | Synthetic identity | Rule engine | Behavioral analysis + knowledge graph |
 | AI phishing messages | User education | AI-generated phishing detection + risk scoring |
 
-AuthMS is integrating an AI-enhanced risk engine into session-service, upgrading risk assessment from a "one-time check at login" to "continuous evaluation throughout the session."
+Autional is integrating an AI-enhanced risk engine into session-service, upgrading risk assessment from a "one-time check at login" to "continuous evaluation throughout the session."
 
 ## Trend 3: Continuous Authentication Replaces Point-in-Time Authentication
 
@@ -78,7 +78,7 @@ When the risk score exceeds a threshold, the system can:
 2. Downgrade session permissions (temporarily disable sensitive operations)
 3. Terminate the session and require re-login
 
-AuthMS's session-service architecture has reserved the interface for continuous authentication — the `RiskEvaluator` interface allows plugging in custom risk assessment engines, and the evaluation results affect the session's trust level.
+Autional's session-service architecture has reserved the interface for continuous authentication — the `RiskEvaluator` interface allows plugging in custom risk assessment engines, and the evaluation results affect the session's trust level.
 
 ## Trend 4: Identity Becomes the New Security Perimeter
 
@@ -88,11 +88,11 @@ Gartner named "Identity Fabric" as the number one security trend for 2026. The c
 
 This drives three changes:
 
-**Identity-Aware Proxy**: The gateway no longer looks at just IP and port — it makes access decisions based on user identity and context. AuthMS's gateway-service is evolving in this direction — deeply integrated with identity-service to complete identity verification and basic authorization at the gateway layer.
+**Identity-Aware Proxy**: The gateway no longer looks at just IP and port — it makes access decisions based on user identity and context. Autional's gateway-service is evolving in this direction — deeply integrated with identity-service to complete identity verification and basic authorization at the gateway layer.
 
 **Identity Data Lake**: Aggregating identity signals from multiple sources into a unified analytics platform — logs, authentication events, permission changes, device signals — forming a complete identity posture awareness. audit-service is expanding into this role.
 
-**Identity Orchestration**: Identity is no longer a single service but an orchestration of multiple capabilities — authentication, authorization, risk, audit — working in concert. This is a natural advantage of AuthMS's microservice architecture: each service evolves independently but collaborates through standard protocols.
+**Identity Orchestration**: Identity is no longer a single service but an orchestration of multiple capabilities — authentication, authorization, risk, audit — working in concert. This is a natural advantage of Autional's microservice architecture: each service evolves independently but collaborates through standard protocols.
 
 ## Trend 5: Privacy-Enhancing Identity — Selective Disclosure and Zero-Knowledge Proofs
 
@@ -106,7 +106,7 @@ This over-disclosure is increasingly unacceptable in 2026 under increasingly str
 - **BBS+ Signatures**: Allowing only a subset of attributes to be disclosed from a signed credential
 - **SD-JWT (Selective Disclosure JWT)**: Allowing selective disclosure of individual JWT fields
 
-AuthMS is in the exploratory phase of integrating these capabilities into oauth-service's token issuance flow. The long-term goal is to allow users to say "I only prove I am a member of this tenant" without exposing their full user profile.
+Autional is in the exploratory phase of integrating these capabilities into oauth-service's token issuance flow. The long-term goal is to allow users to say "I only prove I am a member of this tenant" without exposing their full user profile.
 
 ## Trend 6: AI Agent Identity — The Explosive Growth of Non-Human Identities
 
@@ -122,7 +122,7 @@ This question deserves its own dedicated discussion (see "The Identity Problem o
 - A new identity model is needed to handle "Delegated Authorization"
 - Each operation by an AI Agent needs its own independent audit trail
 
-AuthMS is expanding the "principal" concept in identity-service from "natural person" to three types: "Human / AI Agent / Service Account," each with different authentication and authorization strategies.
+Autional is expanding the "principal" concept in identity-service from "natural person" to three types: "Human / AI Agent / Service Account," each with different authentication and authorization strategies.
 
 ## Summary
 

@@ -10,7 +10,7 @@ reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Compliance Note**: The FERPA and COPPA-related technical capabilities described herein represent AuthMS platform design goals. FERPA compliance must be assessed by the educational institution itself; COPPA compliance requires a parental consent mechanism and privacy policy. AuthMS helps customers meet relevant standards through technical architecture but does not constitute a legal compliance endorsement.
+> **Compliance Note**: The FERPA and COPPA-related technical capabilities described herein represent Autional platform design goals. FERPA compliance must be assessed by the educational institution itself; COPPA compliance requires a parental consent mechanism and privacy policy. Autional helps customers meet relevant standards through technical architecture but does not constitute a legal compliance endorsement.
 
 ## The EdTech Identity Challenge
 
@@ -46,7 +46,7 @@ FERPA grants parents (or eligible students aged 18+) the following rights:
 - Automatic permission model switching based on student age
 - Parent access to multiple children's accounts
 
-AuthMS RBAC implementation:
+Autional RBAC implementation:
 
 ```go
 // Parent role: can view linked students' grades and attendance, but cannot act on their behalf
@@ -69,7 +69,7 @@ For EdTech products, this means:
 - OAuth scopes must be precise — "learning analytics only, not for marketing"
 - Authorization records must be persistently stored for audit
 
-AuthMS's oauth-service supports custom scopes, and compliance-service's DSAR functionality can generate a student's "data sharing inventory" — listing which third parties received what data and for what purpose.
+Autional's oauth-service supports custom scopes, and compliance-service's DSAR functionality can generate a student's "data sharing inventory" — listing which third parties received what data and for what purpose.
 
 ## COPPA: Protecting Children Under 13
 
@@ -86,7 +86,7 @@ COPPA's core requirement is obtaining "verifiable parental consent" before colle
 
 ### Technical Implementation for Children's Accounts
 
-AuthMS provides the following technical support for COPPA compliance:
+Autional provides the following technical support for COPPA compliance:
 
 **Parental Consent Workflow**: A special approval process is triggered during child registration:
 1. Child fills in basic info (name, age, parent email)
@@ -97,7 +97,7 @@ AuthMS provides the following technical support for COPPA compliance:
 
 This workflow is driven by identity-service's approval mechanism, with audit-service recording every step's timestamp and operator.
 
-**Data Minimization**: COPPA requires collecting only the information reasonably necessary to provide the online service. AuthMS's registration flow supports age-based required field trimming:
+**Data Minimization**: COPPA requires collecting only the information reasonably necessary to provide the online service. Autional's registration flow supports age-based required field trimming:
 - Under 13: Minimal fields (nickname, password, parent email)
 - 13-17: Email may be added
 - 18+: Standard registration flow
@@ -148,7 +148,7 @@ System Admin
 - IEP (Individualized Education Program): Special education team only
 - Medical records: School nurse and designated admins only
 
-AuthMS supports this multi-dimensional authorization model through:
+Autional supports this multi-dimensional authorization model through:
 
 **Hierarchical Roles + Scope Constraints**:
 ```go
@@ -196,4 +196,4 @@ Education data cannot be retained indefinitely. After a student graduates or tra
 
 EdTech identity systems differ fundamentally from enterprise identity systems: they include minors requiring special protection, role hierarchies spanning multiple organizational levels, and permission models that must simultaneously handle institutional tiers, role categories, and data sensitivity dimensions.
 
-AuthMS provides an identity infrastructure compliant with FERPA/COPPA requirements for EdTech products through its NIST RBAC system (hierarchical roles + SoD + ABAC extensions), compliance-service's parental consent workflow and data lifecycle management, and audit-service's comprehensive audit trail.
+Autional provides an identity infrastructure compliant with FERPA/COPPA requirements for EdTech products through its NIST RBAC system (hierarchical roles + SoD + ABAC extensions), compliance-service's parental consent workflow and data lifecycle management, and audit-service's comprehensive audit trail.

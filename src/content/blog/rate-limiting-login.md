@@ -4,7 +4,7 @@ date: "2026-05-23"
 category: "Tech"
 tags: ["Rate Limiting", "DDoS", "Security"]
 readTime: "9 min"
-excerpt: "Login endpoints are attackers' favorite targets. From token buckets to sliding windows, from IP-level to user-level rate limiting, from single-node to distributed rate limiting—this article walks through a real brute-force attack scenario, layer by layer, showing the evolution of rate-limiting strategies and how AuthMS gateway-service provides configurable multi-dimensional protection for every tenant."
+excerpt: "Login endpoints are attackers' favorite targets. From token buckets to sliding windows, from IP-level to user-level rate limiting, from single-node to distributed rate limiting—this article walks through a real brute-force attack scenario, layer by layer, showing the evolution of rate-limiting strategies and how Autional gateway-service provides configurable multi-dimensional protection for every tenant."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -79,7 +79,7 @@ Sliding windows are far more accurate than fixed windows, but in high-precision 
 
 ### Third Generation: Token Bucket
 
-The token bucket is the industry's most popular rate-limiting algorithm and the default in AuthMS gateway-service.
+The token bucket is the industry's most popular rate-limiting algorithm and the default in Autional gateway-service.
 
 ```
 Token Bucket Model:
@@ -125,7 +125,7 @@ The leaky bucket is the mirror image of the token bucket: token bucket refills a
 
 The leaky bucket suits traffic-shaping scenarios—where you need a steady request rate delivered to downstream services. But for bursts, the leaky bucket drops rather than queues, resulting in worse UX than the token bucket.
 
-AuthMS gateway-service defaults to the token bucket, with config options allowing tenant admins to switch algorithms based on traffic patterns.
+Autional gateway-service defaults to the token bucket, with config options allowing tenant admins to switch algorithms based on traffic patterns.
 
 ## Multi-Dimensional Rate Limiting: Beyond IP
 
@@ -139,7 +139,7 @@ A mature rate-limiting strategy requires multiple layers:
 ### Layer 1: IP-Level Rate Limiting
 
 ```
-IP-level parameters (AuthMS defaults):
+IP-level parameters (Autional defaults):
   - Window: 60 seconds
   - Threshold: 30 requests / window
   - Algorithm: sliding window
@@ -168,10 +168,10 @@ Global parameters:
 
 This is the disaster protection layer. When overall login request volume far exceeds normal levels (indicating a DDoS attack), it prioritizes availability for other business endpoints.
 
-### AuthMS Gateway-Service Three-Layer Example
+### Autional Gateway-Service Three-Layer Example
 
 ```yaml
-# Tenant admin configuration in AuthMS admin console
+# Tenant admin configuration in Autional admin console
 rate_limiting:
   login_endpoint:
     ip_limit:
@@ -223,11 +223,11 @@ EVAL "
 " 1 "ratelimit:login:ip:192.168.1.1" 60 30 1715692800000
 ```
 
-AuthMS gateway-service has this Redis rate limiter built in—developers don't need to implement it themselves. It auto-enables distributed mode via `redis` connection info in the gateway config; if Redis is unavailable, it gracefully degrades to local rate limiting (each instance counts independently) and triggers an alert.
+Autional gateway-service has this Redis rate limiter built in—developers don't need to implement it themselves. It auto-enables distributed mode via `redis` connection info in the gateway config; if Redis is unavailable, it gracefully degrades to local rate limiting (each instance counts independently) and triggers an alert.
 
 ## Real-World Scenario: Complete Brute-Force Defense Chain
 
-Back to the attack scenario at the beginning. Here's AuthMS's layered response:
+Back to the attack scenario at the beginning. Here's Autional's layered response:
 
 ```
 Time: 03:00:00
@@ -289,7 +289,7 @@ When rate limiting is triggered, error messages should not distinguish between "
 { "error": "Authentication failed. Please try again later." }
 ```
 
-AuthMS returns a standard `429 Too Many Requests` status code with a `Retry-After` header, but the response body stays consistent with normal authentication failures, not exposing rate-limiting details.
+Autional returns a standard `429 Too Many Requests` status code with a `Retry-After` header, but the response body stays consistent with normal authentication failures, not exposing rate-limiting details.
 
 ### 4. Progressive Penalties
 
@@ -318,6 +318,6 @@ Rate limiting isn't "set and forget." You need:
 
 Rate limiting is identity security infrastructure, not an optional add-on. A login endpoint without rate limiting is like a door without a lock—it just hasn't been noticed by attackers yet.
 
-AuthMS gateway-service's built-in distributed rate limiting provides three layers of protection (IP-level, user-level, global-level), supports both token bucket and sliding window algorithms, and achieves cross-instance precise counting via Redis. Each tenant can independently configure based on their own security needs and traffic characteristics.
+Autional gateway-service's built-in distributed rate limiting provides three layers of protection (IP-level, user-level, global-level), supports both token bucket and sliding window algorithms, and achieves cross-instance precise counting via Redis. Each tenant can independently configure based on their own security needs and traffic characteristics.
 
 Arm your login endpoint with armor.

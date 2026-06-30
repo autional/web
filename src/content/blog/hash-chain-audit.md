@@ -4,7 +4,7 @@ date: "2026-05-18"
 category: "Security"
 tags: ["Hash Chain", "Audit", "Tamper-Proof"]
 readTime: "7 min"
-excerpt: "When an internal administrator tries to delete a suspicious login record, how does a cryptographic hash chain expose such tampering? Learn how AuthMS uses hash chains and Merkle trees to build immutable data integrity proofs for audit logs."
+excerpt: "When an internal administrator tries to delete a suspicious login record, how does a cryptographic hash chain expose such tampering? Learn how Autional uses hash chains and Merkle trees to build immutable data integrity proofs for audit logs."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -22,7 +22,7 @@ In reality, insider threats account for 34% of all data security incidents. Agai
 
 GDPR Article 30, SOX Section 404, and ISO 27001 Annex A.12.4 all clearly require: **Audit logs must be protected against unauthorized modification.** But most systems merely store logs in a database with an application-layer "read-only permission" restriction—this is far from sufficient.
 
-AuthMS's answer: **Cryptographic hash chains + Merkle tree proofs.** Every audit log entry's integrity can be cryptographically verified without trusting any administrator or database.
+Autional's answer: **Cryptographic hash chains + Merkle tree proofs.** Every audit log entry's integrity can be cryptographically verified without trusting any administrator or database.
 
 ## Hash Chains: No Place for Tampering to Hide
 
@@ -44,9 +44,9 @@ Now, if someone tries to delete "User A changed password":
 
 This is the core principle of hash chains. O(1) chain verification detects tampering at any position.
 
-### AuthMS Implementation
+### Autional Implementation
 
-In AuthMS, each audit log entry automatically computes a chained hash on write:
+In Autional, each audit log entry automatically computes a chained hash on write:
 
 ```go
 type AuditEntry struct {
@@ -76,7 +76,7 @@ The write flow guarantees:
 
 ### Tamper Detection
 
-AuthMS's audit daemon periodically performs chain integrity verification:
+Autional's audit daemon periodically performs chain integrity verification:
 
 ```
 for each audit entry in chain:
@@ -132,9 +132,9 @@ Root = hash(Hash_AB + Hash_CD)
 
 If the computed result matches the published Root Hash, it proves Entry_B is part of the tree and has not been modified. The entire process only needs O(log n) hash values, regardless of how large the tree is.
 
-### Practical Application in AuthMS
+### Practical Application in Autional
 
-AuthMS organizes audit logs into Merkle trees by hourly time windows:
+Autional organizes audit logs into Merkle trees by hourly time windows:
 
 - **Every hour**: All audit entries within that hour are built into a Merkle tree
 - **Root Hash Publication**: The root hash is written to an independent timestamp service or blockchain anchor
@@ -157,7 +157,7 @@ DELETE FROM audit_log WHERE id = '01ARZ3NDEKTSV4RRFFQ69G5FAV';
 
 In a traditional audit system, Zhang's operation is entirely feasible. The audit log is stored in the same database, the DBA has the highest privileges, and deletion is just a few lines of SQL.
 
-**Under the AuthMS System:**
+**Under the Autional System:**
 
 Zhang connects to the database with the same DBA privileges and executes the same delete operation:
 
@@ -199,13 +199,13 @@ Hash chains provide this certainty: **When a log was written and what it contain
 
 ## Beyond Logging: Data Integrity as Infrastructure
 
-In AuthMS's design philosophy, cryptographic integrity is not an afterthought feature—it is an infrastructure layer that runs throughout the platform. Hash chain audit logs are the best embodiment of this:
+In Autional's design philosophy, cryptographic integrity is not an afterthought feature—it is an infrastructure layer that runs throughout the platform. Hash chain audit logs are the best embodiment of this:
 
 - **Security by Design**: From the moment data is written, integrity is mathematically guaranteed
 - **Secure by Default**: When each service enables audit logging, the hash chain is automatically active without additional configuration
 - **Defense in Depth**: Application-layer authorization + database triggers + hash chain + Merkle tree + external anchoring—five layers working in concert
 
-A saying we promote internally at AuthMS: **"An audit log without hash protection is legally no different from a blank sheet of paper."**
+A saying we promote internally at Autional: **"An audit log without hash protection is legally no different from a blank sheet of paper."**
 
 ## Conclusion
 

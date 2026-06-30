@@ -1,10 +1,77 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
-import PageShell from '../components/PageShell.tsx';
-import ChangelogPage from '../app/changelog/page.tsx';
+
+const changelog = [
+  { date: '2026-06-30', version: '2.0.0-rc.1', items: [
+    'Trial Registration system — invite code flow, auto-cleanup scheduler',
+    'Demo tenant provisioning with admin-console trial management page',
+    'SDK upgradeTrial endpoint for seamless Free→Pro upgrading',
+    'Gateway CORS default enabled for all origins',
+    'DNS resolve hardening — telemetry/DB/Redis unified anti-blocking',
+    'GOMEMLIMIT enforcement for OOM prevention',
+    'Tenant pool resilience improvements',
+    'Autional brand launch — new pricing, comparison, about pages',
+    'English blog: 48 articles translated, 1 original enterprise SSO post',
+    'CookieConsent moved to document root (fixed positioning)',
+    'Excerpt limit 300→500 for English content',
+  ]},
+  { date: '2026-06-28', version: '2.0.0-dev', items: [
+    'Web/ extracted to independent sub-repository (github.com/autional/web)',
+    'Script relocation to web/scripts/ with thin wrapper backward compatibility',
+    'Astro SSG landing site with 79 pages (64 Chinese + 15 English)',
+    'SEO infrastructure: sitemap, RSS, OG tags, hreflang, JSON-LD',
+    'Interactive components: ThemeToggle, LanguageSwitcher, SearchModal, CookieConsent',
+    'Tailwind typography plugin integration for blog content',
+    'useScrollAnimation SSR fix — content visible immediately (removed opacity-0)',
+    'First English site deployment to Vercel',
+    '100-year SSL certificate for *.autional.local (local dev)',
+  ]},
+  { date: '2026-06-20', version: '1.2.0', items: [
+    '48 blog posts Chinese→English translation (9 parallel sub-tasks)',
+    'Content collection schema with Zod validation',
+    'Blog category filters: Tech, Architecture, Compliance, Product, Security, Project',
+    'Featured post hero component',
+    'Internal API authentication: @authms/shared stub for standalone site',
+    'ThemeToggle component replicated (no dependency on @authms/ui)',
+  ]},
+  { date: '2026-06-15', version: '1.1.0', items: [
+    'Astro SSG blog with 4 original English articles',
+    'RSS feed and sitemap generation',
+    'Blog detail template with JSON-LD Article schema',
+    'PageShell React wrapper for legacy auth pages',
+    'i18next English-only initialization with en-US.json',
+    'Tailwind CSS with primary blue color scheme',
+    'EdgeOne deployment files (middleware.js, edgeone.json)',
+  ]},
+  { date: '2026-06-07', version: '1.0.0', items: [
+    'Landing site migration from Vite CSR to Astro SSG',
+    'Docker multi-domain nginx with 6 server blocks',
+    'Language detection and hreflang support',
+    '48 blog posts with compliance disclaimer audit',
+    'Landing page Hero, Features Grid, Stats, CTA',
+    'Enterprise SSO / MFA / RBAC feature pages',
+    'Compare, Pricing, About, Trust, Roadmap pages',
+  ]},
+];
 ---
-<LandingLayout title="Changelog — Autional" description="">
-  <PageShell client:load>
-    <ChangelogPage />
-  </PageShell>
+<LandingLayout title="Changelog — Autional" description="Version history and release notes for Autional identity platform.">
+  <section class="mx-auto max-w-3xl px-4 py-20">
+    <div class="text-center mb-16">
+      <h1 class="text-4xl font-bold sm:text-5xl">Changelog</h1>
+      <p class="mt-4 text-lg text-neutral-500 max-w-xl mx-auto">Version history and release notes for the Autional identity platform. Each version corresponds to a tagged release in the <a href="https://github.com/autional/authms" class="text-primary-600 hover:underline">GitHub repository</a>.</p>
+    </div>
+    <div class="space-y-12">
+      {changelog.map(v => (
+        <div>
+          <div class="flex items-baseline gap-3 mb-4">
+            <h2 class="text-xl font-bold">{v.version}</h2>
+            <time class="text-sm text-neutral-500">{v.date}</time>
+          </div>
+          <ul class="space-y-2">
+            {v.items.map(item => <li class="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-300"><span class="text-primary-500 mt-0.5 shrink-0">•</span>{item}</li>)}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
 </LandingLayout>

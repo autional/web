@@ -4,7 +4,7 @@ date: "2026-06-16"
 category: "Product"
 tags: ["TCO", "ROI", "Build vs Buy"]
 readTime: "9 min"
-excerpt: "\"We can just build a login system ourselves — why pay for it?\" — nearly every potential AuthMS customer has asked this question. This article uses real engineering economics to run the numbers: the complete TCO of 3 months of development plus ongoing maintenance, and the hidden costs that are often overlooked — security audits, compliance fill-ins, and developer onboarding documentation."
+excerpt: "\"We can just build a login system ourselves — why pay for it?\" — nearly every potential Autional customer has asked this question. This article uses real engineering economics to run the numbers: the complete TCO of 3 months of development plus ongoing maintenance, and the hidden costs that are often overlooked — security audits, compliance fill-ins, and developer onboarding documentation."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -14,7 +14,7 @@ There's a widely shared joke in tech circles: "The most expensive trait of a pro
 
 The answer is: **Authentication (login system) and Identity Platform are two entirely different things.** The former is a feature module; the latter is a system engineering effort requiring ongoing investment, continuous compliance, and sustained security. The gap between them is like the gap between building a go-kart in your garage and operating an automobile production line.
 
-> **Integration Note**: The TCO calculations in this article are based on typical industry scenarios (mid-level engineer salaries in first-tier cities, general cloud service pricing). Actual costs vary by team location, tech stack, service provider pricing, and market conditions. Compliance costs are referenced to the Chinese market; other regions should follow local regulatory guidance. AuthMS pricing is subject to the latest official pricing page.
+> **Integration Note**: The TCO calculations in this article are based on typical industry scenarios (mid-level engineer salaries in first-tier cities, general cloud service pricing). Actual costs vary by team location, tech stack, service provider pricing, and market conditions. Compliance costs are referenced to the Chinese market; other regions should follow local regulatory guidance. Autional pricing is subject to the latest official pricing page.
 
 This article is not a product pitch — it's a complete TCO calculation using real data you can plug in for your own team.
 
@@ -144,12 +144,12 @@ You might argue these probabilities are just estimates. True. But the key point 
 | **In-house annual TCO** | **¥429K-1,017K** | **¥237K-777K** | **¥237K-777K** |
 | **3-year cumulative TCO** | — | — | **¥903K-2,571K** |
 
-Compare with AuthMS commercial editions:
+Compare with Autional commercial editions:
 
 | Edition | Annual Fee (10K MAU) | 3-Year Cumulative |
 |---------|----------------------|-------------------|
-| AuthMS Pro | ¥12K/year | ¥36K |
-| AuthMS Enterprise | ¥36K/year | ¥108K |
+| Autional Pro | ¥12K/year | ¥36K |
+| Autional Enterprise | ¥36K/year | ¥108K |
 
 ## When to Build vs When to Buy?
 
@@ -159,7 +159,7 @@ Compare with AuthMS commercial editions:
 
 2. **Zero compliance requirements** — your system is an internal tool with no external users, no personal data processing, and no regulatory scrutiny. Still, you need security — and security's implicit costs don't vanish just because compliance isn't a factor.
 
-3. **You are an identity platform company** — well, if you are a competitor to Auth0, Keycloak, or AuthMS, then yes, you need to build. But if you're reading this blog post, you probably aren't.
+3. **You are an identity platform company** — well, if you are a competitor to Auth0, Keycloak, or Autional, then yes, you need to build. But if you're reading this blog post, you probably aren't.
 
 ### Buy if:
 
@@ -176,4 +176,4 @@ When running the numbers, include the implicit costs. When evaluating, include t
 
 ---
 
-*AuthMS offers a Community Edition (permanently free), Pro Edition (¥12K/year), and Enterprise Edition (¥36K/year). [View full pricing and edition comparison](/pricing).*
+*Autional offers a Community Edition (permanently free), Pro Edition (¥12K/year), and Enterprise Edition (¥36K/year). [View full pricing and edition comparison](/pricing).*

@@ -4,19 +4,19 @@ date: "2026-05-10"
 category: "Compliance"
 tags: ["PIPL", "Data Privacy", "Personal Information Protection"]
 readTime: "9 min"
-excerpt: "A deep dive into how China's Personal Information Protection Law (PIPL) impacts user data management, and how AuthMS helps enterprises achieve compliance through built-in informed consent, DSAR automation, audit trails, and more."
+excerpt: "A deep dive into how China's Personal Information Protection Law (PIPL) impacts user data management, and how Autional helps enterprises achieve compliance through built-in informed consent, DSAR automation, audit trails, and more."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Compliance Note**: The PIPL-related technical capabilities described in this article represent the design goals of the AuthMS platform. PIPL compliance requires coordination with organizational processes including personal information protection impact assessments, consent management, and cross-border data transfer security assessments. The ultimate compliance responsibility rests with the data controller.
+> **Compliance Note**: The PIPL-related technical capabilities described in this article represent the design goals of the Autional platform. PIPL compliance requires coordination with organizational processes including personal information protection impact assessments, consent management, and cross-border data transfer security assessments. The ultimate compliance responsibility rests with the data controller.
 
 The Personal Information Protection Law of the People's Republic of China (PIPL), effective November 1, 2021, is often called "China's GDPR." It elevates personal information protection from industry initiative to legal obligation, with binding force on any organization processing the personal data of Chinese citizens.
 
 The cost of violating PIPL is steep: for serious violations, fines can reach **50 million RMB or 5% of the previous year's revenue**, along with orders to suspend related business or revoke business licenses.
 
-This article focuses on the core PIPL requirements directly related to user data management and introduces how AuthMS helps product teams address these provisions.
+This article focuses on the core PIPL requirements directly related to user data management and introduces how Autional helps product teams address these provisions.
 
 ## I. Informed Consent (PIPL Articles 13-17)
 
@@ -26,18 +26,18 @@ Before processing personal information, a processor must inform the individual i
 
 For processing sensitive personal information (biometric data, financial accounts, travel records, etc.), **separate consent** must be obtained from the individual. For minors under 14, consent must be obtained from their guardian.
 
-### AuthMS's Approach
+### Autional's Approach
 
 **Built-in Informed Consent Management**:
 
-- **Consent records**: AuthMS's identity-service automatically creates consent records during user registration and login, precisely recording the time, version, scope, and IP address of consent
+- **Consent records**: Autional's identity-service automatically creates consent records during user registration and login, precisely recording the time, version, scope, and IP address of consent
 - **Granular consent**: Supports separate consent by information type (basic profile, contact info, location data, behavioral data) rather than "blanket consent"
 - **Revocation mechanism**: Users can withdraw consent at any time—the system automatically stops corresponding data processing and records the revocation
 - **Version management**: When the privacy policy updates, the system automatically pushes new consent requests to all affected users. User data for those who haven't provided new-version consent is suspended
 
 > **PIPL Article 22**: When transferring personal information due to merger, division, dissolution, bankruptcy declaration, etc., the processor shall inform individuals of the recipient's name and contact information.
 >
-> AuthMS's tenant change API automatically generates data transfer notification templates during data transfer, ensuring notification obligations are fulfilled before changes take effect.
+> Autional's tenant change API automatically generates data transfer notification templates during data transfer, ensuring notification obligations are fulfilled before changes take effect.
 
 ## II. Data Subject Rights (PIPL Articles 44-48)
 
@@ -51,11 +51,11 @@ Individuals have the following rights over their personal information:
 - **Right to correct** (Article 46): The right to request correction when information is inaccurate or incomplete
 - **Right to delete** (Article 47): The right to request deletion of personal information under specific circumstances
 
-### AuthMS's Approach
+### Autional's Approach
 
 **DSAR Automation Workflow**:
 
-AuthMS has a built-in complete Data Subject Access Request (DSAR) processing pipeline:
+Autional has a built-in complete Data Subject Access Request (DSAR) processing pipeline:
 
 ```
 User submits request → Identity verification (MFA) → Data aggregation (multi-service parallel) → Generation/Execution → Notify user
@@ -68,7 +68,7 @@ User submits request → Identity verification (MFA) → Data aggregation (multi
 
 **PIPL Article 47 Deletion Trigger Scenarios**:
 
-| Scenario | AuthMS Behavior |
+| Scenario | Autional Behavior |
 |----------|-----------------|
 | Processing purpose achieved or unachievable | Configurable data retention policies, automatic cleanup on expiry |
 | Processor stops providing products/services | Tenant deactivation triggers cascading data cleanup |
@@ -82,7 +82,7 @@ User submits request → Identity verification (MFA) → Data aggregation (multi
 
 The collection of personal information shall be limited to the minimum scope necessary to achieve the processing purpose. Excessive collection is prohibited.
 
-### AuthMS's Approach
+### Autional's Approach
 
 **Configurable Field Policies**:
 
@@ -102,7 +102,7 @@ When personal information must be provided overseas, one of the following condit
 - Signing a standard contract with the overseas recipient
 - Other conditions stipulated by laws or the cyberspace administration
 
-### AuthMS's Approach
+### Autional's Approach
 
 **Cross-Border Data Tracking**:
 
@@ -118,7 +118,7 @@ In the event of personal information leakage, tampering, or loss, the processor 
 
 The industry-recognized notification deadline is **72 hours**.
 
-### AuthMS's Approach
+### Autional's Approach
 
 **Automated Alerts and Notification Templates**:
 
@@ -132,7 +132,7 @@ The industry-recognized notification deadline is **72 hours**.
 
 ## PIPL Compliance Checklist
 
-AuthMS readiness status after enablement:
+Autional readiness status after enablement:
 
 - ✅ Informed consent: Consent records cover all data processing scenarios, supporting granular authorization and revocation
 - ✅ DSAR automation: Users can self-service access, export, correct, and delete personal information
@@ -143,4 +143,4 @@ AuthMS readiness status after enablement:
 
 ---
 
-PIPL is not a one-time project—it's an ongoing compliance obligation. AuthMS embeds PIPL compliance requirements into the product's default behavior. Instead of implementing data protection features one by one in each business system, you build the compliance foundation at the identity layer, uniformly and comprehensively. You focus on business innovation; AuthMS guards the bottom line of data privacy.
+PIPL is not a one-time project—it's an ongoing compliance obligation. Autional embeds PIPL compliance requirements into the product's default behavior. Instead of implementing data protection features one by one in each business system, you build the compliance foundation at the identity layer, uniformly and comprehensively. You focus on business innovation; Autional guards the bottom line of data privacy.

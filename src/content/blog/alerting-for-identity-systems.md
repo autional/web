@@ -14,11 +14,11 @@ It's 3 AM. Your phone buzzes. You open your eyes to the 17th alert notification 
 
 This is the classic script of **Alert Fatigue**. Too much noise drowns out genuine danger signals, eventually desensitizing the entire team. Industry statistics show that **over 70% of alerts received by SREs are meaningless noise** — self-healing without human intervention, thresholds set too low, or alerts that shouldn't exist in the first place.
 
-This article focuses on one specific question: for identity systems, which metrics should have alerts? How should thresholds be set? How should priorities be assigned? Based on AuthMS's Prometheus metrics system and real-world operational experience, we provide a reference-ready framework you can adopt directly.
+This article focuses on one specific question: for identity systems, which metrics should have alerts? How should thresholds be set? How should priorities be assigned? Based on Autional's Prometheus metrics system and real-world operational experience, we provide a reference-ready framework you can adopt directly.
 
 ## Alert Tiering Framework
 
-Alerting is not binary — different severities require different response methods. AuthMS uses a four-tier alert system:
+Alerting is not binary — different severities require different response methods. Autional uses a four-tier alert system:
 
 | Level | Name | Response Time | Notification Method | Wake-Up Required? |
 |-------|------|--------------|-------------------|-------------------|
@@ -92,7 +92,7 @@ All operations in an identity system ultimately depend on the database. Connecti
     description: "Active connections exceed 90% of max connections, current {{ $value | humanizePercentage }}"
 ```
 
-AuthMS's default PostgreSQL connection pool configuration is `DBMaxOpenConns = 25`, `DBMaxIdleConns = 10`. When a service sees active connections consistently above 22, it may be experiencing connection leaks or slow query accumulation.
+Autional's default PostgreSQL connection pool configuration is `DBMaxOpenConns = 25`, `DBMaxIdleConns = 10`. When a service sees active connections consistently above 22, it may be experiencing connection leaks or slow query accumulation.
 
 ## P1 Level: Severe Alerts
 
@@ -112,7 +112,7 @@ MFA is the last line of defense against account takeover. If someone is trying t
     description: "{{ $value }} failed MFA bypass attempts in the past 10 minutes, possible attack in progress"
 ```
 
-This requires a business-layer custom metric — `mfa-service` increments this counter each time it receives an MFA bypass request. AuthMS's MFA module has built-in instrumentation for this.
+This requires a business-layer custom metric — `mfa-service` increments this counter each time it receives an MFA bypass request. Autional's MFA module has built-in instrumentation for this.
 
 ### 5. Token Issuance Latency P99 Exceeds Threshold
 
@@ -197,7 +197,7 @@ A declining cache hit rate means more requests are hitting the database, potenti
 
 For metrics like CPU usage, memory usage, and network traffic, **alerting is the wrong approach**. These belong on trend dashboards for teams to actively review during the day, not to receive passively at 3 AM.
 
-AuthMS recommends setting up the following Grafana dashboards:
+Autional recommends setting up the following Grafana dashboards:
 - **Service Overview**: QPS, latency, error rate × per service
 - **Infrastructure Overview**: PostgreSQL connections/QPS/slow queries, Redis memory/hit rate/connections, RabbitMQ queue depth/consumption rate
 - **Auth Business Dashboard**: Registration count, login count, MFA usage rate, token issuance volume, OAuth authorization volume
@@ -206,7 +206,7 @@ These dashboards, combined with alerts, form a clear division: **dashboards for 
 
 ## Alert Quality Metrics
 
-Setting up alert rules is just the beginning. Continuously measuring alert quality is the long-term effort. AuthMS's operations team tracks these metrics monthly:
+Setting up alert rules is just the beginning. Continuously measuring alert quality is the long-term effort. Autional's operations team tracks these metrics monthly:
 
 - **Alert-to-Incident Conversion Rate**: Out of 100 alerts fired, how many actually corresponded to incidents requiring human intervention? Target: > 30%.
 - **Mean Time to Respond (MTTR)**: From alert firing to service restoration. Target: P0 < 15 minutes, P1 < 60 minutes.
@@ -224,4 +224,4 @@ A good alerting system is like a good security system — you want it to sound t
 
 ---
 
-*AuthMS's Prometheus metrics cover all core business paths and infrastructure components. With built-in Grafana dashboard templates, teams can set up a complete identity system monitoring stack in 30 minutes.*
+*Autional's Prometheus metrics cover all core business paths and infrastructure components. With built-in Grafana dashboard templates, teams can set up a complete identity system monitoring stack in 30 minutes.*

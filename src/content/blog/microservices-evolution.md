@@ -1,16 +1,16 @@
 ---
-title: "From Monolith to Microservices: AuthMS's Evolution Journey"
+title: "From Monolith to Microservices: Autional's Evolution Journey"
 date: "2026-03-30"
 category: "Architecture"
 tags: ["Microservices", "Evolution", "Engineering"]
 readTime: "15 min"
-excerpt: "AuthMS evolved from a startup monolith to 16 independent microservices powering enterprise-grade identity authentication. This article dives into the motivations, methodology, technical challenges, and hard-won lessons of the拆分 journey, covering distributed tracing, graceful shutdown, database isolation, and other key decisions — providing first-hand reference for teams considering microservices adoption."
+excerpt: "Autional evolved from a startup monolith to 16 independent microservices powering enterprise-grade identity authentication. This article dives into the motivations, methodology, technical challenges, and hard-won lessons of the拆分 journey, covering distributed tracing, graceful shutdown, database isolation, and other key decisions — providing first-hand reference for teams considering microservices adoption."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-In early 2024, the first version of AuthMS was a Go monolith under 8,000 lines of code. It ran on a single server, connected to one PostgreSQL instance and one Redis — enough to handle login and registration for early customers. Two years later, AuthMS has evolved into 16 independent microservices, processing hundreds of millions of authentication requests daily for businesses of all sizes.
+In early 2024, the first version of Autional was a Go monolith under 8,000 lines of code. It ran on a single server, connected to one PostgreSQL instance and one Redis — enough to handle login and registration for early customers. Two years later, Autional has evolved into 16 independent microservices, processing hundreds of millions of authentication requests daily for businesses of all sizes.
 
 This article documents that evolution — not just the technology choices, but the continuous iteration of a team across architecture decisions, engineering culture, and product philosophy.
 
@@ -38,7 +38,7 @@ After microservices adoption, similar failures are contained within a single ser
 
 As the product grew (multi-factor authentication, OAuth/OIDC support, wallet system, compliance auditing, RBAC permission model…), the team expanded from 3 to 15 people. In a monorepo, code from different feature modules intertwined, merge conflicts became daily occurrences, and release cadences blocked each other.
 
-After microservices, each service has independent code ownership (AuthMS uses a pseudo-monorepo pattern with Go monorepo + independent `go.mod`), allowing teams to develop, test, and deploy independently. The "Auth team" can modify `identity-service` without affecting the "Compliance team" releasing `compliance-service`. **Release cycles shortened from bi-weekly to on-demand, with up to 8 hotfixes deployed per day during peak periods.**
+After microservices, each service has independent code ownership (Autional uses a pseudo-monorepo pattern with Go monorepo + independent `go.mod`), allowing teams to develop, test, and deploy independently. The "Auth team" can modify `identity-service` without affecting the "Compliance team" releasing `compliance-service`. **Release cycles shortened from bi-weekly to on-demand, with up to 8 hotfixes deployed per day during peak periods.**
 
 ## How to Split: By Business Capability, Not Technical Layer
 
@@ -52,7 +52,7 @@ auth-handler-service → auth-service → auth-repository-service
 
 This approach merely turns function calls into RPC calls without solving any real problems, while introducing network latency and serialization overhead.
 
-### AuthMS's Approach: Split by Business Capability
+### Autional's Approach: Split by Business Capability
 
 Our principle: **one service = one complete business capability**.
 
@@ -89,7 +89,7 @@ The entire split took 8 months while keeping production services online. The key
 
 ## Three Technical Challenges We Had to Solve
 
-Microservices are no silver bullet. Here are the three biggest challenges we faced and AuthMS's solutions.
+Microservices are no silver bullet. Here are the three biggest challenges we faced and Autional's solutions.
 
 ### Challenge 1: Distributed Tracing — One Login Traverses 6 Services
 
@@ -97,7 +97,7 @@ User enters password → `gateway-service` routes → `identity-service` verifie
 
 If a login takes too long, how do you pinpoint which link is slow?
 
-**AuthMS's Solution: OpenTelemetry Full-Chain Tracing**
+**Autional's Solution: OpenTelemetry Full-Chain Tracing**
 
 We implemented unified tracing at all inter-service communication points:
 
@@ -122,7 +122,7 @@ In the monolith era, `Ctrl+C` ends the process — done. With microservices, shu
 
 Wrong order could lead to message loss, request failure, or connection leaks.
 
-**AuthMS's Solution: Unified Bootstrapper `micro-middleware/app`**
+**Autional's Solution: Unified Bootstrapper `micro-middleware/app`**
 
 We abstracted a unified Application architecture — all 15 services use the same bootstrap framework:
 
@@ -160,7 +160,7 @@ The golden rule of microservices is "each service owns its own database." But in
 
 Relying heavily on distributed transactions (2PC) hurts both performance and availability.
 
-**AuthMS's Solution: Eventual Consistency + Domain Events**
+**Autional's Solution: Eventual Consistency + Domain Events**
 
 We chose "eventual consistency" as the default strategy for cross-service data synchronization:
 
@@ -195,7 +195,7 @@ Not all technical debt needs to be paid immediately. We classify technical debt 
 
 ## Present and Future
 
-Today, AuthMS has been running stably on its microservice architecture for over 12 months. Sixteen services exposed through a unified gateway serve everything from individual developers to enterprise clients.
+Today, Autional has been running stably on its microservice architecture for over 12 months. Sixteen services exposed through a unified gateway serve everything from individual developers to enterprise clients.
 
 Areas we're exploring:
 
@@ -211,4 +211,4 @@ Areas we're exploring:
 4. **Database isolation is non-negotiable.** Once two services share a database, you lose the ability to deploy and optimize independently.
 5. **Distributed tracing is not optional.** In a microservice architecture, not having tracing is like debugging in the dark.
 
-AuthMS's microservices journey continues. If you're interested in the architecture of a specific module, feel free to browse our open-source documentation or ask questions on GitHub Discussions.
+Autional's microservices journey continues. If you're interested in the architecture of a specific module, feel free to browse our open-source documentation or ask questions on GitHub Discussions.

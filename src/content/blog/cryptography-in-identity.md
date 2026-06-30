@@ -4,7 +4,7 @@ date: "2026-05-21"
 category: "Tech"
 tags: ["Cryptography", "Security", "Hash"]
 readTime: "10 min"
-excerpt: "Cryptography is the foundation of identity systems. Bad cryptography is worse than no cryptography. This article covers the bcrypt vs argon2 choice, correct use of salt and pepper, secure API Key hashing and storage, field-level PII encryption (AES-256-GCM), and how AuthMS bakes these security practices into its architecture."
+excerpt: "Cryptography is the foundation of identity systems. Bad cryptography is worse than no cryptography. This article covers the bcrypt vs argon2 choice, correct use of salt and pepper, secure API Key hashing and storage, field-level PII encryption (AES-256-GCM), and how Autional bakes these security practices into its architecture."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -46,7 +46,7 @@ That's the power of **slow hashing** — the computational cost difference is ju
 | Go Standard Library | No (needs `golang.org/x/crypto`) | No (needs third-party) | No (needs third-party) |
 | AES Acceleration | No (limited GPU resistance) | Yes (XOR + Salsa20 core) | Yes (Blake2b) |
 
-**AuthMS defaults to bcrypt (cost factor 12).** The reasons are straightforward:
+**Autional defaults to bcrypt (cost factor 12).** The reasons are straightforward:
 
 1. **Battle-tested**: bcrypt has survived 20+ years of security audits and real-world attacks. No publicly known bcrypt weakness has ever been found.
 2. **Mature Go ecosystem**: `golang.org/x/crypto/bcrypt` is an official Go extension library with the best code review and long-term support guarantees.
@@ -54,7 +54,7 @@ That's the power of **slow hashing** — the computational cost difference is ju
 
 Argon2 is theoretically more secure (ASIC and FPGA resistance through memory hardness), but its security advantages mainly matter in extreme scenarios (nation-state attackers with custom hardware). For most SaaS applications, bcrypt provides 80-90% of the security with lower operational risk.
 
-AuthMS is designed with headroom for migrating to argon2id — the identity-service password verification interface accepts any `PasswordHasher` implementation, allowing a switch to a new hash algorithm without modifying business code.
+Autional is designed with headroom for migrating to argon2id — the identity-service password verification interface accepts any `PasswordHasher` implementation, allowing a switch to a new hash algorithm without modifying business code.
 
 ## Salt and Pepper: The Misunderstood Double Protection
 
@@ -64,7 +64,7 @@ A salt is a unique random value per password, prepended to the password before h
 
 One common misconception: salt must be secret. In reality, salt does **not** need to be secret (it's stored in plaintext alongside the hash). The value of salt is **uniqueness**, not secrecy.
 
-AuthMS salt generation:
+Autional salt generation:
 
 ```go
 // Password hashing in identity-service
@@ -91,7 +91,7 @@ Final stored value = bcrypt(password + pepper, cost=12)
 
 If the database leaks but the application configuration doesn't, attackers cannot verify password guesses without knowing the pepper. But if **both leak simultaneously** (e.g., a backup snapshot containing both the database and config files), pepper provides no additional protection.
 
-This is pepper's limitation: it only helps in the specific "database leaked but config didn't" scenario. AuthMS uses an alternative approach — **encrypting the entire password hash field** (see field-level encryption below) — and recommends storing pepper values in a hardware security module (HSM) or cloud KMS, ensuring physical isolation from data storage.
+This is pepper's limitation: it only helps in the specific "database leaked but config didn't" scenario. Autional uses an alternative approach — **encrypting the entire password hash field** (see field-level encryption below) — and recommends storing pepper values in a hardware security module (HSM) or cloud KMS, ensuring physical isolation from data storage.
 
 ## API Key Storage: A Different Strategy from Passwords
 
@@ -100,7 +100,7 @@ API Keys (backend service access keys, user API tokens) have different security 
 1. **API Keys don't need slow hashing**: API Keys are inherently high-entropy random strings (e.g., `tk_` + 64 hex chars = 256 bits of entropy). Brute-forcing one is as hard as brute-forcing an AES-256 key. No need for extra computational cost.
 2. **API Keys need partial display**: Unlike passwords, API Keys are shown to the user at creation time (once only), and users need to see the prefix to distinguish different keys.
 
-AuthMS API Key handling strategy:
+Autional API Key handling strategy:
 
 ```go
 // Create API Key
@@ -141,7 +141,7 @@ PII data like phone numbers, email addresses, and national IDs need protection i
 
 ### AES-256-GCM: Authenticated Encryption
 
-AuthMS uses AES-256-GCM for field-level encryption. GCM (Galois/Counter Mode) is an authenticated encryption mode that provides data integrity verification alongside encryption.
+Autional uses AES-256-GCM for field-level encryption. GCM (Galois/Counter Mode) is an authenticated encryption mode that provides data integrity verification alongside encryption.
 
 ```
 Encryption:
@@ -170,7 +170,7 @@ Decryption:
 
 ### Key Management
 
-The security of the encryption key itself is critical to the whole scheme. AuthMS key management strategy:
+The security of the encryption key itself is critical to the whole scheme. Autional key management strategy:
 
 ```
 Production key hierarchy:
@@ -199,11 +199,11 @@ Production key hierarchy:
 └────────────────────────────────────┘
 ```
 
-At startup, AuthMS uses the cloud KMS to decrypt the DEK ciphertext, keeping the plaintext DEK only in process memory. All field-level encryption and decryption operations use the in-memory DEK.
+At startup, Autional uses the cloud KMS to decrypt the DEK ciphertext, keeping the plaintext DEK only in process memory. All field-level encryption and decryption operations use the in-memory DEK.
 
 ### Which Fields Should Be Encrypted
 
-AuthMS enables field-level encryption for these PII fields by default:
+Autional enables field-level encryption for these PII fields by default:
 
 | Service | Encrypted Fields |
 |---------|-----------------|
@@ -216,7 +216,7 @@ Encrypted fields are tagged with `json:"-"` in JSON responses to prevent acciden
 
 ## Security Practices Checklist
 
-| # | Practice | Description | How AuthMS Does It |
+| # | Practice | Description | How Autional Does It |
 |---|----------|-------------|-------------------|
 | 1 | Slow hash for passwords | bcrypt cost ≥ 12, argon2id | bcrypt cost=12, argon2id interface reserved |
 | 2 | Salt must be unique | Independent random salt per password | bcrypt auto-generates 22-char salt |
@@ -243,7 +243,7 @@ Fix: Migrate to bcrypt immediately. Transparently upgrade the hash algorithm
      on the user's next login.
 ```
 
-AuthMS includes the algorithm identifier in the password hash output (bcrypt's `$2a$12$` prefix), making it possible to auto-detect old hash formats during login and transparently upgrade them.
+Autional includes the algorithm identifier in the password hash output (bcrypt's `$2a$12$` prefix), making it possible to auto-detect old hash formats during login and transparently upgrade them.
 
 ### Mistake 2: Rolling Your Own Password Hash
 
@@ -268,7 +268,7 @@ Consequence: Using AES-CBC without a MAC
 Fix: Use authenticated encryption (AES-256-GCM or AES-256-CBC + HMAC-SHA256)
 ```
 
-AuthMS uniformly uses AES-256-GCM and has never used an unauthenticated encryption mode.
+Autional uniformly uses AES-256-GCM and has never used an unauthenticated encryption mode.
 
 ### Mistake 4: Using Debug Keys in Production
 
@@ -284,7 +284,7 @@ Consequence: A deployment config error, env var not properly set
       → All PII data is effectively "encrypted" with a public key
       → Equivalent to plaintext storage
 
-Fix: AuthMS KMS integration ensures the service fails to start (panics)
+Fix: Autional KMS integration ensures the service fails to start (panics)
      when the key is unavailable, rather than falling back to an insecure mode.
 ```
 
@@ -292,6 +292,6 @@ Fix: AuthMS KMS integration ensures the service fails to start (panics)
 
 Cryptography in identity systems isn't an optional "extra layer of security" — it's fundamental to the architecture. Bad cryptographic practices don't just lower the security level; they completely eliminate it while giving your users a false sense of safety.
 
-AuthMS ships with security-reviewed cryptographic schemes: bcrypt password hashing, SHA-256 API Key verification, AES-256-GCM field-level encryption, and KMS-integrated key management. For applications that integrate with AuthMS, these security practices are the default — no deep understanding required from the developer.
+Autional ships with security-reviewed cryptographic schemes: bcrypt password hashing, SHA-256 API Key verification, AES-256-GCM field-level encryption, and KMS-integrated key management. For applications that integrate with Autional, these security practices are the default — no deep understanding required from the developer.
 
 But if you're building your own identity system, take every practice in this article seriously. Your users entrust their most private information to your system. Don't let them down.

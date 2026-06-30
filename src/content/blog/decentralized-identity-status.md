@@ -148,9 +148,9 @@ A verifiable credential's cryptographic validity is one thing; its legal validit
 
 150+ DID methods, multiple communication protocols (DIDComm vs OpenID4VC vs OIDC4IDA), various cryptography suites — it's a fragmented ecosystem. Developers struggle with "what should I use?"
 
-## AuthMS Strategy: Pragmatic Evolution, Not Radical Revolution
+## Autional Strategy: Pragmatic Evolution, Not Radical Revolution
 
-AuthMS takes a "observe, integrate, evolve" approach to decentralized identity:
+Autional takes a "observe, integrate, evolve" approach to decentralized identity:
 
 **Short-term (2026): DID Exploration**
 - Added `did` module in internal architecture: basic DID resolution and creation for `did:web` and `did:key` methods
@@ -163,13 +163,13 @@ AuthMS takes a "observe, integrate, evolve" approach to decentralized identity:
 - Integrate with EUDI Wallet and mainstream VC platforms like SpruceID
 
 **Long-term (2028+): SSI-Ready**
-- Allow users to upgrade AuthMS-managed identities to self-sovereign identities — exported as DID + VC
+- Allow users to upgrade Autional-managed identities to self-sovereign identities — exported as DID + VC
 - Maintain dual-mode operation (standard identity and DID identity) to meet diverse market and compliance requirements
 
-AuthMS doesn't bet on any specific DID method or blockchain — instead, we build abstractions at the identity infrastructure layer, allowing the upper layers to adapt to technological evolution without rewriting core logic.
+Autional doesn't bet on any specific DID method or blockchain — instead, we build abstractions at the identity infrastructure layer, allowing the upper layers to adapt to technological evolution without rewriting core logic.
 
 ## Summary
 
 Decentralized identity isn't a utopian fantasy — in 2026, it has real-world deployments, usable technical standards, and clear evolution paths. But mass adoption is still limited by UX challenges (key recovery), ecosystem fragmentation, and lagging legal frameworks.
 
-For most SaaS developers and enterprises, the pragmatic choice today is: build products with mature centralized identity infrastructure (like AuthMS) while keeping an eye on decentralized identity standards. When DID/SSI's practicality and legal foundation reach critical mass, the infrastructure layer will be ready for migration.
+For most SaaS developers and enterprises, the pragmatic choice today is: build products with mature centralized identity infrastructure (like Autional) while keeping an eye on decentralized identity standards. When DID/SSI's practicality and legal foundation reach critical mass, the infrastructure layer will be ready for migration.

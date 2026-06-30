@@ -1,22 +1,22 @@
 ---
-title: "From 0 to 16 Microservices: AuthMS Engineering Culture"
+title: "From 0 to 16 Microservices: Autional Engineering Culture"
 date: "2026-06-19"
 category: "Project"
 tags: ["Engineering Culture", "Team", "Microservices"]
 readTime: "8 min"
-excerpt: "15 people, 16 microservices, 25 CI check scripts — how does AuthMS maintain code quality and architectural consistency while iterating at speed? This article documents our team's engineering culture, toolchain, and lessons learned from three hard-earned mistakes."
+excerpt: "15 people, 16 microservices, 25 CI check scripts — how does Autional maintain code quality and architectural consistency while iterating at speed? This article documents our team's engineering culture, toolchain, and lessons learned from three hard-earned mistakes."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-In early 2024, AuthMS was just a Go monolith maintained by a 3-person team. Two years later, we have 15 people, 16 microservices, roughly 430K lines of Go code, and 1437 API endpoints. More importantly — **these endpoints didn't grow wild; they follow the same set of architectural constraints, coding standards, and engineering workflows.**
+In early 2024, Autional was just a Go monolith maintained by a 3-person team. Two years later, we have 15 people, 16 microservices, roughly 430K lines of Go code, and 1437 API endpoints. More importantly — **these endpoints didn't grow wild; they follow the same set of architectural constraints, coding standards, and engineering workflows.**
 
 This article is about the engineering culture behind it — not the cliché "we love coding" slogans, but the concrete tools, processes, and decision logic. Including our smartest choices and the decisions that make us want to slap ourselves.
 
 ## Why Go
 
-This wasn't a difficult choice. AuthMS's domain characteristics made Go almost the only candidate:
+This wasn't a difficult choice. Autional's domain characteristics made Go almost the only candidate:
 
 - **Identity authentication is high-concurrency by nature.** A medium-sized SaaS platform may process thousands of token validation requests per second. Go's goroutine model handles massive concurrency with minimal memory overhead — a single session-service instance can sustain 15,000 QPS of JWT validation with 2GB of RAM.
 - **Static compilation, single binary deployment.** For on-premises customers, no runtime environment installation is needed — drop a single `identity-service.exe` (~28MB) on a server and it runs. Java can't do this. Python can't do this. Node.js can't do this.
@@ -26,7 +26,7 @@ The only alternative we seriously considered was Rust, but at the time we couldn
 
 ## Why Microservices
 
-If you've read our other article "From Monolith to Microservices: AuthMS's Evolution," you know we didn't start with microservices. We began as a monolith and only started splitting after hitting critical thresholds in team size, user count, and feature complexity.
+If you've read our other article "From Monolith to Microservices: Autional's Evolution," you know we didn't start with microservices. We began as a monolith and only started splitting after hitting critical thresholds in team size, user count, and feature complexity.
 
 But here's an easily overlooked detail: **Even when we had just one service, we wrote code to microservice standards from day one.** What does that mean? Even during the monolith era, we insisted on:
 
@@ -107,7 +107,7 @@ The result: **documentation and code are always in sync because you can't commit
 
 ## Engineering Values
 
-The above covers the tooling. But tooling is just the embodiment of values, not the values themselves. Here are AuthMS's core engineering values:
+The above covers the tooling. But tooling is just the embodiment of values, not the values themselves. Here are Autional's core engineering values:
 
 ### Security is Default, Not Optional
 
@@ -120,7 +120,7 @@ Similar rules:
 
 ### Explicit Over Implicit
 
-The Go community's values are pushed to the extreme in AuthMS:
+The Go community's values are pushed to the extreme in Autional:
 
 - Every error code must have a clear 8-digit number and be registered in `registry.go`
 - Every cache key must have a registered prefix (no hand-written `"user:" + id`)
@@ -160,7 +160,7 @@ Our current principle: **Technology choices default to uniformity. New component
 
 ## Team Organization: No Dedicated "Architect" Role
 
-AuthMS's engineering team has no dedicated architect. Not because we don't value architecture — quite the opposite. **We value it too much to make it one person's responsibility.**
+Autional's engineering team has no dedicated architect. Not because we don't value architecture — quite the opposite. **We value it too much to make it one person's responsibility.**
 
 Whenever we face a significant architectural decision (e.g., whether to adopt gRPC, how to design event sourcing, database selection), the process is:
 1. Any engineer can propose an RFC, written in Notion
@@ -182,4 +182,4 @@ If you're building an engineering team, here are our most important takeaways:
 
 4. **Be honest about mistakes.** The three mistakes in this article aren't a "sharing experience" show — they are real errors that wasted significant team time. If you see similar warning signs in your team, we hope our experience helps you avoid one misstep.
 
-AuthMS's engineering culture wasn't built overnight. It was shaped by 15 people over two years through countless debates, compromises, refactors, and reflections. And it's still evolving — we're currently experimenting with AI-assisted Code Review, and we'll share the results in a future article.
+Autional's engineering culture wasn't built overnight. It was shaped by 15 people over two years through countless debates, compromises, refactors, and reflections. And it's still evolving — we're currently experimenting with AI-assisted Code Review, and we'll share the results in a future article.

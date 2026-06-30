@@ -4,7 +4,7 @@ date: "2026-05-08"
 category: "Project"
 tags: ["AI Apps", "Unified Auth", "SSO"]
 readTime: "9 min"
-excerpt: "AI coding tools can produce a fully functional application in hours, but when you have 3 or more AI-generated apps, identity authentication becomes a Babel Tower. This article explores how AuthMS's unified authentication layer solves this challenge."
+excerpt: "AI coding tools can produce a fully functional application in hours, but when you have 3 or more AI-generated apps, identity authentication becomes a Babel Tower. This article explores how Autional's unified authentication layer solves this challenge."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -42,19 +42,19 @@ Now the problems become clear:
 
 This is the **Identity Babel Tower** — each app speaks its own authentication language, unable to work together. The more apps you have, the bigger the problem.
 
-## From Babel Tower to a Unified Language: AuthMS's Solution
+## From Babel Tower to a Unified Language: Autional's Solution
 
-AuthMS's design philosophy is: **lift identity authentication out of the application layer and elevate it to the platform layer.** All AI-generated apps stop managing users themselves and instead delegate authentication to AuthMS via OAuth 2.0 / OpenID Connect protocols.
+Autional's design philosophy is: **lift identity authentication out of the application layer and elevate it to the platform layer.** All AI-generated apps stop managing users themselves and instead delegate authentication to Autional via OAuth 2.0 / OpenID Connect protocols.
 
 ### A Three-Step Transformation
 
-**Step 1: Register Your App in AuthMS (5 minutes)**
+**Step 1: Register Your App in Autional (5 minutes)**
 
 Create an OAuth client in the Admin Console, obtain a Client ID and Client Secret. Configure the callback URL and required permission scopes.
 
 **Step 2: Integrate OAuth Login (30 minutes of code)**
 
-Add a "Sign in with AuthMS" button to your AI-generated app's login page, redirecting to AuthMS's authorization endpoint:
+Add a "Sign in with Autional" button to your AI-generated app's login page, redirecting to Autional's authorization endpoint:
 
 ```
 GET https://auth.yourcompany.com/oauth/authorize?
@@ -64,7 +64,7 @@ GET https://auth.yourcompany.com/oauth/authorize?
   scope=openid profile email
 ```
 
-Users complete authentication on AuthMS's login page (supporting passwords, Passkey, TOTP, SMS, and more), then get redirected back to the app. The app exchanges the authorization code for an Access Token and ID Token.
+Users complete authentication on Autional's login page (supporting passwords, Passkey, TOTP, SMS, and more), then get redirected back to the app. The app exchanges the authorization code for an Access Token and ID Token.
 
 **Step 3: Configure Security Policies in the Admin Console (2 minutes)**
 
@@ -79,7 +79,7 @@ Save. Done.
 
 ## The World After Unification
 
-When all apps are connected to AuthMS, the previous chaos becomes clear order:
+When all apps are connected to Autional, the previous chaos becomes clear order:
 
 ### At a Glance
 
@@ -123,7 +123,7 @@ When all apps are connected to AuthMS, the previous chaos becomes clear order:
                    OAuth 2.0 / OIDC
                         │
                  ┌──────┴──────┐
-                 │   AuthMS    │
+                 │   Autional    │
                  │ Unified Auth  │
                  └──────┬──────┘
                         │
@@ -140,7 +140,7 @@ When all apps are connected to AuthMS, the previous chaos becomes clear order:
 
 AI coding tools dramatically accelerate the **business logic** portion of applications — CRUD operations, data presentation, workflow orchestration. But **identity authentication** is an area that should not be repeatedly reinvented. It involves cryptography, protocol implementation, compliance requirements, and security auditing — a lapse in any one area can cause a serious security incident.
 
-AuthMS's role is to fill this gap: **You use AI to generate business logic; AuthMS handles identity security.** This division of labor lets developers focus on business code that truly creates value, rather than reimplementing login, registration, password reset, MFA, permission management, and audit logging in every AI-generated app.
+Autional's role is to fill this gap: **You use AI to generate business logic; Autional handles identity security.** This division of labor lets developers focus on business code that truly creates value, rather than reimplementing login, registration, password reset, MFA, permission management, and audit logging in every AI-generated app.
 
 ### Key Data Point
 
