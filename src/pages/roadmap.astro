@@ -1,10 +1,21 @@
 ---
-import LandingLayout from '../layouts/LandingLayout.astro';
-import PageShell from '../components/PageShell.tsx';
-import RoadmapPage from '../app/roadmap/page.tsx';
+import Layout from '../layouts/LandingLayout.astro';
+const phases = [
+  { period: 'Completed', color: 'green', items: ['Multi-tenant architecture with per-tenant isolation', 'SAML 2.0 + OIDC + OAuth 2.1 enterprise SSO', 'MFA: TOTP, SMS, Email, WebAuthn/FIDO2/Passkey', 'Adaptive MFA — risk-based 7-signal authentication', 'NHI (Non-Human Identity) — Agent/Robot/Device lifecycle', 'RBAC + ABAC + ReBAC + PIM authorization models', 'Merkle hash chain audit with GDPR DSAR automation', '15 compliance frameworks (GDPR/SOX/PCI/HIPAA/ISO/Dengbao)', 'National Cryptography: SM2/SM3/SM4, Ed25519', '1,400+ REST API endpoints across 24 microservices', '30+ SDK packages (React, Vue, Next.js, Node.js, MiniApp, RN)', 'Webhook event system with 600+ event types', 'gRPC service mesh for internal communication', 'Password transmission encryption (ECDH/RSA/hash/plain)', 'Field-level AES-256-GCM encryption with key rotation', 'IPv6 dual-stack support for identity APIs'] },
+  { period: '2026 Q3', color: 'blue', items: ['Autional Cloud public beta', 'Admin Console redesign', 'React SDK v1.0 stable', 'Bolt.new and Lovable.dev AI tool templates'] },
+  { period: '2026 Q4', color: 'blue', items: ['Vue and Next.js SDKs', 'SOC 2 Type II audit', 'Multi-region cloud deployment', 'Enterprise audit archive'] },
+  { period: '2027 H1', color: 'gray', items: ['Go and Python SDKs', 'AI Agent Native authentication (NHI)', 'WebAuthn passkey pass-through', 'Kuberentes operator for automated deployment'] },
+];
 ---
-<LandingLayout title="Roadmap — Autional" description="">
-  <PageShell client:load>
-    <RoadmapPage />
-  </PageShell>
-</LandingLayout>
+<Layout title="Roadmap — Autional" description="Autional product roadmap and development priorities.">
+  <section class="mx-auto max-w-4xl px-4 py-20">
+    <h1 class="text-4xl font-bold sm:text-5xl text-center">Roadmap</h1>
+    <p class="mx-auto mt-4 max-w-2xl text-center text-lg text-neutral-500">What we've built, what we're building, and where we're headed. All dates are estimates and subject to change.</p>
+    <div class="mt-16 space-y-8">{phases.map(p => (
+      <div class={`rounded-2xl border p-6 ${p.color === 'green' ? 'border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-900/10' : 'border-neutral-200 dark:border-neutral-800'}`}>
+        <div class={`text-sm font-semibold mb-3 ${p.color === 'green' ? 'text-green-700 dark:text-green-400' : 'text-primary-600'}`}>{p.period}</div>
+        <ul class="grid gap-2 sm:grid-cols-2">{p.items.map(i => <li class="flex items-start gap-2 text-sm"><span class={`mt-0.5 shrink-0 ${p.color === 'green' ? 'text-green-500' : 'text-primary-500'}`}>{p.color === 'green' ? '✓' : '→'}</span>{i}</li>)}</ul>
+      </div>
+    ))}</div>
+  </section>
+</Layout>

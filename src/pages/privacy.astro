@@ -1,10 +1,21 @@
 ---
-import LandingLayout from '../layouts/LandingLayout.astro';
-import PageShell from '../components/PageShell.tsx';
-import PrivacyPage from '../app/privacy/page.tsx';
+import Layout from '../layouts/LandingLayout.astro';
 ---
-<LandingLayout title="Privacy — Autional" description="">
-  <PageShell client:load>
-    <PrivacyPage />
-  </PageShell>
-</LandingLayout>
+<Layout title="Privacy Policy — Autional" description="Autional privacy policy.">
+  <section class="mx-auto max-w-3xl px-4 py-20">
+    <h1 class="text-4xl font-bold sm:text-5xl">Privacy Policy</h1>
+    <div class="mt-8 prose prose-lg dark:prose-invert max-w-none">
+      <p>This privacy policy describes how Autional collects, uses, and handles your personal data when you use our platform and website.</p>
+      <h2>1. Information We Collect</h2>
+      <ul><li><strong>Account data:</strong> email address, username, password hash (argon2id)</li><li><strong>Authentication data:</strong> IP address, user agent, device fingerprint, login timestamps</li><li><strong>Profile data:</strong> avatar, display name, preferences (as configured by user)</li><li><strong>Communication data:</strong> email address for transactional emails</li></ul>
+      <h2>2. How We Use Data</h2>
+      <ul><li>Provide and maintain authentication services</li><li>Security monitoring and fraud prevention</li><li>Compliance with legal obligations (GDPR, etc.)</li><li>Service improvement and debugging</li></ul>
+      <h2>3. Data Retention</h2>
+      <p>Authentication data is retained for the duration of the account plus 90 days. Audit logs are retained according to the tenant's retention policy (configurable, default 90 days). Users may request data deletion at any time.</p>
+      <h2>4. Your Rights</h2>
+      <p>Under GDPR and similar regulations, you have the right to access, rectify, erase, and port your data. Submit requests via the End-User Portal or contact us at privacy@autional.com.</p>
+      <h2>5. Contact</h2>
+      <p>Questions about this policy: <a href="mailto:privacy@autional.com">privacy@autional.com</a></p>
+    </div>
+  </section>
+</Layout>

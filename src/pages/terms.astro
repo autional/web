@@ -1,10 +1,20 @@
 ---
-import LandingLayout from '../layouts/LandingLayout.astro';
-import PageShell from '../components/PageShell.tsx';
-import TermsPage from '../app/terms/page.tsx';
+import Layout from '../layouts/LandingLayout.astro';
 ---
-<LandingLayout title="Terms — Autional" description="">
-  <PageShell client:load>
-    <TermsPage />
-  </PageShell>
-</LandingLayout>
+<Layout title="Terms of Service — Autional" description="Autional terms of service.">
+  <section class="mx-auto max-w-3xl px-4 py-20">
+    <h1 class="text-4xl font-bold sm:text-5xl">Terms of Service</h1>
+    <div class="mt-8 prose prose-lg dark:prose-invert max-w-none">
+      <h2>1. Service Description</h2>
+      <p>Autional provides identity and access management software under the AGPL v3 open-source license. The software may be self-hosted or accessed through future cloud services.</p>
+      <h2>2. License</h2>
+      <p>The Autional source code is licensed under the GNU Affero General Public License v3 (AGPL-3.0). You may use, modify, and distribute the software in compliance with this license.</p>
+      <h2>3. User Responsibilities</h2>
+      <ul><li>Maintain the security of your account credentials</li><li>Comply with applicable laws and regulations</li><li>Not use the service for illegal purposes</li></ul>
+      <h2>4. Limitation of Liability</h2>
+      <p>The software is provided "as is" without warranty of any kind. The authors and contributors are not liable for any damages arising from the use of this software.</p>
+      <h2>5. Contact</h2>
+      <p>For legal inquiries: <a href="mailto:legal@autional.com">legal@autional.com</a></p>
+    </div>
+  </section>
+</Layout>
