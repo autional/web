@@ -1,5 +1,6 @@
 ---
 import ClientShell from '../components/ClientShell.tsx';
+import CookieConsent from '../components/CookieConsent.tsx';
 export interface Props { title: string; description?: string; }
 const { title, description = 'AuthMS — Enterprise Identity & Access Management' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -61,4 +62,5 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       <div class="mt-8 border-t border-neutral-200 pt-8 text-center text-sm text-neutral-400 dark:border-neutral-800 dark:text-neutral-500">&copy; 2026 AuthMS. All rights reserved.</div>
     </div>
   </footer>
+  <CookieConsent client:load />
 </body></html>
