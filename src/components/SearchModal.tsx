@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, X, FileText, Tag, ArrowRight } from 'lucide-react';
+import '../i18n';
 ;
 import { useTranslation } from 'react-i18next';
 
@@ -125,7 +126,7 @@ export default function SearchModal({ isOpen, onClose }: Props) {
           {results.map((item) => (
             <a
               key={item.path}
-              to={item.path}
+              href={item.path}
               onClick={onClose}
               className="group flex items-start gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-neutral-50 dark:hover:bg-slate-800"
             >

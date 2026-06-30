@@ -3,8 +3,8 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/LandingLayout.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => data.status === 'verified');
-  return posts.map(post => ({
+  const posts = await getCollection('blog', ({ data }: { data: CollectionEntry<'blog'>['data'] }) => data.status === 'verified');
+  return posts.map((post: CollectionEntry<'blog'>) => ({
     params: { slug: post.id.replace(/\.md$/, '') },
     props: { post },
   }));
@@ -26,14 +26,30 @@ const jsonLd = JSON.stringify({
 
 <Layout title={`${data.title} — Autional Blog`} description={data.excerpt}>
   <article class="mx-auto max-w-3xl px-4 py-12">
+    <nav class="mb-8 flex flex-wrap items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400" aria-label="Breadcrumb">
+      <a href="/blog" class="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 font-medium text-neutral-700 transition-colors hover:border-primary-200 hover:text-primary-700 dark:border-neutral-800 dark:bg-slate-900 dark:text-neutral-300 dark:hover:border-primary-700 dark:hover:text-white">
+        <span aria-hidden="true">&larr;</span>
+        Back to Blog
+      </a>
+      <span>/</span>
+      <a href="/blog" class="hover:text-primary-600">Blog</a>
+      <span>/</span>
+      <span>{data.category}</span>
+    </nav>
     <div class="flex flex-wrap items-center gap-3 text-sm text-neutral-500">
       <span class="rounded-full bg-primary-50 dark:bg-primary-900/30 px-3 py-1 text-xs font-medium text-primary-700">{data.category}</span>
       <time datetime={data.date}>{data.date}</time>
       <span>{data.readTime}</span>
-      {data.tags.map(tag => <span>#{tag}</span>)}
+      {data.tags.map((tag: string) => <span>#{tag}</span>)}
     </div>
     <h1 class="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">{data.title}</h1>
     <div class="mt-8 prose prose-lg dark:prose-invert max-w-none"><Content /></div>
+    <div class="mt-12 border-t border-neutral-200 pt-6 dark:border-neutral-800">
+      <a href="/blog" class="inline-flex items-center gap-2 text-sm font-medium text-primary-600 transition-colors hover:text-primary-700">
+        <span aria-hidden="true">&larr;</span>
+        Return to all blog posts
+      </a>
+    </div>
   </article>
-  <script type="application/ld+json" set:html={jsonLd} />
+  <script is:inline type="application/ld+json" set:html={jsonLd} />
 </Layout>
