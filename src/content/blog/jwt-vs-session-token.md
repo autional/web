@@ -4,7 +4,7 @@ date: "2026-05-25"
 category: "Tech"
 tags: ["JWT", "Session", "Token"]
 readTime: "12 min"
-excerpt: "JWT and Session Tokens are the two most fundamental token types in identity authentication systems. This article provides a thorough comparison across four dimensions — security, performance, scalability, and statelessness — and reveals how AuthMS's session-service lets you have the best of both worlds through dual-mode support."
+excerpt: "JWT and Session Tokens are the two most fundamental token types in identity authentication systems. This article provides a thorough comparison across four dimensions — security, performance, scalability, and statelessness — and reveals how Autional's session-service lets you have the best of both worlds through dual-mode support."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -12,7 +12,7 @@ claims_reviewed: true
 
 Tokens are the lifeblood of identity authentication systems. On every API call, a token flows between client and server, carrying the information of "who I am." But not all tokens are the same — choosing the right token architecture directly affects your system's security, performance, and architectural complexity.
 
-The two most common token types — JWT (JSON Web Token) and Session Token — represent two philosophical approaches to identity system design: **stateless** and **stateful**. This article provides a comprehensive comparison of both approaches and introduces how AuthMS's session-service supports both modes simultaneously, allowing you to make the optimal choice for different scenarios.
+The two most common token types — JWT (JSON Web Token) and Session Token — represent two philosophical approaches to identity system design: **stateless** and **stateful**. This article provides a comprehensive comparison of both approaches and introduces how Autional's session-service supports both modes simultaneously, allowing you to make the optimal choice for different scenarios.
 
 ## The Essence of Tokens: What to Carry and How
 
@@ -52,7 +52,7 @@ eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIwMUFSO....  ← Header
 
 This is JWT's core selling point. The server does not need to maintain session storage or query external caches on every request. In a microservice architecture, this means Service A, Service B, and Service C can independently verify the same JWT without sharing any state.
 
-AuthMS's architecture perfectly demonstrates this advantage: once identity-service issues a JWT, all 15 microservices including session-service, profile-service, and wallet-service can verify it independently without querying the issuing service every time.
+Autional's architecture perfectly demonstrates this advantage: once identity-service issues a JWT, all 15 microservices including session-service, profile-service, and wallet-service can verify it independently without querying the issuing service every time.
 
 **2. Horizontal Scaling Without State Synchronization**
 
@@ -60,7 +60,7 @@ With Session Tokens, if the first request is routed to Server A and the second t
 
 **3. Self-Contained Information Carriage**
 
-JWT's Payload can carry information such as user roles, permissions, and tenant ID. Upon receiving a JWT, a service can directly understand the requester's identity attributes without additional queries. This is especially efficient for coarse-grained authorization at the gateway layer — AuthMS's gateway-service can decide whether to forward a request based on the role claims in the JWT without querying any downstream service.
+JWT's Payload can carry information such as user roles, permissions, and tenant ID. Upon receiving a JWT, a service can directly understand the requester's identity attributes without additional queries. This is especially efficient for coarse-grained authorization at the gateway layer — Autional's gateway-service can decide whether to forward a request based on the role claims in the JWT without querying any downstream service.
 
 ### Real Pain Points of JWT
 
@@ -99,7 +99,7 @@ JWT signing depends on a key. When key rotation is needed (security events, peri
 
 Because session information is stored server-side, revocation requires a single operation: delete the corresponding session record. Admins can immediately terminate any user's session without waiting for the token to naturally expire. In security incidents, this capability is not "nice to have" but "mandatory."
 
-AuthMS's session-service is purpose-built for this: an admin can call `DELETE /api/v1/internal/session/{session_id}` to immediately terminate a session. Revoked sessions become invalid for all subsequent requests within milliseconds.
+Autional's session-service is purpose-built for this: an admin can call `DELETE /api/v1/internal/session/{session_id}` to immediately terminate a session. Revoked sessions become invalid for all subsequent requests within milliseconds.
 
 **2. No Information Exposed to the Client**
 
@@ -115,7 +115,7 @@ No matter how many permissions or roles a user has, the Session Token is always 
 
 Server-side session storage enables many capabilities: setting session expiry times, recording session activity timestamps, tracking all active sessions for the same user, limiting concurrent sessions, and implementing "log out of all devices."
 
-AuthMS's session-service supports all of these capabilities, including session timeout, idle timeout, maximum concurrent session limits, and session audit logs.
+Autional's session-service supports all of these capabilities, including session timeout, idle timeout, maximum concurrent session limits, and session audit logs.
 
 ### Real Pain Points of Session Tokens
 
@@ -151,7 +151,7 @@ When multiple microservices all need to verify sessions, each service must acces
 
 1. **Pure API service, no user interface**: The client is another microservice with no browser environment; Cookies are inconvenient.
 2. **Gateway-level fast authorization**: JWT's self-contained nature lets the gateway make routing decisions without querying backends.
-3. **Need to pass identity info across services**: In AuthMS's architecture, gateway-service validates identity with JWT, then passes user info to downstream services via Headers.
+3. **Need to pass identity info across services**: In Autional's architecture, gateway-service validates identity with JWT, then passes user info to downstream services via Headers.
 4. **High throughput, low latency requirements**: Saving a Redis query on every request can significantly reduce p99 latency.
 
 ### Choose Session Token When
@@ -161,9 +161,9 @@ When multiple microservices all need to verify sessions, each service must acces
 3. **Compliance requirements**: MLPS Level 3 requires real-time termination of anomalous sessions.
 4. **Fine-grained session management needs**: Need to view all active sessions for a user, limit concurrent logins, and record session activity logs.
 
-## AuthMS's Solution: Dual-Mode Coexistence
+## Autional's Solution: Dual-Mode Coexistence
 
-AuthMS's design philosophy is: **you should not be forced to choose between JWT and Session Tokens.** session-service supports both modes simultaneously, each serving its role in the AuthMS architecture:
+Autional's design philosophy is: **you should not be forced to choose between JWT and Session Tokens.** session-service supports both modes simultaneously, each serving its role in the Autional architecture:
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -216,7 +216,7 @@ Regardless of which token type you choose, the following mechanisms are essentia
 
 This is the standard model for modern identity systems:
 
-- **Access Token**: Short-lived (15 minutes), used for API call authentication. AuthMS's identity-service issues JWT-format Access Tokens.
+- **Access Token**: Short-lived (15 minutes), used for API call authentication. Autional's identity-service issues JWT-format Access Tokens.
 - **Refresh Token**: Long-lived (7 days), used only to obtain new Access Tokens. The Refresh Token is stored in session-service and can be revoked at any time.
 
 Auto-renewal flow after token expiry:
@@ -226,14 +226,14 @@ Client Request → API → 401 (Token Expired) → Client uses Refresh Token to 
 
 ### Token Rotation
 
-AuthMS implements a Refresh Token rotation mechanism: each time a Refresh Token is used to obtain a new Access Token, the old Refresh Token is immediately invalidated while a new one is issued. This fundamentally prevents Refresh Token reuse after theft:
+Autional implements a Refresh Token rotation mechanism: each time a Refresh Token is used to obtain a new Access Token, the old Refresh Token is immediately invalidated while a new one is issued. This fundamentally prevents Refresh Token reuse after theft:
 
 - Legitimate user normal operation → new Refresh Token on each rotation
 - Attacker attempts to use a rotated Refresh Token → system detects "reuse" → revokes all of that user's Refresh Tokens → requires re-login
 
 ### Forced Revocation Scenarios
 
-AuthMS supports the following revocation scenarios through session-service's API:
+Autional supports the following revocation scenarios through session-service's API:
 
 | Scenario | API | Trigger Condition |
 |----------|-----|-------------------|
@@ -252,4 +252,4 @@ JWT and Session Tokens are not competitors — they are complements. A mature id
 - **JWT for fast verification**: Keeps the gateway layer's latency low on every request
 - **Session Tokens for fine-grained control**: Enables security-sensitive checks and instant revocation
 
-AuthMS's session-service is built precisely on this philosophy. You don't have to choose between "performance" and "security" — you can have both.
+Autional's session-service is built precisely on this philosophy. You don't have to choose between "performance" and "security" — you can have both.

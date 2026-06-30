@@ -14,7 +14,7 @@ claims_reviewed: true
 
 In the web development world, there's a long-standing myth: "Language performance doesn't matter; the database is the bottleneck." In identity authentication systems, this myth is shattered by reality. Modern SaaS platforms handle tens of millions of logins, token validations, and MFA checks daily — operations where a significant amount of CPU time is spent on cryptographic computation and protocol processing, not database I/O.
 
-AuthMS chose Go as its primary language from the start. Let's look at real data to see exactly where Go microservices outperform traditional PHP monoliths in identity systems.
+Autional chose Go as its primary language from the start. Let's look at real data to see exactly where Go microservices outperform traditional PHP monoliths in identity systems.
 
 ## Concurrency Model: goroutine vs Process
 
@@ -32,7 +32,7 @@ Go's concurrency model is "one connection, one goroutine":
 
 **Real data comparison:** On a 4-core 8GB VM, PHP-FPM configured with 100 workers handles login requests concurrently; Go's identity-service handles the same requests in a single process. Results:
 
-| Metric | PHP-FPM (Laravel) | Go (AuthMS) | Gap |
+| Metric | PHP-FPM (Laravel) | Go (Autional) | Gap |
 |--------|------------------|-------------|-----|
 | Concurrent connections | 100 (worker-limited) | 50,000+ | 500× |
 | Login requests/sec | ~2,100 | ~51,000 | 24× |
@@ -58,7 +58,7 @@ Go service memory usage:
 
 ```
 PHP-FPM (Laravel):  100 workers × 35MB = 3.5GB baseline memory
-Go (AuthMS):         1 process × 100MB = 100MB baseline memory
+Go (Autional):         1 process × 100MB = 100MB baseline memory
                      + 10K goroutines × 5KB = 50MB
                      Total: 150MB
 ```
@@ -105,7 +105,7 @@ Go connection pool management:
 | In-memory cache | Offloaded to Redis | In-process `sync.Map` + periodic refresh |
 | gRPC connections | Not supported | HTTP/2 multiplexing, single connection carries thousands of concurrent streams |
 
-In AuthMS, identity-service creates a connection pool of 25 database connections on startup, with a max idle time of 3600 seconds. All requests share these connections, avoiding repeated handshake overhead. To achieve the same effect in PHP, you'd need to introduce a long-running process solution like Swoole or RoadRunner — essentially imitating Go's runtime model.
+In Autional, identity-service creates a connection pool of 25 database connections on startup, with a max idle time of 3600 seconds. All requests share these connections, avoiding repeated handshake overhead. To achieve the same effect in PHP, you'd need to introduce a long-running process solution like Swoole or RoadRunner — essentially imitating Go's runtime model.
 
 ## Compile-Time Optimization
 
@@ -150,13 +150,13 @@ P99 latency: ~180ms (bottleneck is bcrypt, CPU-intensive)
 Throughput: 30,000 / second
 ```
 
-Go's CPU utilization approaches 100% (bcrypt is compute-intensive), but requests never queue. bcrypt computation is the bottleneck — AuthMS uses **asynchronous hash verification** (offloading bcrypt operations to a goroutine pool to avoid blocking the scheduler) and **connection pool reuse** to ensure the database doesn't become a secondary bottleneck.
+Go's CPU utilization approaches 100% (bcrypt is compute-intensive), but requests never queue. bcrypt computation is the bottleneck — Autional uses **asynchronous hash verification** (offloading bcrypt operations to a goroutine pool to avoid blocking the scheduler) and **connection pool reuse** to ensure the database doesn't become a secondary bottleneck.
 
 Even when scaling is needed, Kubernetes HPA can spin up new Pods within 30 seconds based on CPU usage, and Go services' lightning-fast startup makes scaling effects immediately visible.
 
-## AuthMS's Go Architecture Experience
+## Autional's Go Architecture Experience
 
-Here are the key practices AuthMS has accumulated with Go microservice architecture:
+Here are the key practices Autional has accumulated with Go microservice architecture:
 
 ### 1. Independent Compilation per Service
 
@@ -176,7 +176,7 @@ identity-service's `Repository` interface allows `gomock` to generate mocks for 
 
 ## Summary
 
-| Dimension | PHP-FPM | Go (AuthMS) |
+| Dimension | PHP-FPM | Go (Autional) |
 |-----------|---------|-------------|
 | Concurrency model | Process pool (50-200) | goroutine (tens of thousands) |
 | Memory usage | 20-50MB/worker | 100MB + 2-5KB/goroutine |
@@ -186,6 +186,6 @@ identity-service's `Repository` interface allows `gomock` to generate mocks for 
 | Code safety | Runtime discovery | Compile-time + lint check |
 | Deployment | Composer + hot restart (request interruption) | Static binary + graceful shutdown |
 
-Go isn't "better than PHP" — PHP remains excellent for rapid prototyping and CMS. But for a SaaS platform processing tens of thousands of identity verification requests per second, Go's concurrency model, compile-time safety, and memory efficiency represent architectural gaps that PHP cannot bridge. AuthMS chose Go not as a technology preference, but as an engineering necessity in the face of business scale.
+Go isn't "better than PHP" — PHP remains excellent for rapid prototyping and CMS. But for a SaaS platform processing tens of thousands of identity verification requests per second, Go's concurrency model, compile-time safety, and memory efficiency represent architectural gaps that PHP cannot bridge. Autional chose Go not as a technology preference, but as an engineering necessity in the face of business scale.
 
 > **Note**: Performance figures are from internal benchmark environments. Production results may vary.

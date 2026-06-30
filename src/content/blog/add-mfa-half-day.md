@@ -4,7 +4,7 @@ date: "2026-05-06"
 category: "Project"
 tags: ["MFA", "Quick Integration", "Dev Efficiency"]
 readTime: "6 min"
-excerpt: "Traditionally, adding multi-factor authentication to an existing system takes months of development. With AuthMS, you can go from app registration to a fully functional MFA deployment in just half a day. This article walks you through the entire process step by step."
+excerpt: "Traditionally, adding multi-factor authentication to an existing system takes months of development. With Autional, you can go from app registration to a fully functional MFA deployment in just half a day. This article walks you through the entire process step by step."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -16,11 +16,11 @@ Multi-factor authentication (MFA) is one of the most effective defenses against 
 
 Yet many teams still haven't adopted MFA — not because they don't need it, but because the investment seems too large. Implementing TOTP protocol, SMS sending, email sending, Passkey registration from scratch... a conservative estimate puts the development cycle at **3-6 months**.
 
-AuthMS aims to compress this timeline to **half a day**.
+Autional aims to compress this timeline to **half a day**.
 
 ## The Cost of Building MFA In-House
 
-Before introducing the AuthMS approach, let's look at what building MFA yourself entails:
+Before introducing the Autional approach, let's look at what building MFA yourself entails:
 
 | Item | Work Involved | Estimated Time |
 |------|---------------|---------------|
@@ -38,13 +38,13 @@ Before introducing the AuthMS approach, let's look at what building MFA yourself
 
 And this is just the development side. After go-live, your security team needs to monitor MFA usage — how many users have enabled it? Which users have disabled it? Are there suspicious device registration behaviors? All of this requires additional operational support.
 
-## The AuthMS Solution: Everything Done in Half a Day
+## The Autional Solution: Everything Done in Half a Day
 
-AuthMS implements MFA as a standalone `mfa-service` that provides MFA capabilities to all integrated applications via OAuth 2.0 / OIDC protocols. You don't need to implement any MFA logic in your application code.
+Autional implements MFA as a standalone `mfa-service` that provides MFA capabilities to all integrated applications via OAuth 2.0 / OIDC protocols. You don't need to implement any MFA logic in your application code.
 
 ### Step 1: Register Your Application (5 minutes)
 
-Log into the AuthMS Admin Console and create an OAuth client:
+Log into the Autional Admin Console and create an OAuth client:
 
 - Enter the application name and callback URL
 - Select the required scopes (openid profile email)
@@ -76,7 +76,7 @@ app.get('/auth/callback', async (req, res) => {
 });
 ```
 
-The frontend just needs a "Sign in with AuthMS" button that redirects to the authorization page. The rest of the logic — including login, registration, password reset, and MFA flows — is all handled by AuthMS.
+The frontend just needs a "Sign in with Autional" button that redirects to the authorization page. The rest of the logic — including login, registration, password reset, and MFA flows — is all handled by Autional.
 
 ### Step 3: Enable MFA Policy (2 minutes)
 
@@ -93,7 +93,7 @@ Save. Done.
 After configuration, users' registration and login experience requires no additional code changes:
 
 **New User Registration**:
-1. Create an account on the AuthMS unified registration page → auto-login
+1. Create an account on the Autional unified registration page → auto-login
 2. Go to personal settings → click "Enable Multi-Factor Authentication"
 3. Choose TOTP (recommended), scan the QR code with your phone to complete binding
 4. System generates 10 one-time backup codes; users are advised to save them securely
@@ -110,7 +110,7 @@ After configuration, users' registration and login experience requires no additi
 
 ## Supported MFA Methods
 
-AuthMS's `mfa-service` supports the following four authentication methods, which can be flexibly combined in policies:
+Autional's `mfa-service` supports the following four authentication methods, which can be flexibly combined in policies:
 
 | Method | Use Case | Security | User Experience |
 |--------|---------|----------|----------------|
@@ -123,7 +123,7 @@ All MFA methods share a unified state machine: Device Registered → Awaiting Ac
 
 ## Underlying Implementation
 
-Understanding AuthMS's MFA implementation helps explain why it's more secure than a self-built solution:
+Understanding Autional's MFA implementation helps explain why it's more secure than a self-built solution:
 
 **TOTP Key Protection**:
 - TOTP seed keys are encrypted with AES-256-GCM and stored in PostgreSQL
@@ -142,15 +142,15 @@ Understanding AuthMS's MFA implementation helps explain why it's more secure tha
 
 ## Migrating Existing Users
 
-What if your system already has users? AuthMS provides user import and progressive migration options:
+What if your system already has users? Autional provides user import and progressive migration options:
 
 1. **Bulk Import**: Import existing users via the Bulk Import API (password hashes can be preserved); users are guided to set up MFA on first login
-2. **Progressive Migration**: Keep the old login page as a fallback; new users go through the AuthMS flow. Both login entry points coexist until migration is complete
-3. **Silent Registration**: The legacy system calls AuthMS's internal API in the background, automatically creating an AuthMS account on the user's next login for a seamless migration
+2. **Progressive Migration**: Keep the old login page as a fallback; new users go through the Autional flow. Both login entry points coexist until migration is complete
+3. **Silent Registration**: The legacy system calls Autional's internal API in the background, automatically creating an Autional account on the user's next login for a seamless migration
 
 ## Getting Started
 
-AuthMS provides complete SDKs and documentation covering major languages and frameworks. Whether your system uses Node.js, Python, Java, Go, or PHP, there's a corresponding quick-start guide.
+Autional provides complete SDKs and documentation covering major languages and frameworks. Whether your system uses Node.js, Python, Java, Go, or PHP, there's a corresponding quick-start guide.
 
 ```bash
 # Three steps to set up a local dev environment
@@ -163,4 +163,4 @@ Visit `http://localhost:11080` and experience the complete flow from user regist
 
 ---
 
-**Multi-factor authentication is no longer a luxury — it's the baseline for modern application security.** AuthMS helps existing systems integrate MFA capabilities quickly.
+**Multi-factor authentication is no longer a luxury — it's the baseline for modern application security.** Autional helps existing systems integrate MFA capabilities quickly.

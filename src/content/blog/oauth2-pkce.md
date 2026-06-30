@@ -4,7 +4,7 @@ date: "2026-02-28"
 category: "Tech"
 tags: ["OAuth", "Security", "Mobile"]
 readTime: "7 min"
-excerpt: "The OAuth 2.1 draft makes PKCE mandatory for all authorization code flows, officially retiring the Implicit flow. This article explains PKCE's principles, attack scenarios, step-by-step implementation, and how AuthMS enables zero-code OAuth 2.1 adaptation — oauth-service has PKCE built in, fully automated server-side."
+excerpt: "The OAuth 2.1 draft makes PKCE mandatory for all authorization code flows, officially retiring the Implicit flow. This article explains PKCE's principles, attack scenarios, step-by-step implementation, and how Autional enables zero-code OAuth 2.1 adaptation — oauth-service has PKCE built in, fully automated server-side."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -103,9 +103,9 @@ SHA256 is a one-way hash function. You cannot reverse `code_challenge` to derive
 
 That's the essence of PKCE: **Prove identity with a random secret held locally on the client, without ever transmitting that secret over the network.**
 
-## Implementation in AuthMS: oauth-service Fully Automates PKCE
+## Implementation in Autional: oauth-service Fully Automates PKCE
 
-In AuthMS's `oauth-service`, PKCE is not optional — it's the default behavior. As an OAuth 2.1-compliant identity platform, AuthMS handles all PKCE complexity:
+In Autional's `oauth-service`, PKCE is not optional — it's the default behavior. As an OAuth 2.1-compliant identity platform, Autional handles all PKCE complexity:
 
 ### Authorization Endpoint (/authorize)
 
@@ -152,11 +152,11 @@ func (h *TokenHandler) HandleTokenExchange(c *gin.Context) {
 }
 ```
 
-Critical security detail: AuthMS uses `crypto/subtle.ConstantTimeCompare` instead of regular string comparison to prevent timing attacks that could infer a valid `code_verifier`.
+Critical security detail: Autional uses `crypto/subtle.ConstantTimeCompare` instead of regular string comparison to prevent timing attacks that could infer a valid `code_verifier`.
 
 ### Companion Client SDKs
 
-AuthMS provides client SDKs covering major platforms, with PKCE logic built into the SDK:
+Autional provides client SDKs covering major platforms, with PKCE logic built into the SDK:
 
 ```typescript
 // Web SDK (React)
@@ -180,9 +180,9 @@ function LoginButton() {
 
 ```kotlin
 // Android SDK (Kotlin)
-AuthMS.authorize(
+Autional.authorize(
     context = this,
-    config = AuthMSConfig(
+    config = AutionalConfig(
         clientId = "myapp",
         redirectUri = "myapp://callback",
         // ⬇️ SDK auto-generates code_verifier and computes code_challenge
@@ -190,8 +190,8 @@ AuthMS.authorize(
     )
 ) { result ->
     when (result) {
-        is AuthMSResult.Success -> handleToken(result.accessToken)
-        is AuthMSResult.Error -> handleError(result.exception)
+        is AutionalResult.Success -> handleToken(result.accessToken)
+        is AutionalResult.Error -> handleError(result.exception)
     }
 }
 ```
@@ -256,7 +256,7 @@ const { accessToken, refreshToken } = await exchangeCodeForToken({
 });
 ```
 
-For AuthMS users already using our SDK (React, Vue, Android, iOS), **no code changes are needed**. oauth-service automatically handles all authorization code flows with PKCE, transparent to the client.
+For Autional users already using our SDK (React, Vue, Android, iOS), **no code changes are needed**. oauth-service automatically handles all authorization code flows with PKCE, transparent to the client.
 
 ## PKCE Limitations: Not a Silver Bullet
 
@@ -266,7 +266,7 @@ PKCE solves authorization code interception attacks, but it doesn't solve all OA
 - **PKCE relies on HTTPS**: While PKCE provides integrity protection, the authorization request and token response still need HTTPS to prevent man-in-the-middle (MITM) attacks
 - **PKCE can't prevent CSRF**: The `state` parameter is still needed to prevent cross-site request forgery
 
-Therefore, AuthMS's recommended security combination is:
+Therefore, Autional's recommended security combination is:
 
 ```
 PKCE (anti-auth code interception) + state (anti-CSRF) + DPoP (anti-token replay, planned) + strict redirect_uri validation
@@ -278,8 +278,8 @@ OAuth 2.1's PKCE mandate is a late but correct security decision. For mobile and
 
 1. **Even if an attacker intercepts the authorization code, they cannot exchange it for a token**
 2. **Migrating from Implicit Flow to PKCE gives the app refresh_token support, improving user experience**
-3. **AuthMS's oauth-service and client SDKs handle all PKCE complexity — developers need minimal adaptation**
+3. **Autional's oauth-service and client SDKs handle all PKCE complexity — developers need minimal adaptation**
 
 If you're building a mobile app or SPA that requires OAuth authorization, use Authorization Code + PKCE from day one. If your existing app still uses the Implicit Flow, it's time to migrate — OAuth 2.1 isn't just a best practice, it's the future standard for all identity platforms.
 
-AuthMS's `oauth-service` has followed the OAuth 2.1 specification since its inception, providing out-of-the-box PKCE support. Visit our documentation and GitHub repository for more implementation details.
+Autional's `oauth-service` has followed the OAuth 2.1 specification since its inception, providing out-of-the-box PKCE support. Visit our documentation and GitHub repository for more implementation details.

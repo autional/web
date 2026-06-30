@@ -4,13 +4,13 @@ date: "2026-05-13"
 category: "Architecture"
 tags: ["gRPC", "Service-to-Service Communication", "Security"]
 readTime: "7 min"
-excerpt: "How AuthMS uses gRPC to build a secure communication layer between microservices—from Protobuf's efficiency advantages to TLS/mTLS transport security, from JWT+API Key dual-mode authentication to full-link OpenTelemetry tracing."
+excerpt: "How Autional uses gRPC to build a secure communication layer between microservices—from Protobuf's efficiency advantages to TLS/mTLS transport security, from JWT+API Key dual-mode authentication to full-link OpenTelemetry tracing."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-One of the core challenges of microservice architecture is enabling secure and efficient communication between services. The REST + JSON approach may seem simple, but it exposes numerous problems in inter-service communication scenarios: high serialization overhead, lack of strong type constraints, and difficulty with streaming. AuthMS's choice: **REST for external, gRPC for internal.**
+One of the core challenges of microservice architecture is enabling secure and efficient communication between services. The REST + JSON approach may seem simple, but it exposes numerous problems in inter-service communication scenarios: high serialization overhead, lack of strong type constraints, and difficulty with streaming. Autional's choice: **REST for external, gRPC for internal.**
 
 ## Why gRPC for Internal Calls?
 
@@ -59,7 +59,7 @@ gRPC contracts are `.proto` files—**guaranteed at compile time**:
 - New fields don't affect existing callers (Protobuf backward compatibility)
 - Deprecated fields marked `reserved` cause compile errors if reused
 
-In AuthMS, all `.proto` files are generated uniformly by `scripts/generate-proto.ps1`, and `check-grpc-compliance.py` in the CI pipeline ensures generated code is consistent with proto definitions—eliminating runtime bugs like "the doc says accept int, but the code passes string."
+In Autional, all `.proto` files are generated uniformly by `scripts/generate-proto.ps1`, and `check-grpc-compliance.py` in the CI pipeline ensures generated code is consistent with proto definitions—eliminating runtime bugs like "the doc says accept int, but the code passes string."
 
 ### Streaming
 
@@ -79,11 +79,11 @@ Bidirectional:       Bidirectional streams (real-time alerts, conversations)
 
 In the compliance report export scenario, compliance-service calls audit-service's `ExportAuditLogs` method, audit-service pushes data in batches via Server Streaming, and compliance-service writes to CSV as it receives—without waiting for the full dataset to load into memory.
 
-## AuthMS's gRPC Security Architecture
+## Autional's gRPC Security Architecture
 
 ### Transport Security: TLS / mTLS
 
-AuthMS's internal gRPC communication enables TLS by default:
+Autional's internal gRPC communication enables TLS by default:
 
 ```yaml
 grpc:
@@ -100,7 +100,7 @@ Upgraded to mTLS (mutual authentication) in production: each service has its own
 
 ### Authentication: JWT + API Key Dual Mode
 
-Internal inter-service calls have two authentication scenarios, and AuthMS supports both modes:
+Internal inter-service calls have two authentication scenarios, and Autional supports both modes:
 
 **JWT (User Context Propagation):**
 
@@ -127,7 +127,7 @@ ctx := metadata.NewOutgoingContext(ctx, md)
 
 ### Unified Interceptor Chain
 
-AuthMS's gRPC server is created via the `grpc_mw.NewServer` factory method, which auto-injects a four-layer interceptor chain:
+Autional's gRPC server is created via the `grpc_mw.NewServer` factory method, which auto-injects a four-layer interceptor chain:
 
 ```
 Client Request
@@ -155,7 +155,7 @@ if info.FullMethod == "/grpc.health.v1.Health/Check" ||
 
 ## Full-Link Tracing: OpenTelemetry
 
-Inter-service call chains are complex, and debugging latency issues requires full-link tracing. All AuthMS gRPC calls are injected with W3C Trace Context:
+Inter-service call chains are complex, and debugging latency issues requires full-link tracing. All Autional gRPC calls are injected with W3C Trace Context:
 
 **Client Side:**
 
@@ -203,9 +203,9 @@ level=ERROR msg="gdpr export failed" user_id=01ARZ...
   step=get_user grpc_code=NotFound
 ```
 
-## gRPC vs REST Division in AuthMS
+## gRPC vs REST Division in Autional
 
-AuthMS does not recommend using gRPC for end-user-facing APIs:
+Autional does not recommend using gRPC for end-user-facing APIs:
 
 | Scenario | Approach | Reason |
 |------|------|------|
@@ -218,7 +218,7 @@ AuthMS does not recommend using gRPC for end-user-facing APIs:
 
 ## Summary
 
-gRPC's role in AuthMS internal communication can be summarized as:
+gRPC's role in Autional internal communication can be summarized as:
 
 - **Efficiency**: Protobuf binary serialization, 50%+ smaller payload than JSON, lower CPU overhead
 - **Security**: TLS/mTLS transport encryption + JWT/API Key dual-mode authentication + unified interceptor chain

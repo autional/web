@@ -4,7 +4,7 @@ date: "2026-06-11"
 category: "Architecture"
 tags: ["Disaster Recovery", "High Availability", "Backup"]
 readTime: "8 min"
-excerpt: "The identity system is the one piece of infrastructure that cannot fail — when it goes down, every service that depends on it becomes unavailable. This article systematically examines AuthMS's disaster recovery strategy across three typical disaster scenarios: database corruption, regional outage, and misconfigured rollout. Covering PITR backups, stateless painless rebuilds, DLQ message preservation, and minimizing blast radius through architecture."
+excerpt: "The identity system is the one piece of infrastructure that cannot fail — when it goes down, every service that depends on it becomes unavailable. This article systematically examines Autional's disaster recovery strategy across three typical disaster scenarios: database corruption, regional outage, and misconfigured rollout. Covering PITR backups, stateless painless rebuilds, DLQ message preservation, and minimizing blast radius through architecture."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -14,7 +14,7 @@ Every "System Operations Manual" has a chapter called "Disaster Recovery (DR)." 
 
 The identity system has a special place in disaster recovery: **it has the largest blast radius of any infrastructure.** If `wallet-service` goes down, user balances are intact and transactions can wait. But if `identity-service` goes down, users can't log in, and every service — wallet, orders, dashboards, notifications — becomes completely unavailable. This isn't one system's outage; it's the entire product ecosystem grinding to a halt.
 
-Starting from AuthMS's architecture, this article systematically discusses the disaster scenarios an identity system might face, corresponding recovery strategies, and how architectural design minimizes the blast radius before disaster strikes.
+Starting from Autional's architecture, this article systematically discusses the disaster scenarios an identity system might face, corresponding recovery strategies, and how architectural design minimizes the blast radius before disaster strikes.
 
 ## Scenario 1: Database Corruption
 
@@ -28,11 +28,11 @@ At 2:15 AM, a DBA running a data cleanup script misses a `WHERE` clause and trun
 - JWT tokens containing user info may be stale, but since tokens are self-contained, existing tokens remain valid within their expiration (depending on token design)
 - All sessions are invalidated (sessions stored in DB)
 
-### AuthMS Recovery Strategy
+### Autional Recovery Strategy
 
 **Step 1: Point-in-Time Recovery (PITR)**
 
-AuthMS gives each service its own independent PostgreSQL database (`authms_identity`, `authms_session`, `authms_mfa`, etc.), each backed up independently, so recovery doesn't require rebuilding the entire cluster. AuthMS backup strategy:
+Autional gives each service its own independent PostgreSQL database (`authms_identity`, `authms_session`, `authms_mfa`, etc.), each backed up independently, so recovery doesn't require rebuilding the entire cluster. Autional backup strategy:
 
 - **Full backup**: `pg_dump` daily at 2:00 AM, retained 30 days
 - **Incremental backup**: WAL archive every hour, retained 7 days
@@ -43,14 +43,14 @@ Recovering a service: find the most recent full backup → apply WAL logs to the
 
 **Step 2: Token Validity Protection**
 
-Key design decision: AuthMS JWT tokens are **self-contained** — the token encodes user ID, tenant ID, role list, and expiration time. This means:
+Key design decision: Autional JWT tokens are **self-contained** — the token encodes user ID, tenant ID, role list, and expiration time. This means:
 - Even if identity-service's database is corrupted, valid tokens held by users can still be verified by the gateway
 - session-service database corruption won't force online users to log out
 - Signing keys are stored in independent security modules (env vars or KMS), not lost with database corruption
 
 **Step 3: Cache Warming**
 
-Going live immediately after database recovery would cause 100% cache misses, and the flood of requests could overwhelm the just-restored database. AuthMS uses progressive cache warming:
+Going live immediately after database recovery would cause 100% cache misses, and the flood of requests could overwhelm the just-restored database. Autional uses progressive cache warming:
 1. First 5 minutes: traffic gradually released at 20% rate, backend preloads hot data into Redis
 2. 5-15 minutes: traffic ramped to 50%, database load monitored
 3. After 15 minutes: if DB load is normal, ramp to 100%
@@ -67,11 +67,11 @@ A cloud provider's availability zone suffers a power system failure, or a fiber 
 - If the database is single-region, data is inaccessible
 - DNS may need manual switching to the standby region
 
-### AuthMS Recovery Strategy
+### Autional Recovery Strategy
 
 **Step 1: Database Primary-Standby Switch**
 
-AuthMS Enterprise supports database primary-standby replication:
+Autional Enterprise supports database primary-standby replication:
 - Primary in region A, handling all reads and writes
 - Standby in region B, continuously replicating asynchronously
 - When region A is unavailable, operators perform failover: promote the standby to primary, update the database connection address in service configuration
@@ -83,7 +83,7 @@ The problem with asynchronous replication is potentially losing the last few sec
 
 **Step 2: Fast Stateless Service Rebuild**
 
-All AuthMS business services (identity, profile, session, mfa, etc.) are stateless — they hold no local data, with all state in DB/Redis/MQ. This means restoring services in the standby region requires only:
+All Autional business services (identity, profile, session, mfa, etc.) are stateless — they hold no local data, with all state in DB/Redis/MQ. This means restoring services in the standby region requires only:
 1. Start the Kubernetes Deployment (image already exists)
 2. Update DNS to point to the new region's Gateway
 3. Services read the new region's DB/Redis/MQ addresses from ConfigMap
@@ -97,7 +97,7 @@ A full active-active architecture isn't optimal for identity systems. Reasons:
 - Active-active requires database bidirectional sync (e.g., PostgreSQL logical replication), with exponential complexity
 - Cost doubles, but for a "low-frequency, high-criticality" service like identity, the ROI isn't there
 
-AuthMS chooses an **active-passive (primary-standby) architecture**:
+Autional chooses an **active-passive (primary-standby) architecture**:
 - Production traffic handled by the primary region
 - Standby region maintains a minimal deployment (single replica + database standby)
 - On failover, the standby region scales to full capacity
@@ -117,18 +117,18 @@ This is a more common disaster than hardware failure. A seemingly harmless confi
 - It may not trigger immediately — a wrong SESSION_TTL might go unnoticed for hours, but its impact covers all users
 - No "partial damage" — unlike database failures that may affect only some tables, a wrong JWT_SECRET affects 100% of authentication requests
 
-### AuthMS Recovery Strategy
+### Autional Recovery Strategy
 
 **Step 1: Versioned Config with Fast Rollback**
 
-AuthMS uses YAML files + environment variable override pattern:
+Autional uses YAML files + environment variable override pattern:
 - `configs/service/{service}.yaml` is Git-managed, every change has a complete diff and commit log
 - Environment variable overrides (e.g., `JWT_SECRET`) come from `.env` files or Kubernetes Secrets
 - Rollback = `git revert` + redeploy
 
 **Step 2: Canary Validation**
 
-For high-risk config changes (JWT_SECRET, database connection strings, MQ config), AuthMS recommends canary deployment:
+For high-risk config changes (JWT_SECRET, database connection strings, MQ config), Autional recommends canary deployment:
 1. Update 1 Pod first
 2. Wait 5 minutes to observe error rate and health checks
 3. If normal, expand to 25% of Pods
@@ -139,11 +139,11 @@ But this requires an automated toolchain to execute. Manual kubectl apply makes 
 
 **Step 3: Independent Secret Management**
 
-JWT_SECRET, database passwords, API Keys and other sensitive information should never be stored alongside regular config. AuthMS recommends using Kubernetes Secrets or HashiCorp Vault for independent management, injected into Pods via `envFrom`. Even if regular configuration is accidentally modified, secrets remain unaffected.
+JWT_SECRET, database passwords, API Keys and other sensitive information should never be stored alongside regular config. Autional recommends using Kubernetes Secrets or HashiCorp Vault for independent management, injected into Pods via `envFrom`. Even if regular configuration is accidentally modified, secrets remain unaffected.
 
 ## How to Minimize Disaster Blast Radius
 
-The ideal disaster recovery strategy reduces the impact before disaster strikes. AuthMS makes several key architectural decisions:
+The ideal disaster recovery strategy reduces the impact before disaster strikes. Autional makes several key architectural decisions:
 
 ### 1. Independent Database Per Service
 
@@ -161,11 +161,11 @@ Not all operations need to be synchronous:
 - **Synchronous (must wait)**: password verification, token issuance, permission checks
 - **Asynchronous (can be deferred)**: audit log writes, notification sending, analytics
 
-AuthMS uses MQ for asynchronous audit log delivery, meaning login flows are unaffected even if `audit-service` is down. This reduces the blast radius — an audit service failure doesn't impact login availability.
+Autional uses MQ for asynchronous audit log delivery, meaning login flows are unaffected even if `audit-service` is down. This reduces the blast radius — an audit service failure doesn't impact login availability.
 
 ### 4. Regular Drills
 
-A disaster recovery plan that isn't practiced is no plan at all. AuthMS recommends quarterly DR drills covering:
+A disaster recovery plan that isn't practiced is no plan at all. Autional recommends quarterly DR drills covering:
 - Database recovery from scratch (using the most recent backup)
 - Regional failover (primary → standby)
 - Key rotation (change JWT_SECRET, ensure old tokens still verify)
@@ -185,4 +185,4 @@ If you can't answer one of these questions, your identity system is unprotected.
 
 ---
 
-*AuthMS Enterprise includes built-in cross-region deployment support, automated backup policies, and PITR database recovery capabilities. [Learn about Enterprise features](/pricing) for more information.*
+*Autional Enterprise includes built-in cross-region deployment support, automated backup policies, and PITR database recovery capabilities. [Learn about Enterprise features](/pricing) for more information.*

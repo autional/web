@@ -1,10 +1,10 @@
 ---
-title: "WebAuthn Deep Dive: From the CTAP2 Protocol to AuthMS's Complete Implementation"
+title: "WebAuthn Deep Dive: From the CTAP2 Protocol to Autional's Complete Implementation"
 date: "2026-05-24"
 category: "Tech"
 tags: ["WebAuthn", "FIDO2", "Passkey"]
 readTime: "12 min"
-excerpt: "WebAuthn is the most important standard in identity authentication in recent years. This article starts from the CTAP2 protocol, analyzes the complete registration and authentication flows layer by layer, examines the security differences between platform authenticators and roaming authenticators, and shows how AuthMS mfa-service + identity-service collaborate to deliver a complete WebAuthn server-side implementation."
+excerpt: "WebAuthn is the most important standard in identity authentication in recent years. This article starts from the CTAP2 protocol, analyzes the complete registration and authentication flows layer by layer, examines the security differences between platform authenticators and roaming authenticators, and shows how Autional mfa-service + identity-service collaborate to deliver a complete WebAuthn server-side implementation."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -12,7 +12,7 @@ claims_reviewed: true
 
 WebAuthn, short for Web Authentication, is the W3C and FIDO Alliance's browser-based passwordless authentication standard. Unlike traditional username + password, WebAuthn is based on public-key cryptography — the client generates and holds the private key, while the server only stores the public key. The private key never leaves the user's device.
 
-This article will go layer by layer from the protocol level, and finally show how AuthMS encapsulates this complex protocol into an enterprise-grade capability that works out of the box.
+This article will go layer by layer from the protocol level, and finally show how Autional encapsulates this complex protocol into an enterprise-grade capability that works out of the box.
 
 ## Protocol Overview: FIDO2 Layered Architecture
 
@@ -57,14 +57,14 @@ Client → Server: POST /webauthn/register/begin
 
 Server Processing:
     1. Generate 32-byte random challenge (crypto/rand)
-    2. Generate user ID (AuthMS ULID)
+    2. Generate user ID (Autional ULID)
     3. Query user's already-registered credentials (for excludeCredentials)
     4. Store challenge temporarily (Redis, TTL 5 minutes)
 
 Server → Client:
     {
       "challenge": "base64url...",
-      "rp": { "id": "iam.tianv.com", "name": "AuthMS" },
+      "rp": { "id": "iam.tianv.com", "name": "Autional" },
       "user": {
         "id": "base64url...",
         "name": "user@example.com",
@@ -146,7 +146,7 @@ Server Processing:
         - device_name: user-set device name
 ```
 
-AuthMS's mfa-service applies the following security hardening during registration verification:
+Autional's mfa-service applies the following security hardening during registration verification:
 
 - **Strict origin validation**: Only accepts configured allowed origin list, preventing cross-domain attacks
 - **Challenge anti-replay**: Challenge is deleted immediately after use, preventing reuse
@@ -228,7 +228,7 @@ Server Processing:
 | Loss Risk | Device loss requires recovery flow | Physical loss requires backup key |
 | Use Case | Daily login, low-medium security | Admin operations, high security |
 
-AuthMS allows tenant administrators to configure accepted authenticator types in MFA policies:
+Autional allows tenant administrators to configure accepted authenticator types in MFA policies:
 
 ```yaml
 webauthn_policy:
@@ -239,9 +239,9 @@ webauthn_policy:
   attestation: none
 ```
 
-## AuthMS Implementation Architecture
+## Autional Implementation Architecture
 
-AuthMS's complete WebAuthn implementation is a collaboration between two services:
+Autional's complete WebAuthn implementation is a collaboration between two services:
 
 ### identity-service Role
 
@@ -280,7 +280,7 @@ Primary responsibilities:
 
 ### Why Split Into Two Services?
 
-This separation of responsibilities embodies AuthMS's microservice design philosophy:
+This separation of responsibilities embodies Autional's microservice design philosophy:
 
 1. **Separation of concerns**: identity-service handles user interaction, mfa-service handles cryptographic operations. Changing signature algorithms or adding new authenticator types only requires changes in mfa-service.
 2. **Independent scaling**: The cryptographic operations in registration and authentication (ECDSA verification) are CPU-intensive. During Passkey promotion, registration requests may spike — mfa-service can scale independently without affecting identity-service.
@@ -288,10 +288,10 @@ This separation of responsibilities embodies AuthMS's microservice design philos
 
 ## Developer Experience
 
-For developers integrating AuthMS, enabling Passkey requires just three steps:
+For developers integrating Autional, enabling Passkey requires just three steps:
 
 1. **Enable Passkey in the admin console**: Go to MFA policy configuration, enable WebAuthn, and select allowed authenticator types.
-2. **Frontend code (zero lines)**: AuthMS's login page (auth-pages) already has the complete WebAuthn flow built-in. The user's browser automatically detects Passkey support.
+2. **Frontend code (zero lines)**: Autional's login page (auth-pages) already has the complete WebAuthn flow built-in. The user's browser automatically detects Passkey support.
 3. **User registration**: After logging in, the user goes to security settings, clicks "Add Passkey," and the system automatically calls `navigator.credentials.create()`, guiding the user through fingerprint/face registration.
 
 The entire process requires the integrator to understand zero underlying concepts like CTAP2, CBOR, COSE Key, or attestation.
@@ -302,7 +302,7 @@ The entire process requires the integrator to understand zero underlying concept
 
 RP ID is the foundation of WebAuthn's anti-phishing capability. It must precisely match your domain — no wildcards allowed. If your service has multiple subdomains (e.g., `app.example.com` and `admin.example.com`), you need to decide between using `example.com` as a shared RP ID (credentials can be used across all subdomains) or independent RP IDs per subdomain (higher isolation).
 
-In AuthMS's multi-tenant scenarios, each tenant can have its own independent domain; the system configures the correct RP ID for each tenant at registration.
+In Autional's multi-tenant scenarios, each tenant can have its own independent domain; the system configures the correct RP ID for each tenant at registration.
 
 ### 2. User Verification Strategy
 
@@ -311,11 +311,11 @@ In AuthMS's multi-tenant scenarios, each tenant can have its own independent dom
 - `preferred`: Verification recommended if the authenticator supports it. Suitable for daily login.
 - `required`: Verification mandatory. Suitable for sensitive operations.
 
-AuthMS's adaptive MFA engine can dynamically determine the `userVerification` strategy based on the operation's risk level — `preferred` for viewing profiles, `required` for password changes, `required` + mandatory hardware key for large transfers.
+Autional's adaptive MFA engine can dynamically determine the `userVerification` strategy based on the operation's risk level — `preferred` for viewing profiles, `required` for password changes, `required` + mandatory hardware key for large transfers.
 
 ### 3. Credential Backup and Recovery
 
-Once a user registers a Passkey, they need to be protected from being locked out due to device loss. AuthMS's strategy:
+Once a user registers a Passkey, they need to be protected from being locked out due to device loss. Autional's strategy:
 
 - Passkey serves as the primary authentication factor (replacing passwords), while TOTP and Backup Codes are retained as recovery channels
 - Supports registering multiple Passkeys on the same account (primary device + backup device)
@@ -329,4 +329,4 @@ WebAuthn represents the future of identity authentication — replacing shared s
 2. **Domain-bound**: Phishing sites can't pass origin verification, eliminating phishing at the protocol level
 3. **Nothing to remember**: Better user experience than passwords
 
-AuthMS has encapsulated WebAuthn from a complex protocol standard into an out-of-the-box capability. Your application only needs one API call to let users log in with their fingerprint.
+Autional has encapsulated WebAuthn from a complex protocol standard into an out-of-the-box capability. Your application only needs one API call to let users log in with their fingerprint.

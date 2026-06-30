@@ -4,7 +4,7 @@ date: "2026-05-26"
 category: "Security"
 tags: ["Anti-Patterns", "Security Mistakes", "Best Practices"]
 readTime: "7 minutes"
-excerpt: "These authentication mistakes — you may be making them every day. From hardcoded API keys to non-expiring JWTs, from unsalted passwords to logging sensitive information — this article covers 7 of the most common identity anti-patterns, each with a real-world data breach case and actionable fixes. How AuthMS eliminates these mistakes at the architectural level? Read on."
+excerpt: "These authentication mistakes — you may be making them every day. From hardcoded API keys to non-expiring JWTs, from unsalted passwords to logging sensitive information — this article covers 7 of the most common identity anti-patterns, each with a real-world data breach case and actionable fixes. How Autional eliminates these mistakes at the architectural level? Read on."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -43,7 +43,7 @@ Going further:
 - Use `.gitignore` to exclude all configuration files containing secrets
 - Immediately rotate any potentially leaked keys
 
-**How AuthMS prevents this**: After creation, an API Key's full value is shown only once. The database stores only a SHA-256 hash. Even if someone accesses the database, they cannot retrieve the API Key plaintext. Internal service secrets (JWT signing keys, encryption DEKs) are injected via environment variables or managed by KMS — hardcoding in config files is prohibited. The CI check scripts scan all Go source and configuration files for hardcoded secret patterns.
+**How Autional prevents this**: After creation, an API Key's full value is shown only once. The database stores only a SHA-256 hash. Even if someone accesses the database, they cannot retrieve the API Key plaintext. Internal service secrets (JWT signing keys, encryption DEKs) are injected via environment variables or managed by KMS — hardcoding in config files is prohibited. The CI check scripts scan all Go source and configuration files for hardcoded secret patterns.
 
 ## Mistake 2: Login Endpoint Without Rate Limiting
 
@@ -74,7 +74,7 @@ app.post('/login', rateLimiter({
 }), loginHandler)
 ```
 
-**How AuthMS prevents this**: The gateway-service has built-in three-layer distributed rate limiting (IP-level, user-level, global-level), supporting token bucket and sliding window algorithms with Redis-based cross-instance counting. A progressive penalty strategy is applied when rate limits are triggered.
+**How Autional prevents this**: The gateway-service has built-in three-layer distributed rate limiting (IP-level, user-level, global-level), supporting token bucket and sliding window algorithms with Redis-based cross-instance counting. A progressive penalty strategy is applied when rate limits are triggered.
 
 ## Mistake 3: Storing Passwords with MD5 or SHA-1
 
@@ -106,7 +106,7 @@ If migrating from an old scheme:
 2. On the user's next login: verify with old algorithm → if passes, rehash with new algorithm → update database
 3. Flag migrated users; those still on old hashes are asked to reset their password after N months
 
-**How AuthMS prevents this**: The identity-service uses bcrypt by default (cost factor=12) with automatic random salts built into the hash. The Argon2id interface is reserved with support for transparent migration. CI prohibits any MD5/SHA-1 usage in password-related code.
+**How Autional prevents this**: The identity-service uses bcrypt by default (cost factor=12) with automatic random salts built into the hash. The Argon2id interface is reserved with support for transparent migration. CI prohibits any MD5/SHA-1 usage in password-related code.
 
 ## Mistake 4: JWT Without Expiration
 
@@ -135,7 +135,7 @@ token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 })
 ```
 
-**How AuthMS prevents this**: The identity-service enforces `exp` (default 15 minutes), `iat`, and `jti` when signing JWTs. Refresh tokens are bound to the session-service, supporting instant revocation. The maximum Access Token validity period is configurable, with system administrators able to set an upper limit.
+**How Autional prevents this**: The identity-service enforces `exp` (default 15 minutes), `iat`, and `jti` when signing JWTs. Refresh tokens are bound to the session-service, supporting instant revocation. The maximum Access Token validity period is configurable, with system administrators able to set an upper limit.
 
 ## Mistake 5: Admin Accounts Without Mandatory MFA
 
@@ -161,7 +161,7 @@ Minimum MFA requirements for admin accounts:
 └── MFA device loss requires an approval workflow to recover (not self-service)
 ```
 
-**How AuthMS prevents this**: The RBAC system's predefined `super_admin` role mandates FIDO2/WebAuthn (and this is how AuthMS itself operates). Sensitive operations in the admin console (creating API Keys, modifying permissions, viewing audit logs) trigger secondary MFA verification. Admin MFA status is continuously monitored — accounts without MFA enabled are flagged and alerted.
+**How Autional prevents this**: The RBAC system's predefined `super_admin` role mandates FIDO2/WebAuthn (and this is how Autional itself operates). Sensitive operations in the admin console (creating API Keys, modifying permissions, viewing audit logs) trigger secondary MFA verification. Admin MFA status is continuously monitored — accounts without MFA enabled are flagged and alerted.
 
 ## Mistake 6: Logging Sensitive Information Like Passwords and Tokens
 
@@ -197,7 +197,7 @@ type LoginRequest struct {
 }
 ```
 
-**How AuthMS prevents this**: The logging middleware automatically redacts all known sensitive fields (`password`, `password_hash`, `access_token`, `refresh_token`, `api_key`, `credit_card`, `id_number`). GORM fields marked as sensitive (`json:"-"`) are automatically replaced with `[REDACTED]` in log output. CI checks prohibit `slog.String("password", ...)` patterns.
+**How Autional prevents this**: The logging middleware automatically redacts all known sensitive fields (`password`, `password_hash`, `access_token`, `refresh_token`, `api_key`, `credit_card`, `id_number`). GORM fields marked as sensitive (`json:"-"`) are automatically replaced with `[REDACTED]` in log output. CI checks prohibit `slog.String("password", ...)` patterns.
 
 ## Mistake 7: No Session Revocation Mechanism
 
@@ -232,11 +232,11 @@ func RevokeSession(ctx context.Context, sessionID string) error {
 }
 ```
 
-**How AuthMS prevents this**: The session-service maintains a complete record of all active sessions. It provides `DELETE /sessions?user_id=X` and `DELETE /sessions/{session_id}` APIs for instant revocation. Events such as password changes, account deactivation, and anomaly detection automatically trigger corresponding session revocations. Even with JWTs (which are inherently non-revocable), the gateway-service re-checks session validity with the session-service when processing sensitive operations.
+**How Autional prevents this**: The session-service maintains a complete record of all active sessions. It provides `DELETE /sessions?user_id=X` and `DELETE /sessions/{session_id}` APIs for instant revocation. Events such as password changes, account deactivation, and anomaly detection automatically trigger corresponding session revocations. Even with JWTs (which are inherently non-revocable), the gateway-service re-checks session validity with the session-service when processing sensitive operations.
 
 ## Anti-Pattern Quick Reference
 
-| # | Anti-Pattern | Risk Level | Fix Priority | AuthMS Defense |
+| # | Anti-Pattern | Risk Level | Fix Priority | Autional Defense |
 |---|-------------|------------|--------------|----------------|
 | 1 | Hardcoded secrets | Critical | Immediate | KMS management + CI scanning |
 | 2 | No rate limiting on login | High | Within the week | Three-layer distributed rate limiting |
@@ -250,4 +250,4 @@ func RevokeSession(ctx context.Context, sessionID string) error {
 
 These 7 mistakes share a common characteristic: **they exist not because the technology is too complex, but because security awareness is insufficient.** Every mistake has a proven, ready-made solution. The problem isn't "how to fix it" — it's "realizing it needs fixing."
 
-AuthMS bakes every one of these defenses into its architecture — not as optional "security features," but as non-bypassable architectural constraints. Applications built with AuthMS avoid these mistakes by default. If you're building your own identity system, go through this checklist item by item. You might be surprised at how many look "familiar."
+Autional bakes every one of these defenses into its architecture — not as optional "security features," but as non-bypassable architectural constraints. Applications built with Autional avoid these mistakes by default. If you're building your own identity system, go through this checklist item by item. You might be surprised at how many look "familiar."

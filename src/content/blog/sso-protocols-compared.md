@@ -110,9 +110,9 @@ OAuth 2.0 itself **cannot** be used for authentication. When you click "Sign in 
 
 They serve different security needs. SAML is better suited for federation scenarios (cross-organization), while OAuth 2.0 is better for authorization scenarios (cross-application). It's not about which is more secure — it's about which is more appropriate for your scenario.
 
-### AuthMS OAuth 2.0 Support
+### Autional OAuth 2.0 Support
 
-AuthMS's `oauth-service` fully supports:
+Autional's `oauth-service` fully supports:
 - Authorization Code Grant + PKCE
 - Client Credentials Grant
 - Refresh Token Rotation (each use of a refresh token simultaneously issues a new refresh token, invalidating the old one)
@@ -163,9 +163,9 @@ OIDC is based on OAuth 2.0's Authorization Code Grant, but adds the `openid` sco
 - **Session management**: RP-Initiated Logout, Session Management, Back-Channel Logout, and other specifications provide complete session lifecycle management
 - **OAuth 2.0 compatible**: Any service supporting OIDC naturally supports OAuth 2.0
 
-### AuthMS OIDC Support
+### Autional OIDC Support
 
-AuthMS's `oauth-service` as a complete OpenID Provider:
+Autional's `oauth-service` as a complete OpenID Provider:
 - Supports OIDC Discovery (`/.well-known/openid-configuration`)
 - Supports `id_token` RS256 signing and verification
 - Supports standard claims: `sub`, `name`, `email`, `email_verified`, `phone_number`, `preferred_username`, `picture`
@@ -231,11 +231,11 @@ CAS has a very simple design involving three core roles:
 | "Sign in with Google/WeChat/GitHub" | OIDC (via corresponding Provider) | Social login providers almost all support OIDC |
 | Education / research institution internal SSO | CAS or SAML | Choose based on the target organization's existing infrastructure |
 | Chinese government / state-owned enterprise projects | CAS (common) + SAML (international) | Consider the integration partner's technology stack history |
-| Both enterprise and mobile support needed | SAML + OIDC dual protocol | AuthMS supports both, one platform covers all scenarios |
+| Both enterprise and mobile support needed | SAML + OIDC dual protocol | Autional supports both, one platform covers all scenarios |
 
-### AuthMS Protocol Architecture
+### Autional Protocol Architecture
 
-AuthMS integrates all SSO protocols within `oauth-service`:
+Autional integrates all SSO protocols within `oauth-service`:
 
 ```
 oauth-service (Port 11006)
@@ -264,6 +264,6 @@ All protocols share the same user source (`identity-service`), the same MFA poli
 
 ---
 
-Protocols are means, not ends. Choose SAML not because XML is elegant, choose OIDC not because JWT is cool. Choose the protocol that best fits your users' tech stack, your compliance requirements, and your engineering capabilities — and if your users need multiple protocols, choose a platform that supports them all. AuthMS unifies all four protocols in `oauth-service`, so you don't need to maintain a separate identity system for each protocol.
+Protocols are means, not ends. Choose SAML not because XML is elegant, choose OIDC not because JWT is cool. Choose the protocol that best fits your users' tech stack, your compliance requirements, and your engineering capabilities — and if your users need multiple protocols, choose a platform that supports them all. Autional unifies all four protocols in `oauth-service`, so you don't need to maintain a separate identity system for each protocol.
 
-*AuthMS oauth-service provides complete OAuth 2.0, OIDC, SAML 2.0, and CAS protocol support for enterprise customers. [View developer documentation](/developer/docs/oauth-service) for integration guides.*
+*Autional oauth-service provides complete OAuth 2.0, OIDC, SAML 2.0, and CAS protocol support for enterprise customers. [View developer documentation](/developer/docs/oauth-service) for integration guides.*

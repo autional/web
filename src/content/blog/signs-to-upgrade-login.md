@@ -34,9 +34,9 @@ SSO isn't "an additional login method" — for companies using Okta/Azure AD, SS
 
 MFA isn't "an optional add-on" — for companies handling sensitive data, MFA is a baseline compliance requirement. China's MLPS Level 3 requires MFA, SOC 2 requires MFA, ISO 27001 recommends MFA.
 
-### How AuthMS Solves This
+### How Autional Solves This
 
-AuthMS provides complete SSO protocol support (OIDC, SAML) and can act as an IdP to integrate with enterprise directory services. MFA coverage includes TOTP, WebAuthn/FIDO2, and SMS OTP, with role-based enforcement. Enterprise security teams can self-configure MFA policies and SSO integrations in the admin console — you just flip a switch during your demo.
+Autional provides complete SSO protocol support (OIDC, SAML) and can act as an IdP to integrate with enterprise directory services. MFA coverage includes TOTP, WebAuthn/FIDO2, and SMS OTP, with role-based enforcement. Enterprise security teams can self-configure MFA policies and SSO integrations in the admin console — you just flip a switch during your demo.
 
 ## Signal 2: Your Login Endpoint Was Brute-Forced, and You Found Out From Your Users
 
@@ -52,7 +52,7 @@ A login endpoint without rate limiting is like a house without an alarm — atta
 
 Moreover, post-incident IP blacklisting isn't a long-term solution. Attackers can easily switch IPs, and the next attack will come from an entirely different IP pool. What you need is a complete login security system, not just "add an if statement."
 
-### How AuthMS Solves This
+### How Autional Solves This
 
 Gateway-level distributed rate limiting covers three dimensions: IP-level, user-level, and global. When attack thresholds are exceeded: rate limiting kicks in returning 429 (blocking the attack), while simultaneously pushing security alerts to you. The adaptive MFA engine automatically escalates authentication strength for affected accounts. You don't need to learn about attacks from your users — the system tells you first.
 
@@ -76,7 +76,7 @@ Audit logs aren't "icing on the cake" — they're an entry requirement for enter
 - GDPR's 72-hour data breach notification window is impossible to scope
 - When internal security incidents occur, you can't trace responsibility
 
-### How AuthMS Solves This
+### How Autional Solves This
 
 The audit-service records full-field audit logs for all authentication events and admin operations (who, what operation, when, what IP, what result). Logs use a hash chain to ensure immutability. Supports multi-dimensional search by time range, user, and operation type. Audit reports can be exported with one click for customer security teams.
 
@@ -99,9 +99,9 @@ You know that with the current state, passing the assessment is impossible. The 
 
 Compliance isn't something you can "patch right before the audit." Assessors are professionally trained — they can tell within 5 minutes whether your identity system was "designed with security in mind" or "locked on just for the audit." The latter always has more vulnerabilities.
 
-### How AuthMS Solves This
+### How Autional Solves This
 
-AuthMS was designed from the ground up with MLPS Level 3 and SOC 2 as its security baseline. Password policies, MFA policies, session management, access control, audit logs, data encryption — these aren't "features added later," they're fundamental architectural components. By using AuthMS as your identity layer, your application directly inherits MLPS Level 3 technical capabilities in identity authentication and access control. When assessors come, you show them AuthMS's built-in MLPS Level 3 and SOC 2 compliance mapping documentation plus production configuration screenshots — not hastily written policy documents.
+Autional was designed from the ground up with MLPS Level 3 and SOC 2 as its security baseline. Password policies, MFA policies, session management, access control, audit logs, data encryption — these aren't "features added later," they're fundamental architectural components. By using Autional as your identity layer, your application directly inherits MLPS Level 3 technical capabilities in identity authentication and access control. When assessors come, you show them Autional's built-in MLPS Level 3 and SOC 2 compliance mapping documentation plus production configuration screenshots — not hastily written policy documents.
 
 ## Signal 5: You're Writing Yet Another Login System for Your Third Application
 
@@ -126,9 +126,9 @@ This isn't a technical problem — it's an architectural problem. When every app
 
 When you start writing a login module for your third application, you should realize: what you need is a unified identity layer, not another self-built login.
 
-### How AuthMS Solves This
+### How Autional Solves This
 
-AuthMS is an independently deployed identity service, not a library embedded in some application. All applications connect via the standard OIDC protocol, sharing the same set of user identities, password policies, MFA policies, session management, and audit logs. New application onboarding only requires registering an OIDC client and configuring a callback URL. Your engineers can finally spend their time on business logic instead of identity authentication.
+Autional is an independently deployed identity service, not a library embedded in some application. All applications connect via the standard OIDC protocol, sharing the same set of user identities, password policies, MFA policies, session management, and audit logs. New application onboarding only requires registering an OIDC client and configuring a callback URL. Your engineers can finally spend their time on business logic instead of identity authentication.
 
 ## Upgrade Decision Matrix
 
@@ -150,9 +150,9 @@ Suitable when only signals 2 or 3 apply. Add rate limiting, strengthen password 
 
 Use open-source identity solutions like Keycloak, ORY, or SuperTokens. Suitable for teams with strong operations capabilities. Requires self-hosted infrastructure, self-configured high availability, and self-managed security vulnerability fixes. Maximum flexibility, highest operational cost.
 
-### Path C: Use AuthMS
+### Path C: Use Autional
 
-For teams that need enterprise-grade identity capabilities quickly without wanting to maintain identity infrastructure. AuthMS provides server-side identity microservice suites connected via standard protocols. Password policies, MFA, SSO, RBAC, audit logs, data encryption, compliance mapping — these capabilities are built-in, not third-party libraries that need integration.
+For teams that need enterprise-grade identity capabilities quickly without wanting to maintain identity infrastructure. Autional provides server-side identity microservice suites connected via standard protocols. Password policies, MFA, SSO, RBAC, audit logs, data encryption, compliance mapping — these capabilities are built-in, not third-party libraries that need integration.
 
 None of the three paths is absolutely good or bad — it depends on your team size, security needs, and R&D strategy. But one thing is certain: **when signals appear, waiting is not an option.** Identity system security debt doesn't decrease over time — it increases with user growth and advancing attack methods.
 

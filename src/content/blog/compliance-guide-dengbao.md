@@ -4,17 +4,17 @@ date: "2026-05-11"
 category: "Compliance"
 tags: ["Dengbao", "Compliance", "Security Certification"]
 readTime: "10 minutes"
-excerpt: "An in-depth interpretation of Dengbao 2.0's specific requirements for identity authentication systems, and how AuthMS helps you pass dengbao evaluation through built-in security capabilities."
+excerpt: "An in-depth interpretation of Dengbao 2.0's specific requirements for identity authentication systems, and how Autional helps you pass dengbao evaluation through built-in security capabilities."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Compliance Disclaimer**: The dengbao 2.0-related technical capabilities described in this article represent the design objectives of the AuthMS platform and do not constitute a legal statement of dengbao compliance certification. Dengbao evaluation must be conducted through a comprehensive on-site assessment by a qualified evaluation institution, and the ultimate compliance responsibility rests with the information system operator.
+> **Compliance Disclaimer**: The dengbao 2.0-related technical capabilities described in this article represent the design objectives of the Autional platform and do not constitute a legal statement of dengbao compliance certification. Dengbao evaluation must be conducted through a comprehensive on-site assessment by a qualified evaluation institution, and the ultimate compliance responsibility rests with the information system operator.
 
 *Information Security Technology — Baseline for Classified Protection of Cybersecurity* (Dengbao 2.0) is one of the core compliance standards in China's cybersecurity landscape. For SaaS platforms, enterprise internal systems, and public-facing online services, Dengbao 2.0 sets clear and strict requirements for identity authentication systems.
 
-This article interprets the identity-related requirements of Dengbao 2.0 article by article and analyzes how AuthMS meets these requirements.
+This article interprets the identity-related requirements of Dengbao 2.0 article by article and analyzes how Autional meets these requirements.
 
 ## Dengbao Classification Overview
 
@@ -32,9 +32,9 @@ Dengbao 2.0 divides security requirements into two categories: technical and man
 - When performing remote management, necessary measures must be taken to prevent authentication information from being eavesdropped during network transmission
 - Two or more combined authentication techniques (passwords, cryptographic technology, biometrics) must be used for user identity authentication
 
-### AuthMS Response
+### Autional Response
 
-**Unique Identification and Password Policies**: AuthMS's identity-service supports login via username, email, or phone number — all unique identifiers. Password policies are fully configurable:
+**Unique Identification and Password Policies**: Autional's identity-service supports login via username, email, or phone number — all unique identifiers. Password policies are fully configurable:
 
 - **Complexity requirements**: Supports configurable requirements for minimum length, uppercase/lowercase letters, digits, and special characters
 - **Password history**: Automatically checks history when users change passwords, preventing reuse of the last N passwords
@@ -42,9 +42,9 @@ Dengbao 2.0 divides security requirements into two categories: technical and man
 - **Login failure lockout**: Automatically locks accounts after consecutive login failures exceeding a threshold; both lockout duration and failure count are configurable
 - **Session timeout**: Session lifecycle management via session-service, supporting idle timeout and absolute timeout
 
-**Multi-Factor Authentication (MFA)**: AuthMS's mfa-service provides an out-of-the-box solution for Dengbao 2.0's requirement of "two or more combined authentication methods." It supports TOTP time-based one-time codes, SMS verification codes, email verification codes, and Passkey (WebAuthn) — four authentication methods. Administrators can precisely control which users and which scenarios require MFA through policy configuration.
+**Multi-Factor Authentication (MFA)**: Autional's mfa-service provides an out-of-the-box solution for Dengbao 2.0's requirement of "two or more combined authentication methods." It supports TOTP time-based one-time codes, SMS verification codes, email verification codes, and Passkey (WebAuthn) — four authentication methods. Administrators can precisely control which users and which scenarios require MFA through policy configuration.
 
-**Transmission Security**: AuthMS enforces HTTPS/TLS 1.3 across the entire chain. Communication from the gateway layer to microservices and inter-microservice internal communication all use mTLS encryption. Passwords undergo client-side PBKDF2 salted hashing before transmission, ensuring authentication information is not eavesdropped on the entire transmission path.
+**Transmission Security**: Autional enforces HTTPS/TLS 1.3 across the entire chain. Communication from the gateway layer to microservices and inter-microservice internal communication all use mTLS encryption. Passwords undergo client-side PBKDF2 salted hashing before transmission, ensuring authentication information is not eavesdropped on the entire transmission path.
 
 ## II. Access Control (Secure Computing Environment L3-2)
 
@@ -56,9 +56,9 @@ Dengbao 2.0 divides security requirements into two categories: technical and man
 - Management users must be granted the minimum necessary permissions, achieving separation of management user privileges
 - Authorized entities must configure access control policies, which define the rules for subject access to objects
 
-### AuthMS Response
+### Autional Response
 
-**Fine-Grained RBAC**: AuthMS's identity-service implements the full NIST RBAC standard — including Core RBAC, Hierarchical RBAC (role inheritance), and Static Separation of Duty (SoD).
+**Fine-Grained RBAC**: Autional's identity-service implements the full NIST RBAC standard — including Core RBAC, Hierarchical RBAC (role inheritance), and Static Separation of Duty (SoD).
 
 - **Role hierarchy**: Roles support parent-child hierarchy (ParentID); child roles automatically inherit parent role permissions. For example, `SecurityAdmin` inherits all permissions from `AuditViewer`
 - **Role assignment**: Many-to-many `UserRole` associations with attributes such as grant type (direct grant/approval grant) and expiration time
@@ -79,7 +79,7 @@ admin.AdminRequiredWith("super_admin", "admin")
 admin.AdminRequiredWith("super_admin")
 ```
 
-**Default Account Management**: AuthMS provides no hardcoded backdoor accounts. The initial administrator is created via a bootstrap API on first deployment, and all default configurations require immediate modification. Account lifecycle management APIs support batch deactivation/deletion of expired accounts.
+**Default Account Management**: Autional provides no hardcoded backdoor accounts. The initial administrator is created via a bootstrap API on first deployment, and all default configurations require immediate modification. Account lifecycle management APIs support batch deactivation/deletion of expired accounts.
 
 ## III. Security Audit (Secure Computing Environment L3-3)
 
@@ -90,15 +90,15 @@ admin.AdminRequiredWith("super_admin")
 - Audit records must be protected and regularly backed up to prevent unintended deletion, modification, or overwriting
 - Audit record retention must meet standards such as GB/T 20945 (Level 3 systems: no less than 6 months)
 
-### AuthMS Response
+### Autional Response
 
-**Full Audit Coverage**: AuthMS's audit-service captures audit events through three channels:
+**Full Audit Coverage**: Autional's audit-service captures audit events through three channels:
 
 1. **Automatic HTTP middleware audit**: All requests are automatically recorded — timestamp, operator ID, tenant ID, IP address, request path, HTTP method, response status code, and duration
 2. **Domain event publishing**: Business services publish domain events (user registration, role changes, permission modifications, etc.) via `micro-pkg/event.Publisher`; the audit-service subscribes and automatically records them
 3. **Explicit audit logging**: Critical operations can proactively call the audit API to record additional context
 
-**Hash Chain Tamper-Proofing**: This is AuthMS's most core differentiating audit capability. Each audit record contains:
+**Hash Chain Tamper-Proofing**: This is Autional's most core differentiating audit capability. Each audit record contains:
 
 ```
 prev_hash = SHA-256(previous record content)
@@ -118,7 +118,7 @@ Any modification to historical records will cause hash mismatches in all subsequ
 - Cryptographic techniques must be used to ensure confidentiality of important data during transmission
 - Cryptographic techniques must be used to ensure confidentiality of important data during storage
 
-### AuthMS Response
+### Autional Response
 
 **Transmission Encryption**:
 
@@ -137,7 +137,7 @@ Any modification to historical records will cause hash mismatches in all subsequ
 - **OAuth Tokens**: Refresh Tokens and Client Secrets stored as SHA-256 hashes; plaintext returned only once at creation
 - **API Keys**: `key_hash` field stores SHA-256 hash; the original key is returned only at creation. All sensitive fields are uniformly tagged with `json:"-"` to prevent serialization leaks
 
-**Sensitive Field Inventory**: AuthMS's database schema strictly audits all sensitive fields (password hashes, salts, OAuth tokens, MFA secrets, API key hashes, webhook secrets, provider credentials), ensuring no omissions.
+**Sensitive Field Inventory**: Autional's database schema strictly audits all sensitive fields (password hashes, salts, OAuth tokens, MFA secrets, API key hashes, webhook secrets, provider credentials), ensuring no omissions.
 
 ## V. Security Incident Response (Secure Zone Boundary L3)
 
@@ -147,7 +147,7 @@ Any modification to historical records will cause hash mismatches in all subsequ
 - A graded security incident response mechanism must be established
 - Security incidents must be classified and graded
 
-### AuthMS Response
+### Autional Response
 
 **Real-Time Monitoring**: The audit-service's anomaly detection module continuously analyzes the audit event stream, identifying abnormal login patterns (geo-anomaly, brute-force attacks, unusual-time access) and automatically triggering alerts.
 
@@ -157,16 +157,16 @@ Any modification to historical records will cause hash mismatches in all subsequ
 
 ## Dengbao Compliance Roadmap
 
-Teams using AuthMS can accelerate dengbao certification along the following path:
+Teams using Autional can accelerate dengbao certification along the following path:
 
-| Phase | Activity | AuthMS Built-In Capability | Estimated Time |
+| Phase | Activity | Autional Built-In Capability | Estimated Time |
 |-------|----------|----------------------------|----------------|
 | 1. Gap Assessment | Article-by-article review against Dengbao 2.0 requirements | Compliance checklist + security audit report | 1-2 days |
 | 2. Technical Remediation | Implement missing security controls | Password policies + MFA + RBAC + hash chain audit | 1-3 days |
 | 3. Operational Monitoring | Continuous operation and audit evidence collection | Automated audit logs + security dashboard | 1-3 months |
 | 4. Compliance Evaluation | Submit to evaluation institution | Audit log export + compliance report generation | Per evaluator schedule |
 
-AuthMS is preparing for Dengbao 2.0 Level 3 evaluation. Its built-in security capabilities cover the vast majority of identity-related requirements in Dengbao 2.0. If you are preparing for dengbao evaluation, AuthMS can shorten the identity compliance cycle from months to days.
+Autional is preparing for Dengbao 2.0 Level 3 evaluation. Its built-in security capabilities cover the vast majority of identity-related requirements in Dengbao 2.0. If you are preparing for dengbao evaluation, Autional can shorten the identity compliance cycle from months to days.
 
 ---
 

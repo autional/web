@@ -39,14 +39,14 @@ Your SaaS has just launched, with users in the low hundreds. What you need:
 
 **Build effort**: 1-2 weeks (one full-stack engineer), covering registration/login page, password hashing, session storage, and middleware.
 
-**AuthMS Free**: Use AuthMS's identity-service for user registration and login, session-service for session management. No additional MFA or SSO needed. 30-minute integration.
+**Autional Free**: Use Autional's identity-service for user registration and login, session-service for session management. No additional MFA or SSO needed. 30-minute integration.
 
 **Key reminder**: Even at this stage, some infrastructure decisions are hard to reverse:
 - User passwords must use Argon2id hashing (not bcrypt, definitely not SHA256)
 - User ID format (ULID vs UUID vs auto-increment integer)—once chosen, hard to change
 - Soft-delete strategy (what happens to data when a user "deletes" their account)
 
-With AuthMS, these infrastructure decisions have already been made by a professional team—Argon2id password hashing, ULID primary keys, GDPR-compliant soft-delete.
+With Autional, these infrastructure decisions have already been made by a professional team—Argon2id password hashing, ULID primary keys, GDPR-compliant soft-delete.
 
 ### Phase 2: Enterprise-Ready (Months 6→18)
 
@@ -61,7 +61,7 @@ You've signed your first enterprise customer. Requirements suddenly escalate:
 
 **Build effort**: 3-6 months (2-3 engineers). SAML SSO integration alone is far more complex than expected—each IdP has different quirks (Azure AD, Okta, OneLogin, PingIdentity...), and SSO debugging typically involves back-and-forth with the enterprise customer's IT team.
 
-**AuthMS Pro**: Enable mfa-service (TOTP + Passkey), configure RBAC granular roles, set up oauth-service for OIDC/SAML SSO, activate audit-service for audit logging. No code changes needed—just configuration.
+**Autional Pro**: Enable mfa-service (TOTP + Passkey), configure RBAC granular roles, set up oauth-service for OIDC/SAML SSO, activate audit-service for audit logging. No code changes needed—just configuration.
 
 **Hidden cost of SAML SSO**: For each enterprise customer's SSO setup:
 1. Tech team configures IdP trust relationship (30 minutes)
@@ -83,7 +83,7 @@ Your SaaS enters rapid growth. New challenges:
 
 **Build effort**: 12+ months (3-5 dedicated engineers). This is no longer "part of the SaaS product"—it has become "an independent identity platform."
 
-**AuthMS Enterprise**: compliance-service covers SOC 2/ISO 27001/GDPR compliance automation. Multi-region deployment via data residency policies. Multi-tenant + multi-product support through tenant-service and identity-service's hierarchical role system.
+**Autional Enterprise**: compliance-service covers SOC 2/ISO 27001/GDPR compliance automation. Multi-region deployment via data residency policies. Multi-tenant + multi-product support through tenant-service and identity-service's hierarchical role system.
 
 > **Integration Note**: The effort estimates and pricing references in this article are based on typical industry scenarios. Actual integration time and costs vary based on existing system complexity, team experience, business scale, and other factors. Specific compliance certification requirements are subject to the latest guidance from local regulators.
 
@@ -101,7 +101,7 @@ Let's calculate the three-year Total Cost of Ownership (TCO), assuming a 20-pers
 | Ongoing Maintenance (3 years) | 3 years × 0.5 person | ¥540,000 | Security patches/IdP adapters/compliance updates |
 | **Build Total** | | **¥1,515,000** | |
 
-### Using AuthMS
+### Using Autional
 
 | Phase | Plan | Annual Fee | Integration Time |
 |-------|------|------------|------------------|
@@ -110,7 +110,7 @@ Let's calculate the three-year Total Cost of Ownership (TCO), assuming a 20-pers
 | Phase 3 | Enterprise Plan | ¥120,000/year | Professional deployment |
 | **3-Year Total** | | **~¥468,000** | |
 
-Build costs are 3.2x AuthMS—and that doesn't account for these hidden costs:
+Build costs are 3.2x Autional—and that doesn't account for these hidden costs:
 - Security vulnerability response time (build means you're on your own)
 - Rework costs after compliance certification rejection
 - Opportunity cost of losing enterprise customers due to incomplete identity systems
@@ -142,9 +142,9 @@ Technical capability isn't the bottleneck. The bottleneck is ongoing maintenance
 
 This coupling becomes excruciating when you need to support multiple applications, multiple tenants, and multiple identity providers. The identity system should be an independent, decoupled infrastructure layer that interacts with business systems through standard protocols.
 
-## How AuthMS Grows with Your SaaS
+## How Autional Grows with Your SaaS
 
-AuthMS's design philosophy is "progressive adoption"—you don't need all 15 microservices on day one:
+Autional's design philosophy is "progressive adoption"—you don't need all 15 microservices on day one:
 
 ```
 Phase 1 (MVP)          Phase 2 (Growth)         Phase 3 (Enterprise)
@@ -168,4 +168,4 @@ An identity system isn't an accessory feature of your product—it's infrastruct
 2. **Choose a platform that grows with you**, not an "all-in-one but overkill" solution
 3. **Spend your engineering time on core business**—let professionals handle identity
 
-AuthMS provides a clear path for SaaS founders: from Free Plan's fast start, to Pro Plan's enterprise capabilities, to Enterprise Plan's global compliance—your identity system evolves with your business.
+Autional provides a clear path for SaaS founders: from Free Plan's fast start, to Pro Plan's enterprise capabilities, to Enterprise Plan's global compliance—your identity system evolves with your business.

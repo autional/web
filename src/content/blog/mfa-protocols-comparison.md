@@ -4,7 +4,7 @@ date: "2026-05-20"
 category: "Tech"
 tags: ["MFA", "TOTP", "FIDO2"]
 readTime: "10 min"
-excerpt: "MFA isn't just 'one more verification code.' Different MFA protocols vary enormously in security, user experience, and phishing resistance. This article compares TOTP, HOTP, SMS OTP, and FIDO2/WebAuthn — the four mainstream MFA protocols — across working principles, security strengths, and applicable scenarios, and shows how AuthMS mfa-service delivers an optimal authentication experience through risk-based adaptive selection."
+excerpt: "MFA isn't just 'one more verification code.' Different MFA protocols vary enormously in security, user experience, and phishing resistance. This article compares TOTP, HOTP, SMS OTP, and FIDO2/WebAuthn — the four mainstream MFA protocols — across working principles, security strengths, and applicable scenarios, and shows how Autional mfa-service delivers an optimal authentication experience through risk-based adaptive selection."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -156,7 +156,7 @@ Client and server clocks can never be perfectly synchronized. Servers typically 
 
 Servers must remember recently verified OTPs to prevent reuse within the same 30-second window.
 
-AuthMS mfa-service replay protection implementation:
+Autional mfa-service replay protection implementation:
 
 ```go
 func VerifyTOTP(userID, secret string, otp string) (bool, error) {
@@ -250,9 +250,9 @@ This is protocol-level phishing protection — not "advise users to check the UR
 | Security Score | 2/5 | 3/5 | 4/5 | 5/5 |
 | Recommended For | Transition or low-risk | Offline industrial | General MFA | High-security scenarios |
 
-## AuthMS Multi-Channel MFA Architecture
+## Autional Multi-Channel MFA Architecture
 
-AuthMS mfa-service manages all of the above MFA protocols in a unified way:
+Autional mfa-service manages all of the above MFA protocols in a unified way:
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -308,7 +308,7 @@ The system uses the user's configured primary method by default, but automatical
 
 ### Adaptive MFA Policy
 
-AuthMS's adaptive MFA engine dynamically selects authentication methods based on login risk score:
+Autional's adaptive MFA engine dynamically selects authentication methods based on login risk score:
 
 ```
 Risk Score 0-30 (Low Risk):
@@ -343,6 +343,6 @@ Administrators can configure risk thresholds and corresponding authentication po
 
 MFA is not an on/off switch — it's a spectrum of security levels. From the weakest SMS OTP to the strongest FIDO2, the gap spans a dimension: shared secrets vs public-key cryptography, no origin binding vs protocol-level anti-phishing.
 
-AuthMS mfa-service unifies all MFA protocols in one channel, so application developers don't need to integrate each protocol separately. More importantly, the adaptive MFA engine ensures users don't have to tolerate low-security authentication before they purchase hardware keys — the system automatically escalates authentication requirements based on risk.
+Autional mfa-service unifies all MFA protocols in one channel, so application developers don't need to integrate each protocol separately. More importantly, the adaptive MFA engine ensures users don't have to tolerate low-security authentication before they purchase hardware keys — the system automatically escalates authentication requirements based on risk.
 
 MFA is the first line of defense for account security. Don't settle for the weakest option.
