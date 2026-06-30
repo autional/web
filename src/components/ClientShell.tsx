@@ -3,7 +3,6 @@ import { Menu, X, Search, ChevronUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ThemeToggle } from '../components/ThemeToggle';
 import SearchModal from '../components/SearchModal';
-import CookieConsent from '../components/CookieConsent';
 
 const navLinks = [
   { href: '/features', labelKey: 'nav.features' },
@@ -72,7 +71,6 @@ export default function ClientShell() {
         </button>
       )}
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
-      <CookieConsent />
     </>
   );
 }
