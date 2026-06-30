@@ -1,10 +1,28 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
-import PageShell from '../components/PageShell.tsx';
-import ComparePage from '../app/compare/page.tsx';
+const comparisons = [
+  { name: 'vs Auth0', url: '#auth0', pros: ['Open source — no vendor lock-in', 'Transparent pricing, no surprise MAU bills', 'AI-native — designed for AI-generated apps', 'Self-host or cloud — you choose'], cons: ['Smaller ecosystem than Auth0', 'Fewer third-party integrations', 'Younger community'], verdict: 'Auth0 is the incumbent. Autional is the open alternative — same enterprise features, zero lock-in, built for the AI era.' },
+  { name: 'vs Clerk', url: '#clerk', pros: ['AGPL open source — self-host or cloud', 'Enterprise SSO included (not an add-on)', 'Multi-tenant architecture built for B2B SaaS', '24 microservices for true enterprise scale'], cons: ['Fewer pre-built UI components', 'No built-in billing (yet)'], verdict: 'Clerk has beautiful UI. Autional has enterprise depth — and it\'s open source.' },
+  { name: 'vs WorkOS', url: '#workos', pros: ['Complete user system, not just enterprise add-ons', 'AI-gen workflow first — Bolt/Lovable/Cursor', 'Open source — no per-connection pricing', 'Self-hostable for compliance'], cons: ['No FGA (yet)', 'Smaller sales/enterprise team'], verdict: 'WorkOS helps you sell to enterprise. Autional helps you build AI apps that have users. Different focus — broader coverage.' },
+  { name: 'vs Bolt.new Built-in Auth', url: '#bolt', pros: ['Goes where Bolt\'s auth stops — SSO, MFA, RBAC, audit', 'Works with any AI tool, not just Bolt', 'Scales from MVP to enterprise without migration', 'Enterprise features without enterprise pricing'], cons: ['Not as simple as Bolt\'s zero-config auth for MVPs', 'Requires SDK integration for basic auth'], verdict: 'Bolt.new gives you basic email/password. Autional gives you everything else — when your AI-generated app outgrows Bolt\'s built-in auth.' },
+  { name: 'vs Building In-House', url: '#build', pros: ['3-6 months of engineering time saved', 'Ongoing security maintenance eliminated', '544+ APIs built and tested', 'Enterprise compliance ready from day one'], cons: ['Monthly cost instead of internal engineering cost', 'Dependency on external platform'], verdict: 'Building auth is building a security product. Let Autional handle the identity layer while you focus on what makes your AI app unique.' },
+];
 ---
-<LandingLayout title="Compare — AuthMS" description="">
-  <PageShell client:load>
-    <ComparePage />
-  </PageShell>
+<LandingLayout title="Compare — Autional" description="See how Autional stacks up against Auth0, Clerk, WorkOS, and building auth in-house.">
+  <section class="mx-auto max-w-4xl px-4 py-20">
+    <div class="text-center mb-16">
+      <h1 class="text-4xl font-bold sm:text-5xl">How We Compare</h1>
+      <p class="mt-4 text-lg text-neutral-500 max-w-2xl mx-auto">Honest comparisons. No marketing fluff. See where Autional wins — and where we don't.</p>
+    </div>
+    {comparisons.map(c => (
+      <div id={c.url.replace('#','')} class="mb-16 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8">
+        <h2 class="text-2xl font-bold mb-4">{c.name}</h2>
+        <div class="grid gap-8 md:grid-cols-2 mb-6">
+          <div><h3 class="text-sm font-semibold text-green-600 mb-3">Autional Advantage</h3><ul class="space-y-2">{c.pros.map(p => <li class="flex items-start gap-2 text-sm"><span class="text-green-500 mt-0.5 shrink-0">✓</span>{p}</li>)}</ul></div>
+          <div><h3 class="text-sm font-semibold text-neutral-500 mb-3">Considerations</h3><ul class="space-y-2">{c.cons.map(p => <li class="flex items-start gap-2 text-sm text-neutral-500"><span class="text-neutral-400 mt-0.5 shrink-0">○</span>{p}</li>)}</ul></div>
+        </div>
+        <div class="rounded-lg bg-neutral-50 dark:bg-slate-900 p-4 text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed"><strong class="text-neutral-900 dark:text-white">Verdict:</strong> {c.verdict}</div>
+      </div>
+    ))}
+  </section>
 </LandingLayout>

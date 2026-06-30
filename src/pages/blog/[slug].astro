@@ -20,11 +20,11 @@ const jsonLd = JSON.stringify({
   headline: data.title,
   description: data.excerpt,
   datePublished: data.date,
-  author: { '@type': 'Organization', name: 'Aotional' },
+  author: { '@type': 'Organization', name: 'Autional' },
 }, null, 2);
 ---
 
-<Layout title={`${data.title} — Aotional Blog`} description={data.excerpt}>
+<Layout title={`${data.title} — Autional Blog`} description={data.excerpt}>
   <article class="mx-auto max-w-3xl px-4 py-12">
     <div class="flex flex-wrap items-center gap-3 text-sm text-neutral-500">
       <span class="rounded-full bg-primary-50 dark:bg-primary-900/30 px-3 py-1 text-xs font-medium text-primary-700">{data.category}</span>

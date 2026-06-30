@@ -1,24 +1,85 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
 ---
-<Layout title="AuthMS — Enterprise Identity & Access Management" description="Enterprise IAM platform. SSO, MFA, RBAC, Multi-Tenant, GDPR Compliance. Open-core, integrate in 10 minutes.">
-  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 lg:py-36 text-center">
-    <h1 class="text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl leading-tight">Identity &amp;<br/> <span class="text-primary-600">Access Management</span></h1>
-    <p class="mx-auto mt-8 max-w-2xl text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed">AuthMS provides enterprise-grade IAM infrastructure — SSO, MFA, OAuth 2.0 / OIDC, RBAC, multi-tenant isolation, GDPR compliance tools. Open-core, integrate in 10 minutes.</p>
+<Layout title="Autional — Identity for AI-Generated Applications" description="Your AI app needs users. We've got that. Authentication, accounts, multi-tenancy, and access control — built for AI-generated applications.">
+  <!-- Hero -->
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28 text-center">
+    <h1 class="text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl leading-tight">Your AI App Needs Users.<br/> <span class="text-primary-600">We've Got That.</span></h1>
+    <p class="mx-auto mt-6 max-w-2xl text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed">The identity layer for AI-generated applications. AI generates your app logic. Autional gives it a complete user system — authentication, accounts, multi-tenancy, and access control. So you can build with AI and ship with confidence.</p>
     <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-      <a href="/features" class="rounded-lg bg-primary-600 px-8 py-3 text-sm font-semibold text-white hover:bg-primary-700 shadow-lg shadow-primary-600/25">Explore Features</a>
-      <a href="/docs" class="rounded-lg border border-neutral-300 dark:border-neutral-700 px-8 py-3 text-sm font-semibold hover:bg-neutral-50 dark:hover:bg-slate-900">Read Docs</a>
-      <a href="/pricing" class="text-sm text-neutral-500 hover:text-primary-600">View Pricing &rarr;</a>
+      <a href="/pricing" class="rounded-lg bg-primary-600 px-8 py-3 text-sm font-semibold text-white hover:bg-primary-700 shadow-lg shadow-primary-600/25">Start Free</a>
+      <a href="/docs" class="rounded-lg border border-neutral-300 dark:border-neutral-700 px-8 py-3 text-sm font-semibold hover:bg-neutral-50 dark:hover:bg-slate-900">View Docs</a>
+      <a href="https://github.com/autional/authms" class="rounded-lg border border-neutral-300 dark:border-neutral-700 px-8 py-3 text-sm font-semibold hover:bg-neutral-50 dark:hover:bg-slate-900">GitHub</a>
     </div>
   </section>
+
+  <!-- Stats -->
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 border-t border-neutral-200 dark:border-neutral-800">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <div><div class="text-3xl font-bold text-primary-600">24</div><div class="text-sm text-neutral-500 mt-1">Microservices</div></div>
+      <div><div class="text-3xl font-bold text-primary-600">544+</div><div class="text-sm text-neutral-500 mt-1">API Endpoints</div></div>
+      <div><div class="text-3xl font-bold text-primary-600">AGPL</div><div class="text-sm text-neutral-500 mt-1">Open Source</div></div>
+      <div><div class="text-3xl font-bold text-primary-600">&lt;50ms</div><div class="text-sm text-neutral-500 mt-1">Avg. Response</div></div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
   <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-neutral-200 dark:border-neutral-800">
-    <div class="text-center mb-16"><h2 class="text-3xl font-bold sm:text-4xl">Why AuthMS</h2></div>
-    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-      {[['SSO','SAML 2.0 / OAuth 2.0 / OIDC / CAS'],['MFA','TOTP / Passkey / WebAuthn / SMS / Email'],['RBAC','NIST RBAC, role hierarchy, SoD'],['Multi-Tenant','Per-tenant data isolation, compliance-ready'],['Audit & Compliance','GDPR / HIPAA / PCI-DSS, full audit trail'],['Developer API','RESTful + gRPC, Swagger docs, SDK support']].map(([title,desc]) => (
+    <div class="text-center mb-16"><h2 class="text-3xl font-bold sm:text-4xl">How It Works</h2></div>
+    <div class="grid gap-8 md:grid-cols-3 text-center">
+      <div class="p-8"><div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary-600 text-lg font-bold">1</div><h3 class="mt-4 text-lg font-semibold">Connect</h3><p class="mt-2 text-sm text-neutral-500">npm install @autional/sdk-js — or use our MCP server to auto-integrate with Bolt, Lovable, Cursor, or Claude Code.</p></div>
+      <div class="p-8"><div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary-600 text-lg font-bold">2</div><h3 class="mt-4 text-lg font-semibold">Configure</h3><p class="mt-2 text-sm text-neutral-500">Define your auth flows: email/password, social login, or passwordless. Enable MFA, SSO, or multi-tenancy with a click.</p></div>
+      <div class="p-8"><div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary-600 text-lg font-bold">3</div><h3 class="mt-4 text-lg font-semibold">Ship</h3><p class="mt-2 text-sm text-neutral-500">Your AI-generated app now has a production-ready user system. From MVP to enterprise — no migration needed.</p></div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-neutral-200 dark:border-neutral-800">
+    <div class="text-center mb-16"><h2 class="text-3xl font-bold sm:text-4xl">Everything You Need</h2><p class="mt-4 text-neutral-500 max-w-xl mx-auto">From sign-up to enterprise SSO, from single-user to multi-tenant — a complete identity platform for your AI-born app.</p></div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {[['🔐','Authentication','Email/password, social login, magic link, passkey — every way to sign in.'],
+        ['🛡️','MFA & Passkey','TOTP, SMS, email OTP, WebAuthn/FIDO2. Adaptive MFA for risk-based authentication.'],
+        ['🏢','Enterprise SSO','SAML 2.0, OIDC, OAuth 2.0, LDAP/AD. One click to enable for your customers.'],
+        ['👥','Multi-Tenancy','Per-tenant data isolation, custom domains, white-label. Built for B2B SaaS from day one.'],
+        ['📊','Audit & Compliance','Hash-chain audit logs, GDPR DSAR automation, SOX/ISO27001 mapping.'],
+        ['⚡','Developer API','544+ REST endpoints, gRPC, SDKs, webhooks. Generated TypeScript types from OpenAPI specs.'],
+      ].map(([icon,title,desc]) => (
         <div class="rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 hover:shadow-md transition-shadow">
-          <h3 class="font-semibold text-lg mb-2">{title}</h3><p class="text-sm text-neutral-500">{desc}</p>
+          <div class="text-3xl mb-4">{icon}</div>
+          <h3 class="font-semibold text-lg mb-2">{title}</h3>
+          <p class="text-sm text-neutral-500 leading-relaxed">{desc}</p>
         </div>
       ))}
+    </div>
+  </section>
+
+  <!-- AI Tools Integration -->
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-neutral-200 dark:border-neutral-800">
+    <div class="text-center mb-16"><h2 class="text-3xl font-bold sm:text-4xl">Works With Your AI Stack</h2><p class="mt-4 text-neutral-500 max-w-xl mx-auto">Plug into any AI coding tool. Autional gives your generated app a user system — no context switching, no boilerplate.</p></div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {[['⚡','Bolt.new','Add user auth to your Bolt-generated SaaS in minutes.','https://docs.autional.com/bolt'],
+        ['🎨','Lovable.dev','One-click user system for your Lovable prototypes.','https://docs.autional.com/lovable'],
+        ['🤖','Cursor / Claude','MCP server auto-integrates Autional as AI generates code.','https://docs.autional.com/mcp'],
+        ['🔄','Replit','Deploy an app with built-in auth from a Replit template.','https://docs.autional.com/replit'],
+      ].map(([icon,name,desc,url]) => (
+        <a href={url} class="rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 hover:shadow-md transition-shadow text-left">
+          <div class="text-2xl mb-3">{icon}</div>
+          <h3 class="font-semibold mb-1">{name}</h3>
+          <p class="text-sm text-neutral-500">{desc}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
+    <div class="rounded-3xl bg-primary-600 px-8 py-16 text-center text-white">
+      <h2 class="text-3xl font-bold sm:text-4xl">AI Generates Apps. We Generate Users.</h2>
+      <p class="mt-4 text-primary-100 max-w-xl mx-auto">Start free — no credit card. Upgrade when your AI-generated app needs enterprise features.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="/pricing" class="rounded-lg bg-white px-8 py-3 text-sm font-semibold text-primary-600 hover:bg-primary-50">Start Free</a>
+        <a href="/docs" class="rounded-lg border border-primary-400 px-8 py-3 text-sm font-semibold hover:bg-primary-500">Read Docs</a>
+      </div>
     </div>
   </section>
 </Layout>

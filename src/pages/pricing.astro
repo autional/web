@@ -1,10 +1,47 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
-import PageShell from '../components/PageShell.tsx';
-import PricingPage from '../app/pricing/page.tsx';
+const plans = [
+  { name: 'Free', price: '$0', period: '/mo', desc: 'For MVPs and prototypes', features: ['Up to 1,000 MAU', 'Email/password + social login', 'TOTP MFA', 'SAML/OIDC SSO', 'Multi-tenancy', '7-day audit retention', '1,000 API calls/day', 'Discord community'], cta: 'Start Free', highlight: false },
+  { name: 'Pro', price: '$299', period: '/mo', desc: 'For growing AI SaaS', features: ['Up to 10,000 MAU', 'Everything in Free', 'Passkey / WebAuthn', 'SMS MFA', 'Custom domains', '90-day audit retention', 'Unlimited API calls', 'Email support (4h)', '99.9% SLA'], cta: 'Start Trial', highlight: true },
+  { name: 'Enterprise', price: 'Custom', period: '', desc: 'For mission-critical deployments', features: ['Unlimited MAU', 'Everything in Pro', 'Adaptive MFA', 'LDAP/AD integration', 'SSO domain verification', 'Unlimited audit retention + archive', 'Private deployment', '24/7 dedicated support', '99.99% SLA'], cta: 'Contact Sales', highlight: false },
+];
+const faqs = [
+  { q: 'Can I self-host Autional for free?', a: 'Yes. Autional\'s core is AGPL open source. You can self-host the entire 24-service stack using Docker — no license fee, no MAU limits, no feature restrictions. Cloud is optional, for when you don\'t want to manage infrastructure.' },
+  { q: 'What counts as a MAU?', a: 'A Monthly Active User is a unique user who authenticates within a calendar month. If a user signs in once during the month, they count as 1 MAU. Idle users do not count.' },
+  { q: 'Can I upgrade from Free to Pro without migrating?', a: 'Yes. Upgrading unlocks higher limits and additional features instantly. No data migration, no code changes, no downtime.' },
+  { q: 'Do you offer discounts for open-source projects?', a: 'Yes. We offer special pricing for open-source projects and non-profit organizations. Contact us for details.' },
+  { q: 'What payment methods do you accept?', a: 'We accept all major credit cards via Stripe. For Enterprise plans, we also support wire transfers and annual invoicing.' },
+];
 ---
-<LandingLayout title="Pricing — AuthMS" description="">
-  <PageShell client:load>
-    <PricingPage />
-  </PageShell>
+<LandingLayout title="Pricing — Autional" description="Simple, transparent pricing for AI-generated applications. Start free, upgrade when you need enterprise features.">
+  <section class="mx-auto max-w-7xl px-4 py-20">
+    <div class="text-center mb-16">
+      <h1 class="text-4xl font-bold sm:text-5xl">Simple, Transparent Pricing</h1>
+      <p class="mt-4 text-lg text-neutral-500 max-w-xl mx-auto">Start free. Upgrade when your AI-generated app needs more. No surprise bills, no vendor lock-in.</p>
+    </div>
+    <div class="grid gap-8 lg:grid-cols-3 max-w-5xl mx-auto">
+      {plans.map(p => (
+        <div class={`rounded-2xl border p-8 flex flex-col ${p.highlight ? 'border-primary-500 ring-2 ring-primary-500 shadow-lg' : 'border-neutral-200 dark:border-neutral-800'}`}>
+          {p.highlight && <span class="inline-block rounded-full bg-primary-50 text-primary-700 px-3 py-1 text-xs font-medium w-fit mb-4">Most Popular</span>}
+          <h3 class="text-xl font-bold">{p.name}</h3>
+          <div class="mt-2"><span class="text-4xl font-extrabold">{p.price}</span>{p.period && <span class="text-neutral-500 text-sm">{p.period}</span>}</div>
+          <p class="mt-1 text-sm text-neutral-500">{p.desc}</p>
+          <ul class="mt-6 space-y-3 text-sm text-neutral-500 flex-1">
+            {p.features.map(f => <li class="flex items-center gap-2"><span class="text-primary-500 shrink-0">✓</span>{f}</li>)}
+          </ul>
+          <a href="/contact" class={`mt-8 block text-center rounded-lg px-6 py-3 text-sm font-semibold transition-colors ${p.highlight ? 'bg-primary-600 text-white hover:bg-primary-700' : 'border border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-slate-900'}`}>{p.cta}</a>
+        </div>
+      ))}
+    </div>
+    <!-- FAQ -->
+    <div class="max-w-3xl mx-auto mt-24">
+      <h2 class="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+      <div class="space-y-4">{faqs.map(f => (
+        <details class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 group">
+          <summary class="font-medium cursor-pointer list-none flex justify-between items-center">{f.q}<span class="text-neutral-400 group-open:rotate-45 transition-transform text-lg">+</span></summary>
+          <p class="mt-3 text-sm text-neutral-500 leading-relaxed">{f.a}</p>
+        </details>
+      ))}</div>
+    </div>
+  </section>
 </LandingLayout>

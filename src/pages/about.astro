@@ -1,10 +1,53 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
-import PageShell from '../components/PageShell.tsx';
-import AboutPage from '../app/about/page.tsx';
+const milestones = [
+  { date: '2024 Q1', title: 'Project Launch', desc: 'Core authentication engine development begins. AuthMS is born from the need for an open-source identity platform built in Go.' },
+  { date: '2024 Q4', title: 'Alpha Release', desc: 'First public release with SSO, MFA, and RBAC. 14 microservices covering the core identity lifecycle.' },
+  { date: '2025 Q2', title: 'Open Source Launch', desc: 'Core modules open-sourced under AGPL. Community adoption begins. GitHub stars grow organically.' },
+  { date: '2026 Q1', title: 'Autional Launch', desc: 'Rebranded as Autional — the identity layer for AI-generated applications. 24 services, 544+ APIs, full enterprise compliance.' },
+];
+const values = [
+  { icon: '🔓', title: 'Open First', desc: 'Source code, architecture, and our roadmap are open. No black boxes, no hidden pricing, no vendor lock-in.' },
+  { icon: '⚡', title: 'AI-Native', desc: 'Built for the AI era. From Bolt to Cursor, from MVP to enterprise — identity that keeps up with AI-speed development.' },
+  { icon: '🤝', title: 'Developer Experience', desc: '10-minute integration. Auto-generated SDKs. Type-safe APIs. Identity infrastructure that feels like a product, not a platform.' },
+  { icon: '🔒', title: 'Security by Default', desc: 'Enterprise-grade security without the enterprise complexity. Hash-chain audit, adaptive MFA, multi-tenant isolation — built in, not bolted on.' },
+];
+const roadmap = [
+  { period: '2026 Q3', items: ['Autional MCP Server — auto-integrate with AI coding tools', 'Bolt.new and Lovable.dev templates', 'React SDK v1.0', 'Admin Console redesign'] },
+  { period: '2026 Q4', items: ['Autional Cloud public beta', 'Vue and Next.js SDKs', 'WebAuthn passkey pass-through', 'SOC 2 Type II audit'] },
+  { period: '2027 H1', items: ['Go and Python SDKs', 'Multi-region cloud deployment', 'AI Agent authentication (NHI)', 'Enterprise audit archive'] },
+];
 ---
-<LandingLayout title="About — AuthMS" description="">
-  <PageShell client:load>
-    <AboutPage />
-  </PageShell>
+<LandingLayout title="About — Autional" description="Autional is the identity layer for AI-generated applications. Our story, mission, and roadmap.">
+  <section class="mx-auto max-w-4xl px-4 py-20">
+    <!-- Hero -->
+    <div class="text-center mb-20">
+      <h1 class="text-4xl font-bold sm:text-5xl">About Autional</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500 leading-relaxed">Autional was born from a simple belief: that every AI-generated application deserves a production-ready user system — without building it from scratch, without vendor lock-in, and without enterprise complexity.</p>
+    </div>
+    <!-- Mission -->
+    <div class="rounded-2xl bg-primary-50 dark:bg-primary-900/10 border border-primary-100 dark:border-primary-900/20 p-10 text-center mb-20">
+      <h2 class="text-2xl font-bold">Our Mission</h2>
+      <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto leading-relaxed">Make identity infrastructure as accessible as AI-generated code. Every developer, regardless of team size, should be able to give their app enterprise-grade authentication, authorization, and compliance in minutes — not sprints.</p>
+    </div>
+    <!-- Values -->
+    <div class="mb-20"><h2 class="text-2xl font-bold text-center mb-12">Our Values</h2>
+      <div class="grid gap-6 sm:grid-cols-2">{values.map(v => (
+        <div class="rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8"><div class="text-3xl mb-4">{v.icon}</div><h3 class="font-semibold text-lg">{v.title}</h3><p class="mt-2 text-sm text-neutral-500 leading-relaxed">{v.desc}</p></div>
+      ))}</div>
+    </div>
+    <!-- Milestones -->
+    <div class="mb-20"><h2 class="text-2xl font-bold text-center mb-12">Our Journey</h2>
+      <div class="space-y-8">{milestones.map((m,i) => (
+        <div class="flex gap-6"><div class="flex flex-col items-center"><div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-white text-sm font-bold">{i+1}</div>{i < milestones.length-1 && <div class="w-px flex-1 bg-neutral-200 dark:bg-neutral-700 mt-2"></div>}</div>
+        <div class="pb-8"><div class="text-sm font-semibold text-primary-600">{m.date}</div><h3 class="text-lg font-bold">{m.title}</h3><p class="mt-1 text-sm text-neutral-500">{m.desc}</p></div></div>
+      ))}</div>
+    </div>
+    <!-- Roadmap -->
+    <div><h2 class="text-2xl font-bold text-center mb-12">Roadmap</h2>
+      <div class="grid gap-6 md:grid-cols-3">{roadmap.map(r => (
+        <div class="rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6"><div class="text-sm font-semibold text-primary-600 mb-3">{r.period}</div><ul class="space-y-2">{r.items.map(i => <li class="flex items-start gap-2 text-sm text-neutral-600 dark:text-neutral-300"><span class="text-primary-500 mt-0.5 shrink-0">→</span>{i}</li>)}</ul></div>
+      ))}</div>
+    </div>
+  </section>
 </LandingLayout>
