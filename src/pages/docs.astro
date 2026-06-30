@@ -1,14 +1,55 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
+const steps = [
+  { icon: '1', title: 'Run the Platform', code: `git clone https://github.com/autional/authms\ncd authms\ndocker compose -f docker-compose.infra.yml -f docker-compose.monolith.yml up -d\n\n# Wait 2-3 minutes for all 24 services to start`, lang: 'bash' },
+  { icon: '2', title: 'Install the SDK', code: `npm install @autional/react @autional/core`, lang: 'bash' },
+  { icon: '3', title: 'Add Auth to Your App', code: `import { AuthProvider } from '@autional/react';\n\nfunction App() {\n  return (\n    <AuthProvider>\n      <YourApp />\n    </AuthProvider>\n  );\n}`, lang: 'tsx' },
+  { icon: '4', title: 'Or Self-Host with Docker', code: `# Quick start with Docker\ncurl -sL https://docs.autional.com/quickstart/docker-compose.yml > docker-compose.yml\ndocker compose up -d\n\n# Visit http://localhost:11001 for the admin console\n# Default: admin@admin.com / admin123`, lang: 'bash' },
+];
+const apis = [
+  { svc: 'Identity', port: 11001, desc: 'Auth, registration, password management, SSO, RBAC', path: '/api/v1/auth/login' },
+  { svc: 'MFA', port: 11005, desc: 'TOTP, WebAuthn/FIDO2, SMS, email OTP, adaptive MFA', path: '/api/v1/mfa/totp/setup' },
+  { svc: 'OAuth', port: 11006, desc: 'OAuth 2.1, OIDC, DPoP, token exchange, device code', path: '/oauth/token' },
+  { svc: 'Tenant', port: 11003, desc: 'Multi-tenant CRUD, departments, branding, invitations', path: '/api/v1/tenants' },
+  { svc: 'RBAC', port: 11025, desc: 'Roles, permissions, SoD, approval workflow', path: '/api/v1/admin/roles' },
+  { svc: 'Audit', port: 11013, desc: 'Merklke hash chain audit, anomaly detection, SIEM', path: '/api/v1/internal/audit-logs' },
+  { svc: 'Session', port: 11004, desc: 'Session CRUD, token blacklist, device trust, analytics', path: '/api/v1/sessions' },
+  { svc: 'Profile', port: 11002, desc: 'User profiles, privacy, tags, consent, data export', path: '/api/v1/profiles' },
+];
+const faqs = [
+  { q: 'What ports are used?', a: 'Services run on ports 11001–11025 (HTTP) and 12001–12025 (gRPC). The gateway is on port 11080, PostgreSQL on 15432, Redis on 16379. See docs for full port map.' },
+  { q: 'What are the default credentials?', a: 'Default admin: admin@admin.com / admin123. For production, change passwords and configure JWT_SECRET, PASSWORD_PEPPER, and other secrets.' },
+  { q: 'How do I enable HTTPS?', a: 'See docker/nginx/certs/ for 100-year self-signed certificates. For production, use Let\'s Encrypt or your CA. SSL termination is handled by the nginx gateway.' },
+];
 ---
-<Layout title="Documentation — Autional" description="Autional documentation and API references.">
-  <section class="mx-auto max-w-4xl px-4 py-20 text-center">
-    <h1 class="text-4xl font-bold sm:text-5xl">Documentation</h1>
-    <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">Comprehensive documentation for Autional's 24 microservices, 1,400+ APIs, SDKs, and deployment guides.</p>
-    <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 text-left">
-      <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-6"><h3 class="font-semibold">Quick Start</h3><p class="mt-2 text-sm text-neutral-500">Set up Autional locally with Docker compose. 10 minutes to a running identity system.</p><a href="https://github.com/autional/authms" class="mt-3 inline-block text-sm text-primary-600 hover:underline">GitHub →</a></div>
-      <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-6"><h3 class="font-semibold">API Reference</h3><p class="mt-2 text-sm text-neutral-500">Interactive Swagger docs for all 24 services. Auto-generated TypeScript types.</p><a href="https://docs.autional.com" class="mt-3 inline-block text-sm text-primary-600 hover:underline">docs.autional.com →</a></div>
-      <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-6"><h3 class="font-semibold">SDK Documentation</h3><p class="mt-2 text-sm text-neutral-500">TypeScript SDK for React, Vue, Next.js, Node.js, and more. Auto-generated API packages.</p><a href="https://github.com/autional/authms/tree/main/sdk" class="mt-3 inline-block text-sm text-primary-600 hover:underline">SDK Reference →</a></div>
+<Layout title="Documentation — Autional" description="Quick start guide and API reference for the Autional identity platform.">
+  <section class="mx-auto max-w-5xl px-4 py-20">
+    <div class="text-center mb-16">
+      <h1 class="text-4xl font-bold sm:text-5xl">Get Started in 5 Minutes</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">Run 24 microservices, add auth to your app, or deploy to production. All open source under AGPL.</p>
+    </div>
+
+    <!-- Steps -->
+    <div class="space-y-8 mb-20">{steps.map(s => (
+      <div class="grid gap-6 lg:grid-cols-2 items-start rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6">
+        <div><div class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary-600 text-white text-sm font-bold">{s.icon}</div><h3 class="mt-3 text-xl font-bold">{s.title}</h3></div>
+        <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-4 overflow-x-auto"><pre class="text-sm text-green-400 font-mono leading-relaxed" set:html={s.code}></pre></div>
+      </div>
+    ))}</div>
+
+    <!-- API Reference -->
+    <h2 class="text-2xl font-bold mb-8">API Reference</h2>
+    <p class="text-neutral-500 mb-6">All 24 microservices have interactive Swagger/OpenAPI documentation. Key services and their base paths:</p>
+    <div class="grid gap-4 sm:grid-cols-2">{apis.map(a => (
+      <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4"><div class="flex items-center gap-2"><span class="rounded bg-primary-50 text-primary-700 px-2 py-0.5 text-xs font-mono font-medium">{a.svc}</span><span class="text-xs text-neutral-500">:{a.port}</span></div><p class="mt-2 text-sm text-neutral-600 dark:text-neutral-300">{a.desc}</p><code class="mt-2 block text-xs text-neutral-400 font-mono">{a.path}</code></div>
+    ))}</div>
+    <div class="mt-6 text-center"><p class="text-sm text-neutral-500">Full OpenAPI spec: <a href="https://github.com/autional/authms/tree/main/docker/specs" class="text-primary-600 hover:underline">github.com/autional/authms → docker/specs/</a></p></div>
+
+    <!-- FAQ -->
+    <div class="mt-20"><h2 class="text-2xl font-bold text-center mb-8">Common Questions</h2>
+      <div class="space-y-4 max-w-3xl mx-auto">{faqs.map(f => (
+        <details class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 group"><summary class="font-medium cursor-pointer list-none flex justify-between items-center">{f.q}<span class="text-neutral-400 group-open:rotate-45 transition-transform text-lg">+</span></summary><p class="mt-3 text-sm text-neutral-500 leading-relaxed">{f.a}</p></details>
+      ))}</div>
     </div>
   </section>
 </Layout>
