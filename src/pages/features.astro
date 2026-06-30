@@ -1,10 +1,36 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
-import PageShell from '../components/PageShell.tsx';
-import FeaturesPage from '../app/features/page.tsx';
+const cats = [
+  { icon: '🔐', title: 'Authentication for AI-Generated Apps', items: ['Email/Password sign-up & login', 'Social login (Google, GitHub, WeChat)', 'Magic link / passwordless', 'Multi-step registration flows', 'Customizable UI components'], desc: 'Give your AI-generated app a complete user registration and login system. Works with any frontend — React, Vue, or vanilla HTML.' },
+  { icon: '🛡️', title: 'MFA & Passkey', items: ['TOTP time-based codes', 'SMS and email OTP', 'Passkey / WebAuthn / FIDO2', 'Adaptive MFA (risk-based)', 'Recovery codes'], desc: 'From basic TOTP to phishing-resistant passkeys. Your AI-generated app gets enterprise-grade security without writing security code.' },
+  { icon: '🏢', title: 'SSO & Federation', items: ['SAML 2.0 identity provider', 'OpenID Connect (OIDC)', 'OAuth 2.0 authorization', 'LDAP / Active Directory sync', 'Custom IdP integration'], desc: 'Enterprise SSO with a single click. Configure SAML or OIDC once — every customer IdP just works.' },
+  { icon: '👥', title: 'Multi-Tenancy Built for AI SaaS', items: ['Per-tenant data isolation', 'Custom domains & white-label', 'Tenant-level branding', 'Organization management', 'Delegated administration'], desc: 'B2B multi-tenancy from day one. Each tenant gets isolated data, custom branding, and independent configuration.' },
+  { icon: '📊', title: 'Audit & Compliance', items: ['Immutable hash-chain audit logs', 'GDPR DSAR automation', 'Regulatory compliance mapping', 'Audit report export', 'Data retention policies'], desc: 'Built-in compliance for AI-shipped products. Meet GDPR, SOX, and SOC 2 requirements without a compliance team.' },
+  { icon: '🔑', title: 'Authorization (RBAC & ABAC)', items: ['Role-based access control (RBAC)', 'Role hierarchy & inheritance', 'Attribute-based policies (ABAC)', 'Separation of duties (SoD)', 'Privileged Identity Management (PIM)'], desc: 'Fine-grained access control that scales from a 3-person startup to a 1000-employee enterprise.' },
+  { icon: '⚡', title: 'Developer Platform', items: ['544+ RESTful API endpoints', 'gRPC service mesh', 'TypeScript SDK (auto-generated)', 'Webhook event delivery', 'Swagger/OpenAPI docs'], desc: 'API-first design with auto-generated TypeScript types. Every endpoint has interactive Swagger documentation.' },
+  { icon: '🏗️', title: 'Architecture: 24 Microservices', items: ['24 independently deployable services', 'PostgreSQL + MongoDB + MinIO', 'Prometheus/Grafana monitoring', 'Docker + Kubernetes ready', 'API gateway with rate limiting'], desc: 'Cloud-native from the ground up. Each service scales independently, built in Go for production performance.' },
+];
 ---
-<LandingLayout title="Features — AuthMS" description="">
-  <PageShell client:load>
-    <FeaturesPage />
-  </PageShell>
+<LandingLayout title="Features — Autional" description="Complete identity features for AI-generated applications: authentication, MFA, SSO, multi-tenancy, audit, and developer tools.">
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
+    <div class="text-center mb-16">
+      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Everything Your AI-Generated App Needs</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">From sign-up to enterprise SSO, from single-user to multi-tenant — Autional is the identity layer for your AI-born application.</p>
+    </div>
+    <div class="space-y-16">
+      {cats.map((c,i) => (
+        <div class="grid gap-8 lg:grid-cols-2 items-center">
+          <div class={i % 2 === 0 ? 'order-first' : 'order-first lg:order-last'}>
+            <div class="text-4xl mb-4">{c.icon}</div>
+            <h2 class="text-2xl font-bold">{c.title}</h2>
+            <p class="mt-3 text-neutral-500 leading-relaxed">{c.desc}</p>
+            <ul class="mt-4 space-y-2">{c.items.map(item => <li class="flex items-center gap-2 text-sm"><span class="text-primary-500">✓</span>{item}</li>)}</ul>
+          </div>
+          <div class="rounded-2xl bg-neutral-50 dark:bg-slate-900 p-8 min-h-[200px] flex items-center justify-center border border-neutral-200 dark:border-neutral-800">
+            <span class="text-sm text-neutral-400">[ Architecture diagram placeholder ]</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
 </LandingLayout>
