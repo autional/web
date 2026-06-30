@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import '../i18n';
 import { useTranslation } from 'react-i18next';
 import { X, Cookie, Settings } from 'lucide-react';
 
@@ -58,9 +59,9 @@ export default function CookieConsent() {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-900 sm:p-6">
+    <div className="fixed bottom-4 left-4 right-4 z-50 sm:left-auto sm:max-w-xl">
       {!showSettings ? (
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
+        <div className="brand-card p-4 sm:p-5">
           <div className="flex items-start gap-3">
             <Cookie className="mt-0.5 h-5 w-5 shrink-0 text-primary-600" />
             <div className="text-sm text-neutral-700 dark:text-neutral-300">
@@ -70,7 +71,7 @@ export default function CookieConsent() {
               </p>
             </div>
           </div>
-          <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
+          <div className="mt-4 flex w-full flex-wrap items-center gap-2">
             <button
               onClick={() => setShowSettings(true)}
               className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
@@ -93,7 +94,7 @@ export default function CookieConsent() {
           </div>
         </div>
       ) : (
-        <div className="mx-auto max-w-2xl">
+        <div className="brand-card p-5">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
               {t('cookie.settingsTitle')}

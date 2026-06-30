@@ -1,92 +1,240 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
-const codeSample = `// app.tsx — one import\nimport { AuthProvider } from '@autional/react';\n\nfunction App() {\n  return (\n    <AuthProvider>\n      <YourApp />\n    </AuthProvider>\n  );\n}`;
+const codeSample = `<span class="text-slate-500">// app.tsx</span>
+<span class="text-sky-300">import</span> {
+  <span class="text-white">AuthProvider</span>,
+} <span class="text-sky-300">from</span> <span class="text-amber-300">'@autional/react'</span>;
+
+<span class="text-sky-300">export function</span> <span class="text-white">App</span>() {
+  <span class="text-fuchsia-300">return</span> (
+    <span class="text-sky-200">&lt;AuthProvider</span>
+      <span class="text-emerald-300">tenant</span>=<span class="text-amber-300">"workspace-eu"</span>
+      <span class="text-emerald-300">features</span>=<span class="text-white">{[
+        'sso',
+        'passkey',
+        'audit',
+      ]}</span>
+    <span class="text-sky-200">&gt;</span>
+      <span class="text-sky-200">&lt;YourProduct /&gt;</span>
+    <span class="text-sky-200">&lt;/AuthProvider&gt;</span>
+  );
+}`;
+
+const overviewStats = [
+  { value: '24', label: 'Identity Services' },
+  { value: '1,400+', label: 'API Endpoints' },
+  { value: '99.95%', label: 'SLA Ready' },
+  { value: '<150ms', label: 'Median Response' },
+];
+
+const solutionCards = [
+  {
+    eyebrow: 'Authentication',
+    title: 'Brand-ready sign-in experiences',
+    description: 'Passkey, OTP, social login, magic link, and adaptive MFA with consistent web styling.',
+  },
+  {
+    eyebrow: 'Enterprise Access',
+    title: 'SSO, SCIM, and tenant isolation',
+    description: 'Launch from startup MVP to enterprise rollout without swapping your identity layer later.',
+  },
+  {
+    eyebrow: 'Observability',
+    title: 'Audit, policy, and security insights',
+    description: 'Visual monitoring, event trails, and compliance controls packaged for SaaS operations.',
+  },
+];
+
+const capabilities = [
+  ['Adaptive MFA', 'Risk signals, step-up verification, and passkey fallback in one flow.'],
+  ['Organization Model', 'Tenant boundary, delegated admin, role templates, and white-label controls.'],
+  ['Identity APIs', 'REST, SDK, webhook, and event streams for product teams shipping fast.'],
+  ['Compliance Layer', 'Structured audit records, retention strategy, and policy-based access decisions.'],
+  ['Developer Velocity', 'OpenAPI-first contracts and generated SDKs that match your shipping pace.'],
+  ['Global Delivery', 'SaaS-ready architecture that scales across regions and customer segments.'],
+];
 ---
 <Layout title="Autional — Identity for AI-Generated Applications" description="Open-source identity infrastructure. Authentication, accounts, multi-tenancy, and access control. Build with AI, ship with confidence.">
-  <!-- Hero -->
-  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28 text-center">
-    <h1 class="text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl leading-tight">Your AI App Needs Users.<br/> <span class="text-primary-600">We've Got That.</span></h1>
-    <p class="mx-auto mt-6 max-w-2xl text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed">The identity layer for AI-generated applications. Autional gives your AI-born app a complete user system — authentication, accounts, multi-tenancy, and access control. Built on 24 open-source microservices. Integrate in minutes, not sprints.</p>
-    <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-      <a href="/docs" class="rounded-lg bg-primary-600 px-8 py-3 text-sm font-semibold text-white hover:bg-primary-700 shadow-lg shadow-primary-600/25">Get Started</a>
-      <a href="https://github.com/autional/authms" class="rounded-lg border border-neutral-300 dark:border-neutral-700 px-8 py-3 text-sm font-semibold hover:bg-neutral-50 dark:hover:bg-slate-900">GitHub</a>
-    </div>
-  </section>
-
-  <!-- Stats -->
-  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 border-t border-neutral-200 dark:border-neutral-800">
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-8 text-center">
-      <div><div class="text-3xl font-bold text-primary-600">24</div><div class="text-sm text-neutral-500 mt-1">Microservices</div></div>
-      <div><div class="text-3xl font-bold text-primary-600">1,400+</div><div class="text-sm text-neutral-500 mt-1">API Endpoints</div></div>
-      <div><div class="text-3xl font-bold text-primary-600">AGPL</div><div class="text-sm text-neutral-500 mt-1">Open Source</div></div>
-    </div>
-  </section>
-
-  <!-- How It Works -->
-  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-neutral-200 dark:border-neutral-800">
-    <div class="text-center mb-16"><h2 class="text-3xl font-bold sm:text-4xl">How It Works</h2></div>
-    <div class="grid gap-8 md:grid-cols-3 text-center">
-      <div class="p-8"><div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary-600 text-lg font-bold">1</div><h3 class="mt-4 text-lg font-semibold">Integrate</h3><p class="mt-2 text-sm text-neutral-500">Add Autional to your stack via API or SDK. Auto-generated TypeScript types from OpenAPI specs. Works with any language or framework.</p></div>
-      <div class="p-8"><div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary-600 text-lg font-bold">2</div><h3 class="mt-4 text-lg font-semibold">Configure</h3><p class="mt-2 text-sm text-neutral-500">Define auth flows, enable MFA, configure SSO, set up multi-tenancy. All via API or admin console. Every feature is optional.</p></div>
-      <div class="p-8"><div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary-600 text-lg font-bold">3</div><h3 class="mt-4 text-lg font-semibold">Ship</h3><p class="mt-2 text-sm text-neutral-500">From MVP to enterprise without migration. Start with email/password, add enterprise SSO when your customers need it. Same codebase, zero rewrites.</p></div>
-    </div>
-  </section>
-
-  <!-- Code Sample -->
-  <section class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-20 border-t border-neutral-200 dark:border-neutral-800">
-    <div class="grid gap-8 lg:grid-cols-2 items-center">
+  <section class="relative overflow-hidden px-4 pb-12 pt-10 sm:px-6 lg:px-8 lg:pb-16 lg:pt-16">
+    <div class="absolute inset-x-0 top-0 -z-10 h-[34rem] bg-brand-radial"></div>
+    <div class="absolute left-1/2 top-20 -z-10 hidden h-80 w-80 -translate-x-10 rounded-full bg-amber-300/20 blur-3xl lg:block"></div>
+    <div class="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
       <div>
-        <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">One Line. <span class="text-primary-600">Full Identity.</span></h2>
-        <p class="mt-4 text-neutral-500 leading-relaxed">Add authentication, user management, and enterprise SSO to your app with a single import. No boilerplate. No config files. Just one provider wrapping your app.</p>
-        <div class="mt-6 flex flex-wrap gap-3">
-          {['React','Vue','Next.js','Node.js'].map(f => <span class="rounded-full bg-primary-50 dark:bg-primary-900/30 px-3 py-1 text-xs font-medium text-primary-700 dark:text-primary-300">{f}</span>)}
+        <div class="brand-kicker">
+          <span class="h-2 w-2 rounded-full bg-amber-400"></span>
+          SaaS Identity Design System
+        </div>
+        <h1 class="mt-7 max-w-3xl text-5xl font-extrabold leading-[1.14] tracking-tight text-primary-900 dark:text-white sm:text-6xl sm:leading-[1.08] lg:text-7xl lg:leading-[1.05]">
+          Your AI App Needs Users.
+          <span class="mt-2 block text-sky-500">Autional Makes It Feel Native.</span>
+        </h1>
+        <p class="mt-7 max-w-2xl text-lg leading-8 text-neutral-600 dark:text-sky-50/72">
+          Autional gives AI-native products a complete identity layer with the polish of a product brand system:
+          authentication, organizations, access control, audit, and developer APIs aligned in one modern interface.
+        </p>
+        <div class="mt-10 flex flex-wrap gap-4">
+          <a href="/docs" class="brand-button-primary">Explore Docs</a>
+          <a href="/contact" class="brand-button-secondary">Talk to Us</a>
+        </div>
+        <div class="mt-10 grid max-w-2xl gap-4 sm:grid-cols-3">
+          <div class="rounded-3xl border border-primary-100 bg-white/80 px-5 py-4 shadow-soft dark:border-white/10 dark:bg-white/5">
+            <div class="text-sm font-medium text-neutral-500 dark:text-sky-100/70">Brand palette</div>
+            <div class="mt-2 flex gap-2">
+              <span class="h-8 w-8 rounded-2xl bg-primary-700"></span>
+              <span class="h-8 w-8 rounded-2xl bg-sky-300"></span>
+              <span class="h-8 w-8 rounded-2xl bg-amber-400"></span>
+            </div>
+          </div>
+          <div class="rounded-3xl border border-primary-100 bg-white/80 px-5 py-4 shadow-soft dark:border-white/10 dark:bg-white/5">
+            <div class="text-sm font-medium text-neutral-500 dark:text-sky-100/70">Visual language</div>
+            <div class="mt-2 text-xl font-semibold text-primary-900 dark:text-white">Dashboard-first</div>
+          </div>
+          <div class="rounded-3xl border border-primary-100 bg-white/80 px-5 py-4 shadow-soft dark:border-white/10 dark:bg-white/5">
+            <div class="text-sm font-medium text-neutral-500 dark:text-sky-100/70">Experience</div>
+            <div class="mt-2 text-xl font-semibold text-primary-900 dark:text-white">Clear, secure, premium</div>
+          </div>
         </div>
       </div>
-      <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-6 overflow-x-auto">
-        <pre class="text-sm text-green-400 font-mono leading-relaxed" set:html={codeSample}></pre>
-        <p class="mt-3 text-xs text-neutral-500 font-mono border-t border-neutral-700 pt-3">$ npm install @autional/react @autional/core</p>
+
+      <div class="brand-shell brand-grid relative overflow-hidden p-5 sm:p-7">
+        <div class="absolute inset-x-0 top-0 h-28 bg-gradient-to-r from-primary-700 via-primary-600 to-sky-500"></div>
+        <div class="relative mt-16 rounded-[28px] bg-white p-5 shadow-brand dark:bg-slate-950/90">
+          <div class="flex items-center justify-between gap-4 border-b border-primary-100 pb-4 dark:border-white/10">
+            <div class="flex items-center gap-3">
+              <img src="/logo-mark.svg" alt="Autional mark" class="h-11 w-11 rounded-2xl" />
+              <div>
+                <div class="text-sm font-semibold uppercase tracking-[0.16em] text-primary-500">Identity Command</div>
+                <div class="text-xl font-bold text-primary-900 dark:text-white">Operational Overview</div>
+              </div>
+            </div>
+            <div class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">All systems healthy</div>
+          </div>
+
+          <div class="mt-5 grid gap-4 sm:grid-cols-2">
+            {overviewStats.map((item) => (
+              <div class="rounded-3xl border border-primary-100 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/5">
+                <div class="text-xs font-semibold uppercase tracking-[0.18em] text-primary-500">{item.label}</div>
+                <div class="mt-3 text-3xl font-bold text-primary-900 dark:text-white">{item.value}</div>
+              </div>
+            ))}
+          </div>
+
+          <div class="mt-5 grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+            <div class="rounded-3xl border border-primary-100 p-5 dark:border-white/10">
+              <div class="text-sm font-semibold text-primary-900 dark:text-white">Authentication Mix</div>
+              <div class="mx-auto mt-5 flex h-40 w-40 items-center justify-center rounded-full" style="background: conic-gradient(#003153 0deg 120deg, #87CEEB 120deg 220deg, #FFBF00 220deg 290deg, #61B8DF 290deg 360deg);">
+                <div class="flex h-24 w-24 items-center justify-center rounded-full bg-white text-center text-xs font-semibold text-neutral-600 shadow-inner dark:bg-slate-950 dark:text-sky-100/80">
+                  Risk-aware
+                  <br />
+                  sign-ins
+                </div>
+              </div>
+              <div class="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
+                <span class="rounded-full bg-primary-50 px-3 py-1 text-primary-700 dark:bg-white/10 dark:text-sky-100">SSO 33%</span>
+                <span class="rounded-full bg-sky-50 px-3 py-1 text-sky-700 dark:bg-white/10 dark:text-sky-100">Passkey 28%</span>
+                <span class="rounded-full bg-amber-50 px-3 py-1 text-amber-700 dark:bg-white/10 dark:text-amber-200">OTP 19%</span>
+              </div>
+            </div>
+            <div class="rounded-3xl border border-primary-100 p-5 dark:border-white/10">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-sm font-semibold text-primary-900 dark:text-white">Verification Volume</div>
+                  <div class="mt-1 text-xs text-neutral-500 dark:text-sky-100/70">Daily trend from brand dashboard</div>
+                </div>
+                <div class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">+12.5%</div>
+              </div>
+              <div class="mt-6 flex h-40 items-end gap-3">
+                {[42, 60, 56, 78, 72, 95, 88, 110].map((height, idx) => (
+                  <div class="flex-1 rounded-t-2xl bg-gradient-to-t from-primary-700 via-primary-500 to-sky-300 shadow-soft" style={`height: ${height}%`}>
+                    <div class={`h-full w-full rounded-t-2xl ${idx > 5 ? 'bg-white/10' : ''}`}></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Docker One-Liner
-  <section class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 border-t border-neutral-200 dark:border-neutral-800">
-    <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-6 text-center">
-      <p class="text-sm text-neutral-400">Self-host the entire platform:</p>
-      <p class="mt-2 text-lg text-green-400 font-mono">git clone https://github.com/autional/authms && docker compose up</p>
-    </div>
-  </section>
-  Commented out until Docker one-liner is verified -->
-
-  <!-- Features Grid -->
-  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-neutral-200 dark:border-neutral-800">
-    <div class="text-center mb-16"><h2 class="text-3xl font-bold sm:text-4xl">Enterprise Identity,<br/>Open Source</h2><p class="mt-4 text-neutral-500 max-w-xl mx-auto">24 microservices, 1,400+ APIs, and enterprise compliance features — all open source under AGPL.</p></div>
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {[['🔐','Authentication','Email/password, social login, magic link, passkey. 4-mode password transmission encryption.'],
-        ['🛡️','MFA & Passkey','TOTP, SMS, email OTP, WebAuthn/FIDO2, adaptive MFA. 7-signal risk engine.'],
-        ['🏢','Enterprise SSO','SAML 2.0, OIDC, OAuth 2.1, DPoP, JARM, LDAP/AD, SCIM 2.0.'],
-        ['👥','Multi-Tenancy','Per-tenant data isolation, custom domains, white-label, delegated admin, feature gates.'],
-        ['📊','Audit & Compliance','Merkle hash chain audit. 15 frameworks (PCI/HIPAA/SOX/GDPR/ISO/Dengbao).'],
-        ['⚡','Developer API','1,400+ REST endpoints, gRPC mesh, 30+ SDK packages, webhooks.'],
-        ['🤖','NHI — AI Agent Identity','OAuth token exchange, Ed25519 intent tokens, Agent/Robot/Device lifecycle.'],
-      ].map(([icon,title,desc]) => (
-        <div class="rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 hover:shadow-md transition-shadow">
-          <div class="text-3xl mb-4">{icon}</div>
-          <h3 class="font-semibold text-lg mb-2">{title}</h3>
-          <p class="text-sm text-neutral-500 leading-relaxed">{desc}</p>
+  <section class="px-4 py-6 sm:px-6 lg:px-8">
+    <div class="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">
+      {overviewStats.map((item) => (
+        <div class="brand-card px-6 py-5">
+          <div class="text-xs font-semibold uppercase tracking-[0.18em] text-primary-500">{item.label}</div>
+          <div class="mt-3 text-3xl font-bold text-primary-900 dark:text-white">{item.value}</div>
+          <div class="mt-2 h-1.5 rounded-full bg-gradient-to-r from-primary-700 via-sky-400 to-amber-400"></div>
         </div>
       ))}
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
-    <div class="rounded-3xl bg-primary-600 px-8 py-16 text-center text-white">
-      <h2 class="text-3xl font-bold sm:text-4xl">AI Generates Apps. We Generate Users.</h2>
-      <p class="mt-4 text-primary-100 max-w-xl mx-auto">24 microservices. 1,400+ APIs. AGPL open source.</p>
-      <div class="mt-8 flex flex-wrap justify-center gap-4">
-        <a href="https://github.com/autional/authms" class="rounded-lg bg-white px-8 py-3 text-sm font-semibold text-primary-600 hover:bg-primary-50">GitHub</a>
-        <a href="/docs" class="rounded-lg border border-primary-400 px-8 py-3 text-sm font-semibold hover:bg-primary-500">Documentation</a>
+  <section class="px-4 py-20 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+      <div class="max-w-3xl">
+        <div class="brand-kicker">Brand-led Experience</div>
+        <h2 class="mt-6 text-3xl font-bold leading-[1.34] tracking-tight text-primary-900 dark:text-white sm:text-5xl sm:leading-[1.24]">Designed like a premium SaaS platform, not a default infrastructure tool.</h2>
+        <p class="mt-5 text-lg leading-8 text-neutral-600 dark:text-sky-50/72">The updated site uses the same visual language shown in your design materials: confident deep blue surfaces, sky-blue emphasis, amber highlights, compact data cards, and cleaner information hierarchy.</p>
+      </div>
+
+      <div class="mt-12 grid gap-6 lg:grid-cols-3">
+        {solutionCards.map((card) => (
+          <article class="brand-card p-8">
+            <div class="text-xs font-semibold uppercase tracking-[0.18em] text-primary-500">{card.eyebrow}</div>
+            <h3 class="mt-4 text-2xl font-bold text-primary-900 dark:text-white">{card.title}</h3>
+            <p class="mt-4 text-base leading-7 text-neutral-600 dark:text-sky-50/72">{card.description}</p>
+            <div class="mt-8 flex items-center gap-3">
+              <span class="h-2.5 w-2.5 rounded-full bg-primary-700"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-sky-300"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-amber-400"></span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="px-4 py-20 sm:px-6 lg:px-8">
+    <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr]">
+      <div class="brand-card overflow-hidden">
+        <div class="bg-gradient-to-r from-primary-800 via-primary-700 to-sky-500 px-8 py-8 text-white">
+          <div class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-100">Implementation Snapshot</div>
+          <h2 class="mt-4 text-3xl font-bold sm:text-4xl">One provider, full identity system.</h2>
+          <p class="mt-4 max-w-lg text-sm leading-7 text-sky-50/82">The new presentation keeps technical credibility but frames it with stronger product design. It feels more like a company with a real system behind it.</p>
+        </div>
+        <div class="bg-[#07192c] p-8">
+          <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-5 text-[13px] leading-8 text-slate-100 shadow-inner sm:text-sm" set:html={codeSample}></pre>
+          <div class="mt-5 rounded-2xl border border-sky-300/15 bg-slate-900 px-4 py-3 text-sm font-mono font-medium text-sky-100 break-all sm:break-normal">$ npm install @autional/react @autional/core</div>
+        </div>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2">
+        {capabilities.map(([title, desc], idx) => (
+          <article class="brand-card p-6">
+            <div class="flex items-center justify-between">
+              <div class="rounded-2xl bg-primary-50 px-3 py-2 text-sm font-bold text-primary-700 dark:bg-white/10 dark:text-sky-100">0{idx + 1}</div>
+              <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary-700 via-sky-400 to-amber-400 opacity-90"></div>
+            </div>
+            <h3 class="mt-5 text-xl font-bold text-primary-900 dark:text-white">{title}</h3>
+            <p class="mt-3 text-sm leading-7 text-neutral-600 dark:text-sky-50/72">{desc}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="px-4 py-20 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl rounded-[36px] bg-primary-900 px-8 py-14 text-white shadow-brand sm:px-12">
+      <div class="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-100">Ready for launch</div>
+          <h2 class="mt-4 text-3xl font-bold sm:text-5xl">A stronger homepage now matches the Autional brand system.</h2>
+          <p class="mt-5 max-w-2xl text-lg leading-8 text-sky-50/78">This refresh shifts the website closer to the design references: sharper identity, clearer dashboard storytelling, and more premium enterprise product cues.</p>
+        </div>
+        <div class="flex flex-wrap gap-4">
+          <a href="/docs" class="inline-flex items-center justify-center rounded-full bg-white px-7 py-3 text-sm font-semibold text-primary-700 transition hover:bg-sky-50">View Documentation</a>
+          <a href="https://github.com/autional/authms" class="inline-flex items-center justify-center rounded-full border border-white/20 px-7 py-3 text-sm font-semibold text-white transition hover:bg-white/10">GitHub</a>
+        </div>
       </div>
     </div>
   </section>

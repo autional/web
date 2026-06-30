@@ -1,9 +1,9 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/LandingLayout.astro';
 
-const posts = await getCollection('blog', ({ data }) => data.status === 'verified');
-const sorted = posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const posts = await getCollection('blog', ({ data }: { data: CollectionEntry<'blog'>['data'] }) => data.status === 'verified');
+const sorted = posts.sort((a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 const [featured, ...rest] = sorted;
 
 const categories = ['Tech','Architecture','Compliance','Product','Security','Project'];
@@ -15,13 +15,13 @@ const categories = ['Tech','Architecture','Compliance','Product','Security','Pro
       <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-600 dark:text-neutral-300">Identity, security, compliance &amp; architecture — by the Autional team.</p>
     </div>
 
-    <div class="mt-8 flex flex-wrap justify-center gap-2">
-      <a href="/blog" class="rounded-full bg-primary-600 text-white px-4 py-1.5 text-sm font-medium">All</a>
-      {categories.map(c => <a href={`/blog?cat=${c}`} class="rounded-full bg-neutral-100 dark:bg-slate-800 text-neutral-600 px-4 py-1.5 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-slate-700">{c}</a>)}
+    <div class="mt-8 flex flex-wrap justify-center gap-2" id="blog-category-filters">
+      <button type="button" data-category="All" aria-pressed="true" class="rounded-full bg-primary-600 px-4 py-1.5 text-sm font-medium text-white transition-colors">All</button>
+      {categories.map((c: string) => <button type="button" data-category={c} aria-pressed="false" class="rounded-full bg-neutral-100 px-4 py-1.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-200 dark:bg-slate-800 dark:text-neutral-300 dark:hover:bg-slate-700">{c}</button>)}
     </div>
 
     {featured && (
-      <div class="mt-12 overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-slate-900 shadow-sm">
+      <div class="mt-12 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-slate-900" data-post-card data-post-category={featured.data.category}>
         <div class="grid lg:grid-cols-2">
           <div class="flex items-center justify-center bg-primary-50 p-10 dark:bg-primary-900/10">
             <div class="text-center">
@@ -41,18 +41,60 @@ const categories = ['Tech','Architecture','Compliance','Product','Security','Pro
     )}
 
     <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-      {rest.map(post => {
-        const slug = post.id.replace(/\.md$/,'');
-        return (
-          <article class="group flex flex-col rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-slate-900 p-6 shadow-sm hover:shadow-md transition-all">
-            <span class="rounded-full bg-primary-50 dark:bg-primary-900/30 px-2.5 py-0.5 text-xs font-medium text-primary-700 w-fit">{post.data.category}</span>
-            <a href={`/blog/${slug}`} class="mt-4"><h3 class="text-lg font-semibold group-hover:text-primary-600">{post.data.title}</h3></a>
-            <p class="mt-2 flex-1 text-sm text-neutral-600 dark:text-neutral-400">{post.data.excerpt}</p>
-            <div class="mt-4 flex flex-wrap gap-2">{post.data.tags.map(tag => <span class="text-xs text-neutral-400">#{tag}</span>)}</div>
-            <div class="mt-4 flex items-center gap-4 border-t border-neutral-100 pt-4 text-xs text-neutral-500"><span>{post.data.date}</span><span>{post.data.readTime}</span></div>
-          </article>
-        );
-      })}
+      {rest.map((post: CollectionEntry<'blog'>) => (
+        <article class="group flex flex-col rounded-xl border border-neutral-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-neutral-800 dark:bg-slate-900" data-post-card data-post-category={post.data.category}>
+          <span class="rounded-full bg-primary-50 dark:bg-primary-900/30 px-2.5 py-0.5 text-xs font-medium text-primary-700 w-fit">{post.data.category}</span>
+          <a href={`/blog/${post.id.replace(/\.md$/,'')}`} class="mt-4"><h3 class="text-lg font-semibold group-hover:text-primary-600">{post.data.title}</h3></a>
+          <p class="mt-2 flex-1 text-sm text-neutral-600 dark:text-neutral-400">{post.data.excerpt}</p>
+          <div class="mt-4 flex flex-wrap gap-2">{post.data.tags.map((tag: string) => <span class="text-xs text-neutral-400">#{tag}</span>)}</div>
+          <div class="mt-4 flex items-center gap-4 border-t border-neutral-100 pt-4 text-xs text-neutral-500"><span>{post.data.date}</span><span>{post.data.readTime}</span></div>
+        </article>
+      ))}
+    </div>
+
+    <div id="blog-empty-state" class="mt-12 hidden rounded-3xl border border-dashed border-primary-200 bg-primary-50/60 px-6 py-10 text-center text-neutral-600 dark:border-primary-800 dark:bg-primary-900/10 dark:text-neutral-300">
+      No posts found in this category yet.
     </div>
   </div>
+
+  <script is:inline>
+    const buttons = Array.from(document.querySelectorAll('#blog-category-filters [data-category]'));
+    const cards = Array.from(document.querySelectorAll('[data-post-card]'));
+    const emptyState = document.getElementById('blog-empty-state');
+
+    const setActive = (category) => {
+      buttons.forEach((button) => {
+        const active = button.dataset.category === category;
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        button.classList.toggle('bg-primary-600', active);
+        button.classList.toggle('text-white', active);
+        button.classList.toggle('bg-neutral-100', !active);
+        button.classList.toggle('text-neutral-600', !active);
+        button.classList.toggle('dark:bg-slate-800', !active);
+        button.classList.toggle('dark:text-neutral-300', !active);
+      });
+    };
+
+    const applyFilter = (category) => {
+      let visibleCount = 0;
+      cards.forEach((card) => {
+        const matches = category === 'All' || card.dataset.postCategory === category;
+        card.classList.toggle('hidden', !matches);
+        if (matches) visibleCount += 1;
+      });
+      if (emptyState) emptyState.classList.toggle('hidden', visibleCount > 0);
+      setActive(category);
+      const url = new URL(window.location.href);
+      if (category === 'All') {
+        url.searchParams.delete('cat');
+      } else {
+        url.searchParams.set('cat', category);
+      }
+      window.history.replaceState({}, '', url);
+    };
+
+    const initialCategory = new URL(window.location.href).searchParams.get('cat') || 'All';
+    applyFilter(initialCategory);
+    buttons.forEach((button) => button.addEventListener('click', () => applyFilter(button.dataset.category || 'All')));
+  </script>
 </Layout>

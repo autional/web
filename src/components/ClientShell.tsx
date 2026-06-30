@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, Search, ChevronUp } from 'lucide-react';
+import '../i18n';
 import { useTranslation } from 'react-i18next';
 import { ThemeToggle } from '../components/ThemeToggle';
 import SearchModal from '../components/SearchModal';
@@ -38,29 +39,29 @@ export default function ClientShell() {
   return (
     <>
       {mobileOpen && (
-        <div className="border-t border-neutral-200 bg-white dark:border-neutral-800 dark:bg-slate-900 md:hidden">
-          <div className="space-y-1 px-4 py-3">
+        <div className="brand-shell absolute left-3 right-3 top-[calc(100%+0.5rem)] border-primary-100/90 md:hidden">
+          <div className="space-y-1 px-4 py-4">
             {navLinks.map((link) => (
               <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)}
-                className="block rounded-md px-3 py-2 text-base font-medium text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-slate-800"
+                className="block rounded-2xl px-3 py-2.5 text-base font-medium text-neutral-700 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10"
               >{t(link.labelKey)}</a>
             ))}
           </div>
         </div>
       )}
       <div className="flex items-center gap-2 md:hidden">
-        <button onClick={() => setSearchOpen(true)} className="inline-flex h-9 w-9 items-center justify-center rounded-md text-neutral-600 dark:text-neutral-300" aria-label="Search">
+        <button onClick={() => setSearchOpen(true)} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-primary-100 bg-white/90 text-primary-700 shadow-soft transition hover:bg-sky-50 dark:border-white/10 dark:bg-white/5 dark:text-sky-100 dark:hover:bg-white/10" aria-label="Search">
           <Search className="h-5 w-5" />
         </button>
         <ThemeToggle labelLight="Light" labelDark="Dark" />
-        <button className="inline-flex h-9 w-9 items-center justify-center rounded-md text-neutral-600 dark:text-neutral-300" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
+        <button className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-primary-100 bg-white/90 text-primary-700 shadow-soft transition hover:bg-sky-50 dark:border-white/10 dark:bg-white/5 dark:text-sky-100 dark:hover:bg-white/10" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
       <div className="hidden md:flex items-center gap-2">
-        <button onClick={() => setSearchOpen(true)} className="inline-flex h-9 items-center gap-1.5 rounded-md border border-neutral-200 bg-neutral-50 px-3 text-xs font-medium text-neutral-500 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-400 dark:hover:bg-slate-700">
+        <button onClick={() => setSearchOpen(true)} className="inline-flex h-10 items-center gap-1.5 rounded-full border border-primary-100 bg-white/90 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-primary-700 shadow-soft transition hover:-translate-y-0.5 hover:bg-sky-50 dark:border-white/10 dark:bg-white/5 dark:text-sky-100 dark:hover:bg-white/10">
           <Search className="h-3.5 w-3.5" /><span>Search</span>
-          <kbd className="ml-1 hidden rounded bg-neutral-200 px-1 py-0.5 text-[10px] font-medium text-neutral-500 dark:bg-slate-700 dark:text-neutral-400 lg:inline">Ctrl K</kbd>
+          <kbd className="ml-1 hidden rounded-full bg-primary-50 px-2 py-0.5 text-[10px] font-semibold tracking-normal text-primary-500 dark:bg-white/10 dark:text-sky-100 lg:inline">Ctrl K</kbd>
         </button>
         <ThemeToggle labelLight="Light" labelDark="Dark" />
       </div>
