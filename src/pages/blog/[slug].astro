@@ -1,0 +1,39 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/LandingLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => data.status === 'verified');
+  return posts.map(post => ({
+    params: { slug: post.id.replace(/\.md$/, '') },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props as { post: CollectionEntry<'blog'> };
+const { data } = post;
+const { Content } = await post.render();
+
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: data.title,
+  description: data.excerpt,
+  datePublished: data.date,
+  author: { '@type': 'Organization', name: 'Aotional' },
+}, null, 2);
+---
+
+<Layout title={`${data.title} — Aotional Blog`} description={data.excerpt}>
+  <article class="mx-auto max-w-3xl px-4 py-12">
+    <div class="flex flex-wrap items-center gap-3 text-sm text-neutral-500">
+      <span class="rounded-full bg-primary-50 dark:bg-primary-900/30 px-3 py-1 text-xs font-medium text-primary-700">{data.category}</span>
+      <time datetime={data.date}>{data.date}</time>
+      <span>{data.readTime}</span>
+      {data.tags.map(tag => <span>#{tag}</span>)}
+    </div>
+    <h1 class="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">{data.title}</h1>
+    <div class="mt-8 prose prose-lg dark:prose-invert max-w-none"><Content /></div>
+  </article>
+  <script type="application/ld+json" set:html={jsonLd} />
+</Layout>
