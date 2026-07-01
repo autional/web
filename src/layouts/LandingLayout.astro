@@ -10,7 +10,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 <head>
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title><meta name="description" content={description} />
-  <link rel="canonical" href={canonical.href} /><link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="canonical" href={canonical.href} /><link rel="icon" type="image/png" sizes="680x680" href="/favicon-master-blue-v7.png?v=7" /><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=7" /><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=7" /><link rel="shortcut icon" type="image/png" href="/favicon-32x32.png?v=7" /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=7" /><link rel="manifest" href="/site.webmanifest?v=7" /><meta name="theme-color" content="#ffffff" />
   <meta property="og:title" content={title} /><meta property="og:description" content={description} />
   <meta property="og:url" content={canonical.href} /><meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -35,7 +35,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         <a href="/pricing" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">Pricing</a>
         <a href="/docs" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">Docs</a>
         <a href="/blog" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">Blog</a>
-        <a href="/contact" class="brand-button-primary ml-3 px-5 py-2.5">Book Demo</a>
+        <a href="https://auth.iam.tianv.com" class="brand-button-primary ml-3 px-5 py-2.5">Sign In</a>
       </nav>
       <ClientShell client:load />
     </div>
@@ -64,7 +64,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         <div><h3 class="text-sm font-semibold text-white">Developers</h3><ul class="mt-4 space-y-3">
           <li><a href="/docs" class="text-sm text-sky-100/72 transition-colors hover:text-white">Documentation</a></li>
           <li><a href="/sdk" class="text-sm text-sky-100/72 transition-colors hover:text-white">SDK</a></li>
-          <li><a href="/llms.txt" class="text-sm text-sky-100/72 transition-colors hover:text-white">AI Index</a></li>
+          <li><a href="https://docs.autional.com" class="text-sm text-sky-100/72 transition-colors hover:text-white">Docs Portal</a></li>
+          <li><a href="https://developer.autional.com" class="text-sm text-sky-100/72 transition-colors hover:text-white">Dev Portal</a></li>
+          <li><a href="https://auth.iam.tianv.com" class="text-sm text-sky-100/72 transition-colors hover:text-white">Sign In</a></li>
+        </ul></div>
+        <div><h3 class="text-sm font-semibold text-white">Apps</h3><ul class="mt-4 space-y-3">
+          <li><a href="https://app.iam.tianv.com/admin" class="text-sm text-sky-100/72 transition-colors hover:text-white">Admin</a></li>
+          <li><a href="https://user.iam.tianv.com" class="text-sm text-sky-100/72 transition-colors hover:text-white">User Portal</a></li>
+          <li><a href="https://app.iam.tianv.com/developer" class="text-sm text-sky-100/72 transition-colors hover:text-white">API Keys</a></li>
+          <li><a href="https://app.iam.tianv.com/security" class="text-sm text-sky-100/72 transition-colors hover:text-white">Security</a></li>
         </ul></div>
         <div><h3 class="text-sm font-semibold text-white">Company</h3><ul class="mt-4 space-y-3">
           <li><a href="/about" class="text-sm text-sky-100/72 transition-colors hover:text-white">About</a></li>
