@@ -16,7 +16,10 @@ const navLinks = [
 export default function ClientShell() {
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.scrollY > 400;
+  });
   const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {

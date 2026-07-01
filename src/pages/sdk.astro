@@ -1,32 +1,32 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
 const packages = [
-  { cat: 'Core', pkgs: [{ name: '@autional/core', desc: 'Token management, API client, auth flows', install: 'npm install @autional/core', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/core' }] },
+  { cat: 'Core', pkgs: [{ name: '@autional/core', desc: 'Token management, API client, auth flows', install: 'npm install @autional/core', repo: 'https://github.com/autional/sdk' }] },
   { cat: 'Frameworks', pkgs: [
-    { name: '@autional/react', desc: 'React — AuthProvider, useAuth, RequireAuth', install: 'npm install @autional/react @autional/core', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/react' },
-    { name: '@autional/vue', desc: 'Vue 3 — plugin, composables, guards', install: 'npm install @autional/vue @autional/core', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/vue' },
-    { name: '@autional/next', desc: 'Next.js App Router — middleware, server components', install: 'npm install @autional/next @autional/core', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/next' },
-    { name: '@autional/node', desc: 'Node.js server middleware, token verification', install: 'npm install @autional/node', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/node' },
+    { name: '@autional/react', desc: 'React — AuthProvider, useAuth, RequireAuth', install: 'npm install @autional/react @autional/core', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/vue', desc: 'Vue 3 — plugin, composables, guards', install: 'npm install @autional/vue @autional/core', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/next', desc: 'Next.js App Router — middleware, server components', install: 'npm install @autional/next @autional/core', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/node', desc: 'Node.js server middleware, token verification', install: 'npm install @autional/node', repo: 'https://github.com/autional/sdk' },
   ]},
   { cat: 'Mobile', pkgs: [
-    { name: '@autional/miniapp', desc: 'WeChat Mini Program adapter', install: 'npm install @autional/miniapp @autional/core', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/miniapp' },
-    { name: '@autional/react-native', desc: 'React Native — secure token storage, biometric', install: 'npm install @autional/react-native @autional/core', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/react-native' },
+    { name: '@autional/miniapp', desc: 'WeChat Mini Program adapter', install: 'npm install @autional/miniapp @autional/core', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/react-native', desc: 'React Native — secure token storage, biometric', install: 'npm install @autional/react-native @autional/core', repo: 'https://github.com/autional/sdk' },
   ]},
   { cat: 'Plugins', pkgs: [
-    { name: '@autional/plugin-mfa', desc: 'MFA setup flows, device management', install: 'npm install @autional/plugin-mfa', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/plugin-mfa' },
-    { name: '@autional/plugin-passkey', desc: 'Passkey registration and assertion', install: 'npm install @autional/plugin-passkey', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/plugin-passkey' },
-    { name: '@autional/plugin-tenant', desc: 'Multi-tenant organization management', install: 'npm install @autional/plugin-tenant', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/plugin-tenant' },
+    { name: '@autional/plugin-mfa', desc: 'MFA setup flows, device management', install: 'npm install @autional/plugin-mfa', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/plugin-passkey', desc: 'Passkey registration and assertion', install: 'npm install @autional/plugin-passkey', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/plugin-tenant', desc: 'Multi-tenant organization management', install: 'npm install @autional/plugin-tenant', repo: 'https://github.com/autional/sdk' },
   ]},
   { cat: 'API Clients (auto-generated)', pkgs: [
-    { name: '@autional/api-identity', desc: 'Identity service TypeScript client', install: 'npm install @autional/api-identity', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-identity' },
-    { name: '@autional/api-mfa', desc: 'MFA / WebAuthn / adaptive auth', install: 'npm install @autional/api-mfa', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-mfa' },
-    { name: '@autional/api-oauth', desc: 'OAuth / OIDC authorization server', install: 'npm install @autional/api-oauth', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-oauth' },
-    { name: '@autional/api-session', desc: 'Session and token management', install: 'npm install @autional/api-session', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-session' },
-    { name: '@autional/api-profile', desc: 'User profile, privacy, preferences', install: 'npm install @autional/api-profile', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-profile' },
-    { name: '@autional/api-tenant', desc: 'Tenant, organization, department CRUD', install: 'npm install @autional/api-tenant', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-tenant' },
-    { name: '@autional/api-rbac', desc: 'RBAC roles, permissions, assignments', install: 'npm install @autional/api-rbac', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-rbac' },
-    { name: '@autional/api-billing', desc: 'Subscription billing, plans, metering', install: 'npm install @autional/api-billing', repo: 'https://github.com/autional/authms/tree/main/sdk/packages/api-billing' },
-    { name: '+11 more', desc: 'audit, compliance, wallet, point, pay, storage, etc.', install: '', repo: 'https://github.com/autional/authms/tree/main/sdk/packages' },
+    { name: '@autional/api-identity', desc: 'Identity service TypeScript client', install: 'npm install @autional/api-identity', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/api-mfa', desc: 'MFA / WebAuthn / adaptive auth', install: 'npm install @autional/api-mfa', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/api-oauth', desc: 'OAuth / OIDC authorization server', install: 'npm install @autional/api-oauth', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/api-session', desc: 'Session and token management', install: 'npm install @autional/api-session', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/api-profile', desc: 'User profile, privacy, preferences', install: 'npm install @autional/api-profile', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/api-tenant', desc: 'Tenant, organization, department CRUD', install: 'npm install @autional/api-tenant', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/api-rbac', desc: 'RBAC roles, permissions, assignments', install: 'npm install @autional/api-rbac', repo: 'https://github.com/autional/sdk' },
+    { name: '@autional/api-billing', desc: 'Subscription billing, plans, metering', install: 'npm install @autional/api-billing', repo: 'https://github.com/autional/sdk' },
+    { name: '+11 more', desc: 'audit, compliance, wallet, point, pay, storage, etc.', install: '', repo: 'https://github.com/autional/sdk' },
   ]},
 ];
 const quickstarts = [
@@ -74,7 +74,7 @@ const quickstarts = [
         <p class="mt-2 text-sm text-neutral-500">Pick your framework and add auth in one line.</p>
         <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
           <a href="https://developer.autional.com/quickstart" class="brand-button-primary">Quickstart Guide →</a>
-          <a href="https://github.com/autional/authms/tree/main/sdk/packages" class="rounded-full border border-neutral-300 dark:border-neutral-700 px-5 py-2.5 text-sm font-semibold text-neutral-700 dark:text-neutral-200 transition hover:bg-neutral-50 dark:hover:bg-white/10">View all on GitHub</a>
+          <a href="https://github.com/autional/sdk" class="rounded-full border border-neutral-300 dark:border-neutral-700 px-5 py-2.5 text-sm font-semibold text-neutral-700 dark:text-neutral-200 transition hover:bg-neutral-50 dark:hover:bg-white/10">View all on GitHub</a>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 ---
 import ClientShell from '../components/ClientShell.tsx';
 import CookieConsent from '../components/CookieConsent.tsx';
+import '../styles/global.css';
 export interface Props { title: string; description?: string; }
 const { title, description = 'Autional — Enterprise Identity & Access Management' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
