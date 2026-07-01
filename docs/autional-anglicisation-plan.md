@@ -24,44 +24,24 @@ All Chinese content across the Autional ecosystem must be translated to English 
 | 1.2 | GitHub URL: index.astro → autional/web, blog + jsonld → autional | ✅ | 2026-06-30 |
 | 1.3 | Homepage "Built With" badge (Go/TS/PostgreSQL/Redis/etc) | ✅ | 2026-06-30 |
 
-## Phase 2: Swagger Spec Translation [IN PROGRESS]
+## Phase 2: Swagger Spec Translation [DONE]
 
-### Method
-For each `docker/specs/{service}.json`, translate all:
-- `info.description`
-- Path `summary` and `description` fields
-- Response `description` fields
-- Parameter `description` fields
+| Batch | Services | Fields | Status | Date |
+|:-----:|----------|:------:|:------:|:----:|
+| All | 24 services (5 big, 7 medium, 9 small, 3 tiny) | 5,059 | ✅ | 2026-06-30 |
 
-Output to `docker/specs/{service}-en.json`.
+Method: Python script with 100+ terminology entries, longest-match phrase translation. Output to `docker/specs/*-en.json` and `micro-services/*/docs/swagger.json`.
 
-### Batch 1: Big Services (~5.5h)
-- identity-service (672KB, ~600 fields)
-- compliance-service (461KB, ~500 fields)
-- tenant-service (421KB, ~400 fields)
+## Phase 3: Wiki Regeneration [DONE]
 
-### Batch 2: Medium Services (~4h)
-- billing-service (299KB), audit-service (269KB), mfa-service (264KB)
-- storage-service (223KB), oauth-service (206KB), notification-service (221KB)
-- wallet-service (239KB)
+Regenerated from translated English swagger specs. 1,409 endpoint pages in English. ✅
 
-### Batch 3: Small Services (~4h)
-- profile-service, rbac-service, communication-service, point-service
-- session-service, secret-service, verification-service
-- status-service, pay-service, gateway-service
+## Phase 4: Deployment [IN PROGRESS]
 
-### Batch 4: Tiny Services (~30min)
-- thirdparty-service, saml-service
-- hash-service-standard, hash-service-sm
-
-## Phase 3: Wiki Regeneration
-After all swagger specs are translated:
-```bash
-python scripts/generate/generate_api_wiki.py --spec-dir docker/specs/
-```
-Regenerates 1,432 pages from translated specs.
-
-## Phase 4: Deployment
-- Copy translated specs to docker/specs/*-en.json
-- Update Scalar UI to use -en.json
-- Deploy wiki to docs.autional.com/reference/
+| Sub-task | Status |
+|----------|:------:|
+| English swagger JSON in Gitea repo | ✅ pushed |
+| English swagger in each service docs/ dir | ✅ pushed |
+| English API wiki in repo | ✅ pushed |
+| docs.autional.com `/api` linking to Scalar UI | 📋 todo |
+| docs.autional.com `/reference` for wiki | 📋 todo |
