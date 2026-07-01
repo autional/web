@@ -14,7 +14,7 @@ export function getOrganizationSchema() {
       email: 'tianv@tianv.com',
     },
     sameAs: [
-      'https://github.com/authms',
+      'https://github.com/autional',
     ],
   };
 }
