@@ -12,8 +12,22 @@ const faqs = [
   { q: 'Do you offer discounts for open-source projects?', a: 'Yes. We offer special pricing for open-source projects and non-profit organizations. Contact us for details.' },
   { q: 'What payment methods do you accept?', a: 'We accept all major credit cards via Stripe. For Enterprise plans, we also support wire transfers and annual invoicing.' },
 ];
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+};
 ---
-<LandingLayout title="Pricing — Autional" description="Simple, transparent pricing for AI-generated applications. Start free, upgrade when you need enterprise features.">
+<LandingLayout
+  title="Pricing — Autional"
+  description="Simple, transparent pricing for AI-generated applications. Start free, upgrade when you need enterprise features."
+  keywords="Autional, pricing, identity, IAM, subscription, plans"
+  jsonLd={[faqJsonLd]}
+>
   <section class="mx-auto max-w-7xl px-4 py-20">
     <div class="text-center mb-16">
       <h1 class="text-4xl font-bold sm:text-5xl">Simple, Transparent Pricing</h1>

@@ -11,12 +11,25 @@ export function usePageMeta(description: string) {
   }
 }
 
+function injectJsonLd(items: Record<string, any>[]) {
+  if (typeof document === 'undefined') return;
+  document.querySelectorAll('script[data-jsonld]').forEach((el) => el.remove());
+  items.forEach((item) => {
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.setAttribute('data-jsonld', '');
+    script.textContent = JSON.stringify(item);
+    document.head.appendChild(script);
+  });
+}
+
 export function useSEO(
-  { title, description }: { title?: string; description?: string },
+  { title, description, jsonld }: { title?: string; description?: string; jsonld?: Record<string, any>[] },
   _opts?: { hreflang?: boolean }
 ) {
   usePageTitle(title || '');
   usePageMeta(description || '');
+  if (jsonld && jsonld.length > 0) injectJsonLd(jsonld);
 }
 
 export const DEVELOPER_PORTAL_URL = 'https://developer.autional.com';

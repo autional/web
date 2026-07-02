@@ -1,19 +1,35 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
+const faqItems = [
+  ['Is Autional open source?','Yes. Autional core is open source under AGPL v3. The full source code is available on GitHub at github.com/autional/authms. You can self-host the entire 24-service stack without any license fee or MAU limit.'],
+  ['What is Autional?','Autional is the identity layer for AI-generated applications. It provides authentication, authorization, multi-tenancy, enterprise SSO, and compliance — all backed by 24 open-source microservices and 1,400+ APIs.'],
+  ['How is Autional different from Auth0?','Auth0 is a closed-source SaaS. Autional is open source (AGPL), self-hostable, and designed specifically for AI-generated applications. Our pricing is transparent and there\'s no per-user or per-connection pricing.'],
+  ['Can I self-host Autional?','Yes. Self-hosting is free. Deploy with Docker/Podman compose or Kubernetes. The entire platform runs on PostgreSQL + MongoDB + Redis + RabbitMQ.'],
+  ['What does "AI-generated applications" mean?','Apps built with tools like Bolt.new, Lovable.dev, Cursor, Claude Code, or Replit. These tools generate application code rapidly. Autional provides the identity layer so your generated app doesn\'t need to reinvent authentication.'],
+  ['Do you offer cloud hosting?','Not yet. Cloud hosting is on our roadmap. Currently you can self-host or run locally. Contact us if you need managed infrastructure.'],
+  ['What compliance frameworks do you support?','Autional includes data models and tooling for ISO 27001, PCI DSS, HIPAA, SOX, GDPR, PSD2, PIPL, and Dengbao 2.0. Compliance certification is the responsibility of the deploying organization.'],
+  ['How many API endpoints does Autional have?','1,400+ RESTful API endpoints across 24 microservices. Every endpoint is documented with Swagger/OpenAPI.'],
+];
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map(([q, a]) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+};
 ---
-<Layout title="FAQ — Autional" description="Frequently asked questions about the Autional identity platform.">
+<Layout
+  title="FAQ — Autional"
+  description="Frequently asked questions about the Autional identity platform."
+  keywords="Autional, FAQ, identity, IAM, SSO, authentication, open source"
+  jsonLd={[faqJsonLd]}
+>
   <section class="mx-auto max-w-3xl px-4 py-20">
     <h1 class="text-4xl font-bold sm:text-5xl text-center">FAQ</h1>
     <div class="mt-12 space-y-4">
-      {[['Is Autional open source?','Yes. Autional core is open source under AGPL v3. The full source code is available on GitHub at github.com/autional/authms. You can self-host the entire 24-service stack without any license fee or MAU limit.'],
-        ['What is Autional?','Autional is the identity layer for AI-generated applications. It provides authentication, authorization, multi-tenancy, enterprise SSO, and compliance — all backed by 24 open-source microservices and 1,400+ APIs.'],
-        ['How is Autional different from Auth0?','Auth0 is a closed-source SaaS. Autional is open source (AGPL), self-hostable, and designed specifically for AI-generated applications. Our pricing is transparent and there\'s no per-user or per-connection pricing.'],
-        ['Can I self-host Autional?','Yes. Self-hosting is free. Deploy with Docker/Podman compose or Kubernetes. The entire platform runs on PostgreSQL + MongoDB + Redis + RabbitMQ.'],
-        ['What does "AI-generated applications" mean?','Apps built with tools like Bolt.new, Lovable.dev, Cursor, Claude Code, or Replit. These tools generate application code rapidly. Autional provides the identity layer so your generated app doesn\'t need to reinvent authentication.'],
-        ['Do you offer cloud hosting?','Not yet. Cloud hosting is on our roadmap. Currently you can self-host or run locally. Contact us if you need managed infrastructure.'],
-        ['What compliance frameworks do you support?','Autional includes data models and tooling for ISO 27001, PCI DSS, HIPAA, SOX, GDPR, PSD2, PIPL, and Dengbao 2.0. Compliance certification is the responsibility of the deploying organization.'],
-        ['How many API endpoints does Autional have?','1,400+ RESTful API endpoints across 24 microservices. Every endpoint is documented with Swagger/OpenAPI.'],
-      ].map(([q,a]) => (
+      {faqItems.map(([q,a]) => (
         <details class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 group">
           <summary class="font-medium cursor-pointer list-none flex justify-between items-center">{q}<span class="text-neutral-400 group-open:rotate-45 transition-transform text-lg">+</span></summary>
           <p class="mt-3 text-sm text-neutral-500 leading-relaxed">{a}</p>

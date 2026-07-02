@@ -21,8 +21,22 @@ const faqs = [
   { q: 'What are the default credentials?', a: 'Default admin: admin@admin.com / admin123. For production, change passwords and configure JWT_SECRET, PASSWORD_PEPPER, and other secrets.' },
   { q: 'How do I enable HTTPS?', a: 'See docker/nginx/certs/ for 100-year self-signed certificates. For production, use Let\'s Encrypt or your CA. SSL termination is handled by the nginx gateway.' },
 ];
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+};
 ---
-<Layout title="Documentation — Autional" description="Quick start guide and API reference for the Autional identity platform.">
+<Layout
+  title="Documentation — Autional"
+  description="Quick start guide and API reference for the Autional identity platform."
+  keywords="Autional, documentation, docs, quickstart, API reference, identity, IAM"
+  jsonLd={[faqJsonLd]}
+>
   <section class="mx-auto max-w-5xl px-4 py-20">
     <div class="text-center mb-16">
       <h1 class="text-4xl font-bold sm:text-5xl">Get Started in 5 Minutes</h1>

@@ -13,18 +13,38 @@ export async function getStaticPaths() {
 const { post } = Astro.props as { post: CollectionEntry<'blog'> };
 const { data } = post;
 const { Content } = await post.render();
+const postUrl = `https://www.autional.com/blog/${post.id.replace(/\.md$/, '')}/`;
 
-const jsonLd = JSON.stringify({
+const articleJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: data.title,
   description: data.excerpt,
   datePublished: data.date,
   author: { '@type': 'Organization', name: 'Autional' },
-}, null, 2);
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.autional.com' },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://www.autional.com/blog' },
+    { '@type': 'ListItem', position: 3, name: data.category, item: `https://www.autional.com/blog?category=${encodeURIComponent(data.category)}` },
+    { '@type': 'ListItem', position: 4, name: data.title },
+  ],
+};
+
+const keywords = ['Autional', 'identity', 'auth', data.category, ...data.tags].join(', ');
 ---
 
-<Layout title={`${data.title} — Autional Blog`} description={data.excerpt}>
+<Layout
+  title={`${data.title} — Autional Blog`}
+  description={data.excerpt}
+  ogType="article"
+  keywords={keywords}
+  jsonLd={[articleJsonLd, breadcrumbJsonLd]}
+>
   <article class="mx-auto max-w-3xl px-4 py-12">
     <nav class="mb-8 flex flex-wrap items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400" aria-label="Breadcrumb">
       <a href="/blog" class="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 font-medium text-neutral-700 transition-colors hover:border-primary-200 hover:text-primary-700 dark:border-neutral-800 dark:bg-slate-900 dark:text-neutral-300 dark:hover:border-primary-700 dark:hover:text-white">
@@ -51,5 +71,4 @@ const jsonLd = JSON.stringify({
       </a>
     </div>
   </article>
-  <script is:inline type="application/ld+json" set:html={jsonLd} />
 </Layout>
