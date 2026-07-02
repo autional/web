@@ -32,7 +32,7 @@
 - 24 microservices, 1,400+ REST APIs
 - PostgreSQL, MongoDB, Redis, RabbitMQ
 - Go backend, TypeScript/React frontend
-- AGPL v3 open source — github.com/autional/authms
+- Source code and SDKs — github.com/autional
 
 ## Integrations
 - OAuth 2.1, OIDC, SAML 2.0

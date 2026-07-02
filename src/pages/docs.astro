@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
 const steps = [
-  { icon: '1', title: 'Run the Platform', code: `git clone https://github.com/autional/authms\ncd authms\ndocker compose -f docker-compose.infra.yml -f docker-compose.monolith.yml up -d\n\n# Wait 2-3 minutes for all 24 services to start`, lang: 'bash' },
+  { icon: '1', title: 'Run the Platform', code: `# See docs.autional.com for setup instructions\ndocker compose -f docker-compose.infra.yml -f docker-compose.monolith.yml up -d\n\n# Wait 2-3 minutes for all 24 services to start`, lang: 'bash' },
   { icon: '2', title: 'Install the SDK', code: `npm install @autional/react @autional/core`, lang: 'bash' },
   { icon: '3', title: 'Add Auth to Your App', code: `import { AuthProvider } from '@autional/react';\n\nfunction App() {\n  return (\n    <AuthProvider>\n      <YourApp />\n    </AuthProvider>\n  );\n}`, lang: 'tsx' },
   { icon: '4', title: 'Or Self-Host with Docker', code: `# Quick start with Docker\ncurl -sL https://docs.autional.com/quickstart/docker-compose.yml > docker-compose.yml\ndocker compose up -d\n\n# Visit http://localhost:11001 for the admin console\n# Default: admin@admin.com / admin123`, lang: 'bash' },
@@ -59,7 +59,7 @@ const faqJsonLd = {
     <div class="grid gap-4 sm:grid-cols-2">{apis.map(a => (
       <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4"><div class="flex items-center gap-2"><span class="rounded bg-primary-50 text-primary-700 px-2 py-0.5 text-xs font-mono font-medium">{a.svc}</span><span class="text-xs text-neutral-500">:{a.port}</span></div><p class="mt-2 text-sm text-neutral-600 dark:text-neutral-300">{a.desc}</p><code class="mt-2 block text-xs text-neutral-400 font-mono">{a.path}</code></div>
     ))}</div>
-    <div class="mt-6 text-center"><p class="text-sm text-neutral-500">Full OpenAPI spec: <a href="https://github.com/autional/authms/tree/main/docker/specs" class="text-primary-600 hover:underline">github.com/autional/authms → docker/specs/</a></p></div>
+    <div class="mt-6 text-center"><p class="text-sm text-neutral-500">Full OpenAPI spec: <a href="https://reference.autional.com" class="text-primary-600 hover:underline">reference.autional.com</a></p></div>
 
     <!-- FAQ -->
     <div class="mt-20"><h2 class="text-2xl font-bold text-center mb-8">Common Questions</h2>

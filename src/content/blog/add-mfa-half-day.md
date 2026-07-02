@@ -154,8 +154,8 @@ Autional provides complete SDKs and documentation covering major languages and f
 
 ```bash
 # Three steps to set up a local dev environment
-git clone https://github.com/autional/authms-demo
-cd authms-demo
+git clone https://github.com/autional/sdk
+cd sdk/demo
 docker compose up -d
 ```
 
