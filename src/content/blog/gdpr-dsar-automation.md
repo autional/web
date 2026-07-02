@@ -10,7 +10,7 @@ reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Compliance Note**: The technical capabilities described represent Aotional's design goals and do not constitute GDPR compliance certification. Final compliance responsibility rests with the data controller.
+> **Compliance Note**: The technical capabilities described represent Autional's design goals and do not constitute GDPR compliance certification. Final compliance responsibility rests with the data controller.
 
 ## The DSAR Challenge
 
@@ -23,7 +23,7 @@ Under GDPR Article 15, data subjects have the right to access their personal dat
 
 ## Automation Architecture
 
-Aotional's erasure orchestration coordinates 7 services:
+Autional's erasure orchestration coordinates 7 services:
 
 | Service | Operation |
 |---------|-----------|
