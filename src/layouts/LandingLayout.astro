@@ -1,6 +1,6 @@
 ---
 import ClientShell from '../components/ClientShell.tsx';
-import CookieConsent from '../components/CookieConsent.tsx';
+// CookieConsent unmounted (2026-09-29): this site sets no cookies and runs no trackers, so the banner was misleading; component kept for a future analytics integration
 import '../styles/global.css';
 export interface Props {
   title: string;
@@ -129,5 +129,4 @@ const allJsonLd = [defaultJsonLd, ...jsonLd];
       </div>
     </div>
   </footer>
-  <CookieConsent client:load />
 </body></html>
