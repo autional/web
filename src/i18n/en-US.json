@@ -733,7 +733,7 @@
     "title": "Frequently Asked Questions",
     "subtitleIntro": "Can't find what you're looking for?",
     "subtitleLink": "Contact us",
-    "subtitleEnd": "tianv@tianv.com",
+    "subtitleEnd": "support@autional.net",
     "categoryProduct": "Project",
     "categorySecurity": "Security & Compliance",
     "categoryDeveloper": "Developer",
@@ -773,7 +773,7 @@
       "q15": "Where can I check system status?",
       "a15": "You can check real-time operational status and historical incident records for all services on the <a href='/status' class='text-primary-600 hover:underline'>System Status</a> page. We also provide an API endpoint for integration into your own monitoring systems",
       "q16": "How do I report a security vulnerability?",
-      "a16": "If you discover a potential security vulnerability, please email tianv@tianv.com. We commit to acknowledging receipt within 24 hours and providing an initial assessment within 72 hours. See the Security & Compliance page for our detailed vulnerability disclosure process"
+      "a16": "If you discover a potential security vulnerability, please email support@autional.net. We commit to acknowledging receipt within 24 hours and providing an initial assessment within 72 hours. See the Security & Compliance page for our detailed vulnerability disclosure process"
     }
   },
   "showcase": {
@@ -1499,7 +1499,7 @@
   "faq.title": "Frequently Asked Questions",
   "faq.subtitleIntro": "Can't find what you're looking for?",
   "faq.subtitleLink": "Contact us",
-  "faq.subtitleEnd": "tianv@tianv.com",
+  "faq.subtitleEnd": "support@autional.net",
   "faq.categoryProduct": "Project",
   "faq.categorySecurity": "Security & Compliance",
   "faq.categoryDeveloper": "Developer",
@@ -1538,7 +1538,7 @@
   "faq.questions.q15": "Where can I check system status?",
   "faq.questions.a15": "You can check real-time operational status and historical incident records for all services on the <a href='/status' class='text-primary-600 hover:underline'>System Status</a> page. We also provide an API endpoint for integration into your own monitoring systems",
   "faq.questions.q16": "How do I report a security vulnerability?",
-  "faq.questions.a16": "If you discover a potential security vulnerability, please email tianv@tianv.com. We commit to acknowledging receipt within 24 hours and providing an initial assessment within 72 hours. See the Security & Compliance page for our detailed vulnerability disclosure process",
+  "faq.questions.a16": "If you discover a potential security vulnerability, please email support@autional.net. We commit to acknowledging receipt within 24 hours and providing an initial assessment within 72 hours. See the Security & Compliance page for our detailed vulnerability disclosure process",
   "showcase.pageTitle": "Showcase",
   "showcase.pageDesc": "Autional technical practice and project showcase.",
   "showcase.title": "Technical Showcase",

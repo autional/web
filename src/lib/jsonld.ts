@@ -11,7 +11,7 @@ export function getOrganizationSchema() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'sales',
-      email: 'hello@autional.com',
+      email: 'support@autional.net',
     },
     sameAs: [
       'https://github.com/autional',
