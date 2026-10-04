@@ -11,6 +11,7 @@ const navLinks = [
   { href: '/docs', labelKey: 'nav.docs' },
   { href: '/blog', labelKey: 'nav.blog' },
   { href: '/contact', labelKey: 'nav.contact' },
+  { href: '/ai', labelKey: 'nav.ai' },
 ];
 
 export default function ClientShell() {

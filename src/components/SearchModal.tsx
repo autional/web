@@ -28,6 +28,7 @@ const searchPaths = [
   '/blog/multi-tenant-architecture',
   '/blog/gdpr-dsar-automation',
   '/pricing',
+  '/ai',
 ];
 
 interface Props {
