@@ -10,6 +10,13 @@
 - https://www.autional.com/faq
 - https://www.autional.com/trust
 
+## AI Onboarding (add login to any app with one prompt)
+- Tutorial: https://www.autional.com/ai
+- Skill (EN): https://www.autional.com/ai/skill.md
+- Skill (ZH): https://www.autional.com/ai/skill.zh.md
+- Compliance matrix: https://www.autional.com/ai/references/compliance-matrix.md
+- Config template: https://www.autional.com/ai/references/config-template.md
+
 ## Blog (49 articles)
 - https://www.autional.com/blog
 
