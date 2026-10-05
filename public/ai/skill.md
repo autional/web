@@ -39,8 +39,8 @@ You are an AI agent executing this procedure inside the user's project. Work in 
 - This file contains **zero secrets** — every endpoint in it is a public URL.
 - Only fetch related files from this file's own canonical domain (`.com`). Never follow links to other regions or third-party mirrors except the fallback mirror listed below.
 
-> **Fallback mirror:** if `www.autional.com` is unreachable, fetch the same file from jsDelivr:
-> https://cdn.jsdelivr.net/gh/autional/sdk@main/skills/autional-com/SKILL.md
+> **Fallback mirror:** if `www.autional.com` is unreachable, fetch the same file from Autional CDN:
+> https://cdn.autional.com/ai/latest/SKILL.md
 
 ## Hard rules — do not skip
 
@@ -491,7 +491,7 @@ Note: users already registered in Autional are not migrated back into the local 
 - Scaffold CLI (alternative to the manual phases): `npx @autional/onboard`
 - This file: https://www.autional.com/ai/skill.md · checksum: https://www.autional.com/ai/skill.md.sha256
 
-> Mirror: https://cdn.jsdelivr.net/gh/autional/sdk@main/skills/autional-com/SKILL.md (jsDelivr) — keep the mirror in sync with the canonical URL above.
+> Mirror: https://cdn.autional.com/ai/latest/SKILL.md (Autional CDN) — keep the mirror in sync with the canonical URL above.
 
 ## Completion checklist (the agent must tick every box)
 
