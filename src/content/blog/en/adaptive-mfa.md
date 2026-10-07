@@ -197,4 +197,4 @@ Autional's Adaptive MFA currently assesses risk **only at login time**. In the n
 
 The future of authentication is not "harder passwords" or "more CAPTCHAs" — it's making authentication invisible to legitimate users while making it impossible for attackers to get through. That is the core philosophy of Adaptive MFA.
 
-Autional's Adaptive MFA engine is open source. Visit our GitHub repository for implementation details and integration documentation.
+Autional's adaptive MFA engine is part of the commercial core. Visit the product documentation for implementation details and integration guides.

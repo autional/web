@@ -1,5 +1,5 @@
 ---
-title: "GDPR DSAR Automation with Open-Source IAM"
+title: "GDPR DSAR Automation with Modern IAM"
 date: "2026-06-15"
 category: "Compliance"
 tags: ["GDPR", "DSAR", "Privacy", "Automation"]

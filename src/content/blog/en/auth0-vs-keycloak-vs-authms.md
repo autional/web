@@ -4,7 +4,7 @@ date: "2026-06-17"
 category: "Product"
 tags: ["Competitive Analysis", "Auth0", "Keycloak"]
 readTime: "12 minutes"
-excerpt: "Auth0, Keycloak, and Autional are three representative identity platforms on the 2026 market, embodying SaaS closed-source, community open-source, and commercial open-source business models respectively. This article provides an in-depth 15-dimension comparison without bias — each product has its optimal use case, and the cost of choosing wrong is often not technical, but financial and compliance-related."
+excerpt: "Auth0, Keycloak, and Autional are three representative identity platforms on the 2026 market, embodying SaaS closed-source, community open-source, and open-core business models respectively. This article provides an in-depth 15-dimension comparison without bias — each product has its optimal use case, and the cost of choosing wrong is often not technical, but financial and compliance-related."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -12,7 +12,7 @@ claims_reviewed: true
 
 Choosing an identity platform may be one of the most important technical decisions a startup makes — even more important than choosing a programming language or database. The reason is simple: **changing databases is hard; changing identity platforms is even harder.** Once your user data, authentication logic, permission models, and OAuth integrations are deeply coupled with a platform, the migration cost alone is enough to make teams abandon the idea.
 
-The 2026 identity platform market features three representative products: **Auth0** (Okta, SaaS closed-source, global market share leader), **Keycloak** (Red Hat sponsored, Apache 2.0 open-source, Java ecosystem darling), and **Autional** (domestic Go microservice architecture, SaaS + open-source core, compliance-oriented). They represent three different product philosophies: **extreme ease-of-use vs extreme controllability vs compliance-first.**
+The 2026 identity platform market features three representative products: **Auth0** (Okta, SaaS closed-source, global market share leader), **Keycloak** (Red Hat sponsored, Apache 2.0 open-source, Java ecosystem darling), and **Autional** (domestic Go microservice architecture, open core — open-source portals and SDKs, commercial core, compliance-oriented). They represent three different product philosophies: **extreme ease-of-use vs extreme controllability vs compliance-first.**
 
 This article provides an objective comparison across 15 dimensions. Disclaimer: the author is an Autional team member, but we strive to be fair — because we believe helping users find the truly right product for their scenario is more important than pushing Autional on everyone.
 
@@ -20,8 +20,8 @@ This article provides an objective comparison across 15 dimensions. Disclaimer: 
 
 | Dimension | Auth0 | Keycloak | Autional |
 |-----------|-------|----------|--------|
-| License | Closed-source | Apache 2.0 | Open-source core (AGPL) + Commercial |
-| Deployment | SaaS Only | Self-hosted / Private Cloud | SaaS / Self-hosted / Private Deployment |
+| License | Closed-source | Apache 2.0 | Open core: portals & docs (AGPL-3.0), SDKs (MIT), commercial core |
+| Deployment | SaaS Only | Self-hosted / Private Cloud | Private deployment (commercial license); cloud on the roadmap |
 | Language | Node.js | Java (WildFly/Quarkus) | Go |
 | Runtime Memory (Idle) | N/A (SaaS) | 400-800 MB | 50-80 MB (per service) |
 | Database | Managed (opaque) | PostgreSQL / MySQL / Oracle | PostgreSQL (per-service databases) |
@@ -33,7 +33,7 @@ This article provides an objective comparison across 15 dimensions. Disclaimer: 
 | Audit Logging | Basic (additional payment) | Basic | Hash-chain tamper-proof audit + full event tracing |
 | Compliance Certifications | SOC 2 / ISO 27001 / GDPR | None built-in (self-certification required) | Built-in GDPR / PIPL / Dengbao / SOC 2 compliance modules |
 | China Market Readiness | Requires VPN / overseas hosting / no ICP support | Requires self-build / no built-in compliance | Natively adapted (data residency / Dengbao / Chinese cryptography) |
-| Pricing (annual, 10K MAU) | Higher (MAU tiered pricing) | Free (self-hosting costs separate) | ¥12,000-36,000 (Pro/Enterprise) |
+| Pricing (annual, 10K MAU) | Higher (MAU tiered pricing) | Free (self-hosting costs separate) | Commercial license (cloud tiers on the roadmap) |
 | Best For | Startups in EU/US markets | Technically capable mid-to-large teams | China market + compliance-conscious enterprises |
 
 ## In-Depth Dimension-by-Dimension Comparison
@@ -97,15 +97,15 @@ Autional's Go microservice architecture offers clear advantages in resource effi
 
 | Item | Auth0 | Keycloak | Autional |
 |------|-------|----------|--------|
-| 1,000 MAU (B2C) | ~$35/month | Free (self-hosting costs separate) | Free (Community Edition) |
-| 10,000 MAU | ~$500/month | Free (self-hosting costs separate) | ¥1,000/month (Pro) |
-| 100,000 MAU | ~$2,000-3,000/month | Free (self-hosting costs separate) | ¥3,000/month (Enterprise) |
-| Enterprise SSO (SAML/OIDC) | Enterprise plan required | Free | Included in Pro |
-| Custom MFA Policies | Enterprise plan required | Free | Included in Pro |
-| Audit Log Retention | Basic: 2 days | Self-managed | Basic: 30 days |
-| Self-hosting Ops (1 DevOps @ 50%) | $0 | Requires ongoing ops investment | ~¥100K/year (Community) |
+| 1,000 MAU (B2C) | ~$35/month | Free (self-hosting costs separate) | Free (open-source components) |
+| 10,000 MAU | ~$500/month | Free (self-hosting costs separate) | Commercial license (no MAU-based fees) |
+| 100,000 MAU | ~$2,000-3,000/month | Free (self-hosting costs separate) | Commercial license (no MAU-based fees) |
+| Enterprise SSO (SAML/OIDC) | Enterprise plan required | Free | Included |
+| Custom MFA Policies | Enterprise plan required | Free | Included |
+| Audit Log Retention | Basic: 2 days | Self-managed | Commercial license |
+| Self-hosting Ops (1 DevOps @ 50%) | $0 | Requires ongoing ops investment | ~¥100K/year |
 
-**Auth0's real cost isn't the monthly fee — it's the marginal cost at scale.** At 10K MAU, Auth0's pricing is acceptable, but at 1M MAU, the annual cost can reach millions of RMB. Conversely, the marginal cost of Keycloak and Autional Community Edition approaches zero — but you bear the operational costs.
+**Auth0's real cost isn't the monthly fee — it's the marginal cost at scale.** At 10K MAU, Auth0's pricing is acceptable, but at 1M MAU, the annual cost can reach millions of RMB. Conversely, the marginal cost of Keycloak approaches zero, and Autional's open-source components carry no license fees of their own — but you bear the operational costs.
 
 ### 7. Ecosystem and Community
 
@@ -113,7 +113,7 @@ Autional's Go microservice architecture offers clear advantages in resource effi
 
 **Keycloak** has the largest open-source community: 10,000+ GitHub stars, active mailing lists, and a rich collection of third-party plugins (e.g., keycloak-metrics-spi).
 
-**Autional**'s community is a growing open-source community (open-sourced in 2024), developing rapidly. Documentation, API Wiki, and 15 CI check scripts are all open-source. Average issue response time is < 24 hours.
+**Autional**'s community grows around its open-source components — portals, design system, and SDKs (AGPL-3.0 / MIT) — with public documentation and API wiki. Average issue response time is < 24 hours.
 
 ## Selection Decision Guide
 
@@ -137,7 +137,7 @@ Autional's Go microservice architecture offers clear advantages in resource effi
 - You need built-in support for GDPR, SOC 2, and other international compliance certifications
 - You value Go language performance and microservice architecture scalability
 - You need a complete RBAC + Audit + MFA + Wallet integrated solution
-- You're budget-conscious but have the technical ability to maintain a self-hosted version (Community Edition)
+- You're budget-conscious and comfortable with private deployment under a commercial license
 
 ---
 

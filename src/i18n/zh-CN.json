@@ -39,10 +39,10 @@
     "meta": {
       "title": "Autional — 面向 AI 生成应用的身份层",
       "description": "面向 AI 生成应用的身份层。认证、账户、多租户与访问控制，为用 AI 构建产品的团队而设计。",
-      "keywords": "Autional, 身份, 认证, IAM, SSO, MFA, 多租户, 开源, AI, SaaS, 企业"
+      "keywords": "Autional, 身份, 认证, IAM, SSO, MFA, 多租户, 开放核心, AI, SaaS, 企业"
     },
     "hero": {
-      "kicker": "开源 · AGPL-3.0",
+      "kicker": "开放核心 · AGPL-3.0",
       "titleLine1": "你的 AI 应用需要用户。",
       "titleLine2": "Autional 让它浑然天成。",
       "lead": "Autional 为 AI 生成应用提供完整的身份层：认证、组织、访问控制、审计与开发者 API，统一在一个连贯的系统中。",
@@ -106,19 +106,19 @@
     "cta": {
       "kicker": "开始使用",
       "title": "用 Autional 为你的产品补上身份层。",
-      "lead": "当前自托管开源可用；云托管在路线图中（即将推出）。浏览文档了解接入方式，或到 GitHub 查看开源代码。",
+      "lead": "门户、设计系统与 SDK 开源（AGPL-3.0 / MIT），核心身份服务为商业授权。云托管在路线图中（即将推出）。浏览文档了解接入方式，或到 GitHub 查看开源代码。",
       "docs": "查看文档"
     }
   },
   "features": {
     "meta": {
       "title": "功能特性 — Autional",
-      "description": "完整的身份平台。认证、MFA、SSO、多租户、NHI、授权、审计、合规、国密、SDK —— 基于 AGPL 开源。",
-      "keywords": "Autional, 功能特性, 认证, SSO, MFA, 多租户, 通行密钥, 审计, 合规, RBAC, SDK, 开源"
+      "description": "完整的身份平台。认证、MFA、SSO、多租户、NHI、授权、审计、合规、国密、SDK —— 开放核心：门户与 SDK 开源，核心商业授权。",
+      "keywords": "Autional, 功能特性, 认证, SSO, MFA, 多租户, 通行密钥, 审计, 合规, RBAC, SDK, 开放核心"
     },
     "hero": {
       "titleLine1": "企业级身份基础设施。",
-      "titleLine2": "开源。",
+      "titleLine2": "开放核心。",
       "lead": "27 个微服务、1,400+ API、npm SDK 软件包、15+ 个合规框架 —— 你的 AI 生成应用在身份方面需要的一切。"
     },
     "sections": [
@@ -264,11 +264,11 @@
   "pricing": {
     "meta": {
       "title": "定价 — Autional",
-      "description": "Autional 定价说明：自托管免费；云托管在路线图中（即将推出）。",
+      "description": "Autional 定价说明：开源组件免费（AGPL-3.0 / MIT）；核心为商业授权，云托管在路线图中（即将推出）。",
       "keywords": "Autional, 定价, 身份, IAM, 订阅, 套餐"
     },
     "title": "简单透明的定价",
-    "lead": "当前自托管开源可用；云托管在路线图中（即将推出）。下方为规划中的云服务档位，没有意外账单，没有厂商锁定。",
+    "lead": "门户、设计系统与 SDK 开源（AGPL-3.0 / MIT）；核心身份服务为商业授权。云托管在路线图中（即将推出）。下方为规划中的云服务档位，没有意外账单，没有厂商锁定。",
     "popular": "最受欢迎",
     "faqTitle": "常见问题",
     "plans": [
@@ -277,7 +277,7 @@
       { "name": "Enterprise", "price": "定制", "desc": "适合关键业务部署", "features": ["MAU 不限量", "包含 Pro 全部功能", "自适应 MFA", "LDAP/AD 集成", "SSO 域名验证", "审计日志不限量保留 + 归档", "私有化部署", "7×24 专属支持", "99.99% SLA"], "cta": "联系销售" }
     ],
     "faqs": [
-      { "q": "可以免费自托管 Autional 吗？", "a": "可以。当前自托管开源可用；云托管在路线图中（即将推出）。自托管没有授权费用、没有 MAU 限制。" },
+      { "q": "可以免费自托管 Autional 吗？", "a": "部分可以 —— 开源组件（门户、设计系统、SDK）可免费自托管（AGPL-3.0 / MIT）；完整的平台核心身份服务为商业授权（私有化部署含源码访问权）。云托管在路线图中（即将推出）。" },
       { "q": "MAU 如何计算？", "a": "MAU（月活跃用户）是指在一个自然月内完成认证的唯一用户。如果某位用户在该月内登录过一次，就计为 1 个 MAU，闲置用户不计入。" },
       { "q": "云服务上线后，可以从 Free 升级到 Pro 而无需迁移吗？", "a": "可以。升级将即时解锁更高的额度与更多功能，无需数据迁移、无需改动代码、无需停机。" },
       { "q": "开源项目有折扣吗？", "a": "云服务上线后，我们计划为开源项目和非营利组织提供特别定价，详情请联系我们。" },
@@ -288,7 +288,7 @@
     "meta": {
       "title": "对比 — Autional",
       "description": "看看 Autional 与 Auth0、Clerk、WorkOS 以及自研认证方案的对比。",
-      "keywords": "Autional, 对比, Auth0, Clerk, WorkOS, 身份, 认证, IAM, 开源, 定价"
+      "keywords": "Autional, 对比, Auth0, Clerk, WorkOS, 身份, 认证, IAM, 开放核心, 定价"
     },
     "title": "我们与其他方案的对比",
     "lead": "诚实的对比，没有营销话术。看看 Autional 在哪里胜出 —— 以及哪里不如别人。",
@@ -297,11 +297,11 @@
     "verdictLabel": "结论：",
     "linkLabels": { "pricing": "查看定价", "features": "浏览功能特性", "docs": "阅读文档" },
     "comparisons": [
-      { "name": "对比 Auth0", "url": "#auth0", "pros": ["开源 —— 无厂商锁定", "定价透明，没有意外的 MAU 账单", "AI 原生 —— 专为 AI 生成的应用设计", "当前自托管可用；云托管在路线图中（即将推出）"], "cons": ["生态规模小于 Auth0", "第三方集成较少", "社区起步较晚"], "verdict": "Auth0 是市场在位者。Autional 是开源的替代方案 —— 同样的企业级能力、零锁定，为 AI 时代而构建。" },
-      { "name": "对比 Clerk", "url": "#clerk", "pros": ["AGPL-3.0 开源 —— 当前自托管可用", "企业级 SSO 已包含（而非附加项）", "为 B2B SaaS 构建的多租户架构", "27 个微服务，支撑真正的企业级规模"], "cons": ["预置 UI 组件较少", "暂无内置计费"], "verdict": "Clerk 的界面很漂亮。Autional 胜在企业级深度 —— 而且它是开源的。" },
-      { "name": "对比 WorkOS", "url": "#workos", "pros": ["完整的用户体系，而不只是企业级附加组件", "AI 生成工作流优先 —— Bolt/Lovable/Cursor", "开源 —— 没有按连接数计费", "为满足合规要求可自托管"], "cons": ["暂无 FGA", "销售与企业团队规模较小"], "verdict": "WorkOS 帮你把产品卖给企业。Autional 帮你构建真正有用户的 AI 应用。侧重点不同 —— 覆盖面更广。" },
+      { "name": "对比 Auth0", "url": "#auth0", "pros": ["开放核心 —— 门户与 SDK 开源，无厂商锁定", "定价透明，没有意外的 MAU 账单", "AI 原生 —— 专为 AI 生成的应用设计", "核心身份服务商业授权；云托管在路线图中（即将推出）"], "cons": ["生态规模小于 Auth0", "第三方集成较少", "社区起步较晚"], "verdict": "Auth0 是市场在位者。Autional 是开放核心（Open Core）的替代方案 —— 同样的企业级能力、零锁定，为 AI 时代而构建。" },
+      { "name": "对比 Clerk", "url": "#clerk", "pros": ["开放核心 —— 门户与 SDK 开源（AGPL-3.0 / MIT）", "企业级 SSO 已包含（而非附加项）", "为 B2B SaaS 构建的多租户架构", "27 个微服务，支撑真正的企业级规模"], "cons": ["预置 UI 组件较少", "暂无内置计费"], "verdict": "Clerk 的界面很漂亮。Autional 胜在企业级深度 —— 而且它是开放核心的。" },
+      { "name": "对比 WorkOS", "url": "#workos", "pros": ["完整的用户体系，而不只是企业级附加组件", "AI 生成工作流优先 —— Bolt/Lovable/Cursor", "开放核心 —— 没有按连接数计费", "商业授权含源码访问，满足合规审计"], "cons": ["暂无 FGA", "销售与企业团队规模较小"], "verdict": "WorkOS 帮你把产品卖给企业。Autional 帮你构建真正有用户的 AI 应用。侧重点不同 —— 覆盖面更广。" },
       { "name": "对比 Bolt.new 内置认证", "url": "#bolt", "pros": ["覆盖 Bolt 认证止步之处 —— SSO、MFA、RBAC、审计", "适用于任何 AI 工具，不只限于 Bolt", "从 MVP 扩展到企业级，无需迁移", "企业级能力，无需企业级价格"], "cons": ["对 MVP 而言，不如 Bolt 的零配置认证简单", "基础认证也需要集成 SDK"], "verdict": "Bolt.new 给你基础的邮箱/密码认证。Autional 给你其余的一切 —— 当你的 AI 生成应用超出 Bolt 内置认证的能力时。" },
-      { "name": "对比自研", "url": "#build", "pros": ["节省 3-6 个月的工程时间", "无需再承担持续的安全维护", "1,400+ 个 API 已构建并经过测试", "从第一天起就具备企业级合规能力"], "cons": ["云托管在路线图中（即将推出），当前需自行部署", "依赖外部平台"], "verdict": "自研认证就是在造一个安全产品。让 Autional 承担身份层，你把精力放在让 AI 应用与众不同的地方。" }
+      { "name": "对比自研", "url": "#build", "pros": ["节省 3-6 个月的工程时间", "无需再承担持续的安全维护", "1,400+ 个 API 已构建并经过测试", "从第一天起就具备企业级合规能力"], "cons": ["云托管在路线图中（即将推出），当前为商业授权私有化部署", "依赖外部平台"], "verdict": "自研认证就是在造一个安全产品。让 Autional 承担身份层，你把精力放在让 AI 应用与众不同的地方。" }
     ]
   },
   "roadmap": {
@@ -352,7 +352,7 @@
       { "value": "27", "label": "微服务" },
       { "value": "1,400+", "label": "API 端点" },
       { "value": "Go / TypeScript", "label": "技术栈" },
-      { "value": "AGPL-3.0", "label": "开源" }
+      { "value": "AGPL-3.0 / MIT", "label": "开源组件" }
     ],
     "entries": [
       { "title": "全服务 Demo 总入口", "desc": "逐一体验各服务的演示环境 —— 认证、企业级访问、审计与更多。", "label": "打开演示门户" },
@@ -404,23 +404,23 @@
     "meta": { "title": "服务条款 — Autional", "description": "Autional 服务条款。", "keywords": "Autional, 条款, 服务条款, 法律, 协议" },
     "title": "服务条款",
     "updatedLabel": "最近更新：{{date}}",
-    "s1": { "title": "1. 服务说明", "body": "Autional 基于 AGPL-3.0 开源许可证提供身份与访问管理软件。当前自托管开源可用；云托管在路线图中（即将推出）。" },
-    "s2": { "title": "2. 许可证", "body": "Autional 源代码基于 GNU Affero 通用公共许可证 v3（AGPL-3.0）授权。你可以在遵守该许可证的前提下使用、修改和分发本软件。" },
+    "s1": { "title": "1. 服务说明", "body": "Autional 提供身份与访问管理软件。开源组件（门户、设计系统与文档）依 AGPL-3.0 授权（SDK 软件包为 MIT）；核心身份服务为专有软件，依商业授权协议提供（私有化部署含源码访问权）；云服务在路线图中。" },
+    "s2": { "title": "2. 许可证", "body": "Autional 的开源组件依 GNU Affero 通用公共许可证 v3（AGPL-3.0）授权，SDK 软件包依 MIT 授权。你可以在遵守相应许可证的前提下使用、修改和分发这些组件。核心身份服务为专有软件，依单独的商业授权协议使用。" },
     "s3": { "title": "3. 用户责任", "items": ["保障你的账户凭据安全", "遵守适用的法律与法规", "不得将本服务用于非法用途"] },
     "s4": { "title": "4. 责任限制", "body": "本软件按「原样」提供，不附带任何形式的担保。作者与贡献者不对因使用本软件而产生的任何损害承担责任。" },
     "s5": { "title": "5. 联系方式", "label": "法律事务咨询：" },
     "contactEmail": "legal@autional.net"
   },
   "faq": {
-    "meta": { "title": "常见问题 — Autional", "description": "关于 Autional 身份平台的常见问题解答。", "keywords": "Autional, 常见问题, 身份, IAM, SSO, 认证, 开源" },
+    "meta": { "title": "常见问题 — Autional", "description": "关于 Autional 身份平台的常见问题解答。", "keywords": "Autional, 常见问题, 身份, IAM, SSO, 认证, 开放核心" },
     "title": "常见问题",
     "items": [
-      { "q": "Autional 是开源的吗？", "a": "是的。门户、设计系统与 SDK 以 AGPL-3.0 在 GitHub 组织页（github.com/autional）开源发布。当前自托管开源可用；云托管在路线图中（即将推出）。" },
+      { "q": "Autional 是开源的吗？", "a": "Autional 是开放核心（Open Core）模式：门户、设计系统与文档以 AGPL-3.0 开源，SDK 软件包为 MIT，均在 GitHub 组织页（github.com/autional）。核心身份服务为商业授权（私有化部署含源码访问权）。云托管在路线图中（即将推出）。" },
       { "q": "Autional 是什么？", "a": "Autional 是面向 AI 生成应用的身份层。它提供认证、授权、多租户、企业级 SSO 与合规能力 —— 全部由 27 个微服务和 1,400+ API 支撑。" },
-      { "q": "Autional 与 Auth0 有什么不同？", "a": "Auth0 是闭源 SaaS，而 Autional 支持自托管，并且专为 AI 生成的应用设计。我们的定价透明，不按用户数或连接数收费。" },
-      { "q": "我可以自托管 Autional 吗？", "a": "可以，自托管免费：当前自托管开源可用，云托管在路线图中（即将推出）。部署支持 Docker/Podman compose 或 Kubernetes，平台运行在 PostgreSQL + MongoDB + Redis + RabbitMQ 之上。" },
+      { "q": "Autional 与 Auth0 有什么不同？", "a": "Auth0 是闭源 SaaS，而 Autional 开源其门户、设计系统与 SDK，核心身份服务可商业授权私有化部署，并且专为 AI 生成的应用设计。我们的定价透明，不按用户数或连接数收费。" },
+      { "q": "我可以自托管 Autional 吗？", "a": "开源组件（门户、设计系统、SDK）可免费自托管；核心身份服务可商业授权私有化部署（支持 Docker/Podman compose 或 Kubernetes，运行在 PostgreSQL + MongoDB + Redis + RabbitMQ 之上）。云托管在路线图中（即将推出）。" },
       { "q": "「AI 生成的应用」指什么？", "a": "指使用 Bolt.new、Lovable.dev、Cursor、Claude Code 或 Replit 等工具构建的应用。这些工具能快速生成应用代码。Autional 提供身份层，让你的生成式应用不必重新发明认证。" },
-      { "q": "你们提供云托管吗？", "a": "云托管在路线图中（即将推出）。当前自托管开源可用；如果你需要托管基础设施，请联系我们。" },
+      { "q": "你们提供云托管吗？", "a": "云托管在路线图中（即将推出）。如果你需要私有化部署或托管基础设施，请联系我们。" },
       { "q": "你们支持哪些合规框架？", "a": "Autional 包含面向 ISO 27001、PCI DSS、HIPAA、SOX、GDPR、PSD2、PIPL 与等保 2.0 的数据模型与工具。合规认证由部署方自行负责。" },
       { "q": "Autional 有多少个 API 端点？", "a": "27 个微服务中共有 1,400+ 个 RESTful API 端点。每个端点都有 Swagger/OpenAPI 文档。" }
     ]
@@ -442,23 +442,23 @@
     ]
   },
   "about": {
-    "meta": { "title": "关于 — Autional", "description": "Autional 是面向 AI 生成应用的身份层。了解我们的故事、使命与路线图。", "keywords": "Autional, 关于, 身份, IAM, 开源, 使命, 团队" },
+    "meta": { "title": "关于 — Autional", "description": "Autional 是面向 AI 生成应用的身份层。了解我们的故事、使命与路线图。", "keywords": "Autional, 关于, 身份, IAM, 开放核心, 使命, 团队" },
     "heroTitle": "关于 Autional",
     "heroLead": "Autional 诞生于一个朴素的信念：每个 AI 生成的应用都值得拥有一个可直接上生产的用户体系 —— 无需从零自建，不被厂商锁定，也没有企业级的复杂度。",
     "missionTitle": "我们的使命",
     "missionBody": "让身份基础设施像 AI 生成的代码一样易于获得。无论团队规模大小，每位开发者都应该能在几分钟内 —— 而不是几个迭代内 —— 为自己的应用赋予企业级的认证、授权与合规能力。",
     "valuesTitle": "我们的价值观",
     "values": [
-      { "title": "开放优先", "desc": "门户、设计系统与 SDK 以 AGPL-3.0 开源发布；路线图公开，没有隐藏定价，没有厂商锁定。" },
+      { "title": "开放优先", "desc": "门户、设计系统与 SDK 开源发布（AGPL-3.0 / MIT）；路线图公开，没有隐藏定价，没有厂商锁定。" },
       { "title": "AI 原生", "desc": "为 AI 时代而生。从 Bolt 到 Cursor，从 MVP 到企业级 —— 身份能力始终跟得上 AI 速度的开发节奏。" },
       { "title": "开发者体验", "desc": "10 分钟集成。类型安全的 API。像产品而不像平台的身份基础设施。" },
       { "title": "默认安全", "desc": "企业级安全，却没有企业级的复杂度。哈希链审计、自适应 MFA、多租户隔离 —— 内建设计，而非事后外挂。" }
     ],
     "milestonesTitle": "我们的历程",
     "milestones": [
-      { "title": "项目启动", "desc": "核心认证引擎开始研发。Autional 诞生于对基于 Go 构建的开源身份平台的需求。" },
+      { "title": "项目启动", "desc": "核心认证引擎开始研发。Autional 诞生于对基于 Go 构建的现代身份平台的需求。" },
       { "title": "Alpha 版本", "desc": "首个版本，包含 SSO、MFA 与 RBAC，覆盖核心身份生命周期。" },
-      { "title": "开源发布", "desc": "门户、设计系统与 SDK 以 AGPL-3.0 协议开源，代码托管在 GitHub 组织页。" },
+      { "title": "开源发布", "desc": "门户、设计系统与 SDK 开源（AGPL-3.0 / MIT），代码托管在 GitHub 组织页。" },
       { "title": "Autional 发布", "desc": "品牌升级为 Autional —— 面向 AI 生成应用的身份层。27 个服务、1,400+ API、企业级合规能力。" }
     ],
     "roadmapTitle": "路线图"
@@ -466,7 +466,7 @@
   "docs": {
     "meta": { "title": "文档 — Autional", "description": "Autional 身份平台的快速开始指南与 API 参考。", "keywords": "Autional, 文档, docs, 快速开始, API 参考, 身份, IAM" },
     "title": "5 分钟快速开始",
-    "lead": "运行 27 个微服务、为你的应用接入认证，或部署到生产环境。开源发布，基于 AGPL-3.0。",
+    "lead": "运行 27 个微服务、为你的应用接入认证，或部署到生产环境。开放核心：门户、设计系统与 SDK 开源，核心身份服务为商业授权。",
     "steps": [
       { "title": "启动平台", "code": "# 完整步骤见快速开始指南：{{quickstartUrl}}\ndocker compose -f docker-compose.infra.yml -f docker-compose.monolith.yml up -d\n\n# 等待约 2-3 分钟，全部 27 个服务启动" },
       { "title": "安装 SDK", "code": "npm install @autional/react" },
@@ -627,7 +627,7 @@
     "pages": {
       "home": { "title": "首页", "excerpt": "面向 AI 生成应用的身份层" },
       "features": { "title": "功能", "excerpt": "SSO、MFA、通行密钥（Passkey）、多租户、审计与合规等核心能力" },
-      "pricing": { "title": "定价方案", "excerpt": "自托管开源免费；云服务档位在路线图中（即将推出）" },
+      "pricing": { "title": "定价方案", "excerpt": "开源组件（AGPL-3.0 / MIT）免费自托管；核心身份服务为商业授权，云托管在路线图中" },
       "compare": { "title": "方案对比", "excerpt": "与 Auth0、Clerk、WorkOS 等身份平台的诚实对比" },
       "roadmap": { "title": "路线图", "excerpt": "已交付成果与后续规划" },
       "showcase": { "title": "演示与展示", "excerpt": "真实演示环境与产品能力一览" },

@@ -1,5 +1,5 @@
 ---
-title: "用开源 IAM 实现 GDPR DSAR 自动化"
+title: "用现代 IAM 实现 GDPR DSAR 自动化"
 date: "2026-06-15"
 category: "Compliance"
 tags: ["GDPR", "DSAR", "隐私", "自动化"]

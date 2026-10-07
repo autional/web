@@ -144,12 +144,13 @@ You might argue these probabilities are just estimates. True. But the key point 
 | **In-house annual TCO** | **¥429K-1,017K** | **¥237K-777K** | **¥237K-777K** |
 | **3-year cumulative TCO** | — | — | **¥903K-2,571K** |
 
-Compare with Autional commercial editions:
+Compare with Autional:
 
-| Edition | Annual Fee (10K MAU) | 3-Year Cumulative |
-|---------|----------------------|-------------------|
-| Autional Pro | ¥12K/year | ¥36K |
-| Autional Enterprise | ¥36K/year | ¥108K |
+| Edition | Fee | 3-Year Cumulative |
+|---------|-----|-------------------|
+| Open-source components (portals / design system / SDKs), self-hosted | Free (AGPL-3.0 / MIT) | ¥0 |
+| Core identity services (commercial license; private deployment includes source access) | Commercial license | Per commercial quote |
+| Cloud hosting | On the roadmap (coming soon) | Not yet available |
 
 ## When to Build vs When to Buy?
 
@@ -176,4 +177,4 @@ When running the numbers, include the implicit costs. When evaluating, include t
 
 ---
 
-*Autional offers a Community Edition (permanently free), Pro Edition (¥12K/year), and Enterprise Edition (¥36K/year). [View full pricing and edition comparison](/pricing).*
+*Autional's open-source components (portals, design system, and SDKs under AGPL-3.0 / MIT) are free to self-host; the core identity services are available under a commercial license (private deployment includes source access). [View pricing details](/pricing).*

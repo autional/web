@@ -8,7 +8,7 @@ import { GITHUB_ORG_URL } from './site-env';
 export const SITE_FACTS = {
   serviceCount: 27,
   apiEndpointCount: '1,400+',
-  license: 'AGPL-3.0',
+  license: 'AGPL-3.0 / MIT',
   /** GitHub 口径唯一来源：site-env.GITHUB_ORG_URL（W6：两侧同值 github.com/autional） */
   githubOrg: GITHUB_ORG_URL,
   /** 已发布至 npm 的软件包（以 npm 实查为准；发布新包后同步此表） */
