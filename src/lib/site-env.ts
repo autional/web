@@ -35,5 +35,10 @@ export const brotherUrl = (sub: string): string => `https://${sub}.${SITE_ROOT_D
 /** GitHub 口径（W6 用户裁定：统一组织页 github.com/autional，两侧同值）。 */
 export const GITHUB_ORG_URL = 'https://github.com/autional';
 
+/** 对侧区主站 URL（W3 ai 页跨区互链）：仅 TLD 互换（.cn ↔ .com），全站唯一定义处。 */
+export const OTHER_REGION_SITE_URL: string = SITE_URL.endsWith('.cn')
+  ? SITE_URL.replace(/\.cn$/, '.com')
+  : SITE_URL.replace(/\.com$/, '.cn');
+
 /** BCP-47 locale（zh→zh-CN / en→en-US）。 */
 export const LOCALE: string = DEFAULT_LANG === 'zh' ? 'zh-CN' : 'en-US';

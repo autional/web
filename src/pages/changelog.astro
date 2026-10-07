@@ -1,40 +1,24 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
+import { t } from '../i18n';
+import { GITHUB_ORG_URL } from '../lib/site-env';
+
+interface ChangelogEntry { date: string; version: string; items: string[] }
 
 // 发布记录口径（CH-01）：只列产品与开源组件的真实发布，不含本站工程日志；
 // npm 组件条目以 npm publish time 实查为准（2026-10-05 核对）。
-const changelog = [
-  { date: '2026-10-05', version: '开源组件发布', items: [
-    '@autional/onboard 0.1.0 —— 项目初始化 CLI 首发',
-    '@autional/tokens 0.1.0-rc.7 发布',
-  ]},
-  { date: '2026-10-04', version: '开源组件发布', items: [
-    '@autional/ui 0.1.0-rc.38 发布',
-    '@autional/shared 0.1.0-rc.26 发布',
-  ]},
-  { date: '2026-10-03', version: '开源组件发布', items: [
-    '@autional/tailwind-preset 0.1.0-rc.2 发布',
-  ]},
-  { date: '2026-09-29', version: '开源组件首发', items: [
-    '@autional/react 0.1.0-rc 发布 —— React SDK 登陆 npm',
-    '@autional/ui、@autional/tokens、@autional/tailwind-preset、@autional/shared 首个 rc 版本发布',
-  ]},
-  { date: '2026-06-30', version: '2.0.0-rc.1', items: [
-    '网关 CORS 默认对所有来源开启',
-    'DNS 解析加固 —— 遥测、数据库与 Redis 统一防阻断',
-    '启用 GOMEMLIMIT 以防止 OOM',
-    '租户连接池韧性改进',
-  ]},
-];
+const entries = t('changelog.entries', { returnObjects: true }) as ChangelogEntry[];
+// npm 检索页（语言中立）；GitHub 链接依 W6 裁定统一 GITHUB_ORG_URL
+const NPM_SEARCH_URL = 'https://www.npmjs.com/search?q=%40autional';
 ---
-<LandingLayout title="更新日志 — Autional" description="Autional 平台与开源组件的版本发布记录。" keywords="Autional, 更新日志, 发布, 更新, 版本历史, 身份">
+<LandingLayout title={t('changelog.meta.title')} description={t('changelog.meta.description')} keywords={t('changelog.meta.keywords')}>
   <section class="mx-auto max-w-3xl px-4 py-20">
     <div class="text-center mb-16">
-      <h1 class="text-4xl font-bold sm:text-5xl">更新日志</h1>
-      <p class="mt-4 text-lg text-neutral-500 max-w-xl mx-auto">Autional 平台与开源组件的版本发布记录。npm 软件包随迭代滚动发布，明细可在 <a href="https://www.npmjs.com/search?q=%40autional" class="text-primary-600 hover:underline">npm</a> 与 <a href="https://github.com/autional-cn" class="text-primary-600 hover:underline">GitHub 组织页</a>查看。</p>
+      <h1 class="text-4xl font-bold sm:text-5xl">{t('changelog.title')}</h1>
+      <p class="mt-4 text-lg text-neutral-500 max-w-xl mx-auto">{t('changelog.leadPrefix')} <a href={NPM_SEARCH_URL} class="text-primary-600 hover:underline">{t('changelog.leadNpm')}</a> {t('changelog.leadMid')} <a href={GITHUB_ORG_URL} class="text-primary-600 hover:underline">{t('changelog.leadGithub')}</a>{t('changelog.leadSuffix')}</p>
     </div>
     <div class="space-y-12">
-      {changelog.map(v => (
+      {entries.map(v => (
         <div>
           <div class="flex items-baseline gap-3 mb-4">
             <h2 class="text-xl font-bold">{v.version}</h2>

@@ -2,108 +2,98 @@
 import Layout from '../../layouts/LandingLayout.astro';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { t } from '../../i18n';
+import { CDN_HOST, DEFAULT_LANG, LOCALE, OTHER_REGION_SITE_URL, SITE_HOST, SITE_URL } from '../../lib/site-env';
 
-// 构建期快照：与 /ai/skill.md 逐字节一致
+interface Phase { n: string; title: string; desc: string }
+
+// 构建期快照：与 /ai/skill.md 逐字节一致（gen-static 已按本区默认语言从入仓镜像落位）
 const skillMd = readFileSync(resolve(process.cwd(), 'public/ai/skill.md'), 'utf8');
 
-const promptZh = `请读取 https://www.autional.cn/ai/skill.md，并据此为当前项目接入 Autional 登录。
-若打不开，改用国内镜像：
-https://cdn.autional.cn/ai/latest/SKILL.md`;
+// W3：每区只保留 /ai/ 主页（cn=zh / com=en），语言变体页退场——本文语言随 DEFAULT_LANG
+const otherLang = DEFAULT_LANG === 'zh' ? 'en' : 'zh';
+const otherLocale = DEFAULT_LANG === 'zh' ? 'en-US' : 'zh-CN';
+const skillMain = `${SITE_URL}/ai/skill.md`;
+const skillMainFallback = `${CDN_HOST}/ai/latest/SKILL.md`;
+const skillOther = `${SITE_URL}/ai/skill.${otherLang}.md`;
+const skillOtherFallback = `${CDN_HOST}/ai/latest/SKILL.${otherLang}.md`;
+const skillMirror = `${CDN_HOST}/ai/latest/SKILL.md`;
+const otherSkillPath = `/ai/skill.${otherLang}.md`;
 
-// hreflang 互指（T-03）：/ai（zh-CN 主）与 /ai/en 互指，x-default 指中文主版本
-const site = Astro.site!;
+// hreflang 互指（T-03 / W3）：本区 /ai/（DEFAULT_LANG 主）与对侧区 /ai/ 互指，x-default 指本区主版本
 const alternates = [
-  { hreflang: 'zh-CN', href: new URL('/ai/', site).href },
-  { hreflang: 'en', href: new URL('/ai/en/', site).href },
-  { hreflang: 'x-default', href: new URL('/ai/', site).href },
+  { hreflang: LOCALE, href: `${SITE_URL}/ai/` },
+  { hreflang: otherLocale, href: `${OTHER_REGION_SITE_URL}/ai/` },
+  { hreflang: 'x-default', href: `${SITE_URL}/ai/` },
 ];
 
-const phases = [
-  { n: '0', title: '先建安全网', desc: 'git 分支、工具链检查、风险披露——所有改动可回退。' },
-  { n: '1', title: '盘点你的应用', desc: '框架、现有认证、冲突点，以及接入会影响什么。' },
-  { n: '2', title: '设计策略', desc: '租户命名、合规驱动的密码策略（等保/PIPL 档位）、登录方式。' },
-  { n: '3', title: '开通身份服务', desc: '在开发者门户创建租户与应用；凭证只处理一次。' },
-  { n: '4', title: '安装 SDK', desc: '按框架安装依赖包（npm 源可配 npmmirror）并注入环境变量。' },
-  { n: '5', title: '写入代码', desc: 'Provider、登录界面、外部 ID 映射、用户中心——真实代码，改完立即验证构建。' },
-  { n: '6-7', title: '测试与验证', desc: '单元测试 + 8 步端到端流程：注册 → 登录 → 资料 → 刷新 → 登出 → 吊销。' },
-  { n: '8', title: '交付清单', desc: '变更清单、测试账号，以及门户里要核对的项。' },
-];
-
-const checklist = [
-  '注册、登录、登出全链路可用',
-  '刷新页面会话保持；Token 静默自动刷新',
-  '受保护路由未登录不可进入',
-  '加上账号体系后，原有应用数据仍在',
-  '构建通过、单元测试全绿',
-  '端到端流程验证：discovery → 注册 → 登录 → 资料 → 刷新 → 登出 → 吊销 Token 被拒',
-  'AUTIONAL_CHANGES.md 列出所有改动文件',
-  '创建了多用户验证用的测试账号',
-];
+const phases = t('ai.phases', { returnObjects: true }) as Phase[];
+const reqItems = t('ai.reqItems', { returnObjects: true }) as string[];
+const checklist = t('ai.checklist', { returnObjects: true }) as string[];
 ---
 
 <Layout
-  title="AI 接入 — Autional"
-  description="一句话让 AI 编程助手为你的应用接入 Autional 登录与多用户能力。支持 Claude Code、Cursor、OpenCode 等任意 AI agent；含自有 CDN 国内兜底。"
-  keywords="Autional, AI 接入, Claude Code, Cursor, AI 编程助手, 登录, 多用户, OIDC, 自有 CDN 镜像"
+  title={t('ai.meta.title')}
+  description={t('ai.meta.description')}
+  keywords={t('ai.meta.keywords')}
   alternates={alternates}
 >
-  <section class="mx-auto max-w-4xl px-4 py-20">
+  <section
+    class="mx-auto max-w-4xl px-4 py-20"
+    data-copy-ok={t('ai.copyOk')}
+    data-copy-fail={t('ai.copyFail')}
+  >
     <!-- 语言 / 区域切换 -->
     <div class="mb-8 flex items-center justify-between text-sm">
-      <span class="brand-kicker">Agent Onboarding</span>
+      <span class="brand-kicker">{t('ai.kicker')}</span>
       <div class="flex items-center gap-4 text-neutral-500">
-        <a href="/ai/en" class="hover:text-primary-600">English</a>
-        <a href="https://www.autional.com/ai" class="hover:text-primary-600">国际版 (.com) →</a>
+        <a href={`${OTHER_REGION_SITE_URL}/ai`} class="hover:text-primary-600">{t('ai.regionSwitch')}</a>
       </div>
     </div>
 
     <!-- Hero -->
     <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold sm:text-5xl">把你的应用变成多人产品</h1>
-      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">
-        把一句话粘贴进你的 AI 编程助手。它会抓取接入 skill——一份引导式流程，为你的现有项目加上
-        Autional 登录、账号与会话。中国大陆网络不稳时，自动回退自有 CDN 镜像。
-      </p>
+      <h1 class="text-4xl font-bold sm:text-5xl">{t('ai.heroTitle')}</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">{t('ai.heroLead')}</p>
     </div>
 
     <!-- 主 prompt + 复制 -->
     <div class="brand-card p-6 mb-4">
-      <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-3">第 1 步 — 复制这句话</p>
+      <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-3">{t('ai.step1Label')}</p>
       <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-4 overflow-x-auto">
-        <pre id="prompt-zh" class="text-sm text-syntax-plain font-mono leading-relaxed whitespace-pre-wrap">{promptZh}</pre>
+        <pre id="prompt-main" class="text-sm text-syntax-plain font-mono leading-relaxed whitespace-pre-wrap">{t('ai.promptPrimary', { url: skillMain, fallback: skillMainFallback })}</pre>
       </div>
       <div class="mt-4 flex items-center gap-3">
-        <button class="brand-button-primary" data-copy-target="prompt-zh">复制 prompt</button>
-        <span class="text-sm text-neutral-500">适用于 Claude Code、Cursor、OpenCode 等任何能联网的 agent。</span>
+        <button class="brand-button-primary" data-copy-target="prompt-main">{t('ai.copyPrimary')}</button>
+        <span class="text-sm text-neutral-500">{t('ai.agentNote')}</span>
       </div>
     </div>
 
-    <!-- 英文 prompt -->
+    <!-- 次级语言 prompt -->
     <details class="brand-card p-6 mb-4">
-      <summary class="cursor-pointer text-sm font-semibold text-neutral-600 dark:text-neutral-300">习惯用英文？改用这句 prompt</summary>
+      <summary class="cursor-pointer text-sm font-semibold text-neutral-600 dark:text-neutral-300">{t('ai.promptSecondarySummary')}</summary>
       <div class="mt-4 rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-4 overflow-x-auto">
-        <pre id="prompt-en" class="text-sm text-syntax-plain font-mono leading-relaxed whitespace-pre-wrap">Fetch https://www.autional.cn/ai/skill.en.md and follow it to add Autional login to this project. If unreachable, use:
-https://cdn.autional.cn/ai/latest/SKILL.en.md</pre>
+        <pre id="prompt-secondary" class="text-sm text-syntax-plain font-mono leading-relaxed whitespace-pre-wrap">{t('ai.promptSecondary', { url: skillOther, fallback: skillOtherFallback })}</pre>
       </div>
-      <button class="brand-button-secondary mt-3" data-copy-target="prompt-en">Copy English prompt</button>
+      <button class="brand-button-secondary mt-3" data-copy-target="prompt-secondary">{t('ai.copySecondary')}</button>
     </details>
 
     <!-- 第 2-3 步 -->
     <div class="grid gap-4 sm:grid-cols-2 mb-16">
       <div class="brand-card p-6">
-        <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-2">第 2 步</p>
-        <p class="font-semibold">粘贴给你的 agent</p>
-        <p class="mt-1 text-sm text-neutral-500">在你想要升级的项目里运行。agent 会读取 skill 并逐 Phase 执行，每个阶段都先与你确认。</p>
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-2">{t('ai.step2Title')}</p>
+        <p class="font-semibold">{t('ai.step2Head')}</p>
+        <p class="mt-1 text-sm text-neutral-500">{t('ai.step2Desc')}</p>
       </div>
       <div class="brand-card p-6">
-        <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-2">第 3 步</p>
-        <p class="font-semibold">跟随确认门</p>
-        <p class="mt-1 text-sm text-neutral-500">agent 先盘点你的应用、再给出方案——你确认后才动代码。所有改动都落在独立 git 分支上。</p>
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-2">{t('ai.step3Title')}</p>
+        <p class="font-semibold">{t('ai.step3Head')}</p>
+        <p class="mt-1 text-sm text-neutral-500">{t('ai.step3Desc')}</p>
       </div>
     </div>
 
     <!-- agent 会做什么 -->
-    <h2 class="text-2xl font-bold mb-6">agent 会做什么</h2>
+    <h2 class="text-2xl font-bold mb-6">{t('ai.phasesTitle')}</h2>
     <div class="grid gap-3 sm:grid-cols-2 mb-16">
       {phases.map((p) => (
         <div class="brand-card p-4 flex gap-4">
@@ -119,17 +109,16 @@ https://cdn.autional.cn/ai/latest/SKILL.en.md</pre>
     <div class="grid gap-8 md:grid-cols-2 mb-16">
       <!-- 前置条件 -->
       <div>
-        <h2 class="text-2xl font-bold mb-4">你需要准备</h2>
+        <h2 class="text-2xl font-bold mb-4">{t('ai.reqTitle')}</h2>
         <ul class="space-y-2 text-sm text-neutral-600 dark:text-neutral-300">
-          <li class="flex gap-2"><span class="text-primary-600">•</span>一个现有项目——React、Vue、Next.js、Node 等</li>
-          <li class="flex gap-2"><span class="text-primary-600">•</span>一个可联网的 AI 编程助手</li>
-          <li class="flex gap-2"><span class="text-primary-600">•</span>git 仓库（建议——便于安全回退）</li>
-          <li class="flex gap-2"><span class="text-primary-600">•</span>Autional 账号（接入过程中在开发者门户创建）</li>
+          {reqItems.map((r) => (
+            <li class="flex gap-2"><span class="text-primary-600">•</span>{r}</li>
+          ))}
         </ul>
       </div>
       <!-- 完成标准 -->
       <div>
-        <h2 class="text-2xl font-bold mb-4">"接入完成"的标准</h2>
+        <h2 class="text-2xl font-bold mb-4">{t('ai.checklistTitle')}</h2>
         <ul class="space-y-2 text-sm text-neutral-600 dark:text-neutral-300">
           {checklist.map((c) => (
             <li class="flex gap-2"><span class="text-green-600">✓</span>{c}</li>
@@ -139,20 +128,19 @@ https://cdn.autional.cn/ai/latest/SKILL.en.md</pre>
     </div>
 
     <!-- 兜底路径 -->
-    <h2 class="text-2xl font-bold mb-6">agent 不能联网怎么办</h2>
+    <h2 class="text-2xl font-bold mb-6">{t('ai.fallbacksTitle')}</h2>
     <div class="grid gap-4 mb-6">
       <div class="brand-card p-6">
-        <p class="font-semibold mb-1">路径 A — 粘贴全文</p>
+        <p class="font-semibold mb-1">{t('ai.optATitle')}</p>
         <p class="text-sm text-neutral-500 mb-4">
-          展开、全选复制，连同"按这份说明为我的项目接入 Autional 登录"一起粘贴给 agent。
-          以下内容与
+          {t('ai.optADescA')}
           <a href="/ai/skill.md" class="text-primary-600 hover:underline font-mono text-xs">/ai/skill.md</a>
-          逐字节一致（自有 CDN 镜像同名文件亦一致）。
+          {t('ai.optADescB')}
         </p>
         <details>
-          <summary class="cursor-pointer text-sm font-semibold text-primary-600">展开完整 skill 全文（{(skillMd.length / 1024).toFixed(0)} KB）</summary>
+          <summary class="cursor-pointer text-sm font-semibold text-primary-600">{t('ai.optAToggle', { kb: (skillMd.length / 1024).toFixed(0) })}</summary>
           <div class="mt-3">
-            <button class="brand-button-secondary" data-copy-target="skill-full">复制全文</button>
+            <button class="brand-button-secondary" data-copy-target="skill-full">{t('ai.copyFull')}</button>
             <div class="mt-3 max-h-96 overflow-auto rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-4">
               <pre id="skill-full" class="text-xs text-neutral-300 font-mono leading-relaxed whitespace-pre-wrap">{skillMd}</pre>
             </div>
@@ -160,40 +148,42 @@ https://cdn.autional.cn/ai/latest/SKILL.en.md</pre>
         </details>
       </div>
       <div class="brand-card p-6">
-        <p class="font-semibold mb-1">路径 B — npx 脚手架</p>
-        <p class="text-sm text-neutral-500 mb-3">不想让 agent 改代码、只想生成骨架？在你的项目里运行（默认走 npmmirror 镜像源）：</p>
+        <p class="font-semibold mb-1">{t('ai.optBTitle')}</p>
+        <p class="text-sm text-neutral-500 mb-3">{t('ai.optBDesc')}</p>
         <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-4 flex items-center justify-between gap-3 overflow-x-auto">
-          <code id="npx-cmd" class="text-sm text-syntax-plain font-mono whitespace-nowrap">npx -y @autional/onboard --registry=https://registry.npmmirror.com</code>
-          <button class="text-xs font-semibold text-sky-300 hover:text-white shrink-0" data-copy-target="npx-cmd">复制</button>
+          <code id="npx-cmd" class="text-sm text-syntax-plain font-mono whitespace-nowrap">{t('ai.optBCmd')}</code>
+          <button class="text-xs font-semibold text-sky-300 hover:text-white shrink-0" data-copy-target="npx-cmd">{t('ai.copyShort')}</button>
         </div>
       </div>
       <div class="brand-card p-6">
-        <p class="font-semibold mb-1">路径 C — 自有 CDN 镜像</p>
-        <p class="text-sm text-neutral-500 mb-3">整站不可达时，skill 文件在自有 CDN 有同名镜像，内容与本站逐字节一致：</p>
+        <p class="font-semibold mb-1">{t('ai.optCTitle')}</p>
+        <p class="text-sm text-neutral-500 mb-3">{t('ai.optCDesc')}</p>
         <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-4 overflow-x-auto">
-          <code id="cdn-url" class="text-sm text-syntax-plain font-mono whitespace-nowrap">https://cdn.autional.cn/ai/latest/SKILL.md</code>
+          <code id="cdn-url" class="text-sm text-syntax-plain font-mono whitespace-nowrap">{skillMirror}</code>
         </div>
-        <button class="brand-button-secondary mt-3" data-copy-target="cdn-url">复制镜像地址</button>
+        <button class="brand-button-secondary mt-3" data-copy-target="cdn-url">{t('ai.copyMirror')}</button>
       </div>
     </div>
 
     <!-- 原始文件 -->
     <div class="brand-card p-6">
-      <p class="font-semibold mb-3">agent 会读取的文件</p>
+      <p class="font-semibold mb-3">{t('ai.filesTitle')}</p>
       <ul class="space-y-1.5 text-sm font-mono">
-        <li><a href="/ai/skill.md" class="text-primary-600 hover:underline">/ai/skill.md</a><span class="text-neutral-400 font-sans"> — 中文版 skill（主）</span></li>
-        <li><a href="/ai/skill.en.md" class="text-primary-600 hover:underline">/ai/skill.en.md</a><span class="text-neutral-400 font-sans"> — English skill</span></li>
-        <li><a href="/ai/references/compliance-matrix.md" class="text-primary-600 hover:underline">/ai/references/compliance-matrix.md</a><span class="text-neutral-400 font-sans"> — 等保/PIPL 密码与合规档</span></li>
-        <li><a href="/ai/references/config-template.md" class="text-primary-600 hover:underline">/ai/references/config-template.md</a><span class="text-neutral-400 font-sans"> — 配置与环境变量模板</span></li>
-        <li><a href="/llms.txt" class="text-primary-600 hover:underline">/llms.txt</a><span class="text-neutral-400 font-sans"> — 站点机器可读索引</span></li>
+        <li><a href="/ai/skill.md" class="text-primary-600 hover:underline">/ai/skill.md</a><span class="text-neutral-400 font-sans"> — {t('ai.filesMainLabel')}</span></li>
+        <li><a href={otherSkillPath} class="text-primary-600 hover:underline">{otherSkillPath}</a><span class="text-neutral-400 font-sans"> — {t('ai.filesOtherLabel')}</span></li>
+        <li><a href="/ai/references/compliance-matrix.md" class="text-primary-600 hover:underline">/ai/references/compliance-matrix.md</a><span class="text-neutral-400 font-sans"> — {t('ai.filesComplianceLabel')}</span></li>
+        <li><a href="/ai/references/config-template.md" class="text-primary-600 hover:underline">/ai/references/config-template.md</a><span class="text-neutral-400 font-sans"> — {t('ai.filesConfigLabel')}</span></li>
+        <li><a href="/llms.txt" class="text-primary-600 hover:underline">/llms.txt</a><span class="text-neutral-400 font-sans"> — {t('ai.filesLlmsLabel')}</span></li>
       </ul>
-      <p class="mt-4 text-xs text-neutral-400">
-        skill 不含任何密钥——其中所有端点均为公开 URL。只从 www.autional.cn 抓取这些文件；自有 CDN 镜像仅作网络兜底，内容同源同校验。
-      </p>
+      <p class="mt-4 text-xs text-neutral-400">{t('ai.filesNote', { host: SITE_HOST })}</p>
     </div>
   </section>
 
   <script>
+    // 复制反馈文案随区域语言（SSR 注入 data-*，避免在客户端脚本里散语言字面量）
+    const holder = document.querySelector<HTMLElement>('[data-copy-ok]');
+    const copyOk = holder?.dataset.copyOk ?? 'Copied!';
+    const copyFail = holder?.dataset.copyFail ?? 'Copy failed';
     document.querySelectorAll<HTMLButtonElement>('[data-copy-target]').forEach((btn) => {
       const original = btn.textContent;
       btn.addEventListener('click', async () => {
@@ -201,10 +191,10 @@ https://cdn.autional.cn/ai/latest/SKILL.en.md</pre>
         if (!target) return;
         try {
           await navigator.clipboard.writeText(target.textContent?.trim() ?? '');
-          btn.textContent = '已复制！';
+          btn.textContent = copyOk;
           setTimeout(() => (btn.textContent = original), 1500);
         } catch {
-          btn.textContent = '复制失败——请手动选择';
+          btn.textContent = copyFail;
           setTimeout(() => (btn.textContent = original), 2000);
         }
       });

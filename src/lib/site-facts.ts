@@ -1,4 +1,5 @@
 // 站点事实单一来源（C-01 等）— 与服务端实况一致，改动只在此一处。
+import { GITHUB_ORG_URL } from './site-env';
 // 服务数核对（2026-10-05，五源一致）：infra-ops/docker/entrypoint-monolith.sh（27 hostname）·
 // shared/ci/bin/repos.manifest（27 service-*）· sites/reference/scripts/sync-specs-zh.py（27）·
 // reference.autional.cn 线上"全部 27" · demo 门户配置 27 slug。
@@ -8,7 +9,8 @@ export const SITE_FACTS = {
   serviceCount: 27,
   apiEndpointCount: '1,400+',
   license: 'AGPL-3.0',
-  githubOrg: 'https://github.com/autional-cn',
+  /** GitHub 口径唯一来源：site-env.GITHUB_ORG_URL（W6：两侧同值 github.com/autional） */
+  githubOrg: GITHUB_ORG_URL,
   /** 已发布至 npm 的软件包（以 npm 实查为准；发布新包后同步此表） */
   publishedPackages: [
     { name: '@autional/react', version: '0.3.0' },

@@ -1,37 +1,36 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
+import { t } from '../i18n';
+import { brotherUrl, GITHUB_ORG_URL } from '../lib/site-env';
 import { SITE_FACTS } from '../lib/site-facts';
 
-// 已发布软件包以 npm 实查为准（单一来源：src/lib/site-facts.ts）
-const pkgMeta: Record<string, { desc: string; install: string }> = {
-  '@autional/react': { desc: 'React —— AutionalProvider、useAutional、RequireAuth', install: 'npm install @autional/react' },
-  '@autional/onboard': { desc: '项目初始化 CLI', install: 'npx @autional/onboard' },
-  '@autional/ui': { desc: 'React 组件库 —— 门户与管理面组件', install: 'npm install @autional/ui' },
-  '@autional/tokens': { desc: '设计令牌 —— 颜色、排版与间距 CSS 变量', install: 'npm install @autional/tokens' },
-  '@autional/tailwind-preset': { desc: 'Tailwind 预设 —— 接入设计令牌', install: 'npm install @autional/tailwind-preset' },
-  '@autional/shared': { desc: '共享运行时工具 —— 多门户通用逻辑', install: 'npm install @autional/shared' },
-  '@autional/eslint-config': { desc: 'ESLint 共享配置', install: 'npm install -D @autional/eslint-config' },
-  '@autional/tsconfig': { desc: 'TypeScript 共享配置', install: 'npm install -D @autional/tsconfig' },
-};
+interface PkgMeta { name: string; desc: string; install: string }
+
+// 已发布软件包以 npm 实查为准（单一来源：src/lib/site-facts.ts）；desc/install 取 i18n（sdk.packages 按包名对齐）
+const pkgMeta = Object.fromEntries(
+  (t('sdk.packages', { returnObjects: true }) as PkgMeta[]).map((p) => [p.name, p]),
+);
 const published = SITE_FACTS.publishedPackages.map((p) => ({
   ...p,
   ...(pkgMeta[p.name] ?? { desc: '', install: `npm install ${p.name}` }),
 }));
+const issuerUrl = brotherUrl('api');
 const quickstart = {
   lang: 'React',
-  code: 'import { AutionalProvider } from \'@autional/react\';\n\nconst config = { appId: \'my-app\', issuer: \'https://api.autional.cn\' };\n\nfunction App() {\n  return (\n    <AutionalProvider config={config}>\n      <YourApp />\n    </AutionalProvider>\n  );\n}',
-  install: 'npm install @autional/react',
+  code: t('sdk.quickstartCode').replaceAll('{{issuer}}', issuerUrl),
+  install: t('sdk.quickstartInstall'),
 };
+const quickstartUrl = `${brotherUrl('developer')}/quickstart`;
 ---
-<Layout title="SDK — Autional" description="Autional SDK：已发布的 npm 软件包与设计系统工具，一行代码接入身份能力。" keywords="Autional, SDK, React, npm, 认证, TypeScript, 开源, 设计系统">
+<Layout title={t('sdk.meta.title')} description={t('sdk.meta.description')} keywords={t('sdk.meta.keywords')}>
   <section class="mx-auto max-w-6xl px-4 py-20">
     <div class="text-center mb-16">
-      <h1 class="text-4xl font-bold sm:text-5xl">SDK</h1>
-      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">已发布的 npm 软件包，均可直接安装：React 适配、项目初始化 CLI、设计系统与工程配置工具，以及 Vue、Next.js、Node 等更多框架适配。</p>
+      <h1 class="text-4xl font-bold sm:text-5xl">{t('sdk.title')}</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">{t('sdk.lead')}</p>
     </div>
 
     <!-- Quickstart -->
-    <div class="mb-20"><h2 class="text-2xl font-bold mb-8 text-center">一行代码快速开始</h2>
+    <div class="mb-20"><h2 class="text-2xl font-bold mb-8 text-center">{t('sdk.quickstartTitle')}</h2>
       <div class="mx-auto max-w-3xl">
         <div class="flex items-center gap-3 mb-2"><span class="rounded-full bg-primary-50 text-primary-700 px-3 py-0.5 text-xs font-medium">{quickstart.lang}</span></div>
         <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-5 overflow-x-auto">
@@ -42,7 +41,7 @@ const quickstart = {
     </div>
 
     <!-- Published Packages -->
-    <h2 class="text-2xl font-bold mb-8">已发布的 npm 软件包</h2>
+    <h2 class="text-2xl font-bold mb-8">{t('sdk.publishedTitle')}</h2>
     <div class="grid gap-3 sm:grid-cols-2">{published.map(p => (
       <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 flex flex-col justify-between">
         <div><code class="text-sm font-mono font-semibold text-primary-700 dark:text-primary-300">{p.name}</code><span class="ml-2 rounded-xs bg-neutral-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-mono text-neutral-500">{p.version}</span><p class="mt-1 text-sm text-neutral-500">{p.desc}</p></div>
@@ -53,11 +52,11 @@ const quickstart = {
     <!-- CTA -->
     <div class="mt-16 text-center">
       <div class="brand-card inline-block px-10 py-8">
-        <p class="text-lg font-semibold text-primary-900 dark:text-white">准备好集成了吗？</p>
-        <p class="mt-2 text-sm text-neutral-500">从快速开始指南出发，或到 GitHub 查看开源代码。</p>
+        <p class="text-lg font-semibold text-primary-900 dark:text-white">{t('sdk.readyTitle')}</p>
+        <p class="mt-2 text-sm text-neutral-500">{t('sdk.readyLead')}</p>
         <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
-          <a href="https://developer.autional.cn/quickstart" class="brand-button-primary">快速开始指南 →</a>
-          <a href="https://github.com/autional-cn" class="rounded-full border border-neutral-300 dark:border-neutral-700 px-5 py-2.5 text-sm font-semibold text-neutral-700 dark:text-neutral-200 transition hover:bg-neutral-50 dark:hover:bg-white/10">在 GitHub 上查看</a>
+          <a href={quickstartUrl} class="brand-button-primary">{t('sdk.quickstartCta')} →</a>
+          <a href={GITHUB_ORG_URL} class="rounded-full border border-neutral-300 dark:border-neutral-700 px-5 py-2.5 text-sm font-semibold text-neutral-700 dark:text-neutral-200 transition hover:bg-neutral-50 dark:hover:bg-white/10">{t('sdk.githubCta')}</a>
         </div>
       </div>
     </div>

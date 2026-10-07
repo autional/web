@@ -2,48 +2,45 @@
 import LandingLayout from '../layouts/LandingLayout.astro';
 import { t } from '../i18n';
 import { FUTURE_ROADMAP, type RoadmapPhase } from '../lib/product-roadmap';
-const milestones = [
-  { date: '2024 Q1', title: '项目启动', desc: '核心认证引擎开始研发。Autional 诞生于对基于 Go 构建的开源身份平台的需求。' },
-  { date: '2024 Q4', title: 'Alpha 版本', desc: '首个版本，包含 SSO、MFA 与 RBAC，覆盖核心身份生命周期。' },
-  { date: '2025 Q2', title: '开源发布', desc: '门户、设计系统与 SDK 以 AGPL-3.0 协议开源，代码托管在 GitHub 组织页。' },
-  { date: '2026 Q1', title: 'Autional 发布', desc: '品牌升级为 Autional —— 面向 AI 生成应用的身份层。27 个服务、1,400+ API、企业级合规能力。' },
-];
-const values = [
-  { icon: '🔓', title: '开放优先', desc: '门户、设计系统与 SDK 以 AGPL-3.0 开源发布；路线图公开，没有隐藏定价，没有厂商锁定。' },
-  { icon: '⚡', title: 'AI 原生', desc: '为 AI 时代而生。从 Bolt 到 Cursor，从 MVP 到企业级 —— 身份能力始终跟得上 AI 速度的开发节奏。' },
-  { icon: '🤝', title: '开发者体验', desc: '10 分钟集成。类型安全的 API。像产品而不像平台的身份基础设施。' },
-  { icon: '🔒', title: '默认安全', desc: '企业级安全，却没有企业级的复杂度。哈希链审计、自适应 MFA、多租户隔离 —— 内建设计，而非事后外挂。' },
-];
-// 路线图未来阶段（W10 键化）：文案取 i18n（roadmap.future.*）
+
+interface ValueItem { title: string; desc: string }
+interface MilestoneItem { title: string; desc: string }
+
+const values = t('about.values', { returnObjects: true }) as ValueItem[];
+const milestones = t('about.milestones', { returnObjects: true }) as MilestoneItem[];
+// 路线图未来阶段（W10 键化）：文案取 i18n（roadmap.future.*，en/zh 双资源）
 const futurePhases = FUTURE_ROADMAP.map((key) => t(key, { returnObjects: true }) as RoadmapPhase);
+// 语言中立结构（与 about.values / about.milestones 顺序一一对应）
+const valueIcons = ['🔓', '⚡', '🤝', '🔒'];
+const milestoneDates = ['2024 Q1', '2024 Q4', '2025 Q2', '2026 Q1'];
 ---
-<LandingLayout title="关于 — Autional" description="Autional 是面向 AI 生成应用的身份层。了解我们的故事、使命与路线图。" keywords="Autional, 关于, 身份, IAM, 开源, 使命, 团队">
+<LandingLayout title={t('about.meta.title')} description={t('about.meta.description')} keywords={t('about.meta.keywords')}>
   <section class="mx-auto max-w-4xl px-4 py-20">
     <!-- Hero -->
     <div class="text-center mb-20">
-      <h1 class="text-4xl font-bold sm:text-5xl">关于 Autional</h1>
-      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500 leading-relaxed">Autional 诞生于一个朴素的信念：每个 AI 生成的应用都值得拥有一个可直接上生产的用户体系 —— 无需从零自建，不被厂商锁定，也没有企业级的复杂度。</p>
+      <h1 class="text-4xl font-bold sm:text-5xl">{t('about.heroTitle')}</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500 leading-relaxed">{t('about.heroLead')}</p>
     </div>
     <!-- Mission -->
     <div class="rounded-md bg-primary-50 dark:bg-primary-900/10 border border-primary-100 dark:border-primary-900/20 p-10 text-center mb-20">
-      <h2 class="text-2xl font-bold">我们的使命</h2>
-      <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto leading-relaxed">让身份基础设施像 AI 生成的代码一样易于获得。无论团队规模大小，每位开发者都应该能在几分钟内 —— 而不是几个迭代内 —— 为自己的应用赋予企业级的认证、授权与合规能力。</p>
+      <h2 class="text-2xl font-bold">{t('about.missionTitle')}</h2>
+      <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto leading-relaxed">{t('about.missionBody')}</p>
     </div>
     <!-- Values -->
-    <div class="mb-20"><h2 class="text-2xl font-bold text-center mb-12">我们的价值观</h2>
-      <div class="grid gap-6 sm:grid-cols-2">{values.map(v => (
-        <div class="rounded-md border border-neutral-200 dark:border-neutral-800 p-8"><div class="text-3xl mb-4">{v.icon}</div><h3 class="font-semibold text-lg">{v.title}</h3><p class="mt-2 text-sm text-neutral-500 leading-relaxed">{v.desc}</p></div>
+    <div class="mb-20"><h2 class="text-2xl font-bold text-center mb-12">{t('about.valuesTitle')}</h2>
+      <div class="grid gap-6 sm:grid-cols-2">{values.map((v, i) => (
+        <div class="rounded-md border border-neutral-200 dark:border-neutral-800 p-8"><div class="text-3xl mb-4">{valueIcons[i]}</div><h3 class="font-semibold text-lg">{v.title}</h3><p class="mt-2 text-sm text-neutral-500 leading-relaxed">{v.desc}</p></div>
       ))}</div>
     </div>
     <!-- Milestones -->
-    <div class="mb-20"><h2 class="text-2xl font-bold text-center mb-12">我们的历程</h2>
-      <div class="space-y-8">{milestones.map((m,i) => (
+    <div class="mb-20"><h2 class="text-2xl font-bold text-center mb-12">{t('about.milestonesTitle')}</h2>
+      <div class="space-y-8">{milestones.map((m, i) => (
         <div class="flex gap-6"><div class="flex flex-col items-center"><div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-white text-sm font-bold">{i+1}</div>{i < milestones.length-1 && <div class="w-px flex-1 bg-neutral-200 dark:bg-neutral-700 mt-2"></div>}</div>
-        <div class="pb-8"><div class="text-sm font-semibold text-primary-600">{m.date}</div><h3 class="text-lg font-bold">{m.title}</h3><p class="mt-1 text-sm text-neutral-500">{m.desc}</p></div></div>
+        <div class="pb-8"><div class="text-sm font-semibold text-primary-600">{milestoneDates[i]}</div><h3 class="text-lg font-bold">{m.title}</h3><p class="mt-1 text-sm text-neutral-500">{m.desc}</p></div></div>
       ))}</div>
     </div>
     <!-- Roadmap -->
-    <div><h2 class="text-2xl font-bold text-center mb-12">路线图</h2>
+    <div><h2 class="text-2xl font-bold text-center mb-12">{t('about.roadmapTitle')}</h2>
       <div class="grid gap-6 md:grid-cols-3">{futurePhases.map(r => (
         <div class="rounded-md border border-neutral-200 dark:border-neutral-800 p-6"><div class="text-sm font-semibold text-primary-600 mb-3">{r.period}</div><ul class="space-y-2">{r.items.map(i => <li class="flex items-start gap-2 text-sm text-neutral-600 dark:text-neutral-300"><span class="text-primary-500 mt-0.5 shrink-0">→</span>{i}</li>)}</ul></div>
       ))}</div>
