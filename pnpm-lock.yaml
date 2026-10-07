@@ -21,11 +21,11 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2(astro@5.18.2(@types/node@24.13.2)(jiti@1.21.7)(rollup@4.62.2)(typescript@5.9.3)(yaml@2.9.0))(tailwindcss@3.4.19)
       '@autional/tailwind-preset':
-        specifier: 0.1.0-rc.8
-        version: 0.1.0-rc.8(tailwindcss@3.4.19)
+        specifier: 0.1.0-rc.9
+        version: 0.1.0-rc.9(tailwindcss@3.4.19)
       '@autional/tokens':
-        specifier: 0.1.0-rc.14
-        version: 0.1.0-rc.14
+        specifier: 0.1.0-rc.15
+        version: 0.1.0-rc.15
       astro:
         specifier: ^5.0.0
         version: 5.18.2(@types/node@24.13.2)(jiti@1.21.7)(rollup@4.62.2)(typescript@5.9.3)(yaml@2.9.0)
@@ -135,13 +135,13 @@ packages:
   '@astrojs/yaml2ts@0.2.4':
     resolution: {integrity: sha512-8oddpOae35pJsXPQXhTkM0ypfKPskVsh2bCxRtbf7e+/Epw2nReakFYpLKjZMEr75CsoF203PMnCocpfz0s69A==}
 
-  '@autional/tailwind-preset@0.1.0-rc.8':
-    resolution: {integrity: sha512-1rClq+lBig1rc4LrvthSJbbkfJSF6B12llx0cjz3Jzbs7J8lBpOxLU1BTdymD+YN0CPvuevLAGP8zLti8ZF+5Q==}
+  '@autional/tailwind-preset@0.1.0-rc.9':
+    resolution: {integrity: sha512-MgIHyTiCLAvxpsQ+B4qFNQxgPsjdXsC+aVj0pRFfLGdEuJx5P7c9291ydDkQLpVnpuO7J6BM6xRpJHQytJJCMg==}
     peerDependencies:
       tailwindcss: '>=3.0.0'
 
-  '@autional/tokens@0.1.0-rc.14':
-    resolution: {integrity: sha512-fnJd2m1o/gqFVifWT8uTgb0T6jDqbG3LHz0wlYamaGbKJUjBZ2CJRRdYfTMFfQOi2DBgT5nsEN7Zsf8LTX3RjA==}
+  '@autional/tokens@0.1.0-rc.15':
+    resolution: {integrity: sha512-jbPBR5duWCdDH5GVFuqj8BOcg7U+82uHorGjv0jUGCdcLaTIzYHtSz6z9l+IK5+i4lN681M63TVnXQljOEUB4A==}
 
   '@babel/code-frame@7.29.7':
     resolution: {integrity: sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw==}
@@ -2818,12 +2818,12 @@ snapshots:
     dependencies:
       yaml: 2.9.0
 
-  '@autional/tailwind-preset@0.1.0-rc.8(tailwindcss@3.4.19)':
+  '@autional/tailwind-preset@0.1.0-rc.9(tailwindcss@3.4.19)':
     dependencies:
-      '@autional/tokens': 0.1.0-rc.14
+      '@autional/tokens': 0.1.0-rc.15
       tailwindcss: 3.4.19
 
-  '@autional/tokens@0.1.0-rc.14': {}
+  '@autional/tokens@0.1.0-rc.15': {}
 
   '@babel/code-frame@7.29.7':
     dependencies:

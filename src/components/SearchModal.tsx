@@ -67,7 +67,7 @@ export default function SearchModal({ isOpen, onClose, items }: Props) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/50 pt-[15vh] backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/50 pt-[var(--layout-modal-offset)] backdrop-blur-sm" onClick={onClose}>
       <div
         className="mx-4 w-full max-w-2xl overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-card dark:border-neutral-700 dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}

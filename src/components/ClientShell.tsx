@@ -50,7 +50,7 @@ export default function ClientShell({ searchIndex }: { searchIndex: SearchItem[]
   return (
     <>
       {mobileOpen && (
-        <div className="brand-shell absolute left-3 right-3 top-[calc(100%+0.5rem)] border-primary-100/90 md:hidden">
+        <div className="brand-shell absolute left-3 right-3 top-[calc(100%+var(--space-2))] border-primary-100/90 md:hidden">
           <div className="space-y-1 px-4 py-4">
             {navLinks.map((link) => (
               <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)}

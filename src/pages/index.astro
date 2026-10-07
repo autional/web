@@ -108,8 +108,8 @@ const capabilityItems = t('home.capabilities.items', { returnObjects: true }) as
               </div>
               <div class="mt-6 flex h-40 items-end gap-3">
                 {[42, 60, 56, 78, 72, 95, 88, 110].map((height, idx) => (
-                  <div class="flex-1 rounded-t-2xl bg-gradient-to-t from-primary-700 via-primary-500 to-sky-300 shadow-soft" style={`height: ${height}%`}>
-                    <div class={`h-full w-full rounded-t-2xl ${idx > 5 ? 'bg-white/10' : ''}`}></div>
+                  <div class="flex-1 rounded-t-md bg-gradient-to-t from-primary-700 via-primary-500 to-sky-300 shadow-soft" style={`height: ${height}%`}>
+                    <div class={`h-full w-full rounded-t-md ${idx > 5 ? 'bg-white/10' : ''}`}></div>
                   </div>
                 ))}
               </div>
@@ -180,8 +180,8 @@ const capabilityItems = t('home.capabilities.items', { returnObjects: true }) as
           <p class="mt-4 max-w-lg text-sm leading-7 text-sky-50/82">{t('home.snapshot.lead')}</p>
         </div>
         <div class="bg-primary-900 p-8">
-          <pre class="overflow-x-auto rounded-md border border-white/10 bg-slate-950/70 p-5 text-[13px] leading-8 text-syntax-plain sm:text-sm" set:html={codeSample}></pre>
-          <div class="mt-5 rounded-md border border-sky-300/15 bg-slate-900 px-4 py-3 text-sm font-mono font-medium text-sky-100 break-all sm:break-normal">{t('home.snapshot.npm')}</div>
+          <pre class="overflow-x-auto rounded-md border border-white/10 bg-code/70 p-5 text-[13px] leading-8 text-syntax-plain sm:text-sm" set:html={codeSample}></pre>
+          <div class="mt-5 rounded-md border border-sky-300/15 bg-code px-4 py-3 text-sm font-mono font-medium text-sky-100 break-all sm:break-normal">{t('home.snapshot.npm')}</div>
         </div>
       </div>
 
