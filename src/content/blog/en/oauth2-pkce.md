@@ -156,18 +156,18 @@ Critical security detail: Autional uses `crypto/subtle.ConstantTimeCompare` inst
 
 ### Companion Client SDKs
 
-Autional provides client SDKs covering major platforms, with PKCE logic built into the SDK:
+Autional has published @autional/react and other npm packages, with PKCE logic built into the SDK. Framework adapters for Vue, Next.js and more are on the roadmap; other stacks integrate through standard OAuth 2.0 / OIDC flows:
 
 ```typescript
 // Web SDK (React)
-import { useAuth, login } from '@authms/react';
+import { useAutional } from '@autional/react';
 
 function LoginButton() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loginWithOAuth } = useAutional();
   
   const handleLogin = async () => {
-    await login({
-      clientId: 'myapp',
+    await loginWithOAuth({
+      provider: 'google',
       redirectUri: 'https://myapp.com/callback',
       // ⬇️ SDK auto-generates code_verifier and computes code_challenge
       // Developers don't need to worry about PKCE details
@@ -175,24 +175,6 @@ function LoginButton() {
   };
   
   return !isAuthenticated && <button onClick={handleLogin}>Login</button>;
-}
-```
-
-```kotlin
-// Android SDK (Kotlin)
-Autional.authorize(
-    context = this,
-    config = AutionalConfig(
-        clientId = "myapp",
-        redirectUri = "myapp://callback",
-        // ⬇️ SDK auto-generates code_verifier and computes code_challenge
-        // Developers don't need to worry about PKCE details
-    )
-) { result ->
-    when (result) {
-        is AutionalResult.Success -> handleToken(result.accessToken)
-        is AutionalResult.Error -> handleError(result.exception)
-    }
 }
 ```
 
@@ -242,21 +224,14 @@ const accessToken = new URLSearchParams(hash.substring(1)).get('access_token');
 
 **After (Authorization Code + PKCE):**
 ```javascript
-// response_type=code → exchange code for token via backend SDK
-import { exchangeCodeForToken } from '@authms/web-sdk';
+// After: authorization code + PKCE is handled by the SDK — no manual exchange logic
+import { useAutional } from '@autional/react';
 
-const params = new URLSearchParams(window.location.search);
-const code = params.get('code');
-
-const { accessToken, refreshToken } = await exchangeCodeForToken({
-  code,
-  codeVerifier: getStoredCodeVerifier(), // SDK manages this
-  clientId: 'myapp',
-  redirectUri: 'https://myapp.com/callback'
-});
+const { loginWithOAuth } = useAutional();
+await loginWithOAuth({ provider: 'google' });
 ```
 
-For Autional users already using our SDK (React, Vue, Android, iOS), **no code changes are needed**. oauth-service automatically handles all authorization code flows with PKCE, transparent to the client.
+For Autional users already using the React SDK (`@autional/react`), **no code changes are needed**. oauth-service automatically handles all authorization code flows with PKCE, transparent to the client.
 
 ## PKCE Limitations: Not a Silver Bullet
 
@@ -278,7 +253,7 @@ OAuth 2.1's PKCE mandate is a late but correct security decision. For mobile and
 
 1. **Even if an attacker intercepts the authorization code, they cannot exchange it for a token**
 2. **Migrating from Implicit Flow to PKCE gives the app refresh_token support, improving user experience**
-3. **Autional's oauth-service and client SDKs handle all PKCE complexity — developers need minimal adaptation**
+3. **Autional's oauth-service and the React SDK handle all PKCE complexity — developers need minimal adaptation**
 
 If you're building a mobile app or SPA that requires OAuth authorization, use Authorization Code + PKCE from day one. If your existing app still uses the Implicit Flow, it's time to migrate — OAuth 2.1 isn't just a best practice, it's the future standard for all identity platforms.
 

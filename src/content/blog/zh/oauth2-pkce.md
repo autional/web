@@ -156,7 +156,7 @@ func (h *TokenHandler) HandleTokenExchange(c *gin.Context) {
 
 ### 配套客户端 SDK
 
-Autional 提供覆盖主流平台的客户端 SDK，PKCE 逻辑已内置于 SDK：
+Autional 已发布 @autional/react 等 npm 软件包，PKCE 逻辑已内置于 SDK。Vue、Next.js 等框架适配在路线图中；其他技术栈通过标准 OAuth 2.0 / OIDC 流程接入：
 
 ```typescript
 // Web SDK (React)
@@ -175,24 +175,6 @@ function LoginButton() {
   };
   
   return !isAuthenticated && <button onClick={handleLogin}>Login</button>;
-}
-```
-
-```kotlin
-// Android SDK (Kotlin)
-Autional.authorize(
-    context = this,
-    config = AutionalConfig(
-        clientId = "myapp",
-        redirectUri = "myapp://callback",
-        // ⬇️ SDK auto-generates code_verifier and computes code_challenge
-        // Developers don't need to worry about PKCE details
-    )
-) { result ->
-    when (result) {
-        is AutionalResult.Success -> handleToken(result.accessToken)
-        is AutionalResult.Error -> handleError(result.exception)
-    }
 }
 ```
 
@@ -249,7 +231,7 @@ const { loginWithOAuth } = useAutional();
 await loginWithOAuth({ provider: 'google' });
 ```
 
-对已经使用我们 SDK（React、Vue、Android、iOS）的 Autional 用户而言，**无需任何代码改动**。oauth-service 会自动以 PKCE 处理所有授权码流程，对客户端完全透明。
+对已经使用 React SDK（`@autional/react`）的 Autional 用户而言，**无需任何代码改动**。oauth-service 会自动以 PKCE 处理所有授权码流程，对客户端完全透明。
 
 ## PKCE 的局限：不是银弹
 
@@ -271,7 +253,7 @@ OAuth 2.1 的 PKCE 强制要求是一个迟到但正确的安全决策。对移�
 
 1. **即使攻击者截获了授权码，也无法将其换取令牌**
 2. **从 Implicit 流程迁移到 PKCE 后，应用获得 refresh_token 支持，用户体验更好**
-3. **Autional 的 oauth-service 与客户端 SDK 承担了 PKCE 的全部复杂度——开发者只需极小适配**
+3. **Autional 的 oauth-service 与 React SDK 承担了 PKCE 的全部复杂度——开发者只需极小适配**
 
 如果你正在构建需要 OAuth 授权的移动应用或 SPA，请从第一天起就使用授权码 + PKCE。如果你现有应用仍在使用 Implicit 流程，是时候迁移了——OAuth 2.1 不只是最佳实践，它是所有身份平台的未来标准。
 

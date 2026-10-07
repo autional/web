@@ -44,7 +44,7 @@ This article provides an objective comparison across 15 dimensions. Disclaimer: 
 
 **Keycloak** is moderate. Keycloak's documentation quality has improved significantly in recent years, but the Java tech stack adds complexity that's unfriendly to non-Java teams. The admin console UI is functional but somewhat clunky — teams needing custom login pages and email templates face a steep learning curve.
 
-**Autional** is good. Autional provides a React component library (`@authms/shared`), TanStack Query hooks, and a generated TypeScript API client. Integrating a login box takes just two components: `<AuthProvider>` + `<LoginForm>`. However, its documentation still lags behind Auth0's richness — Chinese docs are comprehensive but English docs are under construction.
+**Autional** is good. Autional provides a React SDK (`@autional/react`), a portal component library (`@autional/ui`), and a generated per-service TypeScript API client. Integrating login takes just one provider: wrap your app in `<AutionalProvider>` and use the `useAutional()` hooks. However, its documentation still lags behind Auth0's richness — Chinese docs are comprehensive but English docs are under construction.
 
 ### 2. Performance and Resource Consumption
 
