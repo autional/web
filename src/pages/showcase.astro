@@ -1,32 +1,28 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
-const stats = [
-  ['27', '微服务'],
-  ['1,400+', 'API 端点'],
-  ['Go / TypeScript', '技术栈'],
-  ['AGPL-3.0', '开源'],
-];
-const entries = [
-  { title: '全服务 Demo 总入口', desc: '逐一体验各服务的演示环境 —— 认证、企业级访问、审计与更多。', href: 'https://demo.autional.cn', label: '打开演示门户' },
-  { title: '平台文档门户', desc: '部署形态、配置机制与运维指南的完整文档。', href: 'https://docs.autional.cn', label: '访问文档门户' },
-  { title: '开发者快速开始', desc: '从安装到第一个登录流程的完整接入指南。', href: 'https://developer.autional.cn/quickstart', label: '查看快速开始' },
-  { title: 'API 参考', desc: '1,400+ 个 REST API 端点，交互式 Swagger/OpenAPI 文档。', href: 'https://reference.autional.cn', label: '浏览 API 参考' },
-  { title: '功能总览', desc: 'SSO、MFA、通行密钥（Passkey）、RBAC、NHI、多租户、审计、合规 —— 完整的身份管理能力。', href: '/features', label: '浏览功能特性' },
-  { title: 'SDK 与 npm 软件包', desc: '@autional/react 等已发布组件，均可直接安装。', href: '/sdk', label: '查看 SDK' },
-];
+import { t } from '../i18n';
+import { brotherUrl } from '../lib/site-env';
+
+interface ShowcaseStat { value: string; label: string }
+interface ShowcaseEntry { title: string; desc: string; label: string }
+
+const stats = t('showcase.stats', { returnObjects: true }) as ShowcaseStat[];
+const entries = t('showcase.entries', { returnObjects: true }) as ShowcaseEntry[];
+// 条目 href：兄弟站随本区根域派生（W7）；站内链接保持相对路径
+const entryHrefs = [brotherUrl('demo'), brotherUrl('docs'), `${brotherUrl('developer')}/quickstart`, brotherUrl('reference'), '/features', '/sdk'];
 ---
-<Layout title="技术展示 — Autional" description="Autional 身份平台的真实演示与文档入口。" keywords="Autional, 展示, 演示, 身份, 认证, IAM, 企业">
+<Layout title={t('showcase.meta.title')} description={t('showcase.meta.description')} keywords={t('showcase.meta.keywords')}>
   <section class="mx-auto max-w-5xl px-4 py-20 text-center">
-    <h1 class="text-4xl font-bold sm:text-5xl">技术展示</h1>
-    <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">从真实演示到完整文档 —— 亲手体验 Autional 的每一项能力。</p>
+    <h1 class="text-4xl font-bold sm:text-5xl">{t('showcase.title')}</h1>
+    <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">{t('showcase.lead')}</p>
     <div class="mt-12 grid grid-cols-2 gap-6 md:grid-cols-4">
-      {stats.map(([v,l]) => (
-        <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-slate-900 p-6 shadow-card"><div class="text-3xl font-bold text-primary-600">{v}</div><div class="mt-1 text-sm text-neutral-500">{l}</div></div>
+      {stats.map(s => (
+        <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-slate-900 p-6 shadow-card"><div class="text-3xl font-bold text-primary-600">{s.value}</div><div class="mt-1 text-sm text-neutral-500">{s.label}</div></div>
       ))}
     </div>
     <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 text-left">
-      {entries.map(e => (
-        <div class="flex flex-col rounded-xl border border-neutral-200 dark:border-neutral-800 p-6"><h3 class="font-semibold">{e.title}</h3><p class="mt-2 flex-1 text-sm text-neutral-500">{e.desc}</p><a href={e.href} class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700">{e.label} →</a></div>
+      {entries.map((e, i) => (
+        <div class="flex flex-col rounded-xl border border-neutral-200 dark:border-neutral-800 p-6"><h3 class="font-semibold">{e.title}</h3><p class="mt-2 flex-1 text-sm text-neutral-500">{e.desc}</p><a href={entryHrefs[i]} class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700">{e.label} →</a></div>
       ))}
     </div>
   </section>

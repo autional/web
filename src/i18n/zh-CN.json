@@ -35,6 +35,334 @@
     "logoAlt": "Autional 徽标",
     "rssTitle": "Autional 博客"
   },
+  "home": {
+    "meta": {
+      "title": "Autional — 面向 AI 生成应用的身份层",
+      "description": "面向 AI 生成应用的身份层。认证、账户、多租户与访问控制，为用 AI 构建产品的团队而设计。",
+      "keywords": "Autional, 身份, 认证, IAM, SSO, MFA, 多租户, 开源, AI, SaaS, 企业"
+    },
+    "hero": {
+      "kicker": "开源 · AGPL-3.0",
+      "titleLine1": "你的 AI 应用需要用户。",
+      "titleLine2": "Autional 让它浑然天成。",
+      "lead": "Autional 为 AI 生成应用提供完整的身份层：认证、组织、访问控制、审计与开发者 API，统一在一个连贯的系统中。",
+      "ctaDocs": "浏览文档",
+      "ctaContact": "联系我们"
+    },
+    "panel": {
+      "logoAlt": "Autional 徽标",
+      "eyebrow": "身份指挥中心",
+      "title": "运营总览",
+      "status": "所有系统正常",
+      "authMix": "认证方式分布",
+      "riskAwareLine1": "风险感知",
+      "riskAwareLine2": "登录",
+      "volume": "验证量",
+      "volumeHint": "品牌仪表盘的每日趋势"
+    },
+    "stats": {
+      "services": "身份服务",
+      "endpoints": "API 端点",
+      "sla": "SLA 就绪",
+      "latency": "响应时间中位数"
+    },
+    "builtWith": { "label": "技术栈" },
+    "capabilities": {
+      "kicker": "核心能力",
+      "title": "从第一个登录框，到企业级访问治理。",
+      "lead": "认证、组织、访问控制、审计与开发者 API，按你的产品节奏逐步接入，无需中途更换身份层。",
+      "items": [
+        { "title": "自适应 MFA", "desc": "风险信号、步进式验证与通行密钥（Passkey）回退，统一在一套流程中。" },
+        { "title": "组织模型", "desc": "租户边界、委派管理、角色模板与白标控制。" },
+        { "title": "身份 API", "desc": "REST、SDK、Webhook 与事件流，助力产品团队快速交付。" },
+        { "title": "合规层", "desc": "结构化审计记录、保留策略与基于策略的访问决策。" },
+        { "title": "开发者效率", "desc": "OpenAPI 优先的契约与自动生成的 SDK，跟得上你的交付节奏。" },
+        { "title": "全球交付", "desc": "面向 SaaS 的架构，可跨区域、跨客户群扩展。" }
+      ]
+    },
+    "solutions": {
+      "auth": {
+        "eyebrow": "认证",
+        "title": "符合品牌调性的登录体验",
+        "description": "通行密钥（Passkey）、OTP、社交登录、Magic Link 与自适应 MFA，Web 端样式保持统一。"
+      },
+      "enterprise": {
+        "eyebrow": "企业级访问",
+        "title": "SSO、SCIM 与租户隔离",
+        "description": "从初创 MVP 一路走到企业级推广，无需日后更换身份层。"
+      },
+      "observability": {
+        "eyebrow": "可观测性",
+        "title": "审计、策略与安全洞察",
+        "description": "面向 SaaS 运营的可视化监控、事件追踪与合规控制。"
+      }
+    },
+    "snapshot": {
+      "kicker": "实现速览",
+      "title": "一个提供方，完整的身份体系。",
+      "lead": "几行代码即可跑通第一个登录流程，随后按需接入组织、审计与开发者 API。",
+      "npm": "$ npm install @autional/react"
+    },
+    "cta": {
+      "kicker": "开始使用",
+      "title": "用 Autional 为你的产品补上身份层。",
+      "lead": "当前自托管开源可用；云托管在路线图中（即将推出）。浏览文档了解接入方式，或到 GitHub 查看开源代码。",
+      "docs": "查看文档"
+    }
+  },
+  "features": {
+    "meta": {
+      "title": "功能特性 — Autional",
+      "description": "完整的身份平台。认证、MFA、SSO、多租户、NHI、授权、审计、合规、国密、SDK —— 基于 AGPL 开源。",
+      "keywords": "Autional, 功能特性, 认证, SSO, MFA, 多租户, 通行密钥, 审计, 合规, RBAC, SDK, 开源"
+    },
+    "hero": {
+      "titleLine1": "企业级身份基础设施。",
+      "titleLine2": "开源。",
+      "lead": "27 个微服务、1,400+ API、npm SDK 软件包、15+ 个合规框架 —— 你的 AI 生成应用在身份方面需要的一切。"
+    },
+    "sections": [
+      {
+        "title": "认证与注册",
+        "desc": "完整的用户身份生命周期 —— 从注册到企业级 SSO，从基础认证到免密登录。",
+        "items": [
+          "邮箱/密码认证，密码策略可配置（最小长度、复杂度、历史密码）",
+          "密码传输加密：明文、哈希、对称（ECDH+AES-256-GCM）、非对称（RSA-OAEP）",
+          "社交登录：Google、GitHub、微信、Apple、Microsoft、钉钉、飞书",
+          "免密登录：Magic Link、短信 OTP、邮件 OTP、扫码登录、匿名登录",
+          "密码生命周期：有效期、强制重置、最近 N 次历史、按租户策略",
+          "账户找回：忘记/重置密码、手机/邮箱验证、恢复码",
+          "验证码：reCAPTCHA、Turnstile、工作量证明 —— 可按租户配置",
+          "密码强度评估（zxcvbn、OWASP ASVS V6.2.8）"
+        ]
+      },
+      {
+        "title": "多因素认证（MFA）",
+        "desc": "从 TOTP 到抗钓鱼的通行密钥（Passkey）。企业级 MFA，支持基于风险的动态调整。",
+        "items": [
+          "TOTP（RFC 6238）—— 基于时间的一次性密码",
+          "短信与邮件 OTP —— 通过可配置的服务商后端",
+          "WebAuthn / FIDO2 / Passkey —— 平台内置与漫游认证器",
+          "推送 MFA —— 挑战/应答，支持批准/拒绝",
+          "自适应 MFA —— 风险引擎：7 类信号（设备/IP/地理位置/行为/频次/泄露/劫持）",
+          "备份与恢复码 —— 生成、校验、吊销、管理员重置",
+          "步进式认证 —— 敏感操作前重新认证"
+        ]
+      },
+      {
+        "title": "企业级 SSO 与联合身份",
+        "desc": "可对接任意身份提供方。符合标准的 SAML、OIDC、OAuth 实现。",
+        "items": [
+          "SAML 2.0 —— SP 发起的 SSO、IdP 管理、SLO、元数据端点",
+          "OpenID Connect —— 完整的提供方实现，支持 Discovery、UserInfo、ID Token",
+          "OAuth 2.1 —— 授权码 + PKCE（RFC 7636）、刷新令牌、设备码（RFC 8628）",
+          "OAuth 令牌交换（RFC 8693）—— 服务间委派、NHI 令牌交换",
+          "DPoP —— 将令牌绑定到客户端密钥，防止重放攻击",
+          "JARM —— 使用 JWT 签名的授权响应，满足金融级安全要求",
+          "动态客户端注册（RFC 7591）—— 自助配置 OAuth 客户端",
+          "富授权请求（RFC 9396）—— 结构化的授权范围",
+          "private_key_jwt —— 基于 JWT 的客户端认证",
+          "社交 OAuth：GitHub、Google、Facebook、Discord、LinkedIn、微信、Apple",
+          "LDAP / Active Directory —— 绑定认证、用户同步、组映射",
+          "SCIM 2.0 —— /scim/v2/Users 与 /Groups，用于企业用户供给"
+        ]
+      },
+      {
+        "title": "多租户与组织",
+        "desc": "为 B2B SaaS 而构建。每项功能在设计上都是租户感知的。",
+        "items": [
+          "按租户隔离数据 —— 每次查询都带 tenant_id，三层强制校验",
+          "自定义域名与白标 —— 按租户品牌定制、自定义登录页",
+          "组织层级 —— 部门、组织架构图、委派管理",
+          "成员管理 —— 邀请、审批、角色分配、批量导入",
+          "应用与角色管理 —— 按租户的应用 CRUD、应用级角色",
+          "租户安全策略 —— 按租户配置密码策略、MFA、会话超时",
+          "功能开关 —— 基于套餐启用，可按租户覆盖"
+        ]
+      },
+      {
+        "title": "授权与访问控制",
+        "desc": "从角色到属性再到关系。四种授权模型集于一个平台。",
+        "items": [
+          "RBAC（NIST 标准）—— 角色层级、继承、预置 super_admin/admin/security_admin",
+          "ABAC —— expr-lang/expr 策略引擎、OPA/Rego 桥接、JWT/GeoIP/DeviceTrust 解析器",
+          "ReBAC —— BFS 关系图、按租户缓存并支持失效",
+          "PIM/JIT —— 限时角色激活（最长 24 小时）、审批流、到期自动失效",
+          "职责分离（SoD）—— 冲突对检测，对所有授权强制执行",
+          "PermissionRequired 中间件 —— 端点级细粒度访问控制",
+          "审批流 —— 敏感操作需要多方审批"
+        ]
+      },
+      {
+        "title": "NHI —— 非人类身份",
+        "desc": "面向 AI 智能体、机器人与 IoT 设备的身份能力。因为 AI 需要有自己的身份。",
+        "items": [
+          "AI 智能体生命周期：供给 → 激活 → 轮换 → 吊销 → 删除",
+          "机器人生命周期：上线 → 激活 → 降级 → 下线 → 删除",
+          "IoT 设备生命周期：未配对 → 激活 → 转移中 → 吊销 → 删除",
+          "认证方式：client_credentials、api_key、device_code、intent_token",
+          "委派中间件 —— 为 AI 智能体调用链提供 OnBehalfOf + Chain-ID 请求头",
+          "Ed25519 意图令牌签名 —— 为委派的 AI 操作签署操作范围",
+          "令牌交换 —— 通过 OAuth 令牌交换授权类型实现 NHI 服务间认证"
+        ]
+      },
+      {
+        "title": "审计与合规",
+        "desc": "基于 Merkle 哈希链验证的防篡改审计追踪，覆盖企业级合规框架。",
+        "items": [
+          "Merkle 哈希链审计日志 —— 密码学完整性验证",
+          "GDPR DSAR 自动化 —— 编排 7 个服务完成擦除，附哈希链审计追踪",
+          "两级删除 —— 软删除（可逆）→ 匿名化（不可逆），由调度器驱动",
+          "合规框架：ISO 27001、PCI DSS、HIPAA、SOX、PSD2、PIPL、等保 2.0",
+          "数据分级 —— 公开 / 内部 / 机密 / 绝密",
+          "跨境数据传输管理",
+          "数据保留策略 —— 可配置 TTL、归档触发条件",
+          "数据泄露通知与供应商风险评估管理",
+          "渗透测试与审计发现跟踪，支持证据关联"
+        ]
+      },
+      {
+        "title": "国密算法（GM/T）",
+        "desc": "中国国家标准的密码算法。政务与受监管行业部署的必备能力。",
+        "items": [
+          "SM2 —— 椭圆曲线密钥交换与数字签名",
+          "SM3 —— 密码杂凑算法（256 位）",
+          "SM4 —— 分组密码（CBC/PKCS7），用于数据加密",
+          "Ed25519 —— 高性能签名算法",
+          "按租户的密码配置 —— 租户级算法选择（国密 vs 标准）",
+          "系统内 14 个集成点，自动检测需要重新哈希的数据"
+        ]
+      },
+      {
+        "title": "开发者平台",
+        "desc": "1,400+ API、npm SDK 软件包、gRPC 网格、自动生成的 TypeScript 类型。",
+        "items": [
+          "27 个微服务共 1,400+ 个 RESTful API 端点，带版本管理且文档完备",
+          "gRPC 服务网格 —— 9 个微服务提供 gRPC 接口",
+          "SDK：已发布 @autional/react 等 npm 软件包；Vue、Next.js 等框架适配在路线图中",
+          "自动生成的 TypeScript 类型 —— 基于 OpenAPI 规范（38K+ 行）",
+          "600+ 种 Webhook 事件类型 —— 全服务统一 HMAC 签名投递",
+          "Swagger/OpenAPI —— 每个端点都有交互式文档",
+          "TanStack Query hooks —— 为所有端点自动生成"
+        ]
+      },
+      {
+        "title": "基础设施与集成",
+        "desc": "多云适配、云原生。随处可运行 —— 你的基础设施，由你掌控。",
+        "items": [
+          "PostgreSQL + PgBouncer、MongoDB、Redis、RabbitMQ、Kafka、ZooKeeper",
+          "对象存储：MinIO、S3、阿里云 OSS、腾讯云 COS、SeaweedFS",
+          "短信：阿里云、腾讯云、SMS4Dev（开发）| 邮件：SMTP",
+          "实名认证：阿里云 OCR、百度、腾讯、CTID",
+          "字段级 AES-256-GCM 加密，支持密钥轮换与 SM4-GCM",
+          "Prometheus + Grafana + OpenTelemetry + Jaeger + Loki + Alertmanager",
+          "Docker + Podman compose，可运行于 Kubernetes"
+        ]
+      }
+    ]
+  },
+  "pricing": {
+    "meta": {
+      "title": "定价 — Autional",
+      "description": "Autional 定价说明：自托管免费；云托管在路线图中（即将推出）。",
+      "keywords": "Autional, 定价, 身份, IAM, 订阅, 套餐"
+    },
+    "title": "简单透明的定价",
+    "lead": "当前自托管开源可用；云托管在路线图中（即将推出）。下方为规划中的云服务档位，没有意外账单，没有厂商锁定。",
+    "popular": "最受欢迎",
+    "faqTitle": "常见问题",
+    "plans": [
+      { "name": "Free", "price": "$0", "period": "/月", "desc": "适合 MVP 与原型", "features": ["最多 1,000 MAU", "邮箱/密码 + 社交登录", "TOTP MFA", "SAML/OIDC SSO", "多租户", "审计日志保留 7 天", "每天 1,000 次 API 调用"], "cta": "联系我们" },
+      { "name": "Pro", "price": "$299", "period": "/月", "desc": "适合成长中的 AI SaaS", "features": ["最多 10,000 MAU", "包含 Free 全部功能", "通行密钥（Passkey）/ WebAuthn", "短信 MFA", "自定义域名", "审计日志保留 90 天", "API 调用不限量", "邮件支持（4 小时响应）", "99.9% SLA"], "cta": "联系我们" },
+      { "name": "Enterprise", "price": "定制", "desc": "适合关键业务部署", "features": ["MAU 不限量", "包含 Pro 全部功能", "自适应 MFA", "LDAP/AD 集成", "SSO 域名验证", "审计日志不限量保留 + 归档", "私有化部署", "7×24 专属支持", "99.99% SLA"], "cta": "联系销售" }
+    ],
+    "faqs": [
+      { "q": "可以免费自托管 Autional 吗？", "a": "可以。当前自托管开源可用；云托管在路线图中（即将推出）。自托管没有授权费用、没有 MAU 限制。" },
+      { "q": "MAU 如何计算？", "a": "MAU（月活跃用户）是指在一个自然月内完成认证的唯一用户。如果某位用户在该月内登录过一次，就计为 1 个 MAU，闲置用户不计入。" },
+      { "q": "云服务上线后，可以从 Free 升级到 Pro 而无需迁移吗？", "a": "可以。升级将即时解锁更高的额度与更多功能，无需数据迁移、无需改动代码、无需停机。" },
+      { "q": "开源项目有折扣吗？", "a": "云服务上线后，我们计划为开源项目和非营利组织提供特别定价，详情请联系我们。" },
+      { "q": "你们接受哪些支付方式？", "a": "云服务上线后将通过 Stripe 支持主流信用卡；Enterprise 档位支持银行转账与按年开票。" }
+    ]
+  },
+  "compare": {
+    "meta": {
+      "title": "对比 — Autional",
+      "description": "看看 Autional 与 Auth0、Clerk、WorkOS 以及自研认证方案的对比。",
+      "keywords": "Autional, 对比, Auth0, Clerk, WorkOS, 身份, 认证, IAM, 开源, 定价"
+    },
+    "title": "我们与其他方案的对比",
+    "lead": "诚实的对比，没有营销话术。看看 Autional 在哪里胜出 —— 以及哪里不如别人。",
+    "advantage": "Autional 的优势",
+    "considerations": "需要权衡之处",
+    "verdictLabel": "结论：",
+    "linkLabels": { "pricing": "查看定价", "features": "浏览功能特性", "docs": "阅读文档" },
+    "comparisons": [
+      { "name": "对比 Auth0", "url": "#auth0", "pros": ["开源 —— 无厂商锁定", "定价透明，没有意外的 MAU 账单", "AI 原生 —— 专为 AI 生成的应用设计", "当前自托管可用；云托管在路线图中（即将推出）"], "cons": ["生态规模小于 Auth0", "第三方集成较少", "社区起步较晚"], "verdict": "Auth0 是市场在位者。Autional 是开源的替代方案 —— 同样的企业级能力、零锁定，为 AI 时代而构建。" },
+      { "name": "对比 Clerk", "url": "#clerk", "pros": ["AGPL-3.0 开源 —— 当前自托管可用", "企业级 SSO 已包含（而非附加项）", "为 B2B SaaS 构建的多租户架构", "27 个微服务，支撑真正的企业级规模"], "cons": ["预置 UI 组件较少", "暂无内置计费"], "verdict": "Clerk 的界面很漂亮。Autional 胜在企业级深度 —— 而且它是开源的。" },
+      { "name": "对比 WorkOS", "url": "#workos", "pros": ["完整的用户体系，而不只是企业级附加组件", "AI 生成工作流优先 —— Bolt/Lovable/Cursor", "开源 —— 没有按连接数计费", "为满足合规要求可自托管"], "cons": ["暂无 FGA", "销售与企业团队规模较小"], "verdict": "WorkOS 帮你把产品卖给企业。Autional 帮你构建真正有用户的 AI 应用。侧重点不同 —— 覆盖面更广。" },
+      { "name": "对比 Bolt.new 内置认证", "url": "#bolt", "pros": ["覆盖 Bolt 认证止步之处 —— SSO、MFA、RBAC、审计", "适用于任何 AI 工具，不只限于 Bolt", "从 MVP 扩展到企业级，无需迁移", "企业级能力，无需企业级价格"], "cons": ["对 MVP 而言，不如 Bolt 的零配置认证简单", "基础认证也需要集成 SDK"], "verdict": "Bolt.new 给你基础的邮箱/密码认证。Autional 给你其余的一切 —— 当你的 AI 生成应用超出 Bolt 内置认证的能力时。" },
+      { "name": "对比自研", "url": "#build", "pros": ["节省 3-6 个月的工程时间", "无需再承担持续的安全维护", "1,400+ 个 API 已构建并经过测试", "从第一天起就具备企业级合规能力"], "cons": ["云托管在路线图中（即将推出），当前需自行部署", "依赖外部平台"], "verdict": "自研认证就是在造一个安全产品。让 Autional 承担身份层，你把精力放在让 AI 应用与众不同的地方。" }
+    ]
+  },
+  "roadmap": {
+    "meta": {
+      "title": "路线图 — Autional",
+      "description": "Autional 产品路线图与研发优先级。",
+      "keywords": "Autional, 路线图, 规划, 2026, 2027, SDK, 云, 通行密钥, 企业, SOC 2"
+    },
+    "title": "路线图",
+    "lead": "我们已经构建的、正在构建的，以及前进的方向。所有日期均为预估，可能调整。",
+    "completed": { "period": "已完成", "items": ["多租户架构，按租户隔离", "SAML 2.0 + OIDC + OAuth 2.1 企业级 SSO", "MFA：TOTP、短信、邮件、WebAuthn/FIDO2/Passkey", "自适应 MFA —— 基于风险的 7 类信号认证", "NHI（非人类身份）—— 智能体/机器人/设备生命周期", "RBAC + ABAC + ReBAC + PIM 授权模型", "Merkle 哈希链审计，支持 GDPR DSAR 自动化", "15 个合规框架（GDPR/SOX/PCI/HIPAA/ISO/等保）", "国密算法：SM2/SM3/SM4、Ed25519", "27 个微服务共 1,400+ 个 REST API 端点", "npm SDK 与设计系统软件包已发布（@autional/react、@autional/ui 等）", "Webhook 事件系统，支持 600+ 种事件类型", "用于内部通信的 gRPC 服务网格", "密码传输加密（ECDH/RSA/哈希/明文）", "字段级 AES-256-GCM 加密，支持密钥轮换", "身份 API 支持 IPv6 双栈"] },
+    "future": {
+      "q4_2026": { "period": "2026 Q4", "items": ["Autional Cloud 公测（即将推出）", "React SDK v1.0 稳定版", "Vue 与 Next.js SDK", "管理控制台体验改版"] },
+      "h1_2027": { "period": "2027 H1", "items": ["SOC 2 Type II 审计", "多区域云部署", "WebAuthn 通行密钥透传", "企业级审计归档"] },
+      "h2_2027": { "period": "2027 H2", "items": ["Go 与 Python SDK", "AI 智能体原生认证（NHI）", "Autional MCP Server 与 AI 编码工具集成", "Bolt.new 与 Lovable.dev 模板", "Kubernetes Operator"] }
+    }
+  },
+  "trust": {
+    "meta": {
+      "title": "信任与合规 — Autional",
+      "description": "Autional 的安全实践、合规框架与信任中心。",
+      "keywords": "Autional, 信任, 合规, 安全, ISO 27001, SOC 2, GDPR, HIPAA, PCI DSS"
+    },
+    "title": "信任与合规",
+    "lead": "Autional 将安全与合规作为核心设计原则，而不是事后补充。",
+    "cards": [
+      { "title": "数据加密", "desc": "所有敏感字段在静态存储时均以 AES-256-GCM 加密，支持密钥轮换。面向中国国家标准的合规场景提供 SM4-GCM。" },
+      { "title": "密码安全", "desc": "采用 argon2id 哈希，支持按租户配置 pepper。密码传输支持 ECDH 对称加密与 RSA 非对称加密。" },
+      { "title": "审计追踪", "desc": "不可篡改的 Merkle 哈希链审计日志。每个认证事件都经过密码学链接，可验证。" },
+      { "title": "MFA 与访问控制", "desc": "TOTP、WebAuthn/FIDO2、短信、邮件、推送 MFA。授权模型覆盖 RBAC + ABAC + ReBAC + PIM。" },
+      { "title": "合规框架", "desc": "为以下框架提供内置数据模型与工具：ISO 27001、PCI DSS、HIPAA、SOX、GDPR、PSD2、PIPL、等保 2.0。" },
+      { "title": "密钥管理", "desc": "集中式 secret-service 统一管理加密密钥、JWT 签名密钥与 API 密钥，敏感凭据不落业务代码。" },
+      { "title": "架构", "desc": "27 个可独立部署的微服务。PostgreSQL、MongoDB、Redis、RabbitMQ。gRPC 服务网格配合 OpenTelemetry 链路追踪。" },
+      { "title": "漏洞管理", "desc": "定期依赖扫描、公开的漏洞披露渠道，以及内建于合规服务的安全审计发现跟踪。" }
+    ],
+    "disclaimerTitle": "合规免责声明",
+    "disclaimer": "上述技术能力代表 Autional 的平台设计目标与内置工具。合规认证（ISO 27001、SOC 2、PCI DSS 等）由部署方自行负责。Autional 提供技术基础 —— 通过认证还需要组织自身的控制措施、审计与制度。"
+  },
+  "showcase": {
+    "meta": {
+      "title": "技术展示 — Autional",
+      "description": "Autional 身份平台的真实演示与文档入口。",
+      "keywords": "Autional, 展示, 演示, 身份, 认证, IAM, 企业"
+    },
+    "title": "技术展示",
+    "lead": "从真实演示到完整文档 —— 亲手体验 Autional 的每一项能力。",
+    "stats": [
+      { "value": "27", "label": "微服务" },
+      { "value": "1,400+", "label": "API 端点" },
+      { "value": "Go / TypeScript", "label": "技术栈" },
+      { "value": "AGPL-3.0", "label": "开源" }
+    ],
+    "entries": [
+      { "title": "全服务 Demo 总入口", "desc": "逐一体验各服务的演示环境 —— 认证、企业级访问、审计与更多。", "label": "打开演示门户" },
+      { "title": "平台文档门户", "desc": "部署形态、配置机制与运维指南的完整文档。", "label": "访问文档门户" },
+      { "title": "开发者快速开始", "desc": "从安装到第一个登录流程的完整接入指南。", "label": "查看快速开始" },
+      { "title": "API 参考", "desc": "1,400+ 个 REST API 端点，交互式 Swagger/OpenAPI 文档。", "label": "浏览 API 参考" },
+      { "title": "功能总览", "desc": "SSO、MFA、通行密钥（Passkey）、RBAC、NHI、多租户、审计、合规 —— 完整的身份管理能力。", "label": "浏览功能特性" },
+      { "title": "SDK 与 npm 软件包", "desc": "@autional/react 等已发布组件，均可直接安装。", "label": "查看 SDK" }
+    ]
+  },
   "footer": {
     "description": "面向 AI 生成应用的身份层。认证、SSO、通行密钥（Passkey）、租户隔离、审计与开发者 API，统一在一个连贯的系统中。",
     "platform": "平台",

@@ -6,7 +6,8 @@
  *   G1 单键空间：两文件均为嵌套结构；键名本身不得含 '.'（i18next 默认 keySeparator='.'，
  *      扁平点号键会与嵌套路径混淆、且不可达）；
  *   G2 键集对称：en-US.json 与 zh-CN.json 的展开键集完全一致；
- *   G3 无空值：字符串非空（trim 后）；数组非空且元素为非空字符串。
+ *   G3 无空值：字符串非空（trim 后）；数组非空；数组/对象元素递归非空、类型合法；
+ *   G4 形状对称：数组/对象值的结构签名（元素类型链 + 对象键集）两侧一致。
  */
 import { readFileSync } from 'node:fs';
 
@@ -34,18 +35,38 @@ const zh = flatten(load('zh-CN.json'), '', 'zh-CN');
 for (const k of en.keys()) if (!zh.has(k)) issues.push(`[G2] zh-CN 缺键：${k}`);
 for (const k of zh.keys()) if (!en.has(k)) issues.push(`[G2] en-US 缺键：${k}`);
 
-// G3 无空值
+// G3 无空值（递归覆盖数组/对象元素）
+const checkValue = (side, k, v) => {
+  if (typeof v === 'string') {
+    if (v.trim() === '') issues.push(`[G3] ${side}: 空值：${k}`);
+    return;
+  }
+  if (Array.isArray(v)) {
+    if (v.length === 0) issues.push(`[G3] ${side}: 空数组：${k}`);
+    v.forEach((item, i) => checkValue(side, `${k}[${i}]`, item));
+    return;
+  }
+  if (v !== null && typeof v === 'object') {
+    for (const [kk, vv] of Object.entries(v)) checkValue(side, `${k}.${kk}`, vv);
+    return;
+  }
+  issues.push(`[G3] ${side}: 非法值类型（${v === null ? 'null' : typeof v}）：${k}`);
+};
 for (const [side, map] of [['en-US', en], ['zh-CN', zh]]) {
-  for (const [k, v] of map) {
-    if (typeof v === 'string') {
-      if (v.trim() === '') issues.push(`[G3] ${side}: 空值：${k}`);
-    } else if (Array.isArray(v)) {
-      if (v.length === 0) issues.push(`[G3] ${side}: 空数组：${k}`);
-      else if (v.some((item) => typeof item !== 'string' || item.trim() === ''))
-        issues.push(`[G3] ${side}: 数组含空元素：${k}`);
-    } else {
-      issues.push(`[G3] ${side}: 非法值类型（${typeof v}）：${k}`);
-    }
+  for (const [k, v] of map) checkValue(side, k, v);
+}
+
+// G4 形状对称（数组/对象值的结构签名两侧一致）
+const shape = (v) => {
+  if (Array.isArray(v)) return `[${v.map(shape).join(',')}]`;
+  if (v !== null && typeof v === 'object') return `{${Object.keys(v).sort().join(',')}}`;
+  return typeof v;
+};
+for (const [k, v] of en) {
+  if (v !== null && typeof v === 'object') {
+    const sigEn = shape(v);
+    const sigZh = shape(zh.get(k));
+    if (sigEn !== sigZh) issues.push(`[G4] 形状不对称：${k}（en=${sigEn} / zh=${sigZh}）`);
   }
 }
 

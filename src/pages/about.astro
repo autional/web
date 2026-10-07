@@ -1,6 +1,7 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
-import { FUTURE_ROADMAP } from '../lib/product-roadmap';
+import { t } from '../i18n';
+import { FUTURE_ROADMAP, type RoadmapPhase } from '../lib/product-roadmap';
 const milestones = [
   { date: '2024 Q1', title: '项目启动', desc: '核心认证引擎开始研发。Autional 诞生于对基于 Go 构建的开源身份平台的需求。' },
   { date: '2024 Q4', title: 'Alpha 版本', desc: '首个版本，包含 SSO、MFA 与 RBAC，覆盖核心身份生命周期。' },
@@ -13,6 +14,8 @@ const values = [
   { icon: '🤝', title: '开发者体验', desc: '10 分钟集成。类型安全的 API。像产品而不像平台的身份基础设施。' },
   { icon: '🔒', title: '默认安全', desc: '企业级安全，却没有企业级的复杂度。哈希链审计、自适应 MFA、多租户隔离 —— 内建设计，而非事后外挂。' },
 ];
+// 路线图未来阶段（W10 键化）：文案取 i18n（roadmap.future.*）
+const futurePhases = FUTURE_ROADMAP.map((key) => t(key, { returnObjects: true }) as RoadmapPhase);
 ---
 <LandingLayout title="关于 — Autional" description="Autional 是面向 AI 生成应用的身份层。了解我们的故事、使命与路线图。" keywords="Autional, 关于, 身份, IAM, 开源, 使命, 团队">
   <section class="mx-auto max-w-4xl px-4 py-20">
@@ -41,7 +44,7 @@ const values = [
     </div>
     <!-- Roadmap -->
     <div><h2 class="text-2xl font-bold text-center mb-12">路线图</h2>
-      <div class="grid gap-6 md:grid-cols-3">{FUTURE_ROADMAP.map(r => (
+      <div class="grid gap-6 md:grid-cols-3">{futurePhases.map(r => (
         <div class="rounded-md border border-neutral-200 dark:border-neutral-800 p-6"><div class="text-sm font-semibold text-primary-600 mb-3">{r.period}</div><ul class="space-y-2">{r.items.map(i => <li class="flex items-start gap-2 text-sm text-neutral-600 dark:text-neutral-300"><span class="text-primary-500 mt-0.5 shrink-0">→</span>{i}</li>)}</ul></div>
       ))}</div>
     </div>

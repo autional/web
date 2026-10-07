@@ -44,8 +44,11 @@ export const i18nReady = i18next.use(initReactI18next).init({
 });
 
 /** 取词单点：.astro frontmatter（构建期）与 React 组件（客户端）共用。 */
-export const t = (key: string, options?: Record<string, unknown>): string =>
-  i18next.t(key, options) as string;
+export function t(key: string, options: { returnObjects: true }): unknown;
+export function t(key: string, options?: Record<string, unknown>): string;
+export function t(key: string, options?: Record<string, unknown>): unknown {
+  return i18next.t(key, options);
+}
 
 /**
  * 客户端切换（LangSwitch island 调用）：i18next 变更 + localStorage 持久化 + <html lang> 同步 +
