@@ -1,27 +1,27 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
 const comparisons = [
-  { name: 'vs Auth0', url: '#auth0', pros: ['Open source — no vendor lock-in', 'Transparent pricing, no surprise MAU bills', 'AI-native — designed for AI-generated apps', 'Self-host or cloud — you choose'], cons: ['Smaller ecosystem than Auth0', 'Fewer third-party integrations', 'Younger community'], verdict: 'Auth0 is the incumbent. Autional is the open alternative — same enterprise features, zero lock-in, built for the AI era.' },
-  { name: 'vs Clerk', url: '#clerk', pros: ['AGPL open source — self-host or cloud', 'Enterprise SSO included (not an add-on)', 'Multi-tenant architecture built for B2B SaaS', '24 microservices for true enterprise scale'], cons: ['Fewer pre-built UI components', 'No built-in billing (yet)'], verdict: 'Clerk has beautiful UI. Autional has enterprise depth — and it\'s open source.' },
-  { name: 'vs WorkOS', url: '#workos', pros: ['Complete user system, not just enterprise add-ons', 'AI-gen workflow first — Bolt/Lovable/Cursor', 'Open source — no per-connection pricing', 'Self-hostable for compliance'], cons: ['No FGA (yet)', 'Smaller sales/enterprise team'], verdict: 'WorkOS helps you sell to enterprise. Autional helps you build AI apps that have users. Different focus — broader coverage.' },
-  { name: 'vs Bolt.new Built-in Auth', url: '#bolt', pros: ['Goes where Bolt\'s auth stops — SSO, MFA, RBAC, audit', 'Works with any AI tool, not just Bolt', 'Scales from MVP to enterprise without migration', 'Enterprise features without enterprise pricing'], cons: ['Not as simple as Bolt\'s zero-config auth for MVPs', 'Requires SDK integration for basic auth'], verdict: 'Bolt.new gives you basic email/password. Autional gives you everything else — when your AI-generated app outgrows Bolt\'s built-in auth.' },
-  { name: 'vs Building In-House', url: '#build', pros: ['3-6 months of engineering time saved', 'Ongoing security maintenance eliminated', '1,400+ APIs built and tested', 'Enterprise compliance ready from day one'], cons: ['Monthly cost instead of internal engineering cost', 'Dependency on external platform'], verdict: 'Building auth is building a security product. Let Autional handle the identity layer while you focus on what makes your AI app unique.' },
+  { name: '对比 Auth0', url: '#auth0', pros: ['开源 —— 无厂商锁定', '定价透明，没有意外的 MAU 账单', 'AI 原生 —— 专为 AI 生成的应用设计', '当前自托管可用；云托管在路线图中（即将推出）'], cons: ['生态规模小于 Auth0', '第三方集成较少', '社区起步较晚'], verdict: 'Auth0 是市场在位者。Autional 是开源的替代方案 —— 同样的企业级能力、零锁定，为 AI 时代而构建。', links: [{ href: '/pricing', label: '查看定价' }, { href: '/docs', label: '阅读文档' }] },
+  { name: '对比 Clerk', url: '#clerk', pros: ['AGPL-3.0 开源 —— 当前自托管可用', '企业级 SSO 已包含（而非附加项）', '为 B2B SaaS 构建的多租户架构', '27 个微服务，支撑真正的企业级规模'], cons: ['预置 UI 组件较少', '暂无内置计费'], verdict: 'Clerk 的界面很漂亮。Autional 胜在企业级深度 —— 而且它是开源的。', links: [{ href: '/features', label: '浏览功能特性' }, { href: '/docs', label: '阅读文档' }] },
+  { name: '对比 WorkOS', url: '#workos', pros: ['完整的用户体系，而不只是企业级附加组件', 'AI 生成工作流优先 —— Bolt/Lovable/Cursor', '开源 —— 没有按连接数计费', '为满足合规要求可自托管'], cons: ['暂无 FGA', '销售与企业团队规模较小'], verdict: 'WorkOS 帮你把产品卖给企业。Autional 帮你构建真正有用户的 AI 应用。侧重点不同 —— 覆盖面更广。', links: [{ href: '/features', label: '浏览功能特性' }] },
+  { name: '对比 Bolt.new 内置认证', url: '#bolt', pros: ['覆盖 Bolt 认证止步之处 —— SSO、MFA、RBAC、审计', '适用于任何 AI 工具，不只限于 Bolt', '从 MVP 扩展到企业级，无需迁移', '企业级能力，无需企业级价格'], cons: ['对 MVP 而言，不如 Bolt 的零配置认证简单', '基础认证也需要集成 SDK'], verdict: 'Bolt.new 给你基础的邮箱/密码认证。Autional 给你其余的一切 —— 当你的 AI 生成应用超出 Bolt 内置认证的能力时。', links: [{ href: '/docs', label: '阅读文档' }] },
+  { name: '对比自研', url: '#build', pros: ['节省 3-6 个月的工程时间', '无需再承担持续的安全维护', '1,400+ 个 API 已构建并经过测试', '从第一天起就具备企业级合规能力'], cons: ['云托管在路线图中（即将推出），当前需自行部署', '依赖外部平台'], verdict: '自研认证就是在造一个安全产品。让 Autional 承担身份层，你把精力放在让 AI 应用与众不同的地方。', links: [{ href: '/pricing', label: '查看定价' }] },
 ];
 ---
-<LandingLayout title="Compare — Autional" description="See how Autional stacks up against Auth0, Clerk, WorkOS, and building auth in-house." keywords="Autional, compare, Auth0, Clerk, WorkOS, identity, authentication, IAM, open source, pricing">
+<LandingLayout title="对比 — Autional" description="看看 Autional 与 Auth0、Clerk、WorkOS 以及自研认证方案的对比。" keywords="Autional, 对比, Auth0, Clerk, WorkOS, 身份, 认证, IAM, 开源, 定价">
   <section class="mx-auto max-w-4xl px-4 py-20">
     <div class="text-center mb-16">
-      <h1 class="text-4xl font-bold sm:text-5xl">How We Compare</h1>
-      <p class="mt-4 text-lg text-neutral-500 max-w-2xl mx-auto">Honest comparisons. No marketing fluff. See where Autional wins — and where we don't.</p>
+      <h1 class="text-4xl font-bold sm:text-5xl">我们与其他方案的对比</h1>
+      <p class="mt-4 text-lg text-neutral-500 max-w-2xl mx-auto">诚实的对比，没有营销话术。看看 Autional 在哪里胜出 —— 以及哪里不如别人。</p>
     </div>
     {comparisons.map(c => (
-      <div id={c.url.replace('#','')} class="mb-16 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8">
+      <div id={c.url.replace('#','')} class="mb-16 rounded-md border border-neutral-200 dark:border-neutral-800 p-8">
         <h2 class="text-2xl font-bold mb-4">{c.name}</h2>
         <div class="grid gap-8 md:grid-cols-2 mb-6">
-          <div><h3 class="text-sm font-semibold text-green-600 mb-3">Autional Advantage</h3><ul class="space-y-2">{c.pros.map(p => <li class="flex items-start gap-2 text-sm"><span class="text-green-500 mt-0.5 shrink-0">✓</span>{p}</li>)}</ul></div>
-          <div><h3 class="text-sm font-semibold text-neutral-500 mb-3">Considerations</h3><ul class="space-y-2">{c.cons.map(p => <li class="flex items-start gap-2 text-sm text-neutral-500"><span class="text-neutral-400 mt-0.5 shrink-0">○</span>{p}</li>)}</ul></div>
+          <div><h3 class="text-sm font-semibold text-green-600 mb-3">Autional 的优势</h3><ul class="space-y-2">{c.pros.map(p => <li class="flex items-start gap-2 text-sm"><span class="text-green-500 mt-0.5 shrink-0">✓</span>{p}</li>)}</ul></div>
+          <div><h3 class="text-sm font-semibold text-neutral-500 mb-3">需要权衡之处</h3><ul class="space-y-2">{c.cons.map(p => <li class="flex items-start gap-2 text-sm text-neutral-500"><span class="text-neutral-400 mt-0.5 shrink-0">○</span>{p}</li>)}</ul></div>
         </div>
-        <div class="rounded-lg bg-neutral-50 dark:bg-slate-900 p-4 text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed"><strong class="text-neutral-900 dark:text-white">Verdict:</strong> {c.verdict}</div>
+        <div class="rounded-lg bg-neutral-50 dark:bg-slate-900 p-4 text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed"><strong class="text-neutral-900 dark:text-white">结论：</strong> {c.verdict}<div class="mt-3 flex flex-wrap gap-4">{c.links.map(l => <a href={l.href} class="font-medium text-primary-600 hover:text-primary-700">{l.label} →</a>)}</div></div>
       </div>
     ))}
   </section>

@@ -1,31 +1,31 @@
 ---
-title: "Multi-Factor Authentication Protocol Comparison: TOTP vs HOTP vs FIDO2 vs SMS OTP"
+title: "多因素认证协议对比：TOTP vs HOTP vs FIDO2 vs 短信 OTP"
 date: "2026-05-20"
 category: "Tech"
 tags: ["MFA", "TOTP", "FIDO2"]
-readTime: "10 min"
-excerpt: "MFA isn't just 'one more verification code.' Different MFA protocols vary enormously in security, user experience, and phishing resistance. This article compares TOTP, HOTP, SMS OTP, and FIDO2/WebAuthn — the four mainstream MFA protocols — across working principles, security strengths, and applicable scenarios, and shows how Autional mfa-service delivers an optimal authentication experience through risk-based adaptive selection."
+readTime: "10 分钟"
+excerpt: "MFA 不是「多一个验证码」这么简单。不同 MFA 协议在安全性、用户体验与抗钓鱼能力上差异巨大。本文对比 TOTP、HOTP、短信 OTP 与 FIDO2/WebAuthn 四种主流 MFA 协议的工作原理、安全强度与适用场景，并展示 Autional mfa-service 如何通过基于风险的自适应选择提供最优认证体验。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-Multi-factor authentication (MFA) is the most effective defense against account takeover. Microsoft research shows MFA can block 99.9% of account compromises. But "MFA" is an umbrella term — the security gap between specific technical implementations is enormous.
+多因素认证（MFA）是抵御账号接管最有效的防线。微软的研究显示，MFA 可以阻断 99.9% 的账号失陷。但「MFA」是一个统称——具体技术实现之间的安全差距极其悬殊。
 
-This article puts four mainstream MFA protocols side by side, analyzing them layer by layer from the protocol level to the security level.
+本文把四种主流 MFA 协议摆在一起，从协议层到安全层逐层剖析。
 
-## Quick Overview of the Four MFA Protocols
+## 四种 MFA 协议速览
 
-| Protocol | Year Introduced | Standard | Authentication Factor | Interaction |
-|----------|-----------------|----------|----------------------|-------------|
-| SMS OTP | 1990s | No unified standard | Something you have (phone number) | Receive SMS, enter manually |
-| HOTP | 2005 | RFC 4226 | Something you have (HMAC counter) | Hardware token or App display, enter manually |
-| TOTP | 2008 | RFC 6238 | Something you have (HMAC time-sync) | App shows 6-digit code, enter manually |
-| FIDO2 | 2018 | W3C + FIDO | Something you have (private key) + Something you are (biometric) | USB/NFC/BLE tap, or fingerprint/face confirm |
+| 协议 | 提出年份 | 标准 | 认证因素 | 交互方式 |
+|------|----------|------|---------|---------|
+| 短信 OTP | 1990 年代 | 无统一标准 | 你所拥有的（手机号） | 接收短信，手动输入 |
+| HOTP | 2005 | RFC 4226 | 你所拥有的（HMAC 计数器） | 硬件令牌或 App 展示，手动输入 |
+| TOTP | 2008 | RFC 6238 | 你所拥有的（HMAC 时间同步） | App 显示 6 位码，手动输入 |
+| FIDO2 | 2018 | W3C + FIDO | 你所拥有的（私钥）+ 你所是的（生物特征） | USB/NFC/BLE 触碰，或指纹/人脸确认 |
 
-## SMS OTP: The Weakest MFA, but the Most Widespread
+## 短信 OTP：最弱的 MFA，却最普及
 
-### How It Works
+### 工作原理
 
 ```
 1. User enters phone number on login page
@@ -35,43 +35,43 @@ This article puts four mainstream MFA protocols side by side, analyzing them lay
 5. Server compares — match means pass
 ```
 
-SMS OTP security relies on one assumption: **a phone number can uniquely and securely identify a user.** But in 2026, that assumption is very fragile.
+短信 OTP 的安全性依赖一个假设：**手机号可以唯一且安全地标识一个用户。** 但在 2026 年，这个假设已经非常脆弱。
 
-### Security Weaknesses
+### 安全弱点
 
-**1. SIM Swap Attack**
+**1. SIM 卡交换攻击**
 
-Attackers use social engineering to request a SIM replacement from the carrier, transferring the target's phone number to a SIM card they control. Once successful, they can receive all SMS messages sent to that number — including MFA codes.
+攻击者通过社会工程向运营商申请补卡，把目标的手机号转移到自己掌控的 SIM 卡上。一旦得手，发往该号码的所有短信都能被其接收——包括 MFA 验证码。
 
-In 2024, the U.S. SEC's X (formerly Twitter) account was compromised via SIM swap + SMS OTP hijacking.
+2024 年，美国 SEC 的 X（原 Twitter）账号就是通过 SIM 卡交换 + 短信 OTP 劫持被攻陷的。
 
-**2. SS7 Protocol Vulnerabilities**
+**2. SS7 协议漏洞**
 
-SS7 (Signaling System No. 7) is the signaling protocol between telecom carriers, designed in the 1970s with几乎没有 security considerations. Attackers with SS7 access (typically through compromised smaller foreign carriers or black-market access) can intercept or redirect SMS messages.
+SS7（7 号信令系统）是电信运营商之间的信令协议，设计于 1970 年代，几乎没有考虑安全问题。能访问 SS7 的攻击者（通常通过被攻陷的海外小型运营商或黑市接入）可以拦截或重定向短信。
 
-**3. Phishing Attacks**
+**3. 钓鱼攻击**
 
-Users can enter an SMS code on a phishing site, and the attacker immediately relays it to the real site. This real-time phishing works perfectly against SMS OTP — because SMS OTP has no origin binding.
+用户可以在钓鱼网站上输入短信验证码，攻击者立即将其转发到真实网站。这种实时钓鱼对短信 OTP 完全有效——因为短信 OTP 没有来源绑定。
 
-**4. No Encryption, No Integrity Protection**
+**4. 无加密、无完整性保护**
 
-SMS messages travel in plaintext over carrier networks. Base stations, core network equipment, international signaling gateways — any node can eavesdrop.
+短信在运营商网络中以明文传输。基站、核心网设备、国际信令网关——任何一个节点都可以窃听。
 
-### Scorecard
+### 评分卡
 
-| Dimension | Score | Notes |
+| 维度 | 评分 | 说明 |
 |-----------|-------|-------|
-| Security | ★★☆☆☆ | Vulnerable to SIM swap, SS7 hijacking, phishing |
-| User Experience | ★★★☆☆ | Must wait for SMS delivery, poor experience with weak signal |
-| Deployment Cost | ★★★★★ | Just an SMS gateway API, zero client deployment |
-| Phishing Resistance | ★☆☆☆☆ | No origin binding, phishing sites can relay directly |
-| Offline Usability | ★☆☆☆☆ | Depends on cellular network coverage |
+| 安全性 | ★★☆☆☆ | 易受 SIM 卡交换、SS7 劫持、钓鱼攻击 |
+| 用户体验 | ★★★☆☆ | 需等待短信送达，信号差时体验糟糕 |
+| 部署成本 | ★★★★★ | 只需一个短信网关 API，客户端零部署 |
+| 抗钓鱼 | ★☆☆☆☆ | 无来源绑定，钓鱼站点可直接转发 |
+| 离线可用 | ★☆☆☆☆ | 依赖蜂窝网络覆盖 |
 
-## HOTP: Event-Based HMAC OTP
+## HOTP：基于事件的 HMAC 一次性密码
 
-### How It Works
+### 工作原理
 
-HOTP (HMAC-based One-Time Password) uses a shared secret and an incrementing counter to generate one-time passwords:
+HOTP（HMAC-based One-Time Password）使用一个共享密钥与一个递增计数器生成一次性密码：
 
 ```
 HOTP(K, C) = Truncate(HMAC-SHA-1(K, C))
@@ -102,27 +102,27 @@ Counter sync issue:
   (Window size configurable, typically 5-10)
 ```
 
-### Characteristics
+### 特性
 
-HOTP's defining feature is that it's **event-driven** — each OTP generation requires active user action. This is both an advantage (works offline, no clock sync needed) and a disadvantage (accidental presses cause counter drift).
+HOTP 的标志性特征是**事件驱动**——每次生成 OTP 都需要用户主动操作。这既是优点（可离线使用，无需时钟同步），也是缺点（误触会导致计数器漂移）。
 
-Best suited for: hardware security tokens providing one-time passwords for employees in offline environments.
+最适合的场景：为离线环境中的员工提供一次性密码的硬件安全令牌。
 
-### Scorecard
+### 评分卡
 
-| Dimension | Score | Notes |
+| 维度 | 评分 | 说明 |
 |-----------|-------|-------|
-| Security | ★★★☆☆ | HMAC-SHA1 cryptographic strength is adequate, but OTP can be phished |
-| User Experience | ★★☆☆☆ | Must press button to generate, enter manually, counter sync issues |
-| Deployment Cost | ★★★★☆ | Software App available, hardware tokens need distribution |
-| Phishing Resistance | ★☆☆☆☆ | Like SMS OTP, OTP can be relayed |
-| Offline Usability | ★★★★★ | No time sync needed, no network required |
+| 安全性 | ★★★☆☆ | HMAC-SHA1 的密码学强度足够，但 OTP 可被钓鱼 |
+| 用户体验 | ★★☆☆☆ | 需按键生成、手动输入，存在计数器同步问题 |
+| 部署成本 | ★★★★☆ | 可用软件 App，硬件令牌需要分发 |
+| 抗钓鱼 | ★☆☆☆☆ | 与短信 OTP 一样，OTP 可被转发 |
+| 离线可用 | ★★★★★ | 无需时间同步，无需网络 |
 
-## TOTP: Time-Based HMAC OTP
+## TOTP：基于时间的 HMAC 一次性密码
 
-### How It Works
+### 工作原理
 
-TOTP (Time-based One-Time Password) is a time variant of HOTP — replacing the counter with the current timestamp:
+TOTP（Time-based One-Time Password）是 HOTP 的时间变体——把计数器替换为当前时间戳：
 
 ```
 TOTP(K, T) = HOTP(K, floor(T / X))
@@ -144,19 +144,19 @@ Example:
   Valid for [T, T+29] — 30-second window
 ```
 
-This is how your familiar Authenticator Apps (Google Authenticator, Authy, Microsoft Authenticator) work. A 6-digit number refreshes every 30 seconds with no network connection required.
+你熟悉的各种 Authenticator App（Google Authenticator、Authy、Microsoft Authenticator）就是这样工作的。6 位数字每 30 秒刷新一次，全程无需联网。
 
-### Security Hardening
+### 安全加固
 
-**Time Sync Tolerance**
+**时间同步容差**
 
-Client and server clocks can never be perfectly synchronized. Servers typically allow ±1 time step tolerance (allowing OTP from the previous or next 30-second window).
+客户端与服务端的时钟永远无法完美同步。服务端通常会允许 ±1 个时间步的容差（接受上一个或下一个 30 秒窗口内产生的 OTP）。
 
-**Replay Protection**
+**防重放**
 
-Servers must remember recently verified OTPs to prevent reuse within the same 30-second window.
+服务端必须记住最近已校验过的 OTP，防止在同一个 30 秒窗口内被重复使用。
 
-Autional mfa-service replay protection implementation:
+Autional mfa-service 的防重放实现：
 
 ```go
 func VerifyTOTP(userID, secret string, otp string) (bool, error) {
@@ -179,21 +179,21 @@ func VerifyTOTP(userID, secret string, otp string) (bool, error) {
 }
 ```
 
-### Scorecard
+### 评分卡
 
-| Dimension | Score | Notes |
+| 维度 | 评分 | 说明 |
 |-----------|-------|-------|
-| Security | ★★★★☆ | Strong cryptography, auto-expires in 30s, but OTP still phishable |
-| User Experience | ★★★★☆ | App auto-refreshes, copy-paste or autofill |
-| Deployment Cost | ★★★★★ | Users just install a free App on their phone |
-| Phishing Resistance | ★★☆☆☆ | 30-second window helps, but real-time phishing can still relay |
-| Offline Usability | ★★★★★ | Pure time calculation, no network needed |
+| 安全性 | ★★★★☆ | 密码学强度高，30 秒自动过期，但 OTP 仍可被钓鱼 |
+| 用户体验 | ★★★★☆ | App 自动刷新，支持复制粘贴或自动填充 |
+| 部署成本 | ★★★★★ | 用户只需在手机上装一个免费 App |
+| 抗钓鱼 | ★★☆☆☆ | 30 秒窗口有所帮助，但实时钓鱼仍可转发 |
+| 离线可用 | ★★★★★ | 纯时间计算，无需网络 |
 
-## FIDO2/WebAuthn: The Strongest MFA
+## FIDO2/WebAuthn：最强的 MFA
 
-FIDO2 is fundamentally different from the first three MFA methods — it's based on public-key cryptography, not shared secrets.
+FIDO2 与前三种 MFA 方式有本质区别——它基于公钥密码学，而非共享密钥。
 
-### Core Difference
+### 核心差异
 
 ```
 TOTP/HOTP/SMS OTP approach (shared secret):
@@ -210,49 +210,49 @@ FIDO2 approach (public-key cryptography):
   ✅ Advantage: server only stores public keys. Even if the server is breached, attackers only get public keys.
 ```
 
-### Why FIDO2 Resists Phishing
+### FIDO2 为什么能抗钓鱼
 
-Phishing attacks work by luring users to a fake site that looks identical to the real one, tricking them into entering credentials. But with FIDO2:
+钓鱼攻击的做法是把用户引到一个与真实站点几乎一模一样的假站点，诱骗用户输入凭证。但在 FIDO2 下：
 
-1. The fake site's domain differs from the real site
-2. The browser verifies the current page's origin (protocol + domain + port) when calling the WebAuthn API
-3. `rp.id` is bound at registration time
-4. The authenticator checks whether the request's `rp.id` matches the one from registration
-5. Mismatch → authenticator refuses to sign
-6. Even with a perfect phishing page, attackers can't pass the authenticator
+1. 假站点的域名与真实站点不同
+2. 浏览器在调用 WebAuthn API 时会校验当前页面的来源（协议 + 域名 + 端口）
+3. 注册时 `rp.id` 已经绑定
+4. 认证器会检查请求的 `rp.id` 是否与注册时一致
+5. 不一致 → 认证器拒绝签名
+6. 即使钓鱼页面做到以假乱真，攻击者也过不了认证器这一关
 
-This is protocol-level phishing protection — not "advise users to check the URL," but cryptographically impossible to authenticate under the wrong domain.
+这是协议级的钓鱼防护——不是「提醒用户检查网址」，而是在错误的域名下密码学意义上就不可能认证成功。
 
-### Scorecard
+### 评分卡
 
-| Dimension | Score | Notes |
+| 维度 | 评分 | 说明 |
 |-----------|-------|-------|
-| Security | ★★★★★ | Public-key crypto + origin binding + hardware security chip |
-| User Experience | ★★★★★ | One-tap fingerprint/face login, or insert key and tap |
-| Deployment Cost | ★★★☆☆ | Requires server-side support and modern browsers (covering 95%+) |
-| Phishing Resistance | ★★★★★ | Protocol-level origin binding, phishing sites can't pass |
-| Offline Usability | ★★★★☆ | No network needed during authentication (required during registration) |
+| 安全性 | ★★★★★ | 公钥密码学 + 来源绑定 + 硬件安全芯片 |
+| 用户体验 | ★★★★★ | 一键指纹/人脸登录，或插入密钥轻触 |
+| 部署成本 | ★★★☆☆ | 需服务端支持与现代浏览器（覆盖率 95%+） |
+| 抗钓鱼 | ★★★★★ | 协议级来源绑定，钓鱼站点无法通过 |
+| 离线可用 | ★★★★☆ | 认证过程无需网络（注册时需要） |
 
-## Comprehensive Comparison Matrix
+## 综合对比矩阵
 
-| Dimension | SMS OTP | HOTP | TOTP | FIDO2 |
+| 维度 | 短信 OTP | HOTP | TOTP | FIDO2 |
 |-----------|---------|------|------|-------|
-| Cryptographic Basis | Random number | HMAC-SHA1 | HMAC-SHA1 | ECDSA/EdDSA |
-| Key Storage | Server-side | Shared both sides | Shared both sides | Private key on device, public key on server |
-| Phishing Resistance | None | None | Very weak (30s window) | Strong (origin binding) |
-| SIM Swap Resistance | None | N/A | N/A | N/A |
-| Offline Usability | No (needs cellular) | Yes | Yes | Yes |
-| User Interaction | Wait for SMS → enter | Press button → enter | App auto → enter | Biometric / tap |
-| Device Dependency | Phone + SIM card | Hardware token or App | App | Platform authenticator or hardware key |
-| Loss Risk | SIM card damage | Token damage | Phone loss | Device loss |
-| Recovery Plan | Replace SIM | Backup token | Backup recovery codes | Alternative auth method |
-| Cost Per User | ~$0.007/msg | Token ~$1-30 | Free | Free-$70 |
-| Security Score | 2/5 | 3/5 | 4/5 | 5/5 |
-| Recommended For | Transition or low-risk | Offline industrial | General MFA | High-security scenarios |
+| 密码学基础 | 随机数 | HMAC-SHA1 | HMAC-SHA1 | ECDSA/EdDSA |
+| 密钥存储 | 服务端 | 双方共享 | 双方共享 | 私钥在设备，公钥在服务端 |
+| 抗钓鱼 | 无 | 无 | 极弱（30 秒窗口） | 强（来源绑定） |
+| 抗 SIM 卡交换 | 无 | 不适用 | 不适用 | 不适用 |
+| 离线可用 | 否（需蜂窝网络） | 是 | 是 | 是 |
+| 用户交互 | 等短信 → 输入 | 按按钮 → 输入 | App 自动 → 输入 | 生物特征 / 轻触 |
+| 设备依赖 | 手机 + SIM 卡 | 硬件令牌或 App | App | 平台认证器或硬件密钥 |
+| 丢失风险 | SIM 卡损坏 | 令牌损坏 | 手机丢失 | 设备丢失 |
+| 恢复方案 | 补卡 | 备用令牌 | 备用恢复码 | 替代认证方式 |
+| 单用户成本 | 约 $0.007/条 | 令牌约 $1-30 | 免费 | 免费-$70 |
+| 安全评分 | 2/5 | 3/5 | 4/5 | 5/5 |
+| 推荐场景 | 过渡期或低风险 | 离线工业环境 | 通用 MFA | 高安全场景 |
 
-## Autional Multi-Channel MFA Architecture
+## Autional 的多通道 MFA 架构
 
-Autional mfa-service manages all of the above MFA protocols in a unified way:
+Autional mfa-service 统一管理上述所有 MFA 协议：
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -272,9 +272,9 @@ Autional mfa-service manages all of the above MFA protocols in a unified way:
 └──────────────────────────────────────────────────┘
 ```
 
-### Multi-Channel Registration
+### 多通道注册
 
-Users can register multiple MFA methods simultaneously in their security settings:
+用户可以在安全设置中同时注册多种 MFA 方式：
 
 ```json
 {
@@ -304,11 +304,11 @@ Users can register multiple MFA methods simultaneously in their security setting
 }
 ```
 
-The system uses the user's configured primary method by default, but automatically falls back to alternative methods if the primary one is unavailable (e.g., hardware key not nearby).
+系统默认使用用户配置的主认证方式，但当主方式不可用时会自动回退到替代方式（如硬件密钥不在身边）。
 
-### Adaptive MFA Policy
+### 自适应 MFA 策略
 
-Autional's adaptive MFA engine dynamically selects authentication methods based on login risk score:
+Autional 的自适应 MFA 引擎根据登录风险分动态选择认证方式：
 
 ```
 Risk Score 0-30 (Low Risk):
@@ -326,23 +326,23 @@ Risk Score 86-100 (Critical Risk):
   → Trigger security alert
 ```
 
-Administrators can configure risk thresholds and corresponding authentication policies per tenant.
+管理员可以按租户配置风险阈值与对应的认证策略。
 
-## Selection Recommendations
+## 选型建议
 
-| Scenario | Recommended MFA | Reason |
+| 场景 | 推荐 MFA | 理由 |
 |----------|-----------------|--------|
-| Consumer-facing SaaS | TOTP (default) + FIDO2 (optional) | Great UX, zero cost, high security |
-| Enterprise internal systems | FIDO2 platform authenticator (Windows Hello / Touch ID) | Easy device management, high security |
-| Finance / Banking | FIDO2 hardware key mandatory | Highest security, regulatory compliance |
-| Offline industrial environment | HOTP hardware token | No network or time sync dependency |
-| Temporary / transition solution | SMS OTP | Wide user coverage, but upgrade ASAP |
-| Admin / privileged users | FIDO2 hardware key + TOTP backup | Defense in depth, dual MFA channels |
+| 面向消费者的 SaaS | TOTP（默认）+ FIDO2（可选） | 体验好、零成本、安全性高 |
+| 企业内部系统 | FIDO2 平台认证器（Windows Hello / Touch ID） | 设备管理方便，安全性高 |
+| 金融 / 银行 | 强制 FIDO2 硬件密钥 | 安全性最高，满足监管合规 |
+| 离线工业环境 | HOTP 硬件令牌 | 不依赖网络或时间同步 |
+| 临时 / 过渡方案 | 短信 OTP | 用户覆盖面广，但应尽快升级 |
+| 管理员 / 特权用户 | FIDO2 硬件密钥 + TOTP 备用 | 纵深防御，双 MFA 通道 |
 
-## Summary
+## 总结
 
-MFA is not an on/off switch — it's a spectrum of security levels. From the weakest SMS OTP to the strongest FIDO2, the gap spans a dimension: shared secrets vs public-key cryptography, no origin binding vs protocol-level anti-phishing.
+MFA 不是一个开关，而是一个安全等级的光谱。从最弱的短信 OTP 到最强的 FIDO2，差距跨越了一个维度：共享密钥 vs 公钥密码学，无来源绑定 vs 协议级抗钓鱼。
 
-Autional mfa-service unifies all MFA protocols in one channel, so application developers don't need to integrate each protocol separately. More importantly, the adaptive MFA engine ensures users don't have to tolerate low-security authentication before they purchase hardware keys — the system automatically escalates authentication requirements based on risk.
+Autional mfa-service 把全部 MFA 协议统一在一个通道里，应用开发者无需逐个对接。更重要的是，自适应 MFA 引擎让用户不必在买到硬件密钥之前一直忍受低安全等级的认证——系统会根据风险自动升级认证要求。
 
-MFA is the first line of defense for account security. Don't settle for the weakest option.
+MFA 是账号安全的第一道防线。不要将就于最弱的选项。

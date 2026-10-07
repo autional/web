@@ -1,60 +1,60 @@
 ---
-title: "From 0 to 1: Adding MFA to Your Existing System in Half a Day"
+title: "从 0 到 1：半天时间为现有系统接入 MFA"
 date: "2026-05-06"
 category: "Project"
-tags: ["MFA", "Quick Integration", "Dev Efficiency"]
-readTime: "6 min"
-excerpt: "Traditionally, adding multi-factor authentication to an existing system takes months of development. With Autional, you can go from app registration to a fully functional MFA deployment in just half a day. This article walks you through the entire process step by step."
+tags: ["MFA", "快速集成", "研发效率"]
+readTime: "6 分钟"
+excerpt: "传统上，为现有系统接入多因素认证需要数月的开发周期。借助 Autional，从注册应用到完成可用的 MFA 部署只需半天。本文手把手带你走完整个流程。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Integration Note**: The integration time estimates ("half a day", "3.5-5 months") described in this article are reference values based on ideal conditions. Actual integration time varies depending on existing system complexity, team experience, security policy requirements, and other factors. We recommend allocating sufficient testing and deployment time in project planning.
+> **集成说明**：本文所述集成耗时（「半天」「3.5-5 个月」）为理想条件下的参考值。实际集成时间受现有系统复杂度、团队经验、安全策略要求等因素影响。建议在项目排期中预留充足的测试与部署时间。
 
-Multi-factor authentication (MFA) is one of the most effective defenses against account hijacking. Microsoft's research shows that MFA can block **99.9%** of account compromise attacks. China's MLPS 2.0 Level 3 explicitly requires the use of two or more combined authentication techniques, and the SOC 2 security standard also lists MFA as a key control.
+多因素认证（MFA）是抵御账号劫持最有效的手段之一。微软的研究表明，MFA 可以阻断 **99.9%** 的账号失陷攻击。中国等保 2.0 三级明确要求采用两种或两种以上组合的认证技术，SOC 2 安全标准也将 MFA 列为关键控制项。
 
-Yet many teams still haven't adopted MFA — not because they don't need it, but because the investment seems too large. Implementing TOTP protocol, SMS sending, email sending, Passkey registration from scratch... a conservative estimate puts the development cycle at **3-6 months**.
+然而许多团队仍未采用 MFA——不是不需要，而是觉得投入太大。从零实现 TOTP 协议、短信发送、邮件发送、通行密钥（Passkey）注册……保守估计开发周期在 **3-6 个月**。
 
-Autional aims to compress this timeline to **half a day**.
+Autional 的目标是把这条时间线压缩到 **半天**。
 
-## The Cost of Building MFA In-House
+## 自研 MFA 的成本
 
-Before introducing the Autional approach, let's look at what building MFA yourself entails:
+在介绍 Autional 的方案之前，先看看自研 MFA 需要投入什么：
 
-| Item | Work Involved | Estimated Time |
+| 项目 | 涉及工作 | 预估工期 |
 |------|---------------|---------------|
-| TOTP Implementation | RFC 6238 protocol, seed key generation, time-based validation, window tolerance | 2 weeks |
-| SMS Verification | SMS provider API integration, send/verify logic, abuse prevention, cost control | 2 weeks |
-| Email Verification | Email template design, send queue, anti-spam policy, multi-provider failover | 1-2 weeks |
-| Passkey/WebAuthn | FIDO2 attestation/assertion protocol, credential storage, cross-device compatibility | 3-4 weeks |
-| MFA Enrollment Flow | User guidance pages, device binding, backup code generation and recovery | 2 weeks |
-| MFA Auth Flow | Post-login secondary auth, Remember Device, session management | 2 weeks |
-| Admin Console | MFA policy configuration, forced user enablement, device view and revocation | 2 weeks |
-| Security Hardening | Seed key encryption, brute-force protection, anomaly detection | 1-2 weeks |
-| Audit Logging | Device registration, auth success/failure, policy change records | 1 week |
+| TOTP 实现 | RFC 6238 协议、种子密钥生成、基于时间的校验、窗口容差 | 2 周 |
+| 短信验证 | 短信服务商 API 对接、发送/校验逻辑、防滥用、成本控制 | 2 周 |
+| 邮件验证 | 邮件模板设计、发送队列、反垃圾策略、多服务商容灾 | 1-2 周 |
+| 通行密钥/WebAuthn | FIDO2 证明/断言协议、凭据存储、跨设备兼容 | 3-4 周 |
+| MFA 注册流程 | 用户引导页面、设备绑定、备份码生成与找回 | 2 周 |
+| MFA 认证流程 | 登录后二次认证、记住设备、会话管理 | 2 周 |
+| 管理控制台 | MFA 策略配置、强制用户启用、设备查看与吊销 | 2 周 |
+| 安全加固 | 种子密钥加密、防暴力破解、异常检测 | 1-2 周 |
+| 审计日志 | 设备注册、认证成功/失败、策略变更记录 | 1 周 |
 
-**Total: approximately 14-19 weeks (3.5-5 months)**. This doesn't even include testing, security reviews, or ongoing maintenance after launch.
+**合计约 14-19 周（3.5-5 个月）**。这还不包括测试、安全评审，以及上线后的持续维护。
 
-And this is just the development side. After go-live, your security team needs to monitor MFA usage — how many users have enabled it? Which users have disabled it? Are there suspicious device registration behaviors? All of this requires additional operational support.
+而这只是开发侧。上线后，安全团队还需要监控 MFA 的使用情况——有多少用户启用了？哪些用户关闭了？是否存在可疑的设备注册行为？这些都需要额外的运营投入。
 
-## The Autional Solution: Everything Done in Half a Day
+## Autional 的方案：半天全部搞定
 
-Autional implements MFA as a standalone `mfa-service` that provides MFA capabilities to all integrated applications via OAuth 2.0 / OIDC protocols. You don't need to implement any MFA logic in your application code.
+Autional 将 MFA 实现为独立的 `mfa-service`，通过 OAuth 2.0 / OIDC 协议向所有接入应用提供 MFA 能力。你无需在应用代码里实现任何 MFA 逻辑。
 
-### Step 1: Register Your Application (5 minutes)
+### 第 1 步：注册应用（5 分钟）
 
-Log into the Autional Admin Console and create an OAuth client:
+登录 Autional 管理控制台，创建一个 OAuth 客户端：
 
-- Enter the application name and callback URL
-- Select the required scopes (openid profile email)
-- Obtain your Client ID and Client Secret
+- 填写应用名称与回调地址
+- 选择所需的 scope（openid profile email）
+- 获取 Client ID 与 Client Secret
 
-### Step 2: Integrate OAuth Login (30 minutes)
+### 第 2 步：接入 OAuth 登录（30 分钟）
 
-Replace your application's existing login flow with the OAuth 2.0 authorization code flow.
+把应用现有的登录流程替换为 OAuth 2.0 授权码流程。
 
-**Backend code-to-token exchange example** (Express.js / 10 lines):
+**后端换取令牌的代码示例**（Express.js / 10 行）：
 
 ```javascript
 app.get('/auth/callback', async (req, res) => {
@@ -76,91 +76,92 @@ app.get('/auth/callback', async (req, res) => {
 });
 ```
 
-The frontend just needs a "Sign in with Autional" button that redirects to the authorization page. The rest of the logic — including login, registration, password reset, and MFA flows — is all handled by Autional.
+前端只需要一个「使用 Autional 登录」按钮，跳转到授权页即可。其余逻辑——包括登录、注册、找回密码以及 MFA 流程——全部由 Autional 处理。
 
-### Step 3: Enable MFA Policy (2 minutes)
+### 第 3 步：启用 MFA 策略（2 分钟）
 
-In the Admin Console → MFA Policy page:
+在管理控制台 → MFA 策略页面中：
 
-1. **Global Default Policy**: Select "Recommended Enable" mode — users can choose to set up MFA after login, not mandatory
-2. **Admin Forced Policy**: Create a policy for the admin role → "Force Enable" → check both TOTP and Passkey
-3. **Sensitive Operation Policy**: Configure operations like "Change Password" and "Change Security Settings" → force MFA secondary verification
+1. **全局默认策略**：选择「推荐启用」模式——用户可在登录后自行选择是否设置 MFA，不做强制
+2. **管理员强制策略**：为管理员角色创建策略 →「强制启用」→ 同时勾选 TOTP 与通行密钥
+3. **敏感操作策略**：为「修改密码」「变更安全设置」等操作配置 → 强制 MFA 二次验证
 
-Save. Done.
+保存，完成。
 
-### User Experience Flow
+### 用户体验流程
 
-After configuration, users' registration and login experience requires no additional code changes:
+配置完成后，用户的注册与登录体验无需任何额外代码改动：
 
-**New User Registration**:
-1. Create an account on the Autional unified registration page → auto-login
-2. Go to personal settings → click "Enable Multi-Factor Authentication"
-3. Choose TOTP (recommended), scan the QR code with your phone to complete binding
-4. System generates 10 one-time backup codes; users are advised to save them securely
+**新用户注册**：
+1. 在 Autional 统一注册页创建账号 → 自动登录
+2. 进入个人设置 → 点击「启用多因素认证」
+3. 选择 TOTP（推荐），用手机扫描二维码完成绑定
+4. 系统生成 10 个一次性备份码，建议用户妥善保存
 
-**Existing User Login**:
-1. Complete first-factor authentication with password/Passkey
-2. If TOTP is enabled → enter the 6-digit code (or use phone biometric auto-fill)
-3. Optionally check "Trust this device for 30 days" → subsequent logins skip MFA
+**老用户登录**：
+1. 用密码/通行密钥完成第一因素认证
+2. 若已启用 TOTP → 输入 6 位验证码（或使用手机生物识别自动填充）
+3. 可选勾选「30 天内信任此设备」→ 后续登录跳过 MFA
 
-**Admin Operations**:
-1. View all users' MFA enrollment status in the Admin Console
-2. Force-enable MFA or revoke device bindings for specific users
-3. View MFA-related audit logs (who registered a device and when, who entered incorrect verification codes)
+**管理员操作**：
+1. 在管理控制台查看所有用户的 MFA 启用状态
+2. 为指定用户强制启用 MFA 或吊销设备绑定
+3. 查看 MFA 相关审计日志（谁在何时注册了设备、谁输入了错误的验证码）
 
-## Supported MFA Methods
+## 支持的 MFA 方式
 
-Autional's `mfa-service` supports the following four authentication methods, which can be flexibly combined in policies:
+Autional 的 `mfa-service` 支持以下四种认证方式，可在策略中灵活组合：
 
-| Method | Use Case | Security | User Experience |
+| 方式 | 适用场景 | 安全性 | 用户体验 |
 |--------|---------|----------|----------------|
-| **TOTP** (Time-based One-Time Password) | Recommended default, free, works offline | High | Scan QR code, enter 6 digits |
-| **SMS Code** | Users less familiar with technology | Medium (SIM swap risk) | Auto-fill (mobile), enter 6 digits |
-| **Email Code** | Users without a phone number | Medium | Click link or enter 6-digit code from email |
-| **Passkey** (WebAuthn) | High-security scenarios | Highest | One-touch fingerprint/face auth |
+| **TOTP**（基于时间的一次性密码） | 推荐默认，免费，可离线使用 | 高 | 扫码后输入 6 位数字 |
+| **短信验证码** | 对技术不太熟悉的用户 | 中（存在 SIM 卡劫持风险） | 手机自动填充，输入 6 位数字 |
+| **邮件验证码** | 没有手机号的用户 | 中 | 点击链接或输入邮件中的 6 位验证码 |
+| **通行密钥**（WebAuthn） | 高安全场景 | 最高 | 一键指纹/人脸认证 |
 
-All MFA methods share a unified state machine: Device Registered → Awaiting Activation → Activated → Revoked. Admins can view and manage all registered devices for each user.
+所有 MFA 方式共用同一套状态机：设备已注册 → 待激活 → 已激活 → 已吊销。管理员可以查看并管理每个用户的所有已注册设备。
 
-## Underlying Implementation
+## 底层实现
 
-Understanding Autional's MFA implementation helps explain why it's more secure than a self-built solution:
+了解 Autional 的 MFA 实现，有助于说明它为什么比自研方案更安全：
 
-**TOTP Key Protection**:
-- TOTP seed keys are encrypted with AES-256-GCM and stored in PostgreSQL
-- The encryption key is not hardcoded — it's injected via environment variables and integrated with the configuration management system
-- Keys are decrypted in memory only during verification and immediately cleared afterward
+**TOTP 密钥保护**：
+- TOTP 种子密钥使用 AES-256-GCM 加密后存储在 PostgreSQL 中
+- 加密密钥不硬编码——通过环境变量注入，并与配置管理系统集成
+- 密钥仅在验证时于内存中解密，用后立即清除
 
-**Brute-Force Protection**:
-- Consecutive incorrect TOTP codes trigger a cooldown period automatically (exponential backoff)
-- After the cooldown ends, further incorrect attempts are required before entering another cooldown
-- All failure records are logged in audit logs; abnormal brute-force patterns automatically trigger alerts
+**防暴力破解**：
+- 连续输错 TOTP 验证码会自动触发冷却期（指数退避）
+- 冷却期结束后再次输错，才会进入下一个冷却期
+- 所有失败记录都会写入审计日志；异常暴力模式会自动触发告警
 
-**Session Security**:
-- After completing MFA verification, the session-service injects the `amr` (Authentication Methods Reference) claim into the token, recording which MFA method was used
-- Inter-service API calls can check the `amr` field and reject requests that haven't completed MFA
-- Trusted Device (Remember Device) is implemented via a separate encrypted cookie that auto-expires after 30 days
+**会话安全**：
+- 完成 MFA 验证后，session-service 会在令牌中注入 `amr`（Authentication Methods Reference）声明，记录本次使用了哪种 MFA 方式
+- 服务间的 API 调用可以校验 `amr` 字段，拒绝未完成 MFA 的请求
+- 可信设备（记住设备）通过独立的加密 Cookie 实现，30 天后自动过期
 
-## Migrating Existing Users
+## 迁移存量用户
 
-What if your system already has users? Autional provides user import and progressive migration options:
+如果你的系统已有用户怎么办？Autional 提供了用户导入与渐进式迁移方案：
 
-1. **Bulk Import**: Import existing users via the Bulk Import API (password hashes can be preserved); users are guided to set up MFA on first login
-2. **Progressive Migration**: Keep the old login page as a fallback; new users go through the Autional flow. Both login entry points coexist until migration is complete
-3. **Silent Registration**: The legacy system calls Autional's internal API in the background, automatically creating an Autional account on the user's next login for a seamless migration
+1. **批量导入**：通过批量导入 API 导入存量用户（可保留密码哈希）；用户首次登录时引导其设置 MFA
+2. **渐进迁移**：保留旧登录页作为兜底；新用户走 Autional 流程。两个登录入口并存，直到迁移完成
+3. **静默注册**：旧系统在后台调用 Autional 的内部 API，在用户下次登录时自动创建 Autional 账号，实现无感迁移
 
-## Getting Started
+## 快速开始
 
-Autional provides complete SDKs and documentation covering major languages and frameworks. Whether your system uses Node.js, Python, Java, Go, or PHP, there's a corresponding quick-start guide.
+Autional 提供了完整的文档与快速开始指南，并已发布 @autional/react 等 npm 软件包。前端应用可以直接安装使用；其他技术栈通过标准 OAuth 2.0 / OIDC 流程接入。
 
 ```bash
-# Three steps to set up a local dev environment
-git clone https://github.com/autional/sdk
-cd sdk/demo
-docker compose up -d
+# 安装 React SDK（其他技术栈通过标准 OAuth 2.0 / OIDC 流程接入）
+npm install @autional/react
+
+# 本地演示环境：完整启动步骤见快速开始指南
+# https://developer.autional.cn/quickstart
 ```
 
-Visit `http://localhost:11080` and experience the complete flow from user registration to MFA deployment in under 30 minutes.
+部署完成后，即可在演示环境中体验从用户注册到 MFA 部署的完整流程。
 
 ---
 
-**Multi-factor authentication is no longer a luxury — it's the baseline for modern application security.** Autional helps existing systems integrate MFA capabilities quickly.
+**多因素认证不再是奢侈品，而是现代应用安全的基线。** Autional 帮助现有系统快速接入 MFA 能力。

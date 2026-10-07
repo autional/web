@@ -1,50 +1,50 @@
 ---
-title: "From 0 to 16 Microservices: Autional Engineering Culture"
+title: "从 0 到 27 个微服务：Autional 的工程文化"
 date: "2026-06-19"
 category: "Project"
-tags: ["Engineering Culture", "Team", "Microservices"]
-readTime: "8 min"
-excerpt: "15 people, 16 microservices, 25 CI check scripts — how does Autional maintain code quality and architectural consistency while iterating at speed? This article documents our team's engineering culture, toolchain, and lessons learned from three hard-earned mistakes."
+tags: ["工程文化", "团队", "微服务"]
+readTime: "8 分钟"
+excerpt: "15 个人、27 个微服务、25 个 CI 检查脚本——Autional 如何在快速迭代的同时守住代码质量与架构一致性？本文记录了我们团队的工程文化、工具链，以及三条踩坑换来的教训。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-In early 2024, Autional was just a Go monolith maintained by a 3-person team. Two years later, we have 15 people, 16 microservices, roughly 430K lines of Go code, and 1437 API endpoints. More importantly — **these endpoints didn't grow wild; they follow the same set of architectural constraints, coding standards, and engineering workflows.**
+2024 年初，Autional 还只是一个由 3 人团队维护的 Go 单体应用。两年后，我们有 15 个人、27 个微服务、约 43 万行 Go 代码、1437 个 API 端点。更重要的是——**这些端点不是野蛮生长出来的，它们遵循同一套架构约束、编码规范与工程流程。**
 
-This article is about the engineering culture behind it — not the cliché "we love coding" slogans, but the concrete tools, processes, and decision logic. Including our smartest choices and the decisions that make us want to slap ourselves.
+本文讲的是背后的工程文化——不是「我们热爱写代码」这类口号，而是具体的工具、流程与决策逻辑。包括我们最聪明的选择，也包括那些让我们想抽自己的决定。
 
-## Why Go
+## 为什么选 Go
 
-This wasn't a difficult choice. Autional's domain characteristics made Go almost the only candidate:
+这不是一个艰难的选择。Autional 的业务特征让 Go 几乎成了唯一候选：
 
-- **Identity authentication is high-concurrency by nature.** A medium-sized SaaS platform may process thousands of token validation requests per second. Go's goroutine model handles massive concurrency with minimal memory overhead — a single session-service instance can sustain 15,000 QPS of JWT validation with 2GB of RAM.
-- **Static compilation, single binary deployment.** For on-premises customers, no runtime environment installation is needed — drop a single `identity-service.exe` (~28MB) on a server and it runs. Java can't do this. Python can't do this. Node.js can't do this.
-- **Type safety + compile-time checks.** When defining gRPC interfaces across 16 services, type safety isn't a "nice to have" — it's a survival necessity. We cannot afford cross-service runtime failures caused by a single misspelled field name.
+- **身份认证天然高并发。** 一个中型 SaaS 平台每秒可能要处理数千次令牌校验请求。Go 的 goroutine 模型能以极小的内存开销撑起海量并发——单个 session-service 实例用 2GB 内存就能稳定支撑 15,000 QPS 的 JWT 校验。
+- **静态编译，单二进制部署。** 对私有化部署的客户来说，不需要安装任何运行环境——把一个 `identity-service.exe`（约 28MB）丢到服务器上就能跑。Java 做不到，Python 做不到，Node.js 也做不到。
+- **类型安全 + 编译期检查。** 当你要在 27 个服务之间定义 gRPC 接口时，类型安全不是「锦上添花」，而是生存必需。我们承受不起因为一个字段名拼错而导致的跨服务运行时故障。
 
-The only alternative we seriously considered was Rust, but at the time we couldn't hire enough Rust developers. The Go job market is more mature and the learning curve is gentler — critical for rapidly building a team.
+唯一被认真考虑过的替代方案是 Rust，但当时我们招不到足够的 Rust 开发者。Go 的人才市场更成熟，学习曲线也更平缓——这对快速组建团队至关重要。
 
-## Why Microservices
+## 为什么是微服务
 
-If you've read our other article "From Monolith to Microservices: Autional's Evolution," you know we didn't start with microservices. We began as a monolith and only started splitting after hitting critical thresholds in team size, user count, and feature complexity.
+如果你读过我们另一篇文章《从单体到微服务：Autional 的演进》，就会知道我们并不是一开始就做微服务。我们从单体起步，直到团队规模、用户量与功能复杂度都触及临界点后才开始拆分。
 
-But here's an easily overlooked detail: **Even when we had just one service, we wrote code to microservice standards from day one.** What does that mean? Even during the monolith era, we insisted on:
+但有一个容易被忽略的细节：**即使当时只有一个服务，我们从第一天起就按微服务的标准写代码。** 这是什么意思？即使在单体时代，我们也坚持：
 
-- Organizing packages by business capability (`identity/`, `session/`, `oauth/`) rather than by technical layer (`handler/`, `service/`, `repository/`)
-- Decoupling domain models with interfaces (`type UserRepository interface { ... }`)
-- Encapsulating database operations in the repository layer — business logic never writes SQL
+- 按业务能力组织包（`identity/`、`session/`、`oauth/`），而不是按技术分层（`handler/`、`service/`、`repository/`）
+- 用接口解耦领域模型（`type UserRepository interface { ... }`）
+- 数据库操作封装在 repository 层——业务逻辑永远不写 SQL
 
-These principles made the eventual split surprisingly smooth — over the past two years, each service split averaged only 2-3 weeks.
+这些原则让后来的拆分出奇顺利——过去两年里，每次服务拆分平均只花了 2-3 周。
 
-## How to Maintain Consistency Across 16 Services
+## 如何在 27 个服务之间保持一致性
 
-This is the central challenge of engineering culture. Sixteen independent `go.mod` files, sixteen `main.go` files, sixteen sets of handler/service/repository — without strong constraints, they'd quickly diverge into 16 different coding styles where nobody can read anyone else's code.
+这是工程文化的核心难题。27 个独立的 `go.mod`、27 个 `main.go`、27 套 handler/service/repository——如果没有强约束，它们很快就会演变成 27 种风格，谁也读不懂谁的代码。
 
-Our solution wasn't more architecture meetings. It was encoding constraints into tooling.
+我们的解法不是开更多的架构会，而是把约束写进工具里。
 
-### Unified Bootstrap: `micro-middleware/app`
+### 统一启动框架：`micro-middleware/app`
 
-All 15 business services use the same bootstrap framework in `main.go`:
+27 个业务服务的 `main.go` 都使用同一套启动框架：
 
 ```go
 app := app_pkg.New("identity-service", logger).
@@ -60,126 +60,126 @@ app := app_pkg.New("identity-service", logger).
 app.Run(11001)
 ```
 
-This framework uniformly manages: HTTP server startup, graceful shutdown, health checks, resource cleanup, gRPC servers, and MQ consumers. A new service's `main.go` is never more than 40 lines. More importantly — **if someone hand-writes `http.ListenAndServe` in any service, CI will reject it.**
+这个框架统一管理：HTTP 服务启动、优雅停机、健康检查、资源清理、gRPC 服务与 MQ 消费者。一个新服务的 `main.go` 从不超过 40 行。更重要的是——**如果有人在任何服务里手写 `http.ListenAndServe`，CI 会直接拒绝。**
 
-### 25 Python Check Scripts
+### 25 个 Python 检查脚本
 
-This is one of our proudest engineering investments. Before every PR is submitted, the CI pipeline runs 25 Python scripts covering three tiers:
+这是我们最引以为傲的工程投入之一。每个 PR 提交前，CI 流水线会运行 25 个 Python 脚本，覆盖三个层次：
 
-**Architecture Gates (preventing architectural degradation):**
-- `check-dto-compliance.py`: All HTTP responses must use `dto_base.NewDataResponse` or `dto_base.NewListResponse`. Bare structs, `gin.H`, and `map[string]interface{}` as JSON responses are prohibited.
-- `check-factory-types.py`: Factory type names must match the registry.
-- `check-rbac-constants.py`: RBAC role codes must exist in the registry.
+**架构闸门（防止架构退化）：**
+- `check-dto-compliance.py`：所有 HTTP 响应必须使用 `dto_base.NewDataResponse` 或 `dto_base.NewListResponse`。禁止用裸 struct、`gin.H`、`map[string]interface{}` 作为 JSON 响应。
+- `check-factory-types.py`：工厂类型名必须与注册表一致。
+- `check-rbac-constants.py`：RBAC 角色码必须存在于注册表中。
 
-**Coding Standards (preventing silent quality erosion):**
-- `check-error-codes.py`: Error codes must be registered in `base/error/registry.go`. Returning `errors.New("something wrong")` from handlers is prohibited.
-- `check-encoding.py`: Scans all source files for GBK contamination and UTF-8 corruption. Windows developers often mix GBK encoding into Chinese comments — this script has saved us countless times.
-- `check-internal-paths.py`: Detects hardcoded internal API paths (e.g., `"/api/v1/internal/..."`), requiring the use of constants.
-- `check-auth-constants.py`: Detects hardcoded MFA types and OAuth grant types — these should use constants defined in `micro-share/auth`.
+**编码规范（防止质量悄然侵蚀）：**
+- `check-error-codes.py`：错误码必须在 `base/error/registry.go` 中注册。禁止在 handler 里直接返回 `errors.New("something wrong")`。
+- `check-encoding.py`：扫描所有源文件中的 GBK 污染与 UTF-8 损坏。Windows 开发者经常在中文注释里混入 GBK 编码——这个脚本救过我们无数次。
+- `check-internal-paths.py`：检测硬编码的内部 API 路径（如 `"/api/v1/internal/..."`），要求改用常量。
+- `check-auth-constants.py`：检测硬编码的 MFA 类型与 OAuth grant type——这些应使用 `micro-share/auth` 中定义的常量。
 
-**Runtime Safety (preventing production incidents):**
-- `check-db-schema.py`: Compares GORM model definitions against actual PostgreSQL table structures, detecting missing columns and type mismatches.
-- `check-swagger-freshness.py`: Detects handler annotation changes without corresponding Swagger doc regeneration.
-- `check-middleware-order.py`: Verifies middleware registration order (Recovery → Logging → Auth → RBAC).
+**运行安全（防止生产事故）：**
+- `check-db-schema.py`：比对 GORM 模型定义与实际的 PostgreSQL 表结构，检测缺失字段与类型不匹配。
+- `check-swagger-freshness.py`：检测 handler 注解变更后未同步重新生成 Swagger 文档的情况。
+- `check-middleware-order.py`：校验中间件注册顺序（Recovery → Logging → Auth → RBAC）。
 
-**These scripts aren't because we distrust developers; it's because even the best developer can write buggy code at 2 AM.** CI doesn't get tired, doesn't get distracted, and never says "I'll let it slide this time."
+**这些脚本不是因为不信任开发者，而是因为再优秀的开发者也会在凌晨两点写出有 bug 的代码。** CI 不会疲惫、不会分心，也永远不会说「这次就先放过吧」。
 
-### Lint-Enforced Architecture Boundaries
+### 用 Lint 强制架构边界
 
-Our `.golangci.yml` doesn't just check code style — it enforces architectural constraints:
+我们的 `.golangci.yml` 不只检查代码风格——它执行架构约束：
 
-- `depguard`: Prohibits lower-layer modules from importing upper-layer modules. If `base/config` imports `micro-share/auth`, CI immediately fails.
-- `forbidigo`: Bans specific function calls. For example, direct `grpc.NewServer()` calls are prohibited — use `grpc_mw.NewServer()` instead. `slog.SetDefault()` is banned — use `logger_base.SetDefault()` instead.
+- `depguard`：禁止低层模块引用高层模块。如果 `base/config` 引用了 `micro-share/auth`，CI 立即失败。
+- `forbidigo`：禁用特定函数调用。例如禁止直接调用 `grpc.NewServer()`——必须用 `grpc_mw.NewServer()`。禁止使用 `slog.SetDefault()`——必须用 `logger_base.SetDefault()`。
 
-**Why encode architectural constraints in lint? Because meetings and documents can't stop tech debt from accumulating.** When you're rushing to meet a deadline at midnight, you're not going to pull up an architecture document to check "is this import direction correct?" Lint will tell you before you commit.
+**为什么要把架构约束写进 lint？因为会议和文档拦不住技术债的堆积。** 当你在半夜赶工期时，你不会翻开架构文档去确认「这个 import 方向对不对？」Lint 会在你提交之前告诉你。
 
-### Auto-Generated Swagger Documentation
+### 自动生成 Swagger 文档
 
-We have 1437 API endpoints. Handwriting documentation would make it obsolete the day after it was written.
+我们有 1437 个 API 端点。手写文档的话，写完第二天就过期了。
 
-Our approach:
-1. Standard Swagger annotations on handlers (`@Summary`, `@Param`, `@Success`, `@Router`, etc.)
-2. `swag init` auto-generates `swagger.json` from annotations
-3. Generators produce API indexes, Wiki docs, and frontend TypeScript types from `swagger.json`
-4. Git pre-commit hook checks: if handler files are modified without regenerating Swagger docs, the commit is blocked
+我们的做法：
+1. 在 handler 上写标准 Swagger 注解（`@Summary`、`@Param`、`@Success`、`@Router` 等）
+2. `swag init` 从注解自动生成 `swagger.json`
+3. 生成器从 `swagger.json` 产出 API 索引、Wiki 文档与前端 TypeScript 类型
+4. Git pre-commit hook 检查：如果修改了 handler 文件却没有重新生成 Swagger 文档，提交会被拦下
 
-The result: **documentation and code are always in sync because you can't commit without syncing.**
+结果是：**文档与代码永远同步，因为不同步就提交不了。**
 
-## Engineering Values
+## 工程价值观
 
-The above covers the tooling. But tooling is just the embodiment of values, not the values themselves. Here are Autional's core engineering values:
+以上讲的是工具。但工具只是价值观的载体，不是价值观本身。以下是 Autional 的核心工程价值观：
 
-### Security is Default, Not Optional
+### 安全是默认，不是可选项
 
-We have a strict rule: all GORM struct fields for password hashes, API Keys, OAuth Tokens, and MFA secrets must have `json:"-"` tags. This is not a suggestion — it's mandatory. Because historically, a developer added a new field, forgot `json:"-"`, and printed the entire struct in a log — password hashes leaked straight into ELK.
+我们有一条铁律：所有涉及口令哈希、API Key、OAuth Token、MFA secret 的 GORM 结构体字段，都必须带 `json:"-"` 标签。这不是建议——是强制。因为曾经有开发者新增了字段却忘了加 `json:"-"`，结果整个结构体被打印进日志，口令哈希直接泄漏到了 ELK 里。
 
-Similar rules:
-- All inter-service communication must be authenticated via `auth_mw.InternalAPIKeyAuth` — no hand-rolled verification logic allowed
-- All user input passes through a unified parameter validation framework before reaching handlers
-- All cross-service data synchronization uses domain events + MQ for eventual consistency — direct cross-service database access is prohibited
+类似的规则还有：
+- 所有服务间通信必须通过 `auth_mw.InternalAPIKeyAuth` 鉴权——不允许手写校验逻辑
+- 所有用户输入都要先经过统一的参数校验框架才能到达 handler
+- 所有跨服务数据同步使用领域事件 + MQ 实现最终一致性——禁止跨服务直连数据库
 
-### Explicit Over Implicit
+### 显式优于隐式
 
-The Go community's values are pushed to the extreme in Autional:
+Go 社区的价值观在 Autional 被推到了极致：
 
-- Every error code must have a clear 8-digit number and be registered in `registry.go`
-- Every cache key must have a registered prefix (no hand-written `"user:" + id`)
-- Every environment variable name must be defined in a constants file
-- Every database table name must be registered in the constants registry
+- 每个错误码必须有明确的 8 位数字，并在 `registry.go` 中注册
+- 每个缓存键必须有已注册的前缀（不允许手写 `"user:" + id`）
+- 每个环境变量名必须在常量文件中定义
+- 每个数据库表名必须在常量注册表中注册
 
-This sounds tedious. But when a new person takes over a service, they can find everything they need within 10 minutes — because everything is explicitly declared, no need for "I guess so" or "ask the veteran."
+这听起来很繁琐。但当新人接手一个服务时，他能在 10 分钟内找到所有需要的信息——因为一切都显式声明了，不需要「我猜应该是」或者「问问老员工」。
 
-### Documentation is Part of the Code
+### 文档也是代码的一部分
 
-Our engineering standards don't live in a Wiki — they live in `AGENTS.md`, in the same repository as the code. Any PR that modifies an architectural decision must also update AGENTS.md. The benefits:
-- Documentation never goes out of date (because you can't pass review without syncing doc with code)
-- New hire onboarding is a single file to read
-- `git blame` traces every architectural decision to its author and context
+我们的工程规范不在 Wiki 里——而在 `AGENTS.md` 里，和代码放在同一个仓库。任何修改架构决策的 PR 都必须同步更新 AGENTS.md。好处是：
+- 文档永远不会过期（因为文档不同步就过不了评审）
+- 新人入职只需要读一个文件
+- `git blame` 能把每个架构决策追溯到作者与当时的上下文
 
-## Three Things We Did Wrong
+## 我们做错的三件事
 
-An engineering culture article that only talks about successes isn't worth reading. Here are three decisions we got wrong and would do differently:
+只讲成功的工程文化文章不值得一读。以下是我们做错、且会换种做法重来的三个决定：
 
-### Mistake 1: Introducing Test Coverage Metrics Too Early
+### 错误一：过早引入测试覆盖率指标
 
-Early on, we set a "80% unit test coverage" target. The result? Developers wrote mountains of meaningless tests for getters and setters to hit the metric, while core business logic tests were neglected.
+早期我们设定了「单元测试覆盖率 80%」的目标。结果呢？开发者为了达标，给 getter 和 setter 写了成堆毫无意义的测试，而核心业务逻辑的测试反而被忽略了。
 
-What we do now: **We don't chase coverage metrics. We require integration tests for critical paths (registration, login, payment, permission validation).** One integration test covering the authentication flow is worth more than 100 unit tests testing `GetName()`.
+现在的做法：**我们不追覆盖率指标。我们要求关键路径（注册、登录、支付、权限校验）必须有集成测试。** 一个覆盖认证流程的集成测试，比 100 个测试 `GetName()` 的单元测试更有价值。
 
-### Mistake 2: Introducing gRPC Too Early
+### 错误二：过早引入 gRPC
 
-We brought in gRPC for inter-service communication early in the microservices split. But with only 3 services at the time, the overhead of maintaining protobuf definitions far exceeded the performance benefit. Worse, gRPC's error handling approach (status codes) caused semantic conflicts with our error code system, forcing us to write an extra translation layer.
+我们在微服务拆分的早期就引入了 gRPC 做服务间通信。但当时只有 3 个服务，维护 protobuf 定义的开销远远超过性能收益。更糟的是，gRPC 的错误处理方式（状态码）与我们的错误码体系产生了语义冲突，逼得我们多写了一层转换。
 
-Our current principle: **Start with HTTP + JSON. Only introduce gRPC when inter-service calls genuinely become a performance bottleneck.** Currently, only compliance-service and a few high-frequency internal interfaces use gRPC.
+我们现在的原则：**先用 HTTP + JSON。只有当服务间调用真的成为性能瓶颈时才引入 gRPC。** 目前只有 compliance-service 和少数高频内部接口使用 gRPC。
 
-### Mistake 3: Too Much Technology Diversity
+### 错误三：技术选型过于多样
 
-Early on, we allowed different services to experiment with different tech stacks — one service used MongoDB, another used Kafka, another used RabbitMQ. The result: the ops team had to maintain 5 different middleware systems. New members had to learn 3 different message queues.
+早期我们允许不同服务试验不同技术栈——一个服务用 MongoDB，另一个用 Kafka，再一个用 RabbitMQ。结果是运维团队要维护 5 套中间件，新成员要学 3 种消息队列。
 
-Our current principle: **Technology choices default to uniformity. New components are only introduced with a solid justification.** Our standard stack: Go + Gin + PostgreSQL + Redis + RabbitMQ. MongoDB is used only in audit-service (audit logs are document-oriented data). Kafka is used only when high-throughput event streams are needed.
+我们现在的原则：**技术选型默认统一，引入新组件必须有充分理由。** 我们的标准技术栈是 Go + Gin + PostgreSQL + Redis + RabbitMQ。MongoDB 只用在 audit-service（审计日志是文档型数据）。Kafka 只在需要高吞吐事件流的场景使用。
 
-## Team Organization: No Dedicated "Architect" Role
+## 团队组织：没有专职「架构师」
 
-Autional's engineering team has no dedicated architect. Not because we don't value architecture — quite the opposite. **We value it too much to make it one person's responsibility.**
+Autional 的工程团队没有专职架构师。这不是因为不重视架构——恰恰相反。**我们太重视它，所以不能把它变成某一个人的责任。**
 
-Whenever we face a significant architectural decision (e.g., whether to adopt gRPC, how to design event sourcing, database selection), the process is:
-1. Any engineer can propose an RFC, written in Notion
-2. All engineers review and comment within 3 days
-3. If there are no major objections, the proposal passes
-4. If there are disputes, a 30-minute synchronous discussion is organized
+每当面临重大架构决策（例如是否采用 gRPC、如何设计事件溯源、数据库选型），流程是：
+1. 任何工程师都可以提 RFC，写在 Notion 上
+2. 所有工程师在 3 天内评审并评论
+3. 如果没有重大异议，提案通过
+4. 如果有争议，组织一次 30 分钟的同步讨论
 
-This process has run for two years, producing 40+ RFCs. Three were rejected; five passed after major revisions. No one can unilaterally decide the architecture direction — and equally, no one can push architectural responsibility onto "the architect."
+这个流程跑了两年，产出了 40 多份 RFC。其中 3 份被否决，5 份在大幅修改后通过。没有人能单方面决定架构方向——同样，也没有人能把架构责任推给「架构师」。
 
-## Advice for Teams Looking to Follow
+## 给想效仿的团队的建议
 
-If you're building an engineering team, here are our most important takeaways:
+如果你正在组建工程团队，以下是我们最重要的几条心得：
 
-1. **Constraints are not the opposite of freedom.** Across 16 services, without strong constraints, you won't get diversity — you'll get chaos. Lint rules, CI scripts, and code generators don't limit creativity. They focus creativity where it truly matters (business logic) instead of wasting it on "what format should this API return?"
+1. **约束不是自由的对立面。** 27 个服务，如果没有强约束，你得到的不是多样性，而是混乱。Lint 规则、CI 脚本与代码生成器不会限制创造力，它们把创造力聚焦到真正重要的地方（业务逻辑），而不是浪费在「这个 API 该返回什么格式」上。
 
-2. **Automate every check you can.** If a rule is important enough to bring up in Code Review, it should be written as a CI script. Humans are unreliable checkers.
+2. **能自动化的检查都自动化。** 如果一条规则重要到值得在 Code Review 里提出，它就应该写成 CI 脚本。人是最不可靠的检查者。
 
-3. **Newcomer experience is one of the most important engineering metrics.** If a new developer needs two weeks to complete their first PR, it's not their problem — it's your onboarding process. Our goal: day one, local dev environment running; day two, first bug fix submitted.
+3. **新人体验是最重要的工程指标之一。** 如果一个新开发者需要两周才能提交第一个 PR，那不是他的问题——是你的入职流程有问题。我们的目标：第一天，本地开发环境跑起来；第二天，提交第一个 bug 修复。
 
-4. **Be honest about mistakes.** The three mistakes in this article aren't a "sharing experience" show — they are real errors that wasted significant team time. If you see similar warning signs in your team, we hope our experience helps you avoid one misstep.
+4. **对错误保持诚实。** 本文的三个错误不是「经验分享」式的表演——它们是真实浪费了团队大量时间的失误。如果你在团队里看到类似的苗头，希望我们的经验能帮你少走一步弯路。
 
-Autional's engineering culture wasn't built overnight. It was shaped by 15 people over two years through countless debates, compromises, refactors, and reflections. And it's still evolving — we're currently experimenting with AI-assisted Code Review, and we'll share the results in a future article.
+Autional 的工程文化不是一夜之间建成的。它是 15 个人用两年时间，在无数次争论、妥协、重构与反思中塑造出来的。而且它仍在演进——我们目前正在试验 AI 辅助 Code Review，结果会在后续文章中分享。

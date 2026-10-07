@@ -1,42 +1,42 @@
 ---
-title: "OpenID Connect Deep Dive: ID Token, UserInfo, and Claims Explained"
+title: "OpenID Connect 深入解析：ID Token、UserInfo 与 Claims 详解"
 date: "2026-05-22"
 category: "Tech"
 tags: ["OIDC", "OpenID Connect", "OAuth"]
-readTime: "10 min"
-excerpt: "OIDC is an identity layer built on top of OAuth 2.0. This article provides an in-depth analysis of ID Token structure (JWT claims), the UserInfo endpoint's role, the differences between Authorization Code, Implicit, and Hybrid flows, and how Autional oauth-service delivers complete OIDC Provider capabilities."
+readTime: "10 分钟"
+excerpt: "OIDC 是构建在 OAuth 2.0 之上的身份层。本文深入解析 ID Token 的结构（JWT claims）、UserInfo 端点的作用、授权码/Implicit/混合三种流程的差异，以及 Autional oauth-service 如何提供完整的 OIDC Provider 能力。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-OAuth 2.0 solves the "authorization" problem — allowing third-party applications to gain access to resources. But it never solved the prerequisite question: **Who is this user?**
+OAuth 2.0 解决了「授权」问题——让第三方应用获得访问资源的能力。但它从未解决一个前置问题：**这个用户是谁？**
 
-OAuth 2.0 doesn't define a standard format for identity information. Each implementation defines its own API for retrieving user data, leading to ecosystem fragmentation. OpenID Connect (OIDC) was created to fill this gap — it's an **identity layer** built on top of OAuth 2.0.
+OAuth 2.0 没有定义身份信息的标准格式。每个实现各自定义获取用户数据的 API，导致生态割裂。OpenID Connect（OIDC）正是为填补这一空白而生——它是构建在 OAuth 2.0 之上的一个**身份层**。
 
-## What is OIDC?
+## OIDC 是什么？
 
-OIDC stands for OpenID Connect 1.0. In one sentence:
+OIDC 全称 OpenID Connect 1.0。一句话概括：
 
-> **OIDC = OAuth 2.0 + ID Token + UserInfo + Standardized Identity Claims**
+> **OIDC = OAuth 2.0 + ID Token + UserInfo + 标准化的身份 Claims**
 
-OAuth 2.0 gives you an `access_token` to access the user's resources. OIDC additionally provides an `id_token` (in JWT format) that tells you who the user is.
+OAuth 2.0 给你一个 `access_token` 用于访问用户资源；OIDC 额外提供一个 `id_token`（JWT 格式），告诉你用户是谁。
 
-The simplest way to understand the relationship:
+理解两者关系的最简单方式：
 
 | | OAuth 2.0 | OIDC |
 |---|-----------|------|
-| Core output | access_token | id_token + access_token |
-| Problem solved | "Can this app access my photos?" | "Who am I? Verify my identity" |
-| Client role | Access resources on behalf of user | Verify user identity |
-| Info format | No standard (defined by resource server) | Standardized JWT claims |
-| Typical scenario | Let Gmail read your Google Drive files | Log into third-party sites with Google account |
+| 核心产物 | access_token | id_token + access_token |
+| 解决的问题 | 「这个应用能访问我的照片吗？」 | 「我是谁？请验证我的身份」 |
+| 客户端角色 | 代表用户访问资源 | 验证用户身份 |
+| 信息格式 | 无标准（由资源服务器自定义） | 标准化的 JWT claims |
+| 典型场景 | 让 Gmail 读取你的 Google Drive 文件 | 用 Google 账号登录第三方网站 |
 
-## ID Token: The Soul of OIDC
+## ID Token：OIDC 的灵魂
 
-The ID Token is OIDC's core innovation. It's a JWT signed by the authorization server, containing a standardized set of identity claims.
+ID Token 是 OIDC 的核心创新。它是由授权服务器签名的 JWT，包含一组标准化的身份 claims。
 
-### ID Token Structure
+### ID Token 结构
 
 ```json
 // Header
@@ -70,39 +70,39 @@ The ID Token is OIDC's core innovation. It's a JWT signed by the authorization s
 }
 ```
 
-### Standard Claims Explained
+### 标准 Claims 详解
 
-**Required Claims (per OIDC spec):**
+**必需 Claims（按 OIDC 规范）：**
 
-- `iss` (Issuer): The token's issuer. Must be an HTTPS URL containing protocol, hostname, optional port and path, but no query parameters or fragments. The RP must verify this value exactly.
-- `sub` (Subject): The user's unique identifier. The same user always has the same `sub` under the same Issuer. **However, different client_ids may receive different `sub` values** (Pairwise Subject Identifier), unless using a Public Subject Identifier.
-- `aud` (Audience): The token's target audience. Must include the client's `client_id`. If the ID Token has multiple audiences, the `azp` (Authorized Party) claim must appear to specify which client is actually authorized.
-- `exp` (Expiration): Expiration time. Clients must verify the ID Token hasn't expired.
-- `iat` (Issued At): Issuance time. Clients can use this to reject tokens with obviously wrong timestamps (e.g., future times).
+- `iss`（Issuer）：令牌的签发者。必须是包含协议、主机名、可选端口与路径，但不含查询参数或 fragment 的 HTTPS URL。RP 必须精确校验该值。
+- `sub`（Subject）：用户的唯一标识符。同一 Issuer 下同一用户的 `sub` 始终一致。**但不同 client_id 可能收到不同的 `sub` 值**（Pairwise Subject Identifier，成对主体标识符），除非使用公开主体标识符。
+- `aud`（Audience）：令牌的目标受众。必须包含客户端的 `client_id`。如果 ID Token 有多个受众，则必须出现 `azp`（Authorized Party，授权方）claim 来指明实际被授权的客户端。
+- `exp`（Expiration）：过期时间。客户端必须校验 ID Token 未过期。
+- `iat`（Issued At）：签发时间。客户端可用它拒绝时间戳明显错误的令牌（如来自未来的时间）。
 
-**Recommended Claims:**
+**推荐 Claims：**
 
-- `auth_time` (Authentication Time): Timestamp of the user's last authentication. Used to determine if re-authentication is needed — if the user hasn't authenticated for a long time, they should re-login even if the ID Token hasn't expired.
-- `nonce`: A random string sent by the client in the authentication request, which must be included with the same value in the ID Token. This is a critical anti-replay mechanism.
+- `auth_time`（Authentication Time）：用户最近一次认证的时间戳。用于判断是否需要重新认证——如果用户很久没有认证，即使 ID Token 未过期也应要求重新登录。
+- `nonce`：客户端在认证请求中发送的随机字符串，ID Token 中必须原值返回。这是关键的防重放机制。
 
-**User Information Claims (defined in OpenID Connect Core 1.0 Section 5.1):**
+**用户信息 Claims（定义于 OpenID Connect Core 1.0 第 5.1 节）：**
 
-| Claim | Type | Description |
+| Claim | 类型 | 说明 |
 |-------|------|-------------|
-| `name` | string | Full name |
-| `given_name` | string | Given name |
-| `family_name` | string | Family name |
-| `email` | string | Email address |
-| `email_verified` | boolean | Whether email is verified |
-| `picture` | string | Profile picture URL |
-| `phone_number` | string | Phone number (E.164 format) |
-| `phone_number_verified` | boolean | Whether phone is verified |
-| `locale` | string | Language and region setting (BCP47) |
-| `zoneinfo` | string | Time zone (e.g., `Asia/Shanghai`) |
+| `name` | string | 全名 |
+| `given_name` | string | 名 |
+| `family_name` | string | 姓 |
+| `email` | string | 邮箱地址 |
+| `email_verified` | boolean | 邮箱是否已验证 |
+| `picture` | string | 头像 URL |
+| `phone_number` | string | 手机号（E.164 格式） |
+| `phone_number_verified` | boolean | 手机号是否已验证 |
+| `locale` | string | 语言与地区设置（BCP47） |
+| `zoneinfo` | string | 时区（如 `Asia/Shanghai`） |
 
-### ID Token Verification Flow
+### ID Token 校验流程
 
-After receiving the ID Token, the client (RP) must perform the following verification:
+客户端（RP）收到 ID Token 后，必须执行以下校验：
 
 ```
 1. Verify JWT signature (using the public key from JWK endpoint)
@@ -115,27 +115,27 @@ After receiving the ID Token, the client (RP) must perform the following verific
 8. If using Implicit/Hybrid Flow, verify at_hash (Access Token Hash)
 ```
 
-Steps 7 and 8 — hash verification — are the most overlooked yet critical. They bind the ID Token to the Authorization Code or Access Token, preventing mixing attacks.
+第 7、8 步——哈希校验——是最容易被忽略却至关重要的一环。它们把 ID Token 与授权码或访问令牌绑定，防止混淆攻击。
 
-Autional oauth-service automatically computes and embeds `c_hash` and `at_hash` when issuing ID Tokens. Client SDKs automatically verify these during validation.
+Autional oauth-service 在签发 ID Token 时自动计算并内嵌 `c_hash` 与 `at_hash`。客户端 SDK 在校验时自动验证。
 
-## The UserInfo Endpoint
+## UserInfo 端点
 
-Beyond the claims embedded in the ID Token, OIDC defines the UserInfo endpoint. This is an OAuth 2.0-protected API endpoint that clients access with their access_token to retrieve the current user's identity information.
+除了 ID Token 中内嵌的 claims，OIDC 还定义了 UserInfo 端点。这是一个受 OAuth 2.0 保护的 API 端点，客户端携带 access_token 访问，以获取当前用户的身份信息。
 
-### UserInfo Endpoint vs ID Token
+### UserInfo 端点与 ID Token 对比
 
-| | ID Token | UserInfo Endpoint |
+| | ID Token | UserInfo 端点 |
 |---|----------|------------------|
-| Retrieval method | Direct response at end of auth flow | Separate API call |
-| Authentication | No credentials needed (self-signed JWT) | Requires access_token |
-| Content | Fixed set of claims | Dynamic content based on scope |
-| Real-time | Snapshot at issuance | Real-time query |
-| Use case | Basic identity info (name, email, etc.) | Latest or additional user info |
+| 获取方式 | 认证流程结束时直接返回 | 单独发起 API 调用 |
+| 认证方式 | 无需凭证（自签名 JWT） | 需要 access_token |
+| 内容 | 固定的 claims 集合 | 按 scope 动态返回内容 |
+| 实时性 | 签发时刻的快照 | 实时查询 |
+| 适用场景 | 基础身份信息（姓名、邮箱等） | 最新的或额外的用户信息 |
 
-**Best practice**: Use the ID Token for authentication confirmation ("verify who this user is") and the UserInfo endpoint for detailed user information. Don't rely solely on the ID Token for sensitive or time-sensitive user attributes, as it may be cached.
+**最佳实践**：用 ID Token 做认证确认（「验证这个用户是谁」），用 UserInfo 端点获取详细的用户信息。对敏感或强时效的用户属性，不要只依赖 ID Token，因为它可能被缓存。
 
-When a client requests `openid profile email` scopes, Autional includes the corresponding claims in the UserInfo endpoint response:
+当客户端请求 `openid profile email` 这些 scope 时，Autional 会在 UserInfo 端点响应中包含对应的 claims：
 
 ```json
 {
@@ -150,37 +150,37 @@ When a client requests `openid profile email` scopes, Autional includes the corr
 }
 ```
 
-## The Three OIDC Flows
+## OIDC 的三种流程
 
-OIDC inherits OAuth 2.0's authorization flows and adds identity information on top. Three main flows:
+OIDC 继承了 OAuth 2.0 的授权流程并叠加身份信息。主要有三种流程：
 
-### 1. Authorization Code Flow
+### 1. 授权码流程
 
-This is the most secure flow. The Authorization Code is passed through the frontend browser (not exposed to JavaScript), while the Token is retrieved via the backend channel. PKCE provides an extra layer of protection. Autional uses this flow by default.
+这是最安全的流程。授权码经前端浏览器传递（不暴露给 JavaScript），令牌则通过后端通道换取。PKCE 提供额外一层保护。Autional 默认使用该流程。
 
-### 2. Implicit Flow — Deprecated
+### 2. Implicit 流程——已废弃
 
-OAuth 2.1 has officially removed the Implicit Flow. It returns the Token directly through the frontend URL fragment, creating serious security risks — tokens are exposed in browser history and referrer headers. If you're still using it, now is the time to migrate.
+OAuth 2.1 已正式移除 Implicit 流程。它通过前端 URL fragment 直接返回令牌，带来严重的安全风险——令牌会暴露在浏览器历史与 referrer 请求头中。如果你还在使用，现在是迁移的时候了。
 
-### 3. Hybrid Flow
+### 3. 混合流程
 
-The Hybrid Flow is a combination of Authorization Code Flow and Implicit Flow — the frontend receives an ID Token (for immediate user display), while the backend exchanges the Authorization Code for an Access Token. Suitable for scenarios requiring both frontend instant display and backend secure access.
+混合流程是授权码流程与 Implicit 流程的组合——前端直接拿到 ID Token（用于立即展示用户信息），后端用授权码换取访问令牌。适用于既需要前端即时展示、又需要后端安全访问的场景。
 
-Autional oauth-service supports all three flows, but for new client registrations in the admin console, only Authorization Code Flow (with PKCE) is allowed by default.
+Autional oauth-service 支持全部三种流程，但在管理后台新建客户端注册时，默认只允许授权码流程（带 PKCE）。
 
-## Requesting Scopes and Claims
+## 请求 Scope 与 Claims
 
-OIDC uses the scope parameter to control which claims are returned:
+OIDC 用 scope 参数控制返回哪些 claims：
 
-| Scope | Meaning | Returned Claims |
+| Scope | 含义 | 返回的 Claims |
 |-------|---------|-----------------|
-| `openid` | Request OIDC authentication (required) | `sub`, `iss`, `aud`, `exp`, `iat` |
-| `profile` | Basic user info | `name`, `family_name`, `given_name`, `picture`, `locale`, `zoneinfo`, `updated_at` |
-| `email` | Email info | `email`, `email_verified` |
-| `address` | Address info | `address` (JSON object) |
-| `phone` | Phone info | `phone_number`, `phone_number_verified` |
+| `openid` | 请求 OIDC 认证（必需） | `sub`、`iss`、`aud`、`exp`、`iat` |
+| `profile` | 基础用户信息 | `name`、`family_name`、`given_name`、`picture`、`locale`、`zoneinfo`、`updated_at` |
+| `email` | 邮箱信息 | `email`、`email_verified` |
+| `address` | 地址信息 | `address`（JSON 对象） |
+| `phone` | 手机号信息 | `phone_number`、`phone_number_verified` |
 
-Additionally, OIDC supports the `claims` request parameter, allowing clients to precisely request specific claims:
+此外，OIDC 支持 `claims` 请求参数，允许客户端精确请求特定 claims：
 
 ```
 GET /authorize?
@@ -197,11 +197,11 @@ GET /authorize?
   }
 ```
 
-Autional oauth-service fully implements standard scope mapping and claims request parameter parsing, and supports configuring allowed scope ranges for each client in the admin console.
+Autional oauth-service 完整实现了标准 scope 映射与 claims 请求参数解析，并支持在管理后台为每个客户端配置允许的 scope 范围。
 
-## Autional as an OIDC Provider
+## Autional 作为 OIDC Provider
 
-Autional oauth-service is a complete OIDC Provider, implementing the following endpoints:
+Autional oauth-service 是一个完整的 OIDC Provider，实现以下端点：
 
 ```
 /.well-known/openid-configuration     # OIDC Discovery document
@@ -213,20 +213,20 @@ Autional oauth-service is a complete OIDC Provider, implementing the following e
 /oauth/introspect                     # Token introspection endpoint
 ```
 
-### Multi-Tenant Support
+### 多租户支持
 
-Each tenant can have its own independent OIDC domain and configuration:
+每个租户可以拥有独立的 OIDC 域名与配置：
 
 ```
 https://tenant-a.iam.tianv.com/.well-known/openid-configuration
 https://tenant-b.iam.tianv.com/.well-known/openid-configuration
 ```
 
-Each tenant's JWK key pair is managed independently, and key rotation happens at the tenant level. This means a key leak in one tenant doesn't affect others.
+每个租户的 JWK 密钥对独立管理，密钥轮换在租户级别进行。这意味着某个租户的密钥泄露不会影响其他租户。
 
-### Custom Claims Mapping
+### 自定义 Claims 映射
 
-Autional allows tenant administrators to configure custom claims mapping:
+Autional 允许租户管理员配置自定义 claims 映射：
 
 ```yaml
 # Tenant configuration
@@ -241,21 +241,21 @@ oidc:
       employee_id: "{{.Profile.EmployeeID}}"
 ```
 
-These templates are dynamically rendered at token issuance time, enabling each tenant to map their business fields into OIDC claims.
+这些模板在令牌签发时动态渲染，让每个租户都能把自己的业务字段映射进 OIDC claims。
 
-### Security Features
+### 安全特性
 
-1. **HTTPS enforced**: All endpoint URLs in the OIDC Discovery document must use HTTPS. Autional enforces HTTPS at the deployment layer through the nginx reverse proxy.
+1. **强制 HTTPS**：OIDC Discovery 文档中的所有端点 URL 必须使用 HTTPS。Autional 在部署层通过 nginx 反向代理强制 HTTPS。
 
-2. **PKCE mandatory**: For public clients (SPAs and mobile apps), PKCE is mandatory and cannot be disabled. This follows OAuth 2.1 security best practices.
+2. **PKCE 强制**：对公开客户端（SPA 与移动应用），PKCE 强制启用且不可关闭。这遵循 OAuth 2.1 的安全最佳实践。
 
-3. **Token binding**: `c_hash` and `at_hash` are automatically computed and embedded, preventing mixing attacks.
+3. **令牌绑定**：自动计算并内嵌 `c_hash` 与 `at_hash`，防止混淆攻击。
 
-4. **Pairwise Subject Identifier**: For privacy-sensitive scenarios, Autional supports generating different `sub` values for different clients, preventing cross-client user tracking. Implementation based on `sub = SHA-256(client_id || user_id || sector_identifier_uri)`.
+4. **成对主体标识符（Pairwise Subject Identifier）**：针对隐私敏感场景，Autional 支持为不同客户端生成不同的 `sub` 值，防止跨客户端追踪用户。实现基于 `sub = SHA-256(client_id || user_id || sector_identifier_uri)`。
 
-## Client Integration Example
+## 客户端集成示例
 
-Below is a standard OIDC client integration with Autional:
+以下是与 Autional 对接的标准 OIDC 客户端集成：
 
 ```javascript
 // 1. Discover OIDC Provider configuration
@@ -283,17 +283,17 @@ window.location.href = authUrl.toString();
 // 7. Extract user info
 ```
 
-Autional provides official OIDC client SDKs for Go, JavaScript, Python, and Java, encapsulating the complex logic of PKCE, JWT verification, and token management.
+Autional 提供 Go、JavaScript、Python、Java 的官方 OIDC 客户端 SDK，封装了 PKCE、JWT 校验与令牌管理的复杂逻辑。
 
-## Summary
+## 总结
 
-OIDC is the most widely adopted standardized identity protocol today. It elevates OAuth 2.0 from a pure authorization protocol to a complete identity authentication protocol, enabling cross-system user identity interoperability through the standardized claims format of the ID Token.
+OIDC 是当今采用最广泛的标准化身份协议。它把 OAuth 2.0 从纯粹的授权协议提升为完整的身份认证协议，并通过 ID Token 的标准化 claims 格式，实现了跨系统的用户身份互通。
 
-Autional oauth-service, as a complete OIDC Provider, delivers:
-- Full OIDC endpoints (Authorization, Token, UserInfo, JWK, Discovery)
-- Multi-tenant isolated domains and key management
-- Flexible custom claims mapping
-- PKCE enforcement, token binding, Pairwise Subject Identifier, and other security features
-- Multi-language client SDKs
+Autional oauth-service 作为完整的 OIDC Provider，提供：
+- 完整的 OIDC 端点（Authorization、Token、UserInfo、JWK、Discovery）
+- 多租户隔离的域名与密钥管理
+- 灵活的自定义 claims 映射
+- PKCE 强制、令牌绑定、成对主体标识符等安全特性
+- 多语言客户端 SDK
 
-Whether you're building your own identity system or integrating third-party login, OIDC is the cornerstone of modern identity architecture.
+无论你是自建身份系统还是集成第三方登录，OIDC 都是现代身份架构的基石。

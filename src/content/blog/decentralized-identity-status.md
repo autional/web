@@ -1,58 +1,59 @@
 ---
-title: "Decentralized Identity (DID/SSI) Status: Concepts, Standards, and Reality"
+title: "去中心化身份（DID/SSI）现状：概念、标准与现实"
 date: "2026-06-08"
 category: "Tech"
-tags: ["Decentralization", "DID", "SSI", "Web3"]
-readTime: "10 min"
-excerpt: "Self-Sovereign Identity (SSI) and Decentralized Identifiers (DID) are promoted as the future of digital identity. But what's the real adoption picture? What's actually implemented and what's still in proof-of-concept? This article provides a sober assessment of DID/SSI's actual state in 2026."
+tags: ["去中心化", "DID", "SSI", "Web3"]
+readTime: "10 分钟"
+excerpt: "自主主权身份（SSI）与去中心化标识符（DID）被宣传为数字身份的未来。但真实的落地情况如何？哪些已经实现，哪些还停留在概念验证阶段？本文对 DID/SSI 在 2026 年的实际状态做出冷静评估。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-## The Vision: Giving Identity Back to the Individual
+## 愿景：把身份还给个人
 
-In the traditional identity model, your digital identity doesn't belong to you — it belongs to every service provider you register with.
+在传统的身份模型中，你的数字身份并不属于你——它属于每一个你注册过的服务提供商。
 
-You use Google to sign in to a hundred websites → Google knows which sites you visit. You use WeChat to log into fifty apps → WeChat knows which apps you use. Every time you register for a new service, you create a new "digital分身" — scattered across the internet, beyond your control, with no ability to link them together.
+你用 Google 登录上百个网站 → Google 知道你去过哪些站点。你用微信登录五十个应用 → 微信知道你在用哪些应用。每次注册新服务，你都在创造一个全新的「数字分身」——散落在互联网各处，不受你控制，也无法彼此关联。
 
-**Self-Sovereign Identity (SSI)** aims to reverse this model:
+**自主主权身份（Self-Sovereign Identity，SSI）** 试图扭转这个模型：
 
-- You create a digital identity that belongs to you (not granted by some company)
-- You obtain Verifiable Credentials (VCs) from trusted institutions — government-issued digital IDs, university-issued digital degrees, bank-issued credit score proofs
-- When you need to prove something to a service provider, you present a verifiable credential — instead of registering a new account
-- The service provider verifies the credential's signature, trusts the issuer, and doesn't need to store your password
+- 你创建一个属于自己的数字身份（不是某家公司授予的）
+- 你从可信机构获取可验证凭证（VC）——政府签发的数字身份证、大学签发的数字学位、银行签发的信用评分证明
+- 当你需要向服务商证明某事时，你出示一张可验证凭证——而不是注册一个新账号
+- 服务商验证凭证签名，信任签发方，无需存储你的密码
 
-This sounds great. But how close is it to reality?
+听起来很美好。但它距离现实有多近？
 
-## The State of W3C Standards
+## W3C 标准现状
 
-Decentralized identity isn't a single technology — it's a family of standards, centered around:
+去中心化身份不是单一技术，而是一个标准家族，核心包括：
 
-### DID (Decentralized Identifier)
+### DID（去中心化标识符）
 
-The W3C DID Core specification became an official W3C Recommendation in July 2022. DID is a globally unique identifier that doesn't require a centralized registration authority. Format:
+W3C DID Core 规范于 2022 年 7 月成为 W3C 正式推荐标准。DID 是一个全局唯一、无需中心化注册机构的标识符。格式：
 
 ```
 did:example:123456789abcdefghi
 ```
 
-`did:` is the scheme, `example` is the DID method, followed by method-specific identifier.
+`did:` 是协议方案，`example` 是 DID 方法（method），后面是方法特定的标识符。
 
-Over 150 DID methods are registered. Commonly used ones include:
-- `did:web` — domain-based, easiest to integrate with existing infrastructure
-- `did:key` — directly derived from a public key, simplest but keys can't be rotated
-- `did:ethr` — based on Ethereum addresses
-- `did:indy` — based on the Hyperledger Indy ledger (enterprise-grade SSI)
-- `did:ion` — based on the Bitcoin blockchain (Sidetree protocol)
+已有 150 多个 DID 方法注册在案。常用方法包括：
 
-**Key milestone**: `did:web` has become the de facto default method, delivering DID's core value without introducing entirely new infrastructure.
+- `did:web` — 基于域名，最容易与现有基础设施集成
+- `did:key` — 直接由公钥派生，最简单但密钥无法轮换
+- `did:ethr` — 基于以太坊地址
+- `did:indy` — 基于 Hyperledger Indy 账本（企业级 SSI）
+- `did:ion` — 基于比特币区块链（Sidetree 协议）
 
-### Verifiable Credentials (VC)
+**关键里程碑**：`did:web` 已成为事实上的默认方法，它在不引入全新基础设施的前提下，交付了 DID 的核心价值。
 
-The W3C Verifiable Credentials Data Model v1.1 became an official Recommendation in March 2022. VC defines a data model for cryptographically expressing "an issuer's claim about a subject."
+### 可验证凭证（VC）
 
-A simplified VC structure:
+W3C 可验证凭证数据模型 v1.1 于 2022 年 3 月成为正式推荐标准。VC 定义了一套数据模型，用于以密码学方式表达「签发方关于某一主体的一项声明」。
+
+简化后的 VC 结构：
 
 ```json
 {
@@ -77,99 +78,106 @@ A simplified VC structure:
 }
 ```
 
-Key VC properties:
-1. **Issuer binding**: The credential is signed by the issuer; anyone can verify the signature
-2. **Self-custody**: The credential is held by the holder, typically in a digital wallet
-3. **Selective disclosure**: You can prove "I'm a university graduate" without disclosing your GPA
-4. **Revocability**: Issuers can revoke issued credentials via a Status List
+VC 的关键特性：
 
-VC v2.0 (W3C Working Group Draft) was released in 2024, adding optional JSON-LD context, native JWT and SD-JWT support, and the Bitstring Status List 2021 as a standard revocation mechanism.
+1. **签发方绑定**：凭证由签发方签名，任何人都能验证签名
+2. **自主保管**：凭证由持有者保管，通常放在数字钱包中
+3. **选择性披露**：你可以证明「我是大学毕业生」而不披露自己的 GPA
+4. **可撤销**：签发方可通过状态列表（Status List）撤销已签发的凭证
+
+VC v2.0（W3C 工作组草案）于 2024 年发布，增加了可选的 JSON-LD context、原生 JWT 与 SD-JWT 支持，并将 Bitstring Status List 2021 作为标准撤销机制。
 
 ### DIDComm / OpenID4VC
 
-In the SSI ecosystem, identity subjects need communication protocols:
+在 SSI 生态中，身份主体之间需要通信协议：
 
-- **DIDComm v2**: Secure peer-to-peer communication protocol between DIDs, supporting encrypted messaging
-- **OpenID for Verifiable Credentials (OpenID4VC)**: Driven by the OpenID Foundation, extending OpenID Connect's mature mechanisms to VC scenarios, including:
-  - OpenID4VCI (Verifiable Credential Issuance): issuer-side protocol
-  - OpenID4VP (Verifiable Presentation): presentation/verification protocol
-  - SIOPv2 (Self-Issued OpenID Provider v2): self-issued identity provider
+- **DIDComm v2**：DID 之间点对点的安全通信协议，支持加密消息传递
+- **OpenID for Verifiable Credentials（OpenID4VC）**：由 OpenID 基金会推动，把 OpenID Connect 的成熟机制扩展到 VC 场景，包括：
+  - OpenID4VCI（可验证凭证签发）：签发方侧协议
+  - OpenID4VP（可验证呈现）：呈现/验证协议
+  - SIOPv2（Self-Issued OpenID Provider v2）：自签发的身份提供方
 
-OpenID4VC is becoming the de facto SSI protocol standard because it builds on the widely proven OAuth 2.0 / OIDC foundation.
+OpenID4VC 正在成为事实上的 SSI 协议标准，因为它建立在被广泛验证的 OAuth 2.0 / OIDC 基础之上。
 
-## Real-World Adoption: Who's Using It and Where?
+## 真实落地：谁在用，用在哪里？
 
-### European Union: eIDAS 2.0 and the EUDI Wallet
+### 欧盟：eIDAS 2.0 与 EUDI 钱包
 
-This is currently the world's largest DID/VC deployment project. The eIDAS 2.0 regulation (effective May 2024) requires every EU member state to offer citizens a "European Digital Identity Wallet" (EUDI Wallet) by the end of 2026.
+这是目前全球最大的 DID/VC 部署项目。eIDAS 2.0 法规（2024 年 5 月生效）要求每个欧盟成员国在 2026 年底前为公民提供「欧洲数字身份钱包」（EUDI Wallet）。
 
-This means by the end of 2026, 450 million EU citizens will have a digital wallet capable of storing and presenting verifiable credentials — for:
-- Proving age (without disclosing date of birth)
-- Opening bank accounts online (presenting digital ID)
-- Applying for jobs (presenting digital diplomas)
-- Cross-border use of public services
+这意味着到 2026 年底，4.5 亿欧盟公民将拥有一个能够存储与出示可验证凭证的数字钱包，用于：
 
-Four large-scale pilot projects (EBSI and POTENTIAL + NOBID + DC4EU + EWC) cover over 150 use cases.
+- 证明年龄（不披露出生日期）
+- 在线开立银行账户（出示数字身份证）
+- 求职（出示数字学位证书）
+- 跨境使用公共服务
 
-### Enterprise Adoption
+四个大型试点项目（EBSI 与 POTENTIAL + NOBID + DC4EU + EWC）覆盖了 150 多个用例。
 
-- **IBM / Mastercard**: Digital Trust Network, based on Hyperledger Indy
-- **Microsoft Entra**: Verified ID, based on did:web + JWT-based VC
-- **SpruceID / MATTR / Cheqd**: VC issuance and verification PaaS services
-- **Auth0 / Okta**: Integrating Verifiable Credentials into their CIAM product lines
+### 企业采用
 
-### China: BSN-DID and ChainMaker
+- **IBM / Mastercard**：Digital Trust Network，基于 Hyperledger Indy
+- **Microsoft Entra**：Verified ID，基于 did:web + 基于 JWT 的 VC
+- **SpruceID / MATTR / Cheqd**：VC 签发与验证 PaaS 服务
+- **Auth0 / Okta**：将可验证凭证集成进其 CIAM 产品线
 
-China has multiple DID explorations:
-- **BSN-DID**: Decentralized identifier system based on the Blockchain Service Network (BSN)
-- **ChainMaker**: Enterprise-grade blockchain supporting DID and VC
-- **DID-Alliance**: Promoting DID applications across industries
+### 中国：BSN-DID 与 ChainMaker
 
-## Reality: Why Hasn't It Gone Mainstream?
+中国有多条 DID 探索路径：
 
-### 1. The Chicken-and-Egg Problem
+- **BSN-DID**：基于区块链服务网络（BSN）的去中心化标识符体系
+- **ChainMaker**：支持 DID 与 VC 的企业级区块链
+- **DID-Alliance**：推动 DID 在各行业的应用
 
-Service providers won't support DID login because users don't have DID wallets. Users don't have DID wallets because no service providers support DID login. eIDAS 2.0 is trying to break this cycle through regulation — mandating that public services accept EUDI Wallets.
+## 现实：为什么还没成为主流？
 
-### 2. Key Recovery Is a Fatal UX Problem
+### 1. 先有鸡还是先有蛋
 
-The biggest practical obstacle: if you lose your DID private key, your entire digital identity is gone. There's no "forgot password" — because there's no centralized password reset service.
+服务商不支持 DID 登录，因为用户没有 DID 钱包。用户没有 DID 钱包，因为没有服务商支持 DID 登录。eIDAS 2.0 正试图通过监管打破这个循环——强制公共服务接受 EUDI 钱包。
 
-Current solutions:
-- Social recovery (wait for enough people to approve recovery)
-- Hardware Security Module (HSM) backup
-- Custodial wallets (reverting to a centralized model, defeating the purpose of decentralization)
+### 2. 密钥恢复是致命的体验问题
 
-### 3. Legal Frameworks Lag Behind Technology
+最大的现实障碍：如果你丢失了 DID 私钥，你的整个数字身份就没了。这里没有「忘记密码」——因为不存在中心化的密码重置服务。
 
-A verifiable credential's cryptographic validity is one thing; its legal validity is another. Does a DID + VC digital ID have the same legal standing as a physical ID card? Under EU eIDAS 2.0, yes. At the federal level in China and the US, it's not yet established.
+目前的解决方案：
 
-### 4. Technology Stack Fragmentation
+- 社交恢复（等待足够多的人批准恢复）
+- 硬件安全模块（HSM）备份
+- 托管钱包（退回中心化模型，背离了去中心化的初衷）
 
-150+ DID methods, multiple communication protocols (DIDComm vs OpenID4VC vs OIDC4IDA), various cryptography suites — it's a fragmented ecosystem. Developers struggle with "what should I use?"
+### 3. 法律框架落后于技术
 
-## Autional Strategy: Pragmatic Evolution, Not Radical Revolution
+可验证凭证在密码学上有效是一回事，在法律上有效是另一回事。DID + VC 的数字身份证与实体身份证具备同等法律效力吗？在欧盟 eIDAS 2.0 下，答案是肯定的。在中国与美国的联邦层面，尚未确立。
 
-Autional takes a "observe, integrate, evolve" approach to decentralized identity:
+### 4. 技术栈碎片化
 
-**Short-term (2026): DID Exploration**
-- Added `did` module in internal architecture: basic DID resolution and creation for `did:web` and `did:key` methods
-- identity-service supports mapping user ULIDs to DIDs
-- OpenID4VC research and lab verification
+150 多个 DID 方法、多种通信协议（DIDComm vs OpenID4VC vs OIDC4IDA）、各异的密码学套件——这是一个碎片化的生态。开发者会困惑：「我到底该用哪个？」
 
-**Mid-term (2027): Selective Introduction**
-- Support OpenID4VP (Verifiable Presentation) as a new authentication method — users can register and log in by presenting verifiable credentials
-- oauth-service supports SD-JWT format tokens for selective disclosure
-- Integrate with EUDI Wallet and mainstream VC platforms like SpruceID
+## Autional 的策略：务实地演进，而非激进地革命
 
-**Long-term (2028+): SSI-Ready**
-- Allow users to upgrade Autional-managed identities to self-sovereign identities — exported as DID + VC
-- Maintain dual-mode operation (standard identity and DID identity) to meet diverse market and compliance requirements
+Autional 对去中心化身份采取「观察、集成、演进」的方式：
 
-Autional doesn't bet on any specific DID method or blockchain — instead, we build abstractions at the identity infrastructure layer, allowing the upper layers to adapt to technological evolution without rewriting core logic.
+**短期（2026）：DID 探索**
 
-## Summary
+- 在内部架构中新增 `did` 模块：为 `did:web` 与 `did:key` 方法提供基础的 DID 解析与创建能力
+- identity-service 支持将用户 ULID 映射到 DID
+- OpenID4VC 研究与实验室验证
 
-Decentralized identity isn't a utopian fantasy — in 2026, it has real-world deployments, usable technical standards, and clear evolution paths. But mass adoption is still limited by UX challenges (key recovery), ecosystem fragmentation, and lagging legal frameworks.
+**中期（2027）：选择性引入**
 
-For most SaaS developers and enterprises, the pragmatic choice today is: build products with mature centralized identity infrastructure (like Autional) while keeping an eye on decentralized identity standards. When DID/SSI's practicality and legal foundation reach critical mass, the infrastructure layer will be ready for migration.
+- 支持 OpenID4VP（可验证呈现）作为一种新的认证方式——用户可以通过出示可验证凭证来注册与登录
+- oauth-service 支持 SD-JWT 格式令牌，用于选择性披露
+- 与 EUDI 钱包及 SpruceID 等主流 VC 平台集成
+
+**长期（2028+）：SSI-Ready**
+
+- 允许用户把 Autional 托管的身份升级为自主主权身份——导出为 DID + VC
+- 保持双模式运行（标准身份与 DID 身份），以满足多样化的市场与合规要求
+
+Autional 不押注任何特定的 DID 方法或区块链——而是在身份基础设施层做抽象，让上层能够适应技术演进，而无需重写核心逻辑。
+
+## 小结
+
+去中心化身份不是乌托邦幻想——在 2026 年，它已有真实世界的部署、可用的技术标准与清晰的演进路径。但大规模普及仍受限于体验挑战（密钥恢复）、生态碎片化与滞后的法律框架。
+
+对大多数 SaaS 开发者与企业而言，当下务实的选择是：用成熟的中心化身份基础设施（如 Autional）构建产品，同时持续关注去中心化身份标准。当 DID/SSI 的实用性与法律基础达到临界规模时，基础设施层将已为迁移做好准备。

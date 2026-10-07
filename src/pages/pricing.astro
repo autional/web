@@ -1,16 +1,16 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
 const plans = [
-  { name: 'Free', price: '$0', period: '/mo', desc: 'For MVPs and prototypes', features: ['Up to 1,000 MAU', 'Email/password + social login', 'TOTP MFA', 'SAML/OIDC SSO', 'Multi-tenancy', '7-day audit retention', '1,000 API calls/day', 'Discord community'], cta: 'Start Free', highlight: false },
-  { name: 'Pro', price: '$299', period: '/mo', desc: 'For growing AI SaaS', features: ['Up to 10,000 MAU', 'Everything in Free', 'Passkey / WebAuthn', 'SMS MFA', 'Custom domains', '90-day audit retention', 'Unlimited API calls', 'Email support (4h)', '99.9% SLA'], cta: 'Start Trial', highlight: true },
-  { name: 'Enterprise', price: 'Custom', period: '', desc: 'For mission-critical deployments', features: ['Unlimited MAU', 'Everything in Pro', 'Adaptive MFA', 'LDAP/AD integration', 'SSO domain verification', 'Unlimited audit retention + archive', 'Private deployment', '24/7 dedicated support', '99.99% SLA'], cta: 'Contact Sales', highlight: false },
+  { name: 'Free', price: '$0', period: '/月', desc: '适合 MVP 与原型', features: ['最多 1,000 MAU', '邮箱/密码 + 社交登录', 'TOTP MFA', 'SAML/OIDC SSO', '多租户', '审计日志保留 7 天', '每天 1,000 次 API 调用'], cta: '联系我们', highlight: false },
+  { name: 'Pro', price: '$299', period: '/月', desc: '适合成长中的 AI SaaS', features: ['最多 10,000 MAU', '包含 Free 全部功能', '通行密钥（Passkey）/ WebAuthn', '短信 MFA', '自定义域名', '审计日志保留 90 天', 'API 调用不限量', '邮件支持（4 小时响应）', '99.9% SLA'], cta: '联系我们', highlight: true },
+  { name: 'Enterprise', price: '定制', period: '', desc: '适合关键业务部署', features: ['MAU 不限量', '包含 Pro 全部功能', '自适应 MFA', 'LDAP/AD 集成', 'SSO 域名验证', '审计日志不限量保留 + 归档', '私有化部署', '7×24 专属支持', '99.99% SLA'], cta: '联系销售', highlight: false },
 ];
 const faqs = [
-  { q: 'Can I self-host Autional for free?', a: 'Yes. Autional\'s core is AGPL open source. You can self-host the entire 24-service stack using Docker — no license fee, no MAU limits, no feature restrictions. Cloud is optional, for when you don\'t want to manage infrastructure.' },
-  { q: 'What counts as a MAU?', a: 'A Monthly Active User is a unique user who authenticates within a calendar month. If a user signs in once during the month, they count as 1 MAU. Idle users do not count.' },
-  { q: 'Can I upgrade from Free to Pro without migrating?', a: 'Yes. Upgrading unlocks higher limits and additional features instantly. No data migration, no code changes, no downtime.' },
-  { q: 'Do you offer discounts for open-source projects?', a: 'Yes. We offer special pricing for open-source projects and non-profit organizations. Contact us for details.' },
-  { q: 'What payment methods do you accept?', a: 'We accept all major credit cards via Stripe. For Enterprise plans, we also support wire transfers and annual invoicing.' },
+  { q: '可以免费自托管 Autional 吗？', a: '可以。当前自托管开源可用；云托管在路线图中（即将推出）。自托管没有授权费用、没有 MAU 限制。' },
+  { q: 'MAU 如何计算？', a: 'MAU（月活跃用户）是指在一个自然月内完成认证的唯一用户。如果某位用户在该月内登录过一次，就计为 1 个 MAU，闲置用户不计入。' },
+  { q: '云服务上线后，可以从 Free 升级到 Pro 而无需迁移吗？', a: '可以。升级将即时解锁更高的额度与更多功能，无需数据迁移、无需改动代码、无需停机。' },
+  { q: '开源项目有折扣吗？', a: '云服务上线后，我们计划为开源项目和非营利组织提供特别定价，详情请联系我们。' },
+  { q: '你们接受哪些支付方式？', a: '云服务上线后将通过 Stripe 支持主流信用卡；Enterprise 档位支持银行转账与按年开票。' },
 ];
 const faqJsonLd = {
   '@context': 'https://schema.org',
@@ -23,20 +23,20 @@ const faqJsonLd = {
 };
 ---
 <LandingLayout
-  title="Pricing — Autional"
-  description="Simple, transparent pricing for AI-generated applications. Start free, upgrade when you need enterprise features."
-  keywords="Autional, pricing, identity, IAM, subscription, plans"
+  title="定价 — Autional"
+  description="Autional 定价说明：自托管免费；云托管在路线图中（即将推出）。"
+  keywords="Autional, 定价, 身份, IAM, 订阅, 套餐"
   jsonLd={[faqJsonLd]}
 >
   <section class="mx-auto max-w-7xl px-4 py-20">
     <div class="text-center mb-16">
-      <h1 class="text-4xl font-bold sm:text-5xl">Simple, Transparent Pricing</h1>
-      <p class="mt-4 text-lg text-neutral-500 max-w-xl mx-auto">Start free. Upgrade when your AI-generated app needs more. No surprise bills, no vendor lock-in.</p>
+      <h1 class="text-4xl font-bold sm:text-5xl">简单透明的定价</h1>
+      <p class="mt-4 text-lg text-neutral-500 max-w-xl mx-auto">当前自托管开源可用；云托管在路线图中（即将推出）。下方为规划中的云服务档位，没有意外账单，没有厂商锁定。</p>
     </div>
     <div class="grid gap-8 lg:grid-cols-3 max-w-5xl mx-auto">
       {plans.map(p => (
-        <div class={`rounded-2xl border p-8 flex flex-col ${p.highlight ? 'border-primary-500 ring-2 ring-primary-500 shadow-lg' : 'border-neutral-200 dark:border-neutral-800'}`}>
-          {p.highlight && <span class="inline-block rounded-full bg-primary-50 text-primary-700 px-3 py-1 text-xs font-medium w-fit mb-4">Most Popular</span>}
+        <div class={`rounded-md border p-8 flex flex-col ${p.highlight ? 'border-primary-500 ring-2 ring-primary-500 shadow-card' : 'border-neutral-200 dark:border-neutral-800'}`}>
+          {p.highlight && <span class="inline-block rounded-full bg-primary-50 text-primary-700 px-3 py-1 text-xs font-medium w-fit mb-4">最受欢迎</span>}
           <h3 class="text-xl font-bold">{p.name}</h3>
           <div class="mt-2"><span class="text-4xl font-extrabold">{p.price}</span>{p.period && <span class="text-neutral-500 text-sm">{p.period}</span>}</div>
           <p class="mt-1 text-sm text-neutral-500">{p.desc}</p>
@@ -48,8 +48,8 @@ const faqJsonLd = {
       ))}
     </div>
     <!-- FAQ -->
-    <div class="max-w-3xl mx-auto mt-24">
-      <h2 class="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+    <div class="max-w-3xl mx-auto mt-20">
+      <h2 class="text-2xl font-bold text-center mb-8">常见问题</h2>
       <div class="space-y-4">{faqs.map(f => (
         <details class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 group">
           <summary class="font-medium cursor-pointer list-none flex justify-between items-center">{f.q}<span class="text-neutral-400 group-open:rotate-45 transition-transform text-lg">+</span></summary>

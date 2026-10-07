@@ -1,156 +1,156 @@
 ---
-title: "Identity System SLI/SLO Design: How 99.99% Availability Is Achieved"
+title: "身份系统 SLI/SLO 设计：99.99% 可用性如何达成"
 date: "2026-06-13"
 category: "Architecture"
-tags: ["SLA", "SLO", "Reliability"]
-readTime: "8 min"
-excerpt: "99.9% and 99.99% differ by a factor of 10 — for identity systems, that's the difference between 8.76 hours and 52 minutes of downtime per year. Starting from SLI selection, this article dives into how Autional achieves enterprise-grade availability guarantees through health checks, dual probes, and error budget mechanisms."
+tags: ["SLA", "SLO", "可靠性"]
+readTime: "8 分钟"
+excerpt: "99.9% 与 99.99% 相差 10 倍——对身份系统而言，这是每年 8.76 小时与 52 分钟不可用的差距。本文从 SLI 的选取出发，拆解 Autional 如何通过健康检查、双探针与错误预算机制达成企业级可用性保障。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Architecture Note**: The SLO/SLI metrics and availability targets described in this article represent Autional's architectural design goals and do not constitute runtime performance commitments for production environments. Actual availability is influenced by deployment architecture, infrastructure configuration, network conditions, and other factors. Specific SLAs are governed by commercial contracts.
+> **架构说明**：本文描述的 SLO/SLI 指标与可用性目标，代表 Autional 的架构设计目标，不构成对生产环境运行性能的承诺。实际可用性受部署架构、基础设施配置、网络状况等因素影响。具体 SLA 以商业合同约定为准。
 
-"We promise 99.99% availability." — This phrase appears in nearly every SaaS identity platform's marketing materials. But what does 99.99% actually mean? How is it measured? What happens when it's not met? For most teams, the answers to these questions matter far more than the number itself.
+「我们承诺 99.99% 的可用性。」——这句话几乎出现在每一家 SaaS 身份平台的市场材料里。但 99.99% 到底意味着什么？怎么测量？没达到又会怎样？对大多数团队来说，这几个问题的答案远比数字本身重要。
 
-Let's start with a common misconception: **SLA (Service Level Agreement), SLO (Service Level Objective), and SLI (Service Level Indicator) are three entirely different concepts.**
+先从一组常见误解说起：**SLA（Service Level Agreement，服务等级协议）、SLO（Service Level Objective，服务等级目标）与 SLI（Service Level Indicator，服务等级指标）是三个完全不同的概念。**
 
-- **SLI** is a measured value — "Over the past 30 days, login success rate was 99.97%"
-- **SLO** is a target — "Login success rate must be ≥ 99.9%"
-- **SLA** is a contractual commitment — "If login success rate falls below 99.9%, we will refund 10% of the monthly fee"
+- **SLI** 是测量值——「过去 30 天，登录成功率 99.97%」
+- **SLO** 是目标——「登录成功率必须 ≥ 99.9%」
+- **SLA** 是合同承诺——「登录成功率低于 99.9%，退还月度费用的 10%」
 
-Most teams skip defining SLIs, pick an SLO number arbitrarily, and then write it into an SLA contract. The result: either the SLO is too loose to matter (you never reach it anyway, so the penalty never applies), or too strict that teams are constantly firefighting. This article takes a systematic approach from the perspective of identity systems — how to define SLIs, set SLOs, and how Autional uses technical measures to guarantee these targets.
+大多数团队跳过定义 SLI，随手拍一个 SLO 数字，然后写进 SLA 合同。结果要么 SLO 定得太松、形同虚设（反正永远达不到，赔偿条款也永远用不上），要么定得太紧、团队天天救火。本文从身份系统的视角系统地讲：怎么定义 SLI、怎么设定 SLO，以及 Autional 用哪些技术手段来保障这些目标。
 
-## SLI Selection: What Should an Identity System Measure?
+## SLI 选取：身份系统该测什么？
 
-Not everything measurable deserves an SLO. Good SLIs satisfy three conditions: **directly correlated with user experience**, **precisely measurable**, and **actionable for improvement**.
+不是所有可测量的东西都值得设 SLO。好的 SLI 满足三个条件：**与用户体验直接相关**、**可精确测量**、**可据以改进**。
 
-For identity systems, we recommend the following 5 core SLIs:
+对身份系统，我们推荐以下 5 个核心 SLI：
 
-### 1. Login Success Rate
+### 1. 登录成功率
 
-This is the most important SLI for an identity system, bar none. Definition:
+这是身份系统最重要的 SLI，没有之一。定义：
 
 ```
 Login Success Rate = Successful Logins / Total Login Requests × 100%
 ```
 
-But there's a trap in defining "success." Does an HTTP 200 always count as success? If the interface returns 200 but the business logic fails (e.g., "account locked"), should that count as success or failure?
+但「成功」的定义里有个陷阱。HTTP 200 就算成功吗？如果接口返回 200 但业务逻辑失败（如「账号被锁定」），算成功还是失败？
 
-Autional's definition: **Only requests where `identity-service` returns 200 and the payload contains a valid JWT token count as success.** All business errors (wrong password, account locked, MFA failure) are excluded from "failures" — they are normal business flows, not availability problems.
+Autional 的定义是：**只有 `identity-service` 返回 200 且响应体中包含有效 JWT 令牌的请求才算成功。** 所有业务性错误（密码错误、账号锁定、MFA 失败）都不计入「失败」——它们是正常的业务流程，不是可用性问题。
 
-This leads to a key methodology: **distinguish between "errors" and "failures."** A user entering a wrong password means your system is working as intended. A database connection timeout means your system has a fault. SLIs measure the latter.
+这引出一条关键方法论：**区分「错误」与「故障」。** 用户输错密码，说明你的系统在按预期工作；数据库连接超时，才说明系统出了故障。SLI 衡量的是后者。
 
-### 2. Token Issuance Latency (P99)
+### 2. 令牌签发延迟（P99）
 
-When a user clicks "Login," authentication completing within 1 second is a smooth experience; above 3 seconds is a poor one. But averages can be deceptive — if 90% of logins complete in 100ms and 10% take 5 seconds, the average might be 590ms, which looks acceptable, but 10% of users are enduring a 5-second wait.
+用户点下「登录」，1 秒内完成认证是流畅体验，超过 3 秒体验就很差。但平均值会骗人——如果 90% 的登录在 100ms 完成、10% 要 5 秒，平均值可能是 590ms，看起来还行，但 10% 的用户在忍受 5 秒的等待。
 
-**Always use percentiles to define latency SLIs, never averages.**
+**定义延迟类 SLI 一律用分位数，不要用平均值。**
 
-Autional's recommendations: P99 login latency < 500ms (standard deployment) / < 200ms (HA deployment). Use the P99 of the `http_request_duration_seconds` histogram as the measurement source.
+Autional 的建议值：P99 登录延迟 < 500ms（标准部署）/ < 200ms（高可用部署）。测量来源为 `http_request_duration_seconds` 直方图。
 
-### 3. MFA Verification Latency (P95)
+### 3. MFA 验证延迟（P95）
 
-More and more applications enforce MFA, meaning MFA latency directly impacts login experience. Autional's `mfa-service` is deployed independently. MFA verification involves:
-- Querying the user's MFA configuration (cache hit or DB query)
-- Calling third-party channels (SMS/email/OTP)
-- Or local TOTP algorithm verification
+越来越多应用强制要求 MFA，这意味着 MFA 延迟直接影响登录体验。Autional 的 `mfa-service` 独立部署。MFA 验证涉及：
+- 查询用户的 MFA 配置（缓存命中或查库）
+- 调用第三方通道（短信/邮件/OTP）
+- 或本地 TOTP 算法校验
 
-Different MFA methods have vastly different latencies — TOTP local verification < 10ms, SMS OTP can take 3-5 seconds. SLIs should be split by MFA method.
+不同 MFA 方式的延迟差异巨大——TOTP 本地校验 < 10ms，短信 OTP 可能要 3-5 秒。SLI 应按 MFA 方式分别拆分。
 
-### 4. Health Check Response Time
+### 4. 健康检查响应时间
 
-This is not a user-facing SLI but an operational one. The `/health` endpoint's response speed reflects the health of infrastructure (DB, Redis, MQ). If `/health` response exceeds 1 second, it typically indicates connection timeouts or slow queries in some infrastructure component.
+这不是面向用户的 SLI，而是运维向的。`/health` 端点的响应速度反映基础设施（DB、Redis、MQ）的健康度。如果 `/health` 响应超过 1 秒，通常意味着某个基础设施组件出现连接超时或慢查询。
 
-### 5. Token Verification Throughput
+### 5. 令牌校验吞吐
 
-In a high-traffic API Gateway scenario, nearly every request needs JWT token verification. If `session-service` or `identity-service` lacks the capacity to verify tokens quickly, the entire business system can be dragged down.
+在高流量的 API Gateway 场景下，几乎每个请求都需要 JWT 令牌校验。如果 `session-service` 或 `identity-service` 不具备快速校验令牌的能力，整个业务系统都会被拖垮。
 
-SLI definition: Successful token verifications per second > expected peak × 1.5 (50% headroom).
+SLI 定义：每秒成功校验的令牌数 > 预期峰值 × 1.5（50% 余量）。
 
-## Setting SLOs: 99.9% or 99.99%?
+## 设定 SLO：99.9% 还是 99.99%？
 
-99.9% (three nines) = 8.76 hours downtime per year
-99.99% (four nines) = 52.6 minutes downtime per year
-99.999% (five nines) = 5.26 minutes downtime per year
+99.9%（三个 9）= 每年 8.76 小时不可用
+99.99%（四个 9）= 每年 52.6 分钟不可用
+99.999%（五个 9）= 每年 5.26 分钟不可用
 
-Each additional nine increases costs by at least 5-10x. Does your system really need four nines?
+每多一个 9，成本至少增加 5-10 倍。你的系统真的需要四个 9 吗？
 
-### Decision Framework
+### 决策框架
 
-| Scenario | Recommended SLO | Rationale |
+| 场景 | 建议 SLO | 理由 |
 |----------|----------------|-----------|
-| Internal admin console | 99.5% | Limited impact of downtime, low operational cost priority |
-| B2B SaaS (SMB) | 99.9% | Balance reliability and cost; industry mainstream standard |
-| B2B SaaS (Enterprise) | 99.95% | High SLA penalty for enterprise customers, requires higher guarantees |
-| Financial / Healthcare | 99.99% | Regulatory requirements or contractual mandates |
-| National identity infrastructure | 99.999% | Public safety impact, requires multi-active architecture |
+| 内部管理后台 | 99.5% | 宕机影响有限，运维成本优先级低 |
+| B2B SaaS（中小企业） | 99.9% | 可靠性与成本的平衡点，行业主流标准 |
+| B2B SaaS（大型企业） | 99.95% | 面向企业客户，SLA 赔偿代价高，需要更高保障 |
+| 金融 / 医疗 | 99.99% | 监管要求或合同强制约定 |
+| 国家级身份基础设施 | 99.999% | 涉及公共安全，需要多活架构 |
 
-Autional targets 99.99% as the SLO for high-availability deployments, and 99.9% for standard deployments. This is reflected in the architecture design:
+Autional 以 99.99% 作为高可用部署的 SLO，标准部署为 99.9%。这在架构设计上体现为：
 
-- **High-Availability Deployment**: At least 3 replicas per service + master-slave database + Redis Sentinel + cross-AZ deployment
-- **Standard Deployment**: 2 replicas per service + single-instance database + daily automated backups
+- **高可用部署**：每个服务至少 3 副本 + 数据库主从 + Redis Sentinel + 跨可用区部署
+- **标准部署**：每个服务 2 副本 + 单实例数据库 + 每日自动备份
 
-### Error Budget: SLO's "Fault Tolerance Quota"
+### 错误预算：SLO 的「容错额度」
 
-An SLO is not an iron law — it allows a certain amount of unavailable time, which is the "error budget." If the SLO is 99.9%, then the error budget = 0.1% × 30 days = 43 minutes/month.
+SLO 不是铁律——它允许一定量的不可用时间，这就是「错误预算」。如果 SLO 是 99.9%，那么错误预算 = 0.1% × 30 天 = 43 分钟/月。
 
-The value of an error budget lies in changing the decision logic:
-- Error budget sufficient → can take risks (ship new features, run chaos engineering)
-- Error budget exhausted → freeze all non-emergency releases, everyone works on stability improvements
+错误预算的价值在于改变决策逻辑：
+- 错误预算充足 → 可以冒险（上线新功能、做混沌工程）
+- 错误预算耗尽 → 冻结一切非紧急发布，全员投入稳定性改进
 
-**An SLO without an error budget is just decoration.** Autional integrates an error budget consumption view into the operations dashboard, automatically triggering different levels of alerts and process freezes when consumption exceeds 50%/80%/100%.
+**没有错误预算的 SLO 只是装饰。** Autional 把错误预算消耗视图集成进运维看板，当消耗超过 50%/80%/100% 时，自动触发不同级别的告警与流程冻结。
 
-## How Autional Guarantees SLOs: Technical Measures
+## Autional 如何保障 SLO：技术措施
 
-### Dual Health Check Probes
+### 双健康检查探针
 
-Autional provides two independent health check endpoints for each service:
+Autional 为每个服务提供两个独立的健康检查端点：
 
-**`/health` (Liveness Probe)**:
-- Checks if the process is alive
-- Returns 200 if the service is running
-- Used for Kubernetes liveness probe; restarts the Pod on failure
+**`/health`（存活探针）**：
+- 检查进程是否存活
+- 服务在运行即返回 200
+- 用于 Kubernetes liveness probe；失败时重启 Pod
 
-**`/ready` (Readiness Probe)**:
-- Checks if the service is ready to receive traffic
-- Checks DB connection, Redis connection, MQ connection one by one
-- Returns 503 if any dependency is unavailable
-- Used for Kubernetes readiness probe; removes from Service on failure, re-adds on success
+**`/ready`（就绪探针）**：
+- 检查服务是否准备好接收流量
+- 逐项检查 DB 连接、Redis 连接、MQ 连接
+- 任一依赖不可用即返回 503
+- 用于 Kubernetes readiness probe；失败时从 Service 摘除，恢复后重新加入
 
-Why two probes? If the DB connection pool is exhausted, `/health` might still return 200 (the process isn't dead), but `/ready` will return 503 (cannot handle requests). Kubernetes stops sending traffic to that Pod on readiness failure, but does not restart it (since liveness is normal — it might be a transient DB fault). When the DB recovers, `/ready` automatically restores, and the Pod resumes receiving traffic — zero operational intervention.
+为什么要两个探针？如果数据库连接池耗尽，`/health` 可能仍返回 200（进程没死），但 `/ready` 会返回 503（无法处理请求）。Kubernetes 在就绪检查失败时停止向该 Pod 发流量，但不重启它（因为存活检查正常——这可能只是数据库的瞬时故障）。数据库恢复后，`/ready` 自动恢复，Pod 重新接收流量——零人工干预。
 
-### Result Caching
+### 结果缓存
 
-For high-frequency queries (e.g., token verification, permission checks), Autional implements a local+distributed two-tier cache with negative caching in `micro-pkg/cache`.
+对高频查询（如令牌校验、权限检查），Autional 在 `micro-pkg/cache` 中实现了本地 + 分布式两级缓存，并支持负缓存。
 
-Key design:
-- **Positive cache**: "Token ABC is valid, user ID is 123" → cached for 5 minutes
-- **Negative cache**: "Token XYZ is revoked" → cached for 1 minute
-- **Cache avalanche protection**: Uses random TTL (TTL ± 20%) to prevent simultaneous cache expiration from causing a DB avalanche
-- **Cache penetration protection**: Also caches an empty value for non-existent keys (negative cache), preventing attackers from using non-existent tokens to penetrate the cache and hit the DB directly
+关键设计：
+- **正缓存**：「令牌 ABC 有效，用户 ID 是 123」→ 缓存 5 分钟
+- **负缓存**：「令牌 XYZ 已吊销」→ 缓存 1 分钟
+- **缓存雪崩防护**：采用随机 TTL（TTL ± 20%），避免大量缓存同时过期造成数据库雪崩
+- **缓存穿透防护**：对不存在的键也缓存空值（负缓存），防止攻击者用不存在的令牌穿透缓存直击数据库
 
-### Graceful Shutdown and Failure Recovery
+### 优雅停机与故障恢复
 
-Each Autional service implements a unified graceful shutdown flow via `micro-middleware/app`:
+每个 Autional 服务都通过 `micro-middleware/app` 实现统一的优雅停机流程：
 
-1. Receive SIGTERM → immediately mark `/ready` as unhealthy
-2. Wait for existing requests to complete (max 30 seconds)
-3. Close DB connection pool, MQ connections
-4. Exit process
+1. 收到 SIGTERM → 立即将 `/ready` 标记为不健康
+2. 等待存量请求处理完成（最长 30 秒）
+3. 关闭数据库连接池、MQ 连接
+4. 退出进程
 
-Combined with Kubernetes rolling update strategy (`maxUnavailable: 0`, `maxSurge: 1`), this ensures zero traffic loss during upgrades.
+配合 Kubernetes 滚动更新策略（`maxUnavailable: 0`、`maxSurge: 1`），确保升级期间流量零丢失。
 
-## Practical Recommendations
+## 实践建议
 
-1. **Start with login success rate**: This is the easiest SLI to measure and the one that most directly affects users. Run data for a month, then set your SLO — don't pick a number out of thin air.
-2. **Distinguish critical path from non-critical path**: Login is critical; avatar uploads are not. Degradation on non-critical paths does not consume the error budget.
-3. **Graceful degradation > hard failure**: If the MFA SMS channel is unavailable, degrade to TOTP only. If audit log writing fails, buffer temporarily instead of blocking login. Autional's async audit writing is a practical application of this philosophy.
-4. **Review error budgets monthly**: Make error budget consumption a standing agenda item in monthly operations reviews. If the budget is exhausted for three consecutive months, consider adjusting the architecture rather than just adding more people.
+1. **从登录成功率开始**：这是最容易测量、也最直接影响用户的 SLI。先跑一个月数据，再据此设定 SLO——不要凭空拍数字。
+2. **区分关键路径与非关键路径**：登录是关键路径，上传头像是非关键路径。非关键路径的降级不消耗错误预算。
+3. **优雅降级优于硬失败**：短信通道不可用就降级为仅 TOTP；审计日志写不进去就临时缓冲，而不是阻断登录。Autional 的审计异步写入正是这一理念的实践。
+4. **每月复盘错误预算**：把错误预算消耗作为月度运维复盘的固定议程。如果连续三个月耗尽，要考虑调整架构，而不是只加人。
 
-99.99% is not a technical metric — it is a promise to your users and the engineering resources you are willing to invest in that promise. Before setting your number, answer this question first: **If the system goes down for 1 hour, what will users lose, and what will we lose?** That answer is your SLO.
+99.99% 不是一个技术指标——它是你对用户的承诺，以及你愿意为这个承诺投入的工程资源。在定下数字之前，先回答这个问题：**如果系统停机 1 小时，用户会损失什么，我们会损失什么？** 那个答案就是你的 SLO。
 
 ---
 
-*All Autional services have built-in dual-probe health checks and Prometheus metrics exposure. Refer to the [architecture documentation](/developer/docs) for more details.*
+*所有 Autional 服务都内置双探针健康检查与 Prometheus 指标暴露。更多细节请参阅[平台文档](https://docs.autional.cn)。*

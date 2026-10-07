@@ -1,24 +1,26 @@
 # Autional — Identity for AI-Generated Applications
 
 ## Core Docs
-- https://www.autional.com/features
-- https://www.autional.com/pricing
-- https://www.autional.com/docs
-- https://www.autional.com/sdk
-- https://www.autional.com/compare
-- https://www.autional.com/about
-- https://www.autional.com/faq
-- https://www.autional.com/trust
+- https://www.autional.cn/features
+- https://www.autional.cn/pricing
+- https://www.autional.cn/docs
+- https://www.autional.cn/sdk
+- https://www.autional.cn/compare
+- https://www.autional.cn/about
+- https://www.autional.cn/faq
+- https://www.autional.cn/trust
 
-## AI Onboarding (add login to any app with one prompt)
-- Tutorial: https://www.autional.com/ai
-- Skill (EN): https://www.autional.com/ai/skill.md
-- Skill (ZH): https://www.autional.com/ai/skill.zh.md
-- Compliance matrix: https://www.autional.com/ai/references/compliance-matrix.md
-- Config template: https://www.autional.com/ai/references/config-template.md
+## AI Onboarding (一句话为应用接入登录)
+- 教程: https://www.autional.cn/ai
+- Skill (中文): https://www.autional.cn/ai/skill.md
+- Skill (EN): https://www.autional.cn/ai/skill.en.md
+- 自有 CDN 镜像 (中文): https://cdn.autional.cn/ai/latest/SKILL.md
+- 自有 CDN 镜像 (EN): https://cdn.autional.cn/ai/latest/SKILL.en.md
+- 合规档: https://www.autional.cn/ai/references/compliance-matrix.md
+- 配置模板: https://www.autional.cn/ai/references/config-template.md
 
 ## Blog (49 articles)
-- https://www.autional.com/blog
+- https://www.autional.cn/blog
 
 ## SDK Packages (31)
 - @autional/core — npm install @autional/core

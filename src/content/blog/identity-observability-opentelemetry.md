@@ -1,32 +1,32 @@
 ---
-title: "Identity System Observability: OpenTelemetry Full-Link Tracing in Practice"
+title: "身份系统可观测性：OpenTelemetry 全链路追踪实践"
 date: "2026-06-14"
 category: "Architecture"
-tags: ["Observability", "OpenTelemetry", "Distributed Tracing"]
-readTime: "10 min"
-excerpt: "Identity systems are the bedrock of security infrastructure, and their observability directly impacts incident detection and root cause localization speed. This article dissects how Autional built a unified observability system integrating logs, metrics, and distributed tracing on top of OpenTelemetry, and demonstrates the practical value of full-link tracing through a slow-login troubleshooting case."
+tags: ["可观测性", "OpenTelemetry", "分布式追踪"]
+readTime: "10 分钟"
+excerpt: "身份系统是安全基础设施的底座，其可观测性直接决定故障发现与根因定位的速度。本文拆解 Autional 如何基于 OpenTelemetry 构建日志、指标、分布式追踪三位一体的可观测体系，并通过一次登录慢排查案例展示全链路追踪的实战价值。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-The 2025 production incident at a major SaaS platform remains a stark reminder: without distributed tracing, a single "slow login" user complaint consumed 6 full hours across 3 SREs, from ticket creation to root cause identification. The culprit was a Redis connection pool misconfiguration in `session-service` that forced a new connection on every token validation — but without tracing, the team had to check each service and middleware manually, like finding a needle in a haystack.
+2025 年一家大型 SaaS 平台的生产事故至今仍是鲜明警示：在没有分布式追踪的情况下，一个「登录慢」的用户投诉，从建单到定位根因，耗尽了 3 名 SRE 整整 6 个小时。罪魁祸首是 `session-service` 中 Redis 连接池的配置错误，导致每次校验令牌都新建连接——但因为没有追踪，团队只能逐个服务、逐个中间件手工排查，如同大海捞针。
 
-This is why observability is not a "nice to have" but a lifeline for identity systems. When an identity system goes down or degrades, every business system that depends on it becomes unavailable — and that blast radius dwarfs any single business module.
+这正是可观测性不是「锦上添花」，而是身份系统生命线的原因。当身份系统宕机或性能退化时，所有依赖它的业务系统都会随之不可用——而这个爆炸半径远超任何单一业务模块。
 
-Autional has treated observability as a first-class citizen from day one, building a unified log-metric-trace observability system on OpenTelemetry. This article breaks down each layer and demonstrates how to quickly locate problems using real-world cases.
+Autional 从第一天起就把可观测性当作一等公民，在 OpenTelemetry 之上构建了日志-指标-追踪三位一体的可观测体系。本文逐层拆解，并用真实案例演示如何快速定位问题。
 
-## Three Pillars of Observability and the Special Needs of Identity Systems
+## 可观测性三大支柱与身份系统的特殊需求
 
-### Logs: Recording "What Happened"
+### 日志：记录「发生了什么」
 
-The pain point of traditional logging isn't a lack of data — it's too much. A medium-sized authentication system can generate gigabytes of access logs daily, but when an actual incident occurs, operators often get lost in a sea of unstructured log data.
+传统日志的痛点不是数据太少，而是太多。一个中等规模的认证系统每天可产生数 GB 的访问日志，但真正发生故障时，运维人员往往迷失在非结构化的日志海洋中。
 
-Autional's structured logging solution:
+Autional 的结构化日志方案：
 
-- **78+ standardized log keys**: All logs use predefined key constants from the `base/logger` package, such as `logger_base.KeyUserID`, `logger_base.KeyTraceID`, and `logger_base.KeyErrorCode`. This means you can precisely `grep` for all operations by a specific user, all occurrences of a specific error code, or every log step within a trace span.
-- **Request-level log context**: On each HTTP request, middleware injects `request_id`, `tenant_id`, `user_id`, and `trace_id` into `context.Context`. All subsequent `logger_base.FromContext(ctx)` calls automatically carry these identifiers — no need to manually pass log parameters as long as the function receives `ctx`.
-- **Complete error chain recording**: `error_base.Err` carries the full error chain (`cause -> cause -> cause`), which is automatically expanded into an `"error_chain"` field in log output, revealing the root cause at a glance.
+- **78+ 个标准化日志键**：所有日志都使用 `base/logger` 包中预定义的键常量，如 `logger_base.KeyUserID`、`logger_base.KeyTraceID`、`logger_base.KeyErrorCode`。这意味着你可以精确 `grep` 出某个用户的全部操作、某个错误码的全部出现，或某个追踪 span 内的每一步日志。
+- **请求级日志上下文**：在每个 HTTP 请求上，中间件向 `context.Context` 注入 `request_id`、`tenant_id`、`user_id`、`trace_id`。后续所有 `logger_base.FromContext(ctx)` 调用都会自动携带这些标识——只要函数接收 `ctx`，就无需手工传递日志参数。
+- **完整错误链记录**：`error_base.Err` 携带完整错误链（`cause -> cause -> cause`），在日志输出中自动展开为 `"error_chain"` 字段，让根因一目了然。
 
 ```go
 logger.Info("user login successful",
@@ -36,24 +36,24 @@ logger.Info("user login successful",
 )
 ```
 
-### Metrics: Quantifying "What Happened"
+### 指标：量化「发生了什么」
 
-Logs tell you the details of a single request; metrics tell you the macro health of your system. Autional's Prometheus metrics cover four layers:
+日志告诉你单次请求的细节；指标告诉你系统的宏观健康度。Autional 的 Prometheus 指标覆盖四个层次：
 
-| Layer | Example Metrics | Purpose |
+| 层次 | 示例指标 | 用途 |
 |-------|----------------|---------|
-| HTTP Service | `http_requests_total`, `http_request_duration_seconds` | Request volume, latency, error rate |
-| Domain Events | `events_published_total`, `events_publish_duration_seconds` | Domain event throughput and latency |
-| MQ Consumption | `mq_consumer_messages_total`, `mq_consumer_message_duration_seconds` | Consumption rate, processing latency, DLQ backlog |
-| Infrastructure | `db_connections_active`, `redis_commands_duration_seconds` | Connection pool health, cache hit rate |
+| HTTP 服务 | `http_requests_total`, `http_request_duration_seconds` | 请求量、延迟、错误率 |
+| 领域事件 | `events_published_total`, `events_publish_duration_seconds` | 领域事件吞吐量与延迟 |
+| MQ 消费 | `mq_consumer_messages_total`, `mq_consumer_message_duration_seconds` | 消费速率、处理延迟、DLQ 积压 |
+| 基础设施 | `db_connections_active`, `redis_commands_duration_seconds` | 连接池健康度、缓存命中率 |
 
-These metrics are automatically registered via the `micro-middleware/metrics` middleware — business code does not require manual instrumentation. But this doesn't mean you can ignore metrics. **The key is defining the right alerting rules**, which we will cover in a separate article.
+这些指标通过 `micro-middleware/metrics` 中间件自动注册——业务代码无需手工埋点。但这不意味着你可以忽视指标。**关键在于定义正确的告警规则**，我们将在另一篇文章中详述。
 
-### Traces: Understanding "How It Happened"
+### 追踪：理解「怎么发生的」
 
-Logs tell you the result of each step. Metrics tell you the overall system trend. Traces connect the two — they reveal how many services a single request crosses, how long each service takes, and where the bottleneck is.
+日志告诉你每一步的结果，指标告诉你系统的整体趋势。追踪把两者连接起来——它揭示一次请求跨越了多少个服务、每个服务耗时多久、瓶颈在哪里。
 
-A typical "user login" request trace in Autional:
+Autional 中一次典型的「用户登录」请求追踪：
 
 ```
 gateway (1ms)
@@ -67,41 +67,41 @@ gateway (1ms)
   → profile-service /profile/me (12ms, parallel)
 ```
 
-In the old architecture, if "login is slow" was the complaint, you had to SSH into each service and check logs manually. With distributed tracing, one screen shows you that `identity-service` bcrypt took 30ms (65% of total), while `session-service`'s PostgreSQL INSERT took only 4ms — everything is crystal clear.
+在旧架构下，如果投诉是「登录慢」，你得逐个 SSH 登录服务、手工查日志。有了分布式追踪，一屏就能看出 `identity-service` 的 bcrypt 耗时 30ms（占总耗时 65%），而 `session-service` 的 PostgreSQL INSERT 仅耗时 4ms——一切一目了然。
 
-## Autional OpenTelemetry Implementation Architecture
+## Autional 的 OpenTelemetry 落地架构
 
-### Cross-Protocol Propagation
+### 跨协议传播
 
-What makes identity systems unique is the need to support three communication protocols simultaneously: HTTP, gRPC, and MQ. `/auth/login` is HTTP → HTTP, but `compliance-service` may require gRPC calls, and audit logs are delivered asynchronously through MQ. If trace context cannot flow smoothly between protocols, the trace breaks.
+身份系统的特殊之处在于需要同时支持三种通信协议：HTTP、gRPC 与 MQ。`/auth/login` 是 HTTP → HTTP，但 `compliance-service` 可能需要 gRPC 调用，审计日志则通过 MQ 异步投递。如果追踪上下文无法在协议之间顺畅流动，链路就会断裂。
 
-Autional's solution:
+Autional 的方案：
 
-- **HTTP**: Uses the W3C Trace Context standard, propagated via the `traceparent` header. The `micro-middleware/tracing` middleware automatically extracts and injects it.
-- **gRPC**: Uses `otelgrpc`'s `NewClientHandler()` / `NewServerHandler()` propagated via gRPC metadata. All gRPC client connections mandatorily inject `otelgrpc.NewClientHandler()`.
-- **MQ**: `micro-pkg/event.Publisher` automatically injects the W3C `traceparent` in `buildHeaders`. Consumers extract it via the `consumer/middleware.Tracing()` middleware.
+- **HTTP**：采用 W3C Trace Context 标准，通过 `traceparent` 请求头传播。`micro-middleware/tracing` 中间件自动提取与注入。
+- **gRPC**：使用 `otelgrpc` 的 `NewClientHandler()` / `NewServerHandler()`，通过 gRPC metadata 传播。所有 gRPC 客户端连接强制注入 `otelgrpc.NewClientHandler()`。
+- **MQ**：`micro-pkg/event.Publisher` 在 `buildHeaders` 中自动注入 W3C `traceparent`。消费者通过 `consumer/middleware.Tracing()` 中间件提取。
 
-This means even if a business flow crosses HTTP → MQ → gRPC → HTTP, the trace remains fully intact. This is especially critical for identity systems, where a "user registration" operation triggers audit logging (MQ), wallet creation (HTTP), and default role assignment (gRPC).
+这意味着即使业务链路跨越 HTTP → MQ → gRPC → HTTP，追踪依然完整。这对身份系统尤为关键，因为一次「用户注册」操作会触发审计落库（MQ）、钱包创建（HTTP）与默认角色分配（gRPC）。
 
-### Integration Approach
+### 集成方式
 
-Autional chose to use the OpenTelemetry SDK directly rather than a vendor-specific agent. The benefits:
+Autional 选择直接使用 OpenTelemetry SDK，而非厂商特定的 agent。好处是：
 
-1. **Vendor-neutral**: Trace data can be exported to any OTLP-compatible backend — Jaeger, Tempo, Datadog, Alibaba Cloud ARMS — by changing just one environment variable: `OTEL_EXPORTER_OTLP_ENDPOINT`.
-2. **Configurable sampling**: 100% sampling in development; on-demand sampling in production (e.g., only error requests and slow requests), preventing trace data explosion.
-3. **Zero code intrusion**: All trace logic is handled by infrastructure-layer middleware. Business code only needs to pass `ctx` normally — zero manual instrumentation cost.
+1. **厂商中立**：追踪数据可导出到任何兼容 OTLP 的后端——Jaeger、Tempo、Datadog、阿里云 ARMS——只需改一个环境变量：`OTEL_EXPORTER_OTLP_ENDPOINT`。
+2. **采样可配**：开发环境 100% 采样；生产环境按需采样（如仅错误请求与慢请求），避免追踪数据爆炸。
+3. **零代码侵入**：所有追踪逻辑由基础设施层中间件处理。业务代码只需正常传递 `ctx`——零手工埋点成本。
 
-## Real-World Case: Debugging Slow Logins with Tracing
+## 真实案例：用追踪排查登录慢
 
-One day, operations received an alert: "identity-service P99 latency spiked from 80ms to 500ms." Here is the complete process of locating the root cause using distributed tracing:
+某天运维收到告警：「identity-service P99 延迟从 80ms 飙升至 500ms。」以下是利用分布式追踪定位根因的完整过程：
 
-### Step 1: Look at the Big Picture
+### 第一步：看大盘
 
-Open the `http_request_duration_seconds` panel in Grafana. Confirm that the latency spike began at 14:32, with P99 rising from 80ms to 500ms. The error rate is normal — meaning the service is not crashing, just degrading in performance.
+打开 Grafana 的 `http_request_duration_seconds` 面板。确认延迟从 14:32 开始飙升，P99 从 80ms 升至 500ms。错误率正常——说明服务没有崩溃，只是性能退化。
 
-### Step 2: Find Representative Traces
+### 第二步：找到代表性追踪
 
-In the tracing backend (e.g., Jaeger), query for traces with `operation = POST /api/v1/auth/login` and `duration > 400ms`. Sample 5 traces at random and find a common pattern:
+在追踪后端（如 Jaeger）查询 `operation = POST /api/v1/auth/login` 且 `duration > 400ms` 的追踪。随机抽取 5 条，发现共同规律：
 
 ```
 identity-service  auth/login  420ms
@@ -112,11 +112,11 @@ identity-service  auth/login  420ms
       └── Redis SET           2ms
 ```
 
-The problem is in `session-service`'s PostgreSQL write.
+问题出在 `session-service` 的 PostgreSQL 写入。
 
-### Step 3: Correlate Logs
+### 第三步：关联日志
 
-Find the `trace_id` in the trace and use it to search logs in Loki (all Autional logs carry the `trace_id` field):
+从追踪中拿到 `trace_id`，在 Loki 中按它检索日志（Autional 所有日志都携带 `trace_id` 字段）：
 
 ```
 14:32:15 [session-service] ERROR session save failed
@@ -125,38 +125,38 @@ Find the `trace_id` in the trace and use it to search logs in Loki (all Autional
   user_id=01ARZ3NDEKTSV4RRFFQ69G5FAV
 ```
 
-The root cause is clear: a tenant configured abnormally large JWT claims (too many custom fields), causing the serialized token to exceed the database column length limit. Fix: increase the column length and add truncation protection before serialization.
+根因清晰了：某租户配置了异常庞大的 JWT claims（自定义字段过多），导致序列化后的令牌超出数据库列长度限制。修复方式：加大列长度，并在序列化前增加截断保护。
 
-**Entire process: from alert receipt to root cause identification — 4 minutes.** Without the observability system, this process could have taken 4 hours.
+**整个过程：从收到告警到定位根因——4 分钟。** 没有可观测性系统，这个过程可能要花 4 小时。
 
-## Beyond Tracing: The Next Frontier of Observability
+## 追踪之外：可观测性的下一站
 
-Autional's observability system continues to evolve. The next milestones include:
+Autional 的可观测体系仍在演进。接下来的里程碑包括：
 
-### Convergence of Audit Logging and Observability
+### 审计日志与可观测性的融合
 
-Identity systems naturally require audit capabilities — who performed what action and when. Autional bridges audit logging (`audit-service` writing to MongoDB) with structured logging: every audit record carries a `trace_id`, allowing you to jump directly from a trace to the corresponding audit record and confirm that an operation was initiated by the user (not an internal call). This is a killer feature for compliance auditing (GDPR Article 30 — records of processing activities).
+身份系统天然需要审计能力——谁在何时执行了什么操作。Autional 打通了审计日志（`audit-service` 写入 MongoDB）与结构化日志：每条审计记录都携带 `trace_id`，让你能从一条追踪直接跳到对应的审计记录，确认某个操作是由用户本人发起（而非内部调用）。这是合规审计的杀手级能力（GDPR 第 30 条——处理活动记录）。
 
-### Error Budget Dashboard
+### 错误预算看板
 
-Based on SLO and error budget principles, we are building a centralized "Identity System Health" dashboard that translates core metrics into business language:
+基于 SLO 与错误预算理念，我们正在构建一个集中的「身份系统健康度」看板，把核心指标翻译成业务语言：
 
-- Login success rate (last 1 hour) — actual vs SLO (99.9%)
-- Remaining error budget (this month) — how much tolerance is left
-- Token issuance P99 latency — is user experience impacted?
+- 登录成功率（最近 1 小时）——实际值与 SLO（99.9%）对比
+- 剩余错误预算（本月）——还剩多少容错空间
+- 令牌签发 P99 延迟——是否影响用户体验？
 
-When the error budget is exhausted, alert levels are automatically escalated, and a ticket is created, forcing the team to pause feature development and prioritize stability — this is the essence of Google SRE and the decision-making layer we are building on top of observability.
+当错误预算耗尽时，告警级别自动升级，并创建工单，强制团队暂停功能开发、优先保障稳定性——这是 Google SRE 的精髓，也是我们在可观测性之上构建的决策层。
 
-## Advice for Readers
+## 给读者的建议
 
-If you are building observability for your identity system, here are three prioritized recommendations:
+如果你正在为身份系统构建可观测性，这里有三条按优先级排序的建议：
 
-1. **Start with structured logging**: Replace `fmt.Sprintf("user %s login", uid)` with `slog.Info("user login", "user_id", uid)`. This is the highest-ROI improvement — near-zero cost, immediate results.
-2. **Then add distributed tracing**: If your architecture spans more than 3 services, distributed tracing is essential. Start by injecting trace headers at the gateway layer and core authentication services, then extract them at the consumer side. Autional's `micro-pkg` middleware is ready to use.
-3. **Finally, implement metrics**: Define your SLOs (what counts as "available") first, then build dashboards and alerts. Metrics without SLOs are just charts; metrics with SLOs are decision-making tools.
+1. **从结构化日志开始**：把 `fmt.Sprintf("user %s login", uid)` 换成 `slog.Info("user login", "user_id", uid)`。这是投入产出比最高的改进——近乎零成本，立竿见影。
+2. **再加分布式追踪**：如果你的架构跨越 3 个以上服务，分布式追踪必不可少。先在网关层和核心认证服务注入追踪头，再在消费端提取。Autional 的 `micro-pkg` 中间件开箱即用。
+3. **最后落地指标**：先定义你的 SLO（什么算「可用」），再建看板和告警。没有 SLO 的指标只是图表；有 SLO 的指标才是决策工具。
 
-Observability is not a set of tools — it is a culture: "How can I know what's wrong with my system faster?" For identity systems, this culture directly determines your security response speed and ultimately, your users' trust.
+可观测性不是一套工具——而是一种文化：「我怎样才能更快知道系统出了什么问题？」对身份系统而言，这种文化直接决定你的安全响应速度，并最终决定用户的信任。
 
 ---
 
-*All 15 Autional microservices have built-in OpenTelemetry support, ready to use out of the box. Learn how to integrate Autional authentication into your application in the [developer documentation](/developer/docs).*
+*27 个 Autional 微服务全部内置 OpenTelemetry 支持，开箱即用。了解如何将 Autional 认证集成到你的应用中，请参阅[快速开始指南](https://developer.autional.cn/quickstart)。*

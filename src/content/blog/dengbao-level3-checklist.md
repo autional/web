@@ -1,219 +1,219 @@
 ---
-title: "Dengbao Level 3 Compliance Checklist: 20 Must-Check Items for Identity Systems"
+title: "等保三级合规检查清单：身份系统必查的 20 项"
 date: "2026-05-27"
 category: "Compliance"
-tags: ["Dengbao", "Level 3", "Compliance Checklist"]
-readTime: "9 min"
-excerpt: "In Dengbao Level 3 certification, identity authentication and access control are key audit domains. This article breaks down the 20 specific requirements that certification assessors focus on during on-site inspections, analyzes evaluation criteria and common pitfalls, and shows how Autional meets core Dengbao Level 3 requirements through built-in password policies, MFA, RBAC, audit logs, and data encryption."
+tags: ["等保", "三级", "合规检查清单"]
+readTime: "9 分钟"
+excerpt: "在等保三级测评中，身份鉴别与访问控制是重点审查域。本文拆解测评机构在现场检查时关注的 20 项具体要求，分析评价口径与常见失分点，并说明 Autional 如何通过内置的密码策略、MFA、RBAC、审计日志与数据加密满足等保三级核心要求。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Compliance Disclaimer**: The Level 3 classified protection security capabilities described in this article represent Autional platform design goals and do not constitute Level 3 certification. Dengbao certification must be completed by a qualified third-party assessment body. The final compliance responsibility rests with the information system operator. The check items listed here are for reference only; actual evaluation standards are subject to the latest national releases.
+> **合规声明**：本文描述的等保三级安全能力为 Autional 平台的设计目标，不构成等保三级认证。等保测评须由具备资质的第三方测评机构完成。最终的合规责任由信息系统运营者承担。本文所列检查项仅供参考，实际评价标准以国家最新发布为准。
 
-China's Cybersecurity Classified Protection 2.0 (Dengbao 2.0) imposes strict requirements on identity authentication and access control for Level 3 systems. For most enterprise-facing SaaS products, Level 3 is the minimum market access requirement — without certification, you can't serve government, state-owned enterprise, financial, or other critical industry clients.
+《网络安全等级保护基本要求》（等保 2.0）对三级系统的身份鉴别与访问控制提出了严格要求。对大多数面向企业的 SaaS 产品而言，三级是市场准入的最低门槛——没有认证，就无法服务政府、国企、金融等关键行业客户。
 
-Level 3 Dengbao evaluation covers both technical and management aspects. On the technical side, **Identity Authentication** and **Access Control** are two independent and most critical evaluation units within the "Secure Computing Environment" domain.
+等保三级测评覆盖技术与管理两个方面。在技术层面，**身份鉴别**与**访问控制**是「安全计算环境」中两个独立且最为关键的测评单元。
 
-This article selects the 20 most frequently inspected items during on-site assessments and analyzes each one.
+本文挑选出现场测评中最常被检查的 20 项，逐条分析。
 
-## I. Identity Authentication (8 Items)
+## 一、身份鉴别（8 项）
 
-### 1. Unique User Identity
+### 1. 用户身份唯一性
 
-**Requirement**: Logged-in users shall be identified and authenticated, with unique identity identifiers.
+**要求**：应对登录的用户进行身份标识和鉴别，身份标识具有唯一性。
 
-**On-site check**: Assessors check for duplicate usernames or user IDs in the system. They examine the user table structure to verify that `username` or `user_id` columns have unique constraints.
+**现场检查**：测评人员检查系统中是否存在重复的用户名或用户标识。他们会查看用户表结构，确认 `username` 或 `user_id` 字段是否具备唯一约束。
 
-**Common pitfalls**: Allowing multiple users to register with the same phone number or email, or generating duplicate identity identifiers during account merging or migration.
+**常见失分点**：允许使用同一手机号或邮箱注册多个用户；在账号合并或数据迁移过程中生成重复的身份标识。
 
-**How Autional meets it**: identity-service's user table has unique indexes on `username`, `email`, and `phone`. ULID primary keys guarantee global uniqueness. Uniqueness is enforced at both the database constraint and application logic levels on every registration or update operation.
+**Autional 如何满足**：identity-service 的用户表对 `username`、`email`、`phone` 建立了唯一索引。ULID 主键保证全局唯一性。在每次注册或更新操作时，唯一性在数据库约束与应用逻辑两个层面同时强制校验。
 
-### 2. Authentication Failure Handling
+### 2. 登录失败处理
 
-**Requirement**: The system shall have login failure handling functionality, including ending sessions, limiting invalid login attempts, and connection timeout.
+**要求**：应具有登录失败处理功能，包括结束会话、限制非法登录次数和连接超时。
 
-**On-site check**: Assessors attempt multiple failed logins on the same account to verify if the system has a lockout mechanism and a recovery mechanism after lockout.
+**现场检查**：测评人员对同一账号多次尝试失败登录，验证系统是否具备锁定机制以及锁定后的恢复机制。
 
-**Common pitfalls**: Only client-side validation of login attempts (can be bypassed); no server-side lockout; lockout duration too short (e.g., 1 minute); lockout can be bypassed by modifying URL parameters.
+**常见失分点**：仅在客户端校验登录次数（可被绕过）；服务端没有锁定；锁定时长过短（如 1 分钟）；通过修改 URL 参数即可绕过锁定。
 
-**How Autional meets it**: identity-service enforces server-side limits — temporary account lockout after 5 failed attempts. Progressive lockout (see item 5 below). Lockout state is maintained server-side and cannot be bypassed by the frontend.
+**Autional 如何满足**：identity-service 在服务端强制限制——连续 5 次失败后临时锁定账号，采用渐进式锁定（见下文第 5 项）。锁定状态保存在服务端，前端无法绕过。
 
-### 3. Password Complexity
+### 3. 口令复杂度
 
-**Requirement**: Authentication information shall have complexity requirements and shall be changed periodically.
+**要求**：应对登录用户的身份鉴别信息具有复杂度要求并定期更换。
 
-**On-site check**: Assessors check whether password policies cover minimum length (Level 3 typically requires ≥ 8 characters), whether three or more character types are required (uppercase, lowercase, digits, special characters), and whether password expiry is enforced.
+**现场检查**：测评人员检查口令策略是否覆盖最小长度（三级通常要求 ≥ 8 位）、是否要求三种及以上字符类型（大写字母、小写字母、数字、特殊字符），以及是否强制口令有效期。
 
-**Common pitfalls**: Password policy only enforced during registration but not during password changes; password expiry policy not actually enforced (just a UI hint); temporary passwords from admin resets not forced to change.
+**常见失分点**：口令策略只在注册时生效，修改口令时不校验；口令有效期策略未真正生效（只有 UI 提示）；管理员重置产生的临时口令未强制修改。
 
-**How Autional meets it**: Password policy is uniformly enforced by identity-service across all scenarios: registration, password changes, admin resets, and password recovery. Minimum length 8 chars (configurable), supports digit+upper+lower+special character combinations. Configurable 90-day password expiry, password history up to 24 entries.
+**Autional 如何满足**：口令策略由 identity-service 在注册、修改口令、管理员重置、口令找回等所有场景统一强制执行。最小长度 8 位（可配置），支持数字+大写+小写+特殊字符的组合。可配置 90 天口令有效期，历史口令最多保留 24 条。
 
-### 4. In-Transit Authentication Protection
+### 4. 鉴别信息传输保护
 
-**Requirement**: Authentication information shall be encrypted during transmission.
+**要求**：应对身份鉴别信息进行传输加密。
 
-**On-site check**: Assessors use Wireshark to capture traffic and verify whether login requests use HTTPS. They specifically check: whether passwords are in the POST body (not URL parameters); whether HTTPS certificates are valid; whether weak cipher suites are supported.
+**现场检查**：测评人员使用 Wireshark 抓包，验证登录请求是否使用 HTTPS。他们会重点检查：口令是否放在 POST 请求体中（而非 URL 参数）；HTTPS 证书是否有效；是否支持弱加密套件。
 
-**Common pitfalls**: Using HTTP in development; production allows HTTPS downgrade; passwords transmitted via GET query parameters (visible in server logs); using self-signed certificates instead of CA-issued ones.
+**常见失分点**：开发环境使用 HTTP；生产环境允许降级到 HTTPS；口令通过 GET 查询参数传输（会出现在服务端日志中）；使用自签名证书而非 CA 签发证书。
 
-**How Autional meets it**: Full-site HTTPS enforcement, HTTP auto-redirects (301) to HTTPS. TLS 1.2+ with strong cipher suites only. Passwords are always transmitted in the POST body. HTTPS termination is handled at the gateway-service layer.
+**Autional 如何满足**：全站强制 HTTPS，HTTP 自动 301 跳转到 HTTPS。仅支持 TLS 1.2+ 与强加密套件。口令始终通过 POST 请求体传输。HTTPS 终结在 gateway-service 层完成。
 
-### 5. Multi-Factor Authentication
+### 5. 多因素认证
 
-**Requirement**: Two or more combined authentication technologies shall be used for user identification.
+**要求**：应采用口令、密码技术、生物技术等两种或两种以上组合的鉴别技术对用户进行身份鉴别。
 
-**On-site check**: Assessors check whether the system supports MFA and whether critical operations (viewing sensitive data, modifying config) require MFA. Dengbao Level 3 increasingly mandates MFA, especially in financial and government data scenarios.
+**现场检查**：测评人员检查系统是否支持 MFA，以及关键操作（查看敏感数据、修改配置）是否要求 MFA。等保三级对 MFA 的要求日趋强制，在金融与政务数据场景尤为明显。
 
-**Common pitfalls**: MFA is supported but not enforced; incomplete MFA implementation (e.g., SMS OTP without usage limits or expiry); MFA can be bypassed by the frontend.
+**常见失分点**：支持 MFA 但未强制启用；MFA 实现不完整（如短信验证码没有使用次数限制或有效期）；MFA 可被前端绕过。
 
-**How Autional meets it**: mfa-service provides complete multi-factor authentication capabilities (TOTP, WebAuthn/FIDO2, SMS OTP, HOTP). Admins can configure role-based MFA enforcement, with high-privilege accounts enforced by default. All MFA verification is server-side and cannot be bypassed by the frontend.
+**Autional 如何满足**：mfa-service 提供完整的多因素认证能力（TOTP、WebAuthn/FIDO2、短信验证码、HOTP）。管理员可按角色配置 MFA 强制策略，高权限账号默认强制。所有 MFA 校验均在服务端完成，前端无法绕过。
 
-### 6. Cross-System Identity Uniqueness
+### 6. 跨系统身份唯一性
 
-**Requirement**: User identifiers shall remain unique throughout the system's lifecycle, and when interacting with other systems for authentication, identifiers shall be unique and traceable.
+**要求**：应保证用户标识在系统整个生存周期内唯一，与其他系统进行鉴别信息交互时，标识唯一且可追溯。
 
-**On-site check**: Assessors verify whether deleted user IDs are reused (they shouldn't be); whether cross-system user identifiers have a consistent mapping; whether user identifiers are consistent in SSO or OIDC integration.
+**现场检查**：测评人员验证已删除的用户 ID 是否被复用（不应复用）；跨系统用户标识是否有稳定的映射关系；在 SSO 或 OIDC 对接中用户标识是否一致。
 
-**How Autional meets it**: User IDs use ULID (time-sorted globally unique identifiers) that are never reused after deletion. All services identify users by the same ID. In OIDC integration, the `sub` claim ensures cross-system user identifier consistency.
+**Autional 如何满足**：用户 ID 采用 ULID（按时间排序的全局唯一标识），删除后永不复用。所有服务使用同一 ID 识别用户。在 OIDC 对接中，`sub` 声明保证跨系统用户标识的一致性。
 
-### 7. Session Management
+### 7. 会话管理
 
-**Requirement**: The system shall have login connection timeout and auto-logout functionality.
+**要求**：应具有登录连接超时及自动退出功能。
 
-**On-site check**: Assessors log in, leave the system idle for a period, then check whether the system automatically logs out and whether the user can return to the previous state without re-authentication.
+**现场检查**：测评人员登录后让系统闲置一段时间，检查系统是否自动退出登录，以及用户是否无需重新鉴别即可回到之前的状态。
 
-**Common pitfalls**: Only a frontend timer (resets on page refresh) with no server-side session timeout; browser back button can still access authenticated pages after logout; Session Cookie has no expiration.
+**常见失分点**：只有前端定时器（刷新页面即重置），服务端没有会话超时；退出登录后浏览器后退按钮仍可访问已鉴权页面；Session Cookie 没有过期时间。
 
-**How Autional meets it**: session-service maintains server-side session timeout — absolute timeout (e.g., 8 hours) and idle timeout (e.g., 30 minutes). After timeout, any request to an authenticated page is redirected to login. Double protection via cookies and server-side sessions.
+**Autional 如何满足**：session-service 在服务端维护会话超时——绝对超时（如 8 小时）与空闲超时（如 30 分钟）。超时后任何访问已鉴权页面的请求都会被重定向到登录页。通过 Cookie 与服务端会话双重保护。
 
-### 8. Critical Operation Two-Factor Protection
+### 8. 关键操作二次鉴别
 
-**Requirement**: Critical operations shall require secondary authentication.
+**要求**：应对关键操作进行二次鉴别。
 
-**On-site check**: Do operations like password changes, modifying bound phone/email, account deletion, large transactions require re-entering the password or MFA verification?
+**现场检查**：修改口令、变更绑定手机/邮箱、注销账号、大额交易等操作，是否要求重新输入口令或进行 MFA 校验？
 
-**How Autional meets it**: Sensitive operations trigger secondary authentication. identity-service's `POST /password/change` requires the current password. Critical config changes require admin MFA verification. The adaptive MFA engine automatically elevates the authentication level for high-sensitivity operations.
+**Autional 如何满足**：敏感操作会触发二次鉴别。identity-service 的 `POST /password/change` 要求提供当前口令。关键配置变更要求管理员完成 MFA 校验。自适应 MFA 引擎会对高敏感度操作自动提升鉴别等级。
 
-## II. Access Control (6 Items)
+## 二、访问控制（6 项）
 
-### 9. Least Privilege
+### 9. 最小权限
 
-**Requirement**: The principle of least privilege shall be followed, granting users the minimum permissions needed to complete their tasks.
+**要求**：应遵循最小权限原则，授予用户完成其任务所需的最小权限。
 
-**On-site check**: Assessors sample default permissions for newly registered users, checking for unnecessary admin permissions. They check if "admin by default" exists.
+**现场检查**：测评人员抽查新注册用户的默认权限，检查是否存在不必要的管理员权限。他们会检查是否存在「默认即管理员」的情况。
 
-**How Autional meets it**: The RBAC system follows least privilege. New users default to a basic role (`user`) with no admin permissions. All permissions must be explicitly assigned by admins. Permission simulation allows admins to preview a specific user's effective permissions without switching accounts.
+**Autional 如何满足**：RBAC 体系遵循最小权限原则。新用户默认分配基础角色（`user`），不具备任何管理员权限。所有权限必须由管理员显式分配。权限模拟功能允许管理员在不切换账号的情况下预览某个用户的实际生效权限。
 
-### 10. Access Control Policy Coverage
+### 10. 访问控制策略覆盖度
 
-**Requirement**: Access control policies shall cover all subjects, objects, and their operations.
+**要求**：应对所有主体、客体及其操作设置访问控制策略。
 
-**On-site check**: Assessors traverse all system feature pages and API endpoints to check for access control gaps — pages accessible without login, low-privilege users bypassing frontend controls via direct API requests.
+**现场检查**：测评人员遍历系统所有功能页面与 API 端点，查找访问控制缺口——未经登录即可访问的页面、低权限用户通过直接调用 API 绕过前端管控。
 
-**Common pitfalls**: API endpoint access control only implemented on the frontend (hiding menu items) with no independent backend API verification; file download endpoints without access control; exported data containing unauthorized information.
+**常见失分点**：API 端点的访问控制只在前端实现（隐藏菜单项），后端没有独立的 API 校验；文件下载端点没有访问控制；导出数据中包含未授权的信息。
 
-**How Autional meets it**: All API endpoints perform permission verification at the handler layer, independent of the frontend. gateway-service validates JWT-declared roles and permissions at the routing layer. RBAC middleware enforces checks before business logic execution.
+**Autional 如何满足**：所有 API 端点均在 handler 层做权限校验，独立于前端。gateway-service 在路由层校验 JWT 中声明的角色与权限。RBAC 中间件在业务逻辑执行前完成检查。
 
-### 11. Separation of Duties (SoD)
+### 11. 职责分离（SoD）
 
-**Requirement**: Roles such as security administrator, system administrator, and security auditor shall have separated permissions.
+**要求**：应对安全管理员、系统管理员、安全审计员等角色进行权限分离。
 
-**On-site check**: Assessors check whether the system defines administrative roles and whether there are separation of duties constraints — i.e., one user cannot simultaneously hold administrative and audit permissions.
+**现场检查**：测评人员检查系统是否定义了管理类角色，以及是否存在职责分离约束——即一个用户不能同时持有管理权限与审计权限。
 
-**How Autional meets it**: Three management roles are pre-defined: Super Admin (system administrator), Admin (administrator), and Security Admin (security auditor). Security Admin can view all security/audit data but cannot modify it. SoD constraints prevent a single user from holding conflicting roles simultaneously.
+**Autional 如何满足**：预置三类管理角色：Super Admin（系统管理员）、Admin（管理员）、Security Admin（安全审计员）。Security Admin 可查看所有安全/审计数据但不能修改。SoD 约束防止单个用户同时持有相互冲突的角色。
 
-### 12. Fine-Grained Access Control
+### 12. 细粒度访问控制
 
-**Requirement**: Access control granularity shall reach the user level for subjects and the file or database table level for objects.
+**要求**：访问控制粒度应对主体为用户级，对客体为文件级或数据库表级。
 
-**On-site check**: Assessors verify whether the permission system can control access to individual records or pieces of data, not just feature menus or page-level access.
+**现场检查**：测评人员验证权限体系能否控制到单条记录或单项数据，而不只是功能菜单或页面级访问。
 
-**Common pitfalls**: Only page-level access control (e.g., "can see user management page" but can't distinguish "can only see their own department's data").
+**常见失分点**：只有页面级访问控制（例如「能看到用户管理页面」，但无法区分「只能看本部门数据」）。
 
-**How Autional meets it**: RBAC permissions can be granular down to individual API endpoints. Supports data-level filtering (based on tenant_id and role). Allows resource-level access control policy definitions.
+**Autional 如何满足**：RBAC 权限可细化到单个 API 端点。支持数据级过滤（基于 tenant_id 与角色）。允许定义资源级访问控制策略。
 
-### 13. Access Control List Management
+### 13. 访问控制列表管理
 
-**Requirement**: Access control lists shall be managed and maintained.
+**要求**：应对访问控制列表进行管理和维护。
 
-**On-site check**: Assessors check for permission management interfaces, audit logs for permission changes, and automatic revocation of expired permissions.
+**现场检查**：测评人员检查是否存在权限管理界面、权限变更的审计日志，以及过期权限的自动回收。
 
-**How Autional meets it**: Provides complete permission management API and admin UI. Permission changes trigger audit events recording operator, time, and change details. Supports temporary permissions with expiration.
+**Autional 如何满足**：提供完整的权限管理 API 与管理后台。权限变更会触发审计事件，记录操作人、时间与变更内容。支持带有效期的临时权限。
 
-### 14. Remote Access Control
+### 14. 远程访问控制
 
-**Requirement**: The address range for remote access shall be restricted.
+**要求**：应对远程访问的地址范围进行限制。
 
-**On-site check**: Check if the system can restrict access sources by IP address for users or APIs.
+**现场检查**：检查系统能否按 IP 地址对用户或 API 限制访问来源。
 
-**How Autional meets it**: Supports IP whitelisting — API Keys or users can be restricted to specific IP address ranges. gateway-service performs IP checks before requests reach business services.
+**Autional 如何满足**：支持 IP 白名单——可将 API Key 或用户限制在特定 IP 地址范围内。gateway-service 在请求到达业务服务前完成 IP 校验。
 
-## III. Security Audit (3 Items)
+## 三、安全审计（3 项）
 
-### 15. Comprehensive Audit Logging
+### 15. 审计日志完整性
 
-**Requirement**: Security audit functionality shall be enabled, covering each user with auditing of important user behaviors and security events.
+**要求**：应启用安全审计功能，覆盖到每个用户，对重要的用户行为和安全事件进行审计。
 
-**On-site check**: Assessors log in and perform a series of operations (login, modify data, delete records, export data), then check whether audit logs record all these operations. They specifically check: whether logs contain the operator, time, operation type, target, result, and source IP.
+**现场检查**：测评人员登录后执行一系列操作（登录、修改数据、删除记录、导出数据），检查审计日志是否记录了上述全部操作。他们会重点核查：日志是否包含操作人、时间、操作类型、对象、结果与来源 IP。
 
-**How Autional meets it**: audit-service records complete audit logs for all authentication events and admin operations. Log fields include: `event_id`, `user_id`, `tenant_id`, `action`, `resource`, `result`, `ip_address`, `user_agent`, `timestamp`. Covers all critical operations: login, logout, password changes, permission changes, data exports.
+**Autional 如何满足**：audit-service 对所有认证事件与管理操作记录完整审计日志。日志字段包括：`event_id`、`user_id`、`tenant_id`、`action`、`resource`、`result`、`ip_address`、`user_agent`、`timestamp`。覆盖所有关键操作：登录、登出、口令修改、权限变更、数据导出。
 
-### 16. Audit Log Integrity Protection
+### 16. 审计记录完整性保护
 
-**Requirement**: Audit records shall be protected against unauthorized deletion, modification, or overwriting.
+**要求**：应对审计记录进行保护，避免受到未预期的删除、修改或覆盖等。
 
-**On-site check**: Assessors attempt to delete an audit log directly from the database and check whether the system has a detection mechanism — i.e., whether the system alerts or reports an anomaly on the next verification.
+**现场检查**：测评人员尝试直接从数据库删除一条审计日志，检查系统是否具备检测机制——即在下次校验时能否告警或报告异常。
 
-**How Autional meets it**: audit-service uses a hash chain to protect log integrity. Each audit record contains `prev_hash` (SHA-256 hash of the previous record) and `chain_index`. Any insertion, deletion, or modification of a log entry breaks the hash chain, which the system detects through periodic verification. Logs are stored append-only with no API for deletion.
+**Autional 如何满足**：audit-service 使用哈希链保护日志完整性。每条审计记录包含 `prev_hash`（上一条记录的 SHA-256 哈希）与 `chain_index`。任何对日志的插入、删除或修改都会破坏哈希链，系统通过定期校验发现异常。日志以追加写方式存储，不提供删除 API。
 
-### 17. Audit Record Retention
+### 17. 审计记录留存
 
-**Requirement**: Audit records shall meet retention requirements, with a minimum of 6 months.
+**要求**：应对审计记录进行留存，留存时间不少于 6 个月。
 
-**On-site check**: Assessors check the audit log retention policy — the oldest log date, whether there's an auto-cleanup policy.
+**现场检查**：测评人员检查审计日志留存策略——最早一条日志的日期、是否存在自动清理策略。
 
-**Common pitfalls**: Audit logs stored in the application database are purged along with business data; retention period shorter than 6 months; archived logs are not retrievable.
+**常见失分点**：审计日志与应用数据库放在一起，随业务数据一起被清理；留存时间短于 6 个月；归档后的日志无法检索。
 
-**How Autional meets it**: audit-service uses an independent MongoDB storage, independent of business database cleanup policies. Default retention of 12 months, configurable by admins for longer periods. Supports automatic archiving to cold storage (e.g., object storage) with continued searchability.
+**Autional 如何满足**：audit-service 使用独立的 MongoDB 存储，不受业务数据库清理策略影响。默认留存 12 个月，管理员可配置更长周期。支持自动归档到冷存储（如对象存储），归档后仍可检索。
 
-## IV. Data Security (3 Items)
+## 四、数据安全（3 项）
 
-### 18. Data-at-Rest Encryption
+### 18. 数据存储保密性
 
-**Requirement**: Cryptographic techniques shall ensure the confidentiality of important data at rest.
+**要求**：应采用密码技术保证重要数据在存储过程中的保密性。
 
-**On-site check**: Assessors check how sensitive database fields (passwords, phone numbers, national IDs, tokens) are stored — plaintext or ciphertext.
+**现场检查**：测评人员检查敏感数据库字段（口令、手机号、身份证号、令牌）的存储方式——明文还是密文。
 
-**How Autional meets it**: Passwords are bcrypt-hashed (irreversible, not encryption), API Keys use SHA-256 hash storage. PII fields (phone numbers, email, national IDs) use AES-256-GCM field-level encryption. Encryption keys are managed by cloud KMS and only exist in process memory as plaintext.
+**Autional 如何满足**：口令使用 bcrypt 哈希（不可逆，非加密），API Key 使用 SHA-256 哈希存储。PII 字段（手机号、邮箱、身份证号）使用 AES-256-GCM 做字段级加密。加密密钥由云 KMS 管理，仅在进程内存中以明文形式存在。
 
-### 19. Data-in-Transit Encryption
+### 19. 数据传输保密性
 
-**Requirement**: Cryptographic techniques shall ensure the confidentiality of important data in transit.
+**要求**：应采用密码技术保证重要数据在传输过程中的保密性。
 
-**On-site check**: Packet capture to verify all API communication uses HTTPS and whether internal service communication is encrypted.
+**现场检查**：抓包验证所有 API 通信是否使用 HTTPS，内部服务间通信是否加密。
 
-**How Autional meets it**: External APIs enforce HTTPS. Internal gRPC communication uses mTLS (Mutual TLS). gateway-service-to-business-service internal network communication is encrypted via TLS in deployed environments.
+**Autional 如何满足**：对外 API 强制 HTTPS。内部 gRPC 通信使用 mTLS（双向 TLS）。在部署环境中，gateway-service 与业务服务之间的内网通信通过 TLS 加密。
 
-### 20. Data Backup and Recovery
+### 20. 数据备份恢复
 
-**Requirement**: Local data backup and recovery functionality for important data shall be provided.
+**要求**：应提供重要数据的本地数据备份与恢复功能。
 
-**On-site check**: Check for regular database backup strategies, encrypted backup storage, and whether recovery can be completed within the specified time.
+**现场检查**：检查是否有定期数据库备份策略、备份数据是否加密存储、能否在规定时间内完成恢复。
 
-**How Autional meets it**: Each microservice uses an independent PostgreSQL database (schema isolation), supporting per-service granularity backups. Backup data is encrypted with AES-256. Provides a rebuild solution based on GORM AutoMigrate + initial SQL.
+**Autional 如何满足**：每个微服务使用独立的 PostgreSQL 数据库（schema 隔离），支持按服务粒度的备份。备份数据使用 AES-256 加密。提供基于 GORM AutoMigrate + 初始 SQL 的重建方案。
 
-## Certification Preparation Checklist
+## 测评准备清单
 
-| Item | Description |
+| 项目 | 说明 |
 |------|-------------|
-| Policy documents | Information security management policy, password management policy, access control strategy documentation |
-| Technical config | Screenshots/config files proving each security control is properly implemented |
-| Audit logs | At least 6 months of complete audit logs available for sample checking |
-| Vulnerability scan | Most recent vulnerability scan report (including remediation results) |
-| Penetration test | Most recent penetration test report |
-| Emergency plan | Security incident response plan and drill records |
-| Personnel training | Security training records |
+| 制度文档 | 信息安全管理制度、口令管理制度、访问控制策略文档 |
+| 技术配置 | 证明各项安全控制已正确落地的截图/配置文件 |
+| 审计日志 | 至少 6 个月的完整审计日志，可供抽样检查 |
+| 漏洞扫描 | 最近一次漏洞扫描报告（含整改结果） |
+| 渗透测试 | 最近一次渗透测试报告 |
+| 应急预案 | 安全事件应急预案与演练记录 |
+| 人员培训 | 安全培训记录 |
 
-Level 3 Dengbao certification isn't a one-time event — it's ongoing validation of security management maturity. Assessors don't just check technical implementation; they look for institutionalized, routinely executed security management. Autional's built-in capabilities help you pass the technical inspection, but having sound policies and processes is equally important.
+等保三级测评不是一次性工作，而是对安全管理成熟度的持续验证。测评人员不只看技术实现，更看重制度化、常态化执行的安全管理。Autional 的内置能力可以帮你通过技术检查，但健全的制度与流程同样重要。

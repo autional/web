@@ -1,24 +1,24 @@
 ---
-title: "gRPC Security Practices for Internal Service Communication"
+title: "内部服务通信的 gRPC 安全实践"
 date: "2026-05-13"
 category: "Architecture"
-tags: ["gRPC", "Service-to-Service Communication", "Security"]
-readTime: "7 min"
-excerpt: "How Autional uses gRPC to build a secure communication layer between microservices—from Protobuf's efficiency advantages to TLS/mTLS transport security, from JWT+API Key dual-mode authentication to full-link OpenTelemetry tracing."
+tags: ["gRPC", "服务间通信", "安全"]
+readTime: "7 分钟"
+excerpt: "Autional 如何用 gRPC 构建微服务之间的安全通信层——从 Protobuf 的效率优势，到 TLS/mTLS 传输安全，从 JWT + API Key 双模式认证，到全链路 OpenTelemetry 追踪。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-One of the core challenges of microservice architecture is enabling secure and efficient communication between services. The REST + JSON approach may seem simple, but it exposes numerous problems in inter-service communication scenarios: high serialization overhead, lack of strong type constraints, and difficulty with streaming. Autional's choice: **REST for external, gRPC for internal.**
+微服务架构的核心挑战之一，是让服务之间既能安全通信、又能高效通信。REST + JSON 看起来简单，但在服务间通信场景下暴露出不少问题：序列化开销高、缺少强类型约束、难以支持流式传输。Autional 的选择是：**对外用 REST，内部用 gRPC。**
 
-## Why gRPC for Internal Calls?
+## 为什么内部调用用 gRPC？
 
-### Efficiency Comparison: Protobuf vs JSON
+### 效率对比：Protobuf vs JSON
 
-Suppose identity-service needs to return user information to compliance-service:
+假设 identity-service 需要向 compliance-service 返回用户信息：
 
-**JSON (REST):**
+**JSON（REST）：**
 
 ```json
 {
@@ -30,9 +30,9 @@ Suppose identity-service needs to return user information to compliance-service:
 }
 ```
 
-Raw payload: approximately 180 bytes, requiring JSON encode/decode on every call.
+原始载荷约 180 字节，且每次调用都需要 JSON 编解码。
 
-**Protobuf (gRPC):**
+**Protobuf（gRPC）：**
 
 ```protobuf
 message GetUserResponse {
@@ -44,31 +44,31 @@ message GetUserResponse {
 }
 ```
 
-Serialized: approximately 80 bytes (binary), no parsing overhead.
+序列化后约 80 字节（二进制），没有解析开销。
 
-For tens of thousands of internal calls per second (authentication, permission checks, data validation), Protobuf's serialization efficiency directly translates to lower CPU usage and faster response times.
+对于每秒数万次的内部调用（认证、权限校验、数据校验），Protobuf 的序列化效率会直接转化为更低的 CPU 占用与更快的响应。
 
-### Strongly Typed Contracts
+### 强类型契约
 
-REST API contracts are "documentation + convention"—Swagger/OpenAPI standardizes the description, but cannot verify at compile time whether the caller passed the correct parameter types.
+REST API 的契约是「文档 + 约定」——Swagger/OpenAPI 规范了描述方式，但无法在编译期校验调用方传的参数类型是否正确。
 
-gRPC contracts are `.proto` files—**guaranteed at compile time**:
+gRPC 的契约是 `.proto` 文件——**在编译期就得到保证**：
 
-- Caller and server generate code from the same `.proto` file
-- Field type errors are caught at compile time
-- New fields don't affect existing callers (Protobuf backward compatibility)
-- Deprecated fields marked `reserved` cause compile errors if reused
+- 调用方与服务端从同一个 `.proto` 文件生成代码
+- 字段类型错误在编译期就会被捕获
+- 新增字段不影响既有调用方（Protobuf 向后兼容）
+- 标记为 `reserved` 的废弃字段若被复用会导致编译错误
 
-In Autional, all `.proto` files are generated uniformly by `scripts/generate-proto.ps1`, and `check-grpc-compliance.py` in the CI pipeline ensures generated code is consistent with proto definitions—eliminating runtime bugs like "the doc says accept int, but the code passes string."
+在 Autional 中，所有 `.proto` 文件统一由 `scripts/generate-proto.ps1` 生成，CI 流水线中的 `check-grpc-compliance.py` 确保生成代码与 proto 定义一致——杜绝「文档说接受 int，代码却传了 string」这类运行时 bug。
 
-### Streaming
+### 流式传输
 
-REST struggles to elegantly handle large data transfers:
+REST 很难优雅地处理大数据量传输：
 
-- compliance-service exports audit logs: requires pagination API (`?page=1`, `?page=2`...), n+1 HTTP calls
-- audit-service pushes real-time alert events: requires WebSocket or SSE, adding protocol complexity
+- compliance-service 导出审计日志：需要分页 API（`?page=1`、`?page=2`……），产生 n+1 次 HTTP 调用
+- audit-service 推送实时告警事件：需要 WebSocket 或 SSE，增加协议复杂度
 
-gRPC natively supports four communication modes:
+gRPC 原生支持四种通信模式：
 
 ```
 Unary:               Request→Response (traditional RPC)
@@ -77,13 +77,13 @@ Client Streaming:    Streaming Request→Single Response (batch upload)
 Bidirectional:       Bidirectional streams (real-time alerts, conversations)
 ```
 
-In the compliance report export scenario, compliance-service calls audit-service's `ExportAuditLogs` method, audit-service pushes data in batches via Server Streaming, and compliance-service writes to CSV as it receives—without waiting for the full dataset to load into memory.
+在合规报告导出场景中，compliance-service 调用 audit-service 的 `ExportAuditLogs` 方法，audit-service 通过 Server Streaming 分批推送数据，compliance-service 边收边写入 CSV——不必等整个数据集加载进内存。
 
-## Autional's gRPC Security Architecture
+## Autional 的 gRPC 安全架构
 
-### Transport Security: TLS / mTLS
+### 传输安全：TLS / mTLS
 
-Autional's internal gRPC communication enables TLS by default:
+Autional 的内部 gRPC 通信默认启用 TLS：
 
 ```yaml
 grpc:
@@ -96,15 +96,15 @@ grpc:
     ca_file: "/certs/ca.crt"
 ```
 
-Upgraded to mTLS (mutual authentication) in production: each service has its own client certificate, and the server verifies the caller's identity. This prevents unauthorized internal calls—even if an attacker breaches network isolation, they cannot call gRPC endpoints without a valid certificate.
+在生产环境升级为 mTLS（双向认证）：每个服务持有自己的客户端证书，服务端校验调用方身份。这样可以阻断未授权的内部调用——即使攻击者突破了网络隔离，没有有效证书也无法调用 gRPC 端点。
 
-### Authentication: JWT + API Key Dual Mode
+### 认证：JWT + API Key 双模式
 
-Internal inter-service calls have two authentication scenarios, and Autional supports both modes:
+内部服务间调用有两类认证场景，Autional 都支持：
 
-**JWT (User Context Propagation):**
+**JWT（用户上下文透传）：**
 
-When the gateway forwards a user request to internal services, the `user_id` and `tenant_id` from the JWT token are passed downstream via gRPC metadata:
+网关把用户请求转发到内部服务时，JWT 令牌中的 `user_id` 与 `tenant_id` 通过 gRPC metadata 透传给下游：
 
 ```go
 // Injected in the gRPC client interceptor
@@ -116,18 +116,18 @@ md := metadata.Pairs(
 ctx := metadata.NewOutgoingContext(ctx, md)
 ```
 
-**API Key (Service-to-Service Trust):**
+**API Key（服务间互信）：**
 
-For internal calls that don't carry user context (e.g., scheduled tasks triggering compliance scans), a pre-provisioned API Key is used:
+对于不携带用户上下文的内部调用（如定时任务触发合规扫描），使用预先配置的 API Key：
 
 ```go
 md := metadata.Pairs("x-api-key", internalAPIKey)
 ctx := metadata.NewOutgoingContext(ctx, md)
 ```
 
-### Unified Interceptor Chain
+### 统一拦截器链
 
-Autional's gRPC server is created via the `grpc_mw.NewServer` factory method, which auto-injects a four-layer interceptor chain:
+Autional 的 gRPC 服务端通过 `grpc_mw.NewServer` 工厂方法创建，自动注入四层拦截器链：
 
 ```
 Client Request
@@ -143,7 +143,7 @@ Client Request
 Business Handler   ← actual gRPC method implementation
 ```
 
-The Auth interceptor automatically skips health check endpoints (`/grpc.health.v1.Health/*`), ensuring Kubernetes liveness probes are always reachable:
+Auth 拦截器会自动跳过健康检查端点（`/grpc.health.v1.Health/*`），确保 Kubernetes 存活探针始终可达：
 
 ```go
 // Health check whitelist inside grpc_mw.NewServer
@@ -153,11 +153,11 @@ if info.FullMethod == "/grpc.health.v1.Health/Check" ||
 }
 ```
 
-## Full-Link Tracing: OpenTelemetry
+## 全链路追踪：OpenTelemetry
 
-Inter-service call chains are complex, and debugging latency issues requires full-link tracing. All Autional gRPC calls are injected with W3C Trace Context:
+服务间的调用链很复杂，排查延迟问题需要全链路追踪。Autional 的所有 gRPC 调用都会注入 W3C Trace Context：
 
-**Client Side:**
+**客户端侧：**
 
 ```go
 conn, err := grpc.NewClient(addr,
@@ -166,7 +166,7 @@ conn, err := grpc.NewClient(addr,
 )
 ```
 
-**Server Side:** `grpc_mw.NewServer` auto-injects `otelgrpc.NewServerHandler()`. This way, when a request from the gateway traverses the gRPC call chain, Jaeger displays the complete trace:
+**服务端侧：** `grpc_mw.NewServer` 自动注入 `otelgrpc.NewServerHandler()`。这样，从网关进来的一次请求穿过 gRPC 调用链时，Jaeger 能展示完整的 trace：
 
 ```
 Gateway → [identity-service: GetUser] → [profile-service: GetProfile] → [compliance-service: CheckCompliance]
@@ -176,11 +176,11 @@ Gateway → [identity-service: GetUser] → [profile-service: GetProfile] → [c
             ↑ Trace: 3a2b1c4d5e6f...
 ```
 
-Each Span records the caller service name, method name, status code, and duration. When P99 latency spikes, you can quickly identify which downstream service method is slowing down the overall response.
+每个 Span 记录调用方服务名、方法名、状态码与耗时。当 P99 延迟飙升时，你可以快速定位到是哪个下游服务的哪个方法拖慢了整体响应。
 
-## In Practice: Compliance Scan Authentication Chain
+## 实战：合规扫描的认证链路
 
-Using compliance-service executing GDPR data export as an example, here's the complete gRPC call chain:
+以 compliance-service 执行 GDPR 数据导出为例，完整的 gRPC 调用链如下：
 
 ```
 1. Admin initiates export request (HTTP → gateway)
@@ -195,7 +195,7 @@ Using compliance-service executing GDPR data export as an example, here's the co
 6. compliance-service assembles data → generates export file → uploads to storage-service
 ```
 
-Steps 3-5 are all gRPC calls, each carrying the same Trace ID. If `GetUser` in step 3 fails, compliance-service can quickly return an error (rather than timing out) and log the failing gRPC status code:
+第 3-5 步都是 gRPC 调用，各自携带同一个 Trace ID。如果第 3 步的 `GetUser` 失败，compliance-service 可以快速返回错误（而不是等到超时），并记录失败的 gRPC 状态码：
 
 ```
 level=ERROR msg="gdpr export failed" user_id=01ARZ... 
@@ -203,26 +203,26 @@ level=ERROR msg="gdpr export failed" user_id=01ARZ...
   step=get_user grpc_code=NotFound
 ```
 
-## gRPC vs REST Division in Autional
+## Autional 中 gRPC 与 REST 的分工
 
-Autional does not recommend using gRPC for end-user-facing APIs:
+Autional 不建议对面向最终用户的 API 使用 gRPC：
 
-| Scenario | Approach | Reason |
+| 场景 | 方案 | 原因 |
 |------|------|------|
-| Browser → Backend | REST + JSON (gateway proxy) | Browsers can't call gRPC directly, need grpc-web proxy |
-| Mobile → Backend | REST + JSON | Adding gRPC layer offers limited value for mobile |
-| Service-to-Service | gRPC + Protobuf | Highest efficiency, type safety, streaming support |
-| Third-party API | REST + OAuth 2.0 | Industry standard, ecosystem compatibility |
-| Webhook Callback | HTTP POST + JSON | Easy for receivers to process |
-| Real-time Push | WebSocket / SSE | Browser-friendly |
+| 浏览器 → 后端 | REST + JSON（网关代理） | 浏览器无法直接调用 gRPC，需要 grpc-web 代理 |
+| 移动端 → 后端 | REST + JSON | 为移动端增加 gRPC 层收益有限 |
+| 服务间通信 | gRPC + Protobuf | 效率最高，类型安全，支持流式传输 |
+| 第三方 API | REST + OAuth 2.0 | 行业标准，生态兼容性最好 |
+| Webhook 回调 | HTTP POST + JSON | 接收方易于处理 |
+| 实时推送 | WebSocket / SSE | 对浏览器友好 |
 
-## Summary
+## 小结
 
-gRPC's role in Autional internal communication can be summarized as:
+gRPC 在 Autional 内部通信中的角色可以概括为：
 
-- **Efficiency**: Protobuf binary serialization, 50%+ smaller payload than JSON, lower CPU overhead
-- **Security**: TLS/mTLS transport encryption + JWT/API Key dual-mode authentication + unified interceptor chain
-- **Reliability**: Compile-time type safety, backward-compatible proto changes, CI-enforced consistency
-- **Observability**: OpenTelemetry full-link tracing, each Span records method name, status code, and duration
+- **效率**：Protobuf 二进制序列化，载荷比 JSON 小 50% 以上，CPU 开销更低
+- **安全**：TLS/mTLS 传输加密 + JWT/API Key 双模式认证 + 统一拦截器链
+- **可靠**：编译期类型安全、proto 变更向后兼容、CI 强制一致性
+- **可观测**：OpenTelemetry 全链路追踪，每个 Span 记录方法名、状态码与耗时
 
-If you have more than 5 microservices and inter-service calls are becoming frequent—now is the best time to introduce gRPC.
+如果你的微服务超过 5 个，且服务间调用越来越频繁——现在就是引入 gRPC 的最佳时机。

@@ -1,179 +1,180 @@
 ---
-title: "Build vs Buy: Identity System Total Cost of Ownership (TCO) Calculator"
+title: "自建还是采购：身份系统总拥有成本（TCO）测算"
 date: "2026-06-16"
 category: "Product"
-tags: ["TCO", "ROI", "Build vs Buy"]
-readTime: "9 min"
-excerpt: "\"We can just build a login system ourselves — why pay for it?\" — nearly every potential Autional customer has asked this question. This article uses real engineering economics to run the numbers: the complete TCO of 3 months of development plus ongoing maintenance, and the hidden costs that are often overlooked — security audits, compliance fill-ins, and developer onboarding documentation."
+tags: ["TCO", "ROI", "自建与采购"]
+readTime: "9 分钟"
+excerpt: "「登录系统我们自己写一个不就行了，为什么要花钱买？」——几乎每一位潜在的 Autional 客户都问过这个问题。本文用真实的工程经济学算一笔账：3 个月开发加持续维护的完整 TCO，以及那些常被忽略的隐性成本——安全审计、合规补课与研发上手文档。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-There's a widely shared joke in tech circles: "The most expensive trait of a programmer isn't writing code — it's saying, 'I can write that too.'" This rings especially true for identity systems. Almost any engineering team can cobble together a "working" login and registration system in a month — password hashing, JWT issuance, Redis session management. It looks simple. Why spend tens of thousands a year on a ready-made solution?
+技术圈流传着一个段子：「程序员最贵的一句话不是写代码，而是『这个我也能写』。」这句话放在身份系统上格外贴切。几乎任何一支研发团队都能在一个月内拼出一个「能用」的登录注册系统——密码哈希、JWT 签发、Redis 会话管理。看起来很简单。为什么要每年花几万块买现成的？
 
-The answer is: **Authentication (login system) and Identity Platform are two entirely different things.** The former is a feature module; the latter is a system engineering effort requiring ongoing investment, continuous compliance, and sustained security. The gap between them is like the gap between building a go-kart in your garage and operating an automobile production line.
+答案是：**认证（登录系统）与身份平台是两回事。** 前者是一个功能模块；后者是需要持续投入、持续合规、持续安全的系统工程。两者之间的差距，就像在自家车库攒一辆卡丁车与运营一条汽车生产线之间的差距。
 
-> **Integration Note**: The TCO calculations in this article are based on typical industry scenarios (mid-level engineer salaries in first-tier cities, general cloud service pricing). Actual costs vary by team location, tech stack, service provider pricing, and market conditions. Compliance costs are referenced to the Chinese market; other regions should follow local regulatory guidance. Autional pricing is subject to the latest official pricing page.
+> **测算说明**：本文的 TCO 测算基于行业典型场景（一线城市中级工程师薪资、通用云服务定价）。实际成本因团队所在地、技术栈、服务商定价与市场环境而异。合规成本以中国市场为参照，其他地区应以当地监管要求为准。Autional 定价以官网最新定价页为准。
 
-This article is not a product pitch — it's a complete TCO calculation using real data you can plug in for your own team.
+本文不是产品推销——它是一份完整的 TCO 测算，数据你都可以代入自己团队重算。
 
-## The Basic TCO Formula
+## TCO 基本公式
 
-For identity systems, TCO can be broken down into three phases:
+对身份系统来说，TCO 可以拆成三个阶段：
 
 ```
 TCO = Initial Build Cost + Annual Operations Cost + Implicit Risk Cost
 ```
 
-Let's unpack each item with formulas and reasonable market reference values.
+下面逐项拆解，并给出公式与合理的市场参考值。
 
-## Phase 1: Initial Build Cost
+## 第一阶段：初始建设成本
 
-### Basic Authentication (Mandatory)
+### 基础认证（必做）
 
-| Feature Module | Engineering Effort | Notes |
+| 功能模块 | 工程量 | 说明 |
 |---------------|-------------------|-------|
-| Email + Phone registration/login | 15 person-days | Includes password policy, email verification, SMS verification code |
-| Social login (WeChat/Google/GitHub) | 10 person-days | OAuth integration + token management per platform |
-| JWT issuance and verification | 5 person-days | Access token + refresh token mechanism |
-| Password reset flow | 5 person-days | Email-based recovery + security verification + password strength check |
-| Session management | 5 person-days | Redis storage + expiry policy + concurrency limits |
-| Basic RBAC (roles + permissions) | 10 person-days | User-role-permission model + dynamic permission checks |
-| **Subtotal** | **50 person-days** | **~2.5 engineer-months** |
+| 邮箱 + 手机号注册/登录 | 15 人天 | 含密码策略、邮箱验证、短信验证码 |
+| 社交登录（微信/Google/GitHub） | 10 人天 | 各平台 OAuth 对接 + 令牌管理 |
+| JWT 签发与校验 | 5 人天 | 访问令牌 + 刷新令牌机制 |
+| 找回密码流程 | 5 人天 | 邮件找回 + 安全校验 + 密码强度检查 |
+| 会话管理 | 5 人天 | Redis 存储 + 过期策略 + 并发限制 |
+| 基础 RBAC（角色 + 权限） | 10 人天 | 用户-角色-权限模型 + 动态权限校验 |
+| **小计** | **50 人天** | **约 2.5 人月** |
 
-### Security Enhancements (Strongly Recommended)
+### 安全增强（强烈建议）
 
-| Feature Module | Engineering Effort | Notes |
+| 功能模块 | 工程量 | 说明 |
 |---------------|-------------------|-------|
-| MFA (TOTP + SMS + Email) | 15 person-days | Three methods + recovery codes + device management |
-| Login risk control (rate limiting + geo anomaly detection) | 10 person-days | IP rate limiting + geographic anomaly detection |
-| Password hashing strategy (bcrypt/argon2) | 3 person-days | Algorithm selection + upgrade migration mechanism |
-| API Key management | 5 person-days | Generation/rotation/revocation + permission binding |
-| Session forced invalidation | 3 person-days | Admin force logout + invalidation on password change |
-| **Subtotal** | **36 person-days** | **~1.8 engineer-months** |
+| MFA（TOTP + 短信 + 邮件） | 15 人天 | 三种方式 + 恢复码 + 设备管理 |
+| 登录风控（限流 + 异地检测） | 10 人天 | IP 限流 + 地理位置异常检测 |
+| 密码哈希策略（bcrypt/argon2） | 3 人天 | 算法选型 + 升级迁移机制 |
+| API Key 管理 | 5 人天 | 生成/轮换/吊销 + 权限绑定 |
+| 会话强制失效 | 3 人天 | 管理员强制下线 + 改密失效 |
+| **小计** | **36 人天** | **约 1.8 人月** |
 
-### Compliance Features (Market-Required)
+### 合规功能（市场硬要求）
 
-| Feature Module | Engineering Effort | Notes |
+| 功能模块 | 工程量 | 说明 |
 |---------------|-------------------|-------|
-| Audit logging (complete + tamper-proof) | 10 person-days | Structured logging + hash chain verification |
-| Data export (user data subject request) | 5 person-days | GDPR DSAR / PIPL data portability |
-| Data deletion (account deletion + data cleanup) | 8 person-days | Cascading deletion + audit retention + backup cleanup |
-| Privacy policy + Cookie consent management | 3 person-days | GDPR/ePrivacy compliance UI |
-| MLPS compliance (log retention 180 days + encryption + audit) | 15 person-days | For the Chinese market |
-| **Subtotal** | **41 person-days** | **~2 engineer-months** |
+| 审计日志（完整 + 防篡改） | 10 人天 | 结构化日志 + 哈希链校验 |
+| 数据导出（用户数据主体请求） | 5 人天 | GDPR DSAR / PIPL 数据可携带 |
+| 数据删除（账号注销 + 数据清理） | 8 人天 | 级联删除 + 审计留存 + 备份清理 |
+| 隐私政策 + Cookie 同意管理 | 3 人天 | GDPR/ePrivacy 合规 UI |
+| 等保合规（日志留存 180 天 + 加密 + 审计） | 15 人天 | 面向中国市场 |
+| **小计** | **41 人天** | **约 2 人月** |
 
-### Total Initial Build Cost
+### 初始建设成本合计
 
 ```
 Initial development effort = 50 + 36 + 41 = 127 person-days ≈ 6.4 engineer-months
 ```
 
-Based on a mid-level backend engineer's annual salary of ¥300,000-450,000 (including benefits and office costs) in a first-tier Chinese city, the monthly cost is approximately ¥30,000-35,000:
+按中国一线城市中级后端工程师年薪 30 万-45 万元（含福利与办公成本）计，月成本约 3 万-3.5 万元：
 
 ```
 Initial build cost = 6.4 months × ¥30,000/month × 1 person ≈ ¥192,000
 ```
 
-If multiple engineers work in parallel (a 3-person team developing different modules concurrently), total person-months remain the same, but calendar time can be compressed to 2-3 months. However, larger teams incur higher communication overhead, and actual person-months typically increase by 20-30%:
+如果多人并行（3 人团队分模块同时开发），总人月不变，但日历时间可压缩到 2-3 个月。不过团队越大沟通成本越高，实际人月通常要上浮 20-30%：
 
 ```
 3-person parallel build cost = 6.4 × 1.25 × ¥30,000 ≈ ¥240,000
 ```
 
-## Phase 2: Annual Operations Cost
+## 第二阶段：年度运营成本
 
-### Infrastructure
+### 基础设施
 
-| Resource | Monthly Cost | Annual Cost |
+| 资源 | 月成本 | 年成本 |
 |----------|-------------|------------|
-| Cloud servers (4C8G × 2, HA) | ¥800 × 2 | ¥19,200 |
-| Managed PostgreSQL | ¥500 | ¥6,000 |
-| Managed Redis | ¥300 | ¥3,600 |
-| SMS + Email service | ¥500 | ¥6,000 |
-| Domain + SSL certificate | ¥100 | ¥1,200 |
-| Monitoring (Managed Prometheus + Grafana) | ¥300 | ¥3,600 |
-| **Subtotal** | **¥3,300/month** | **¥39,600/year** |
+| 云服务器（4C8G × 2，高可用） | ¥800 × 2 | ¥19,200 |
+| 托管 PostgreSQL | ¥500 | ¥6,000 |
+| 托管 Redis | ¥300 | ¥3,600 |
+| 短信 + 邮件服务 | ¥500 | ¥6,000 |
+| 域名 + SSL 证书 | ¥100 | ¥1,200 |
+| 监控（托管 Prometheus + Grafana） | ¥300 | ¥3,600 |
+| **小计** | **¥3,300/月** | **¥39,600/年** |
 
-### Human Maintenance
+### 人力维护
 
-Identity system maintenance is not a "write it and forget it" affair. Ongoing investment includes:
+身份系统的维护不是「写完就不管」的事。持续投入包括：
 
-| Maintenance Item | Frequency | Annual Effort |
+| 维护项 | 频率 | 年度投入 |
 |-----------------|-----------|---------------|
-| Security vulnerability patching (e.g., CVE follow-up) | On-demand, ~1/month | 12 person-days |
-| Dependency upgrades (Go version, third-party libs) | Quarterly | 8 person-days |
-| Feature iteration (new OAuth providers, new MFA methods) | On-demand | 20 person-days |
-| Compliance audit (annual security audit + pen test) | 1/year | 15 person-days |
-| On-call (handling production issues and user support) | Continuous | 12 person-days |
-| **Subtotal** | — | **67 person-days/year** |
+| 安全漏洞修补（如 CVE 跟进） | 按需，约 1 次/月 | 12 人天 |
+| 依赖升级（Go 版本、第三方库） | 每季度 | 8 人天 |
+| 功能迭代（新增 OAuth 提供商、新增 MFA 方式） | 按需 | 20 人天 |
+| 合规审计（年度安全审计 + 渗透测试） | 1 次/年 | 15 人天 |
+| 值班（处理生产问题与用户支持） | 持续 | 12 人天 |
+| **小计** | — | **67 人天/年** |
 
 ```
 Annual human maintenance cost = 67 person-days ÷ 20.83 person-days/month × ¥30,000/month ≈ ¥97,000/year
 ```
 
-### Total Annual Operations Cost
+### 年度运营成本合计
 
 ```
 Annual operations cost = ¥39,600 (infrastructure) + ¥97,000 (human) ≈ ¥136,000/year
 ```
 
-## Phase 3: Implicit Risk Cost
+## 第三阶段：隐性风险成本
 
-This is the most frequently overlooked component of TCO — not reflected on the books, but real when it happens:
+这是 TCO 中最常被忽略的部分——不体现在账面上，但一旦发生就是真金白银：
 
-| Risk Event | Probability | Single Loss | Annualized Risk Cost |
+| 风险事件 | 概率 | 单次损失 | 年化风险成本 |
 |------------|------------|-------------|---------------------|
-| Security breach leading to data leak | 5%/year | ¥500K-5M (fines + compensation + brand damage) | ¥25K-250K |
-| Compliance audit failure (unable to serve customers) | 20%/year (startups) | Loss of 1-3 enterprise customers, each ¥100K-500K | ¥20K-300K |
-| Feature delays (team bottlenecked maintaining old features) | N/A | Product launch delayed 1-3 months | Unquantifiable opportunity cost |
-| Key engineer leaving, taking knowledge | 15%/year | New hire needs 2-3 months to learn the code | ¥60K-90K |
-| **Total Implicit Risk Cost** | — | — | **~¥100K-640K/year** |
+| 安全事件导致数据泄露 | 5%/年 | ¥50 万-500 万（罚款 + 赔偿 + 品牌损失） | ¥2.5 万-25 万 |
+| 合规审计不通过（无法服务客户） | 20%/年（初创） | 流失 1-3 家企业客户，每家 ¥10 万-50 万 | ¥2 万-30 万 |
+| 功能延期（团队被老功能拖住） | 不适用 | 产品发布推迟 1-3 个月 | 机会成本难以量化 |
+| 核心工程师离职带走经验 | 15%/年 | 新人需要 2-3 个月熟悉代码 | ¥6 万-9 万 |
+| **隐性风险成本合计** | — | — | **约 ¥10 万-64 万/年** |
 
-You might argue these probabilities are just estimates. True. But the key point is: **these risks are near-zero with a purchased platform** — security vulnerabilities are patched by the vendor, compliance certifications are maintained by the vendor, and knowledge continuity is guaranteed by the vendor. The risk premium of building in-house is the probability × loss you bear.
+你可能会说这些概率只是估算。没错。但关键在于：**这些风险在采购平台时近乎为零**——安全漏洞由厂商修补，合规认证由厂商维持，知识延续性由厂商保证。自建的风险溢价，就是你自己承担的概率 × 损失。
 
-## TCO Summary
+## TCO 汇总
 
-| Cost Item | Year 1 | Year 2 | Year 3 |
+| 成本项 | 第 1 年 | 第 2 年 | 第 3 年 |
 |-----------|--------|--------|--------|
-| Initial build | ¥192K-240K | ¥0 | ¥0 |
-| Infrastructure | ¥40K | ¥40K | ¥40K |
-| Human maintenance | ¥97K | ¥97K | ¥97K |
-| Implicit risk | ¥100K-640K | ¥100K-640K | ¥100K-640K |
-| **In-house annual TCO** | **¥429K-1,017K** | **¥237K-777K** | **¥237K-777K** |
-| **3-year cumulative TCO** | — | — | **¥903K-2,571K** |
+| 初始建设 | ¥19.2 万-24 万 | ¥0 | ¥0 |
+| 基础设施 | ¥4 万 | ¥4 万 | ¥4 万 |
+| 人力维护 | ¥9.7 万 | ¥9.7 万 | ¥9.7 万 |
+| 隐性风险 | ¥10 万-64 万 | ¥10 万-64 万 | ¥10 万-64 万 |
+| **自建年度 TCO** | **¥42.9 万-101.7 万** | **¥23.7 万-77.7 万** | **¥23.7 万-77.7 万** |
+| **3 年累计 TCO** | — | — | **¥90.3 万-257.1 万** |
 
-Compare with Autional commercial editions:
+对比 Autional：
 
-| Edition | Annual Fee (10K MAU) | 3-Year Cumulative |
+| 版本 | 费用 | 3 年累计 |
 |---------|----------------------|-------------------|
-| Autional Pro | ¥12K/year | ¥36K |
-| Autional Enterprise | ¥36K/year | ¥108K |
+| 自托管开源版 | 免费 | ¥0 |
+| 商业授权（私有化部署）与企业支持 | 商业授权另议 | 以商务报价为准 |
+| 云托管 | 路线图中（即将推出） | 尚未提供 |
 
-## When to Build vs When to Buy?
+## 什么时候该自建，什么时候该采购？
 
-### Build if:
+### 适合自建的情况：
 
-1. **Your needs are extremely unique** — for instance, your identity system needs deep integration with a 15-year-old legacy ERP that no off-the-shelf platform can handle. Even then, what you likely need is a professional services team rather than a pure in-house build.
+1. **需求极其特殊**——比如你的身份系统需要与一套 15 年历史的老 ERP 深度耦合，没有现成平台能对接。即便如此，你真正需要的也很可能是专业服务团队，而不是纯自建。
 
-2. **Zero compliance requirements** — your system is an internal tool with no external users, no personal data processing, and no regulatory scrutiny. Still, you need security — and security's implicit costs don't vanish just because compliance isn't a factor.
+2. **零合规要求**——你的系统是内部工具，没有外部用户、不处理个人信息、不受监管审查。但你仍然需要安全——而安全的隐性成本不会因为不涉及合规就消失。
 
-3. **You are an identity platform company** — well, if you are a competitor to Auth0, Keycloak, or Autional, then yes, you need to build. But if you're reading this blog post, you probably aren't.
+3. **你本身就是一家身份平台公司**——好吧，如果你要做 Auth0、Keycloak 或 Autional 的竞品，那你确实得自建。但既然你在读这篇博客，多半不是这种情况。
 
-### Buy if:
+### 适合采购的情况：
 
-1. **You have external users** — once your system is open to real users, any identity-related security incident is a brand incident.
-2. **You have any compliance requirements** — whether GDPR (for European users), PIPL (for Chinese users), SOC 2 (for enterprise customers), or MLPS (for Chinese regulations), compliance costs far exceed platform fees.
-3. **Your team has fewer than 50 people** — small teams lack the bandwidth to maintain a full identity platform. Buying lets you focus on your core business.
-4. **You are fundraising or preparing for acquisition** — investors and acquirers scrutinize whether the identity system is professionally built during due diligence. A homegrown "good enough" login system is a liability.
+1. **你有外部用户**——系统一旦对真实用户开放，任何身份相关的安全事件都是品牌事件。
+2. **你有任何合规要求**——无论是面向欧洲用户的 GDPR、面向中国用户的 PIPL、面向企业客户的 SOC 2，还是中国的等保，合规成本都远超平台费用。
+3. **团队不足 50 人**——小团队没有余力维护一个完整的身份平台。采购能让你专注核心业务。
+4. **你正在融资或准备被收购**——投资人与收购方在做尽职调查时，会仔细审视身份系统是否专业构建。自研的「够用就行」的登录系统是减分项。
 
-## Final Thoughts
+## 结语
 
-The purpose of this TCO calculation is not to say "buying is always cheaper than building." The truth is: **if all you really need is a login box, building it for a month might indeed cost less than buying for a year.** But the problem is that almost every SaaS product needs not a "login box" but an "identity platform" — a system engineering effort requiring sustained investment in security, compliance, features, and operations.
+这份 TCO 测算的目的不是说「买永远比自建便宜」。事实是：**如果你真的只需要一个登录框，自建一个月可能确实比买一年便宜。** 问题在于，几乎每一款 SaaS 产品需要的都不是「登录框」，而是「身份平台」——一项需要在安全、合规、功能与运维上持续投入的系统工程。
 
-When running the numbers, include the implicit costs. When evaluating, include the risk premium. You should arrive at a sufficiently clear number. And that number will most likely point you toward "buy."
+算账时把隐性成本算进去，评估时把风险溢价算进去，你会得到一个足够清晰的数字。而这个数字大概率会指向「采购」。
 
 ---
 
-*Autional offers a Community Edition (permanently free), Pro Edition (¥12K/year), and Enterprise Edition (¥36K/year). [View full pricing and edition comparison](/pricing).*
+*Autional 提供永久免费的自托管开源版本；商业授权（私有化部署）与企业支持可[查看定价说明](/pricing)。*

@@ -1,40 +1,40 @@
 ---
-title: "JWT vs Session Token: The Ultimate Guide to Identity System Token Selection"
+title: "JWT vs Session Token：身份系统令牌选型终极指南"
 date: "2026-05-25"
 category: "Tech"
-tags: ["JWT", "Session", "Token"]
-readTime: "12 min"
-excerpt: "JWT and Session Tokens are the two most fundamental token types in identity authentication systems. This article provides a thorough comparison across four dimensions — security, performance, scalability, and statelessness — and reveals how Autional's session-service lets you have the best of both worlds through dual-mode support."
+tags: ["JWT", "Session", "令牌"]
+readTime: "12 分钟"
+excerpt: "JWT 与 Session Token 是身份认证系统中最基础的两种令牌形态。本文从安全、性能、扩展性与无状态四个维度做完整对比，并解析 Autional 的 session-service 如何通过双模式并存，让你不必在两者之间二选一。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-Tokens are the lifeblood of identity authentication systems. On every API call, a token flows between client and server, carrying the information of "who I am." But not all tokens are the same — choosing the right token architecture directly affects your system's security, performance, and architectural complexity.
+令牌是身份认证系统的血液。每一次 API 调用，都有一个令牌在客户端与服务端之间流动，承载着「我是谁」的信息。但令牌并非千篇一律——选错令牌架构，会直接影响系统的安全、性能与架构复杂度。
 
-The two most common token types — JWT (JSON Web Token) and Session Token — represent two philosophical approaches to identity system design: **stateless** and **stateful**. This article provides a comprehensive comparison of both approaches and introduces how Autional's session-service supports both modes simultaneously, allowing you to make the optimal choice for different scenarios.
+最常见的两种令牌——JWT（JSON Web Token）与 Session Token——代表了身份系统设计的两条哲学路线：**无状态**与**有状态**。本文完整对比两种路线，并介绍 Autional 的 session-service 如何同时支持两种模式，让你针对不同场景做出最优选择。
 
-## The Essence of Tokens: What to Carry and How
+## 令牌的本质：携带什么，如何携带
 
-Before diving into the comparison, let's answer a fundamental question: **What exactly is a token?**
+在展开对比之前，先回答一个根本问题：**令牌到底是什么？**
 
-A token is a credential issued by the server to the client after authentication completes. The client carries this credential on every subsequent request, and the server verifies its validity to confirm the requester's identity.
+令牌是认证完成后服务端签发给客户端的凭证。客户端在随后的每次请求中携带这份凭证，服务端校验其有效性以确认请求方身份。
 
-The core information a token needs to carry is: **who is making the request (identity identifier) + this credential is recognized by the server (anti-forgery)**.
+令牌需要承载的核心信息是：**谁在发起请求（身份标识）+ 这份凭证被服务端认可（防伪造）**。
 
-These two requirements can be fulfilled in two fundamentally different ways:
+这两项需求可以用两种截然不同的方式满足：
 
-**Approach A (Stateless)**: Encode identity information directly into the token, protected by a digital signature to prevent forgery. The client holds a fully self-contained token; the server can verify it without querying any external storage — this is the core concept behind **JWT**.
+**路线 A（无状态）**：把身份信息直接编码进令牌，用数字签名防伪造。客户端持有完全自包含的令牌，服务端无需查询任何外部存储即可完成校验——这就是 **JWT** 的核心思想。
 
-**Approach B (Stateful)**: The token is just a random string with no inherent meaning. When issued, the server stores this string together with the corresponding user information on the backend. On each request, the server queries the storage using the token string to retrieve identity information — this is the core concept behind **Session Tokens**.
+**路线 B（有状态）**：令牌只是一串无意义的随机字符串。签发时，服务端把这串字符串与对应用户信息一起存到后端。每次请求，服务端用令牌字符串去存储中查询身份信息——这就是 **Session Token** 的核心思想。
 
-Understanding these two approaches makes it clear what each token type's strengths and limitations are.
+理解了这两条路线，两种令牌各自的强项与局限就一目了然了。
 
-## Deep Dive into JWT: The Costs and Benefits of Statelessness
+## JWT 深度剖析：无状态的代价与收益
 
-### JWT Structure
+### JWT 的结构
 
-A typical JWT consists of three parts, separated by `.`:
+一个典型的 JWT 由三部分组成，用 `.` 分隔：
 
 ```
 eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIwMUFSO....  ← Header
@@ -42,49 +42,49 @@ eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIwMUFSO....  ← Header
 .sdfsdfwefwefwefwefwefwefwefwefwefwefwef...  ← Signature
 ```
 
-- **Header**: Describes the signing algorithm (e.g., RS256, HS256) and token type
-- **Payload**: Stores claims, including standard claims (`sub`, `iss`, `exp`, `iat`) and custom claims (`tenant_id`, `roles`, `permissions`)
-- **Signature**: Signs the first two parts to ensure the token has not been tampered with
+- **Header**：描述签名算法（如 RS256、HS256）与令牌类型
+- **Payload**：存放 claims，包括标准 claims（`sub`、`iss`、`exp`、`iat`）与自定义 claims（`tenant_id`、`roles`、`permissions`）
+- **Signature**：对前两部分签名，保证令牌未被篡改
 
-### Real Advantages of JWT
+### JWT 的真实优势
 
-**1. True Statelessness**
+**1. 真正的无状态**
 
-This is JWT's core selling point. The server does not need to maintain session storage or query external caches on every request. In a microservice architecture, this means Service A, Service B, and Service C can independently verify the same JWT without sharing any state.
+这是 JWT 的核心卖点。服务端无需维护会话存储，也无需在每次请求时查询外部缓存。在微服务架构中，这意味着服务 A、服务 B、服务 C 可以各自独立校验同一个 JWT，而无需共享任何状态。
 
-Autional's architecture perfectly demonstrates this advantage: once identity-service issues a JWT, all 15 microservices including session-service, profile-service, and wallet-service can verify it independently without querying the issuing service every time.
+Autional 的架构完美体现了这一优势：identity-service 签发 JWT 后，包含 session-service、profile-service、wallet-service 在内的全部 27 个微服务都能独立校验，无需每次都去询问签发方。
 
-**2. Horizontal Scaling Without State Synchronization**
+**2. 水平扩容无需状态同步**
 
-With Session Tokens, if the first request is routed to Server A and the second to Server B, but the session only exists in Server A's memory, Server B requires re-authentication. The solution is shared storage (e.g., Redis) — but this introduces new complexity. JWT fundamentally avoids this problem.
+用 Session Token 时，如果第一个请求被路由到服务器 A，第二个请求到了服务器 B，而会话只存在于服务器 A 的内存中，服务器 B 就会要求重新认证。解决办法是共享存储（如 Redis）——但这又引入了新的复杂度。JWT 从根本上规避了这个问题。
 
-**3. Self-Contained Information Carriage**
+**3. 自包含的信息携带**
 
-JWT's Payload can carry information such as user roles, permissions, and tenant ID. Upon receiving a JWT, a service can directly understand the requester's identity attributes without additional queries. This is especially efficient for coarse-grained authorization at the gateway layer — Autional's gateway-service can decide whether to forward a request based on the role claims in the JWT without querying any downstream service.
+JWT 的 Payload 可以携带用户角色、权限、租户 ID 等信息。服务收到 JWT 后无需额外查询，就能直接得知请求方的身份属性。这对网关层的粗粒度授权尤为高效——Autional 的 gateway-service 可以仅凭 JWT 中的角色 claims 决定是否转发请求，无需查询任何下游服务。
 
-### Real Pain Points of JWT
+### JWT 的真实痛点
 
-**1. Token Revocation — A Nearly Unsolvable Problem**
+**1. 令牌吊销——一个近乎无解的问题**
 
-This is JWT's biggest architectural flaw. Because JWT is stateless, the server cannot proactively "revoke" an already-issued JWT. It remains valid until its expiration time (`exp`).
+这是 JWT 最大的架构缺陷。因为 JWT 是无状态的，服务端无法主动「吊销」一个已签发的 JWT。在过期时间（`exp`）到达之前，它一直有效。
 
-Common mitigation approaches include:
+常见的缓解手段包括：
 
-- **Token Blacklist**: Maintain a list of revoked JWT IDs (`jti`) and query it on every verification. But this reintroduces state, negating JWT's stateless advantage.
-- **Shorten Token Lifespan**: Reduce the access token's lifespan to 5-15 minutes, paired with a refresh token. This is the most mainstream approach and the OAuth 2.0 recommended practice.
-- **Version Number / Sequence**: Maintain a `token_version` in the user table and embed it into the JWT when issued. Increment the version to revoke — all old tokens become instantly invalid. But the cost is a database query on every verification.
+- **令牌黑名单**：维护一份已吊销 JWT ID（`jti`）的清单，每次校验都查询一次。但这等于把状态又加了回来，抵消了 JWT 的无状态优势。
+- **缩短令牌有效期**：把访问令牌有效期压到 5-15 分钟，配合刷新令牌使用。这是最主流的做法，也是 OAuth 2.0 推荐实践。
+- **版本号 / 序列**：在用户表中维护 `token_version`，签发时写入 JWT。需要吊销时递增版本号——所有旧令牌立即失效。但代价是每次校验都要查库。
 
-**2. Token Size Bloat**
+**2. 令牌体积膨胀**
 
-The more information JWT's Payload carries, the larger the token gets. A JWT with 15 permission claims can reach 2-3 KB. In high-frequency API call scenarios, this means an extra 2-3 KB per request, which can become a performance bottleneck on mobile networks or WebSocket connections.
+JWT 的 Payload 携带的信息越多，令牌就越大。一个带有 15 条权限 claims 的 JWT 可以达到 2-3 KB。在高频 API 调用场景下，这意味着每个请求都多出 2-3 KB，在移动网络或 WebSocket 连接上可能成为性能瓶颈。
 
-**3. Key Rotation Complexity**
+**3. 密钥轮换复杂**
 
-JWT signing depends on a key. When key rotation is needed (security events, periodic replacement), active tokens are signed with the old key, but the server needs to know which key to use for verification. This requires implementing the JWK (JSON Web Key) and `kid` (Key ID) mechanism, adding operational complexity.
+JWT 的签名依赖密钥。当需要轮换密钥时（安全事件、定期更换），存量令牌是用旧密钥签的，但服务端需要知道该用哪把密钥来校验。这要求实现 JWK（JSON Web Key）与 `kid`（Key ID）机制，增加了运维复杂度。
 
-## Deep Dive into Session Tokens: Clunky on the Surface, Elegant Underneath
+## Session Token 深度剖析：表面笨重，内里优雅
 
-### How Session Tokens Work
+### Session Token 的工作方式
 
 ```
 1. User logs in → Server verifies credentials
@@ -93,77 +93,77 @@ JWT signing depends on a key. When key rotation is needed (security events, peri
 4. Server queries storage by Session ID → retrieves user info → verification passes
 ```
 
-### Real Advantages of Session Tokens
+### Session Token 的真实优势
 
-**1. Instant Revocation — A Killer Feature**
+**1. 即时吊销——杀手级能力**
 
-Because session information is stored server-side, revocation requires a single operation: delete the corresponding session record. Admins can immediately terminate any user's session without waiting for the token to naturally expire. In security incidents, this capability is not "nice to have" but "mandatory."
+因为会话信息存在服务端，吊销只需一个操作：删除对应的会话记录。管理员可以立即终止任意用户的会话，无需等待令牌自然过期。在安全事件中，这个能力不是「有更好」，而是「必须有」。
 
-Autional's session-service is purpose-built for this: an admin can call `DELETE /api/v1/internal/session/{session_id}` to immediately terminate a session. Revoked sessions become invalid for all subsequent requests within milliseconds.
+Autional 的 session-service 正是为此而生：管理员调用 `DELETE /api/v1/internal/session/{session_id}` 即可立即终止会话。被吊销的会话在毫秒级内对后续所有请求失效。
 
-**2. No Information Exposed to the Client**
+**2. 不向客户端暴露任何信息**
 
-Session Tokens are opaque random strings (e.g., ULID) that contain no sensitive information. Even if the token is intercepted during transmission, the attacker cannot extract user identity, roles, permissions, or any other information from the token itself.
+Session Token 是不透明的随机字符串（如 ULID），不包含任何敏感信息。即使令牌在传输中被截获，攻击者也无法从令牌本身提取出用户身份、角色、权限等信息。
 
-In contrast, JWT's Payload is only Base64-encoded (not encrypted) — anyone can decode and read its contents.
+相比之下，JWT 的 Payload 只是 Base64 编码（并未加密）——任何人都能解码读取其内容。
 
-**3. Constant Token Size**
+**3. 令牌体积恒定**
 
-No matter how many permissions or roles a user has, the Session Token is always a short string. In high-frequency API call scenarios, this means less network overhead per request.
+无论用户有多少权限、多少角色，Session Token 始终是一串短短的字符串。在高频 API 调用场景下，意味着每个请求的网络开销更小。
 
-**4. Fine-Grained Session Management**
+**4. 细粒度的会话管理**
 
-Server-side session storage enables many capabilities: setting session expiry times, recording session activity timestamps, tracking all active sessions for the same user, limiting concurrent sessions, and implementing "log out of all devices."
+服务端会话存储带来许多能力：设置会话过期时间、记录会话活跃时间戳、追踪同一用户的所有活跃会话、限制并发会话数、实现「登出所有设备」。
 
-Autional's session-service supports all of these capabilities, including session timeout, idle timeout, maximum concurrent session limits, and session audit logs.
+Autional 的 session-service 支持以上全部能力，包括会话超时、闲置超时、最大并发会话限制与会话审计日志。
 
-### Real Pain Points of Session Tokens
+### Session Token 的真实痛点
 
-**1. Requires Shared Storage**
+**1. 需要共享存储**
 
-Every request requires querying the session store. In a single-node deployment, in-memory storage suffices. But in distributed deployments, shared storage (e.g., Redis) is necessary, introducing additional dependencies and complexity.
+每次请求都要查询会话存储。单机部署时用内存即可；但在分布式部署中必须使用共享存储（如 Redis），引入额外的依赖与复杂度。
 
-**2. Storage Cost**
+**2. 存储成本**
 
-In large-scale systems, session storage itself is a non-trivial cost. Each active user occupies at least one session record. Tens of millions of users mean tens of millions of session records.
+在大规模系统中，会话存储本身就是一笔不小的成本。每个活跃用户至少占用一条会话记录，上千万用户就意味着上千万条会话记录。
 
-**3. State Synchronization Across Microservices**
+**3. 跨微服务的状态同步**
 
-When multiple microservices all need to verify sessions, each service must access the session store. This adds network latency compared to JWT's self-contained verification.
+当多个微服务都需要校验会话时，每个服务都得访问会话存储。相比 JWT 的自包含校验，这增加了网络延迟。
 
-## Deep Comparison: A Five-Dimensional Duel
+## 深度对比：五维对决
 
-| Dimension | JWT | Session Token |
+| 维度 | JWT | Session Token |
 |-----------|-----|---------------|
-| Verification performance | Local crypto/signature verification, very fast | Requires querying external storage, adds network latency |
-| Revocation capability | Weak (requires blacklist or version mechanism) | Strong (delete one record) |
-| Horizontal scaling | Natively supported, no shared storage needed | Requires shared storage (Redis/DB) |
-| Information carriage | Self-contained, Payload carries identity info | Zero info, token is a random string |
-| Client payload size | Bloatable, 1-3 KB | Constant, ~26 characters |
-| Security incident response | Slow (depends on TTL expiry or blacklist) | Fast (instant revocation) |
-| Microservice friendliness | Any service can independently verify | Requires shared state or a unified query endpoint |
-| Operational complexity | Key rotation, JWK, kid management | Redis cluster maintenance |
-| Compliance | GDPR "right to deletion" hard to achieve | Delete session record suffices |
+| 校验性能 | 本地密码学/签名校验，极快 | 需查询外部存储，增加网络延迟 |
+| 吊销能力 | 弱（需黑名单或版本机制） | 强（删一条记录即可） |
+| 水平扩容 | 原生支持，无需共享存储 | 需要共享存储（Redis/DB） |
+| 信息携带 | 自包含，Payload 携带身份信息 | 零信息，令牌是随机串 |
+| 客户端载荷大小 | 易膨胀，1-3 KB | 恒定，约 26 个字符 |
+| 安全事件响应 | 慢（依赖 TTL 到期或黑名单） | 快（即时吊销） |
+| 微服务友好度 | 任何服务可独立校验 | 需要共享状态或统一查询端点 |
+| 运维复杂度 | 密钥轮换、JWK、kid 管理 | Redis 集群维护 |
+| 合规性 | GDPR「删除权」难以实现 | 删除会话记录即可 |
 
-## Real-World Decision Tree
+## 实战决策树
 
-### Choose JWT When
+### 适合选用 JWT 的场景
 
-1. **Pure API service, no user interface**: The client is another microservice with no browser environment; Cookies are inconvenient.
-2. **Gateway-level fast authorization**: JWT's self-contained nature lets the gateway make routing decisions without querying backends.
-3. **Need to pass identity info across services**: In Autional's architecture, gateway-service validates identity with JWT, then passes user info to downstream services via Headers.
-4. **High throughput, low latency requirements**: Saving a Redis query on every request can significantly reduce p99 latency.
+1. **纯 API 服务、无用户界面**：调用方是另一个微服务，没有浏览器环境，用 Cookie 不方便。
+2. **网关层快速鉴权**：JWT 的自包含特性让网关无需回查后端即可做出路由决策。
+3. **需要跨服务传递身份信息**：在 Autional 架构中，gateway-service 用 JWT 校验身份，再通过 Header 把用户信息传给下游服务。
+4. **高吞吐、低延迟要求**：每次请求少一次 Redis 查询，能显著降低 p99 延迟。
 
-### Choose Session Token When
+### 适合选用 Session Token 的场景
 
-1. **Need instant revocation capability**: Any end-user-facing product needs to immediately terminate sessions upon detecting risky behavior.
-2. **Security-sensitive applications**: Finance, healthcare, government — industries that require tracking and controlling every session.
-3. **Compliance requirements**: MLPS Level 3 requires real-time termination of anomalous sessions.
-4. **Fine-grained session management needs**: Need to view all active sessions for a user, limit concurrent logins, and record session activity logs.
+1. **需要即时吊销能力**：任何面向终端用户的产品，都需要在发现风险行为时立即终止会话。
+2. **安全敏感型应用**：金融、医疗、政务——这些行业需要追踪并管控每一个会话。
+3. **有合规要求**：等保三级要求能够实时终止异常会话。
+4. **需要细粒度会话管理**：需要查看某用户的所有活跃会话、限制并发登录、记录会话活动日志。
 
-## Autional's Solution: Dual-Mode Coexistence
+## Autional 的方案：双模式并存
 
-Autional's design philosophy is: **you should not be forced to choose between JWT and Session Tokens.** session-service supports both modes simultaneously, each serving its role in the Autional architecture:
+Autional 的设计理念是：**你不应该在 JWT 与 Session Token 之间被迫二选一。** session-service 同时支持两种模式，各自在 Autional 架构中承担相应角色：
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -196,60 +196,60 @@ Autional's design philosophy is: **you should not be forced to choose between JW
 └──────────────────────────────────────────────────┘
 ```
 
-### Specific Mechanism
+### 具体机制
 
-**JWT as Frontend Token**: The client (browser, mobile app) holds a JWT. It carries `user_id`, `tenant_id`, and basic role information, used by gateway-service for fast verification and routing.
+**JWT 作为前端令牌**：客户端（浏览器、移动 App）持有 JWT。它携带 `user_id`、`tenant_id` 与基础角色信息，供 gateway-service 做快速校验与路由。
 
-**Session Token as Backend Session**: When identity-service issues a JWT, it simultaneously creates a corresponding Session record in session-service. The JWT's `jti` (JWT ID) is bound to the Session ID.
+**Session Token 作为后端会话**：identity-service 签发 JWT 的同时，会在 session-service 中创建对应的 Session 记录。JWT 的 `jti`（JWT ID）与 Session ID 绑定。
 
-**Dual Revocation Guarantee**:
-- Daily scenario: JWT has a short lifespan (default 15 minutes), paired with automatic refresh token renewal, reducing the need for revocation.
-- Emergency scenario: Admins revoke the Session record through session-service. Although the JWT itself is still within its validity period, gateway-service re-checks with session-service on critical operations (password change, account deletion, financial transactions, etc.) to confirm whether the Session is still valid.
+**双重吊销保障**：
+- 日常场景：JWT 有效期较短（默认 15 分钟），配合刷新令牌自动续期，减少吊销需求。
+- 紧急场景：管理员通过 session-service 吊销 Session 记录。虽然 JWT 本身仍在有效期内，但 gateway-service 在关键操作（改密、销号、资金交易等）时会回查 session-service，确认 Session 是否仍然有效。
 
-This design retains both JWT's high performance (fast verification at the gateway layer) and Session Token's controllability (real-time check for critical operations).
+这套设计既保留了 JWT 的高性能（网关层快速校验），又保留了 Session Token 的可控性（关键操作实时检查）。
 
-## Token Lifecycle Management
+## 令牌生命周期管理
 
-Regardless of which token type you choose, the following mechanisms are essential for any identity system:
+无论你选择哪种令牌，以下机制对任何身份系统都必不可少：
 
-### Access Token + Refresh Token
+### 访问令牌 + 刷新令牌
 
-This is the standard model for modern identity systems:
+这是现代身份系统的标准模型：
 
-- **Access Token**: Short-lived (15 minutes), used for API call authentication. Autional's identity-service issues JWT-format Access Tokens.
-- **Refresh Token**: Long-lived (7 days), used only to obtain new Access Tokens. The Refresh Token is stored in session-service and can be revoked at any time.
+- **访问令牌（Access Token）**：短有效期（15 分钟），用于 API 调用认证。Autional 的 identity-service 签发 JWT 格式的访问令牌。
+- **刷新令牌（Refresh Token）**：长有效期（7 天），仅用于获取新的访问令牌。刷新令牌存储在 session-service 中，可随时吊销。
 
-Auto-renewal flow after token expiry:
+令牌过期后的自动续期流程：
 ```
 Client Request → API → 401 (Token Expired) → Client uses Refresh Token to get new Access Token → Retry original request
 ```
 
-### Token Rotation
+### 令牌轮换
 
-Autional implements a Refresh Token rotation mechanism: each time a Refresh Token is used to obtain a new Access Token, the old Refresh Token is immediately invalidated while a new one is issued. This fundamentally prevents Refresh Token reuse after theft:
+Autional 实现了刷新令牌轮换机制：每次用刷新令牌换取新的访问令牌时，旧刷新令牌立即失效，同时签发一个新的刷新令牌。这从根本上防范了刷新令牌被盗后被复用：
 
-- Legitimate user normal operation → new Refresh Token on each rotation
-- Attacker attempts to use a rotated Refresh Token → system detects "reuse" → revokes all of that user's Refresh Tokens → requires re-login
+- 合法用户正常操作 → 每次轮换产生新的刷新令牌
+- 攻击者尝试使用已轮换的刷新令牌 → 系统检测到「重用」→ 吊销该用户的全部刷新令牌 → 要求重新登录
 
-### Forced Revocation Scenarios
+### 强制吊销场景
 
-Autional supports the following revocation scenarios through session-service's API:
+Autional 通过 session-service 的 API 支持以下吊销场景：
 
-| Scenario | API | Trigger Condition |
+| 场景 | API | 触发条件 |
 |----------|-----|-------------------|
-| Password change | `DELETE /sessions?user_id=X` | User proactively changes password |
-| Anomaly detection | `DELETE /sessions?user_id=X` | Adaptive MFA detects high-risk behavior |
-| Admin force logout | `DELETE /sessions/{session_id}` | Admin manually terminates suspicious session |
-| Account lock | `DELETE /sessions?user_id=X` | Account disabled by admin |
-| Log out all devices | `DELETE /sessions?user_id=X` | User selects "Log out all devices" |
+| 修改密码 | `DELETE /sessions?user_id=X` | 用户主动修改密码 |
+| 异常检测 | `DELETE /sessions?user_id=X` | 自适应 MFA 检测到高风险行为 |
+| 管理员强制下线 | `DELETE /sessions/{session_id}` | 管理员手动终止可疑会话 |
+| 账号锁定 | `DELETE /sessions?user_id=X` | 账号被管理员禁用 |
+| 登出所有设备 | `DELETE /sessions?user_id=X` | 用户选择「登出所有设备」 |
 
-Every revocation operation triggers an audit event, recording who performed the action, when, and which Session ID was revoked, ensuring traceability for compliance requirements.
+每次吊销操作都会触发审计事件，记录操作人、时间与被吊销的 Session ID，确保满足合规要求的可追溯性。
 
-## Summary
+## 总结
 
-JWT and Session Tokens are not competitors — they are complements. A mature identity system needs both working together:
+JWT 与 Session Token 不是竞争关系——它们是互补关系。一套成熟的身份系统需要两者协同工作：
 
-- **JWT for fast verification**: Keeps the gateway layer's latency low on every request
-- **Session Tokens for fine-grained control**: Enables security-sensitive checks and instant revocation
+- **JWT 负责快速校验**：让网关层在每次请求上都保持低延迟
+- **Session Token 负责精细管控**：支撑安全敏感检查与即时吊销
 
-Autional's session-service is built precisely on this philosophy. You don't have to choose between "performance" and "security" — you can have both.
+Autional 的 session-service 正是基于这一理念构建的。你不必在「性能」与「安全」之间做取舍——两者可以兼得。

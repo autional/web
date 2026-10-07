@@ -1,64 +1,37 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
 
+// 发布记录口径（CH-01）：只列产品与开源组件的真实发布，不含本站工程日志；
+// npm 组件条目以 npm publish time 实查为准（2026-10-05 核对）。
 const changelog = [
+  { date: '2026-10-05', version: '开源组件发布', items: [
+    '@autional/onboard 0.1.0 —— 项目初始化 CLI 首发',
+    '@autional/tokens 0.1.0-rc.7 发布',
+  ]},
+  { date: '2026-10-04', version: '开源组件发布', items: [
+    '@autional/ui 0.1.0-rc.38 发布',
+    '@autional/shared 0.1.0-rc.26 发布',
+  ]},
+  { date: '2026-10-03', version: '开源组件发布', items: [
+    '@autional/tailwind-preset 0.1.0-rc.2 发布',
+  ]},
+  { date: '2026-09-29', version: '开源组件首发', items: [
+    '@autional/react 0.1.0-rc 发布 —— React SDK 登陆 npm',
+    '@autional/ui、@autional/tokens、@autional/tailwind-preset、@autional/shared 首个 rc 版本发布',
+  ]},
   { date: '2026-06-30', version: '2.0.0-rc.1', items: [
-    'Trial Registration system — invite code flow, auto-cleanup scheduler',
-    'Demo tenant provisioning with admin-console trial management page',
-    'SDK upgradeTrial endpoint for seamless Free→Pro upgrading',
-    'Gateway CORS default enabled for all origins',
-    'DNS resolve hardening — telemetry/DB/Redis unified anti-blocking',
-    'GOMEMLIMIT enforcement for OOM prevention',
-    'Tenant pool resilience improvements',
-    'Autional brand launch — new pricing, comparison, about pages',
-    'English blog: 48 articles translated, 1 original enterprise SSO post',
-    'CookieConsent moved to document root (fixed positioning)',
-    'Excerpt limit 300→500 for English content',
-  ]},
-  { date: '2026-06-28', version: '2.0.0-dev', items: [
-    'Web/ extracted to independent sub-repository (github.com/autional/web)',
-    'Script relocation to web/scripts/ with thin wrapper backward compatibility',
-    'Astro SSG landing site with 79 pages (64 Chinese + 15 English)',
-    'SEO infrastructure: sitemap, RSS, OG tags, hreflang, JSON-LD',
-    'Interactive components: ThemeToggle, LanguageSwitcher, SearchModal, CookieConsent',
-    'Tailwind typography plugin integration for blog content',
-    'useScrollAnimation SSR fix — content visible immediately (removed opacity-0)',
-    'First English site deployment to Vercel',
-    '100-year SSL certificate for *.autional.local (local dev)',
-  ]},
-  { date: '2026-06-20', version: '1.2.0', items: [
-    '48 blog posts Chinese→English translation (9 parallel sub-tasks)',
-    'Content collection schema with Zod validation',
-    'Blog category filters: Tech, Architecture, Compliance, Product, Security, Project',
-    'Featured post hero component',
-    'Internal API authentication: @authms/shared stub for standalone site',
-    'ThemeToggle component replicated (no dependency on @authms/ui)',
-  ]},
-  { date: '2026-06-15', version: '1.1.0', items: [
-    'Astro SSG blog with 4 original English articles',
-    'RSS feed and sitemap generation',
-    'Blog detail template with JSON-LD Article schema',
-    'PageShell React wrapper for legacy auth pages',
-    'i18next English-only initialization with en-US.json',
-    'Tailwind CSS with primary blue color scheme',
-    'EdgeOne deployment files (middleware.js, edgeone.json)',
-  ]},
-  { date: '2026-06-07', version: '1.0.0', items: [
-    'Landing site migration from Vite CSR to Astro SSG',
-    'Docker multi-domain nginx with 6 server blocks',
-    'Language detection and hreflang support',
-    '48 blog posts with compliance disclaimer audit',
-    'Landing page Hero, Features Grid, Stats, CTA',
-    'Enterprise SSO / MFA / RBAC feature pages',
-    'Compare, Pricing, About, Trust, Roadmap pages',
+    '网关 CORS 默认对所有来源开启',
+    'DNS 解析加固 —— 遥测、数据库与 Redis 统一防阻断',
+    '启用 GOMEMLIMIT 以防止 OOM',
+    '租户连接池韧性改进',
   ]},
 ];
 ---
-<LandingLayout title="Changelog — Autional" description="Version history and release notes for Autional identity platform." keywords="Autional, changelog, releases, updates, version history, identity">
+<LandingLayout title="更新日志 — Autional" description="Autional 平台与开源组件的版本发布记录。" keywords="Autional, 更新日志, 发布, 更新, 版本历史, 身份">
   <section class="mx-auto max-w-3xl px-4 py-20">
     <div class="text-center mb-16">
-      <h1 class="text-4xl font-bold sm:text-5xl">Changelog</h1>
-      <p class="mt-4 text-lg text-neutral-500 max-w-xl mx-auto">Version history and release notes for the Autional identity platform. Each version corresponds to a tagged release in the <a href="https://github.com/autional" class="text-primary-600 hover:underline">GitHub repository</a>.</p>
+      <h1 class="text-4xl font-bold sm:text-5xl">更新日志</h1>
+      <p class="mt-4 text-lg text-neutral-500 max-w-xl mx-auto">Autional 平台与开源组件的版本发布记录。npm 软件包随迭代滚动发布，明细可在 <a href="https://www.npmjs.com/search?q=%40autional" class="text-primary-600 hover:underline">npm</a> 与 <a href="https://github.com/autional-cn" class="text-primary-600 hover:underline">GitHub 组织页</a>查看。</p>
     </div>
     <div class="space-y-12">
       {changelog.map(v => (

@@ -15,15 +15,14 @@
     "@astrojs/rss": "^4.0.0",
     "@astrojs/sitemap": "^3.7.3",
     "@astrojs/tailwind": "^6.0.2",
+    "@autional/tailwind-preset": "0.1.0-rc.8",
+    "@autional/tokens": "0.1.0-rc.14",
     "astro": "^5.0.0",
     "i18next": "^26.0.10",
     "lucide-react": "^0.509.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-i18next": "^17.0.7",
-    "react-markdown": "^10.1.0",
-    "react-router": "^7.6.1",
-    "remark-gfm": "^4.0.1",
     "tailwindcss": "^3.4.0"
   },
   "devDependencies": {

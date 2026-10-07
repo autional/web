@@ -3,7 +3,7 @@ import '../i18n';
 import { useTranslation } from 'react-i18next';
 import { X, Cookie, Settings } from 'lucide-react';
 
-const STORAGE_KEY = 'authms-cookie-consent';
+const STORAGE_KEY = 'autional-cookie-consent';
 
 interface ConsentState {
   necessary: boolean;

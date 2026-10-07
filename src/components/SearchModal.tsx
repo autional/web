@@ -1,56 +1,25 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, X, FileText, Tag, ArrowRight } from 'lucide-react';
 import '../i18n';
-;
 import { useTranslation } from 'react-i18next';
 
 interface SearchItem {
-  title: string;
   path: string;
+  title: string;
   category: string;
   excerpt: string;
 }
 
-const searchPaths = [
-  '/',
-  '/features',
-  '/docs',
-  '/blog',
-  '/contact',
-  '/trust',
-  '/about',
-  '/privacy',
-  '/terms',
-  '/changelog',
-  '/roadmap',
-  '/faq',
-  '/blog/passkey-2026',
-  '/blog/multi-tenant-architecture',
-  '/blog/gdpr-dsar-automation',
-  '/pricing',
-  '/ai',
-];
-
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  items: SearchItem[];
 }
 
-export default function SearchModal({ isOpen, onClose }: Props) {
+export default function SearchModal({ isOpen, onClose, items }: Props) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const searchIndex = useMemo<SearchItem[]>(
-    () =>
-      searchPaths.map((path, i) => ({
-        path,
-        title: t(`search.index.${i}.title`),
-        category: t(`search.index.${i}.category`),
-        excerpt: t(`search.index.${i}.excerpt`),
-      })),
-    [t]
-  );
 
   const hotTags = useMemo<string[]>(() => {
     const tags = t('search.hotTags', { returnObjects: true });
@@ -81,22 +50,20 @@ export default function SearchModal({ isOpen, onClose }: Props) {
   const results = useMemo(() => {
     if (!query.trim()) return [];
     const q = query.toLowerCase();
-    return searchIndex.filter(
+    return items.filter(
       (item) =>
         item.title.toLowerCase().includes(q) ||
         item.excerpt.toLowerCase().includes(q) ||
         item.category.toLowerCase().includes(q)
     );
-  }, [query, searchIndex]);
+  }, [query, items]);
 
   if (!isOpen) return null;
-
-  const blogCategoryLabel = t('search.category.blog');
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/50 pt-[15vh] backdrop-blur-sm" onClick={onClose}>
       <div
-        className="mx-4 w-full max-w-2xl overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-700 dark:bg-slate-900"
+        className="mx-4 w-full max-w-2xl overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-card dark:border-neutral-700 dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3 border-b border-neutral-200 px-4 py-3 dark:border-neutral-700">
@@ -132,7 +99,7 @@ export default function SearchModal({ isOpen, onClose }: Props) {
               className="group flex items-start gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-neutral-50 dark:hover:bg-slate-800"
             >
               <div className="mt-0.5 shrink-0">
-                {item.category === blogCategoryLabel ? (
+                {item.path.startsWith('/blog/') ? (
                   <Tag className="h-4 w-4 text-neutral-400 group-hover:text-primary-500" />
                 ) : (
                   <FileText className="h-4 w-4 text-neutral-400 group-hover:text-primary-500" />

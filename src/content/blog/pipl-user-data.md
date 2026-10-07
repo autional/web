@@ -1,146 +1,146 @@
 ---
-title: "User Data Management Under PIPL: A Practical Guide"
+title: "PIPL 下的用户数据管理：一份实用指南"
 date: "2026-05-10"
 category: "Compliance"
-tags: ["PIPL", "Data Privacy", "Personal Information Protection"]
-readTime: "9 min"
-excerpt: "A deep dive into how China's Personal Information Protection Law (PIPL) impacts user data management, and how Autional helps enterprises achieve compliance through built-in informed consent, DSAR automation, audit trails, and more."
+tags: ["PIPL", "数据隐私", "个人信息保护"]
+readTime: "9 分钟"
+excerpt: "深入解析《中华人民共和国个人信息保护法》（PIPL）对用户数据管理的影响，并说明 Autional 如何通过内置的告知同意、DSAR 自动化、审计留痕等能力，帮助企业达成合规。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Compliance Note**: The PIPL-related technical capabilities described in this article represent the design goals of the Autional platform. PIPL compliance requires coordination with organizational processes including personal information protection impact assessments, consent management, and cross-border data transfer security assessments. The ultimate compliance responsibility rests with the data controller.
+> **合规说明**：本文所述的 PIPL 相关技术能力代表 Autional 平台的设计目标。PIPL 合规需要与组织流程相配合，包括个人信息保护影响评估、同意管理、跨境数据传输安全评估等。最终的合规责任由个人信息处理者承担。
 
-The Personal Information Protection Law of the People's Republic of China (PIPL), effective November 1, 2021, is often called "China's GDPR." It elevates personal information protection from industry initiative to legal obligation, with binding force on any organization processing the personal data of Chinese citizens.
+《中华人民共和国个人信息保护法》（PIPL）自 2021 年 11 月 1 日起施行，常被称为「中国版 GDPR」。它把个人信息保护从行业倡议提升为法定义务，对任何处理中国公民个人信息的组织都具有约束力。
 
-The cost of violating PIPL is steep: for serious violations, fines can reach **50 million RMB or 5% of the previous year's revenue**, along with orders to suspend related business or revoke business licenses.
+违反 PIPL 的代价高昂：情节严重的，罚款最高可达 **5000 万元人民币或上一年度营业额的 5%**，并可责令暂停相关业务或吊销营业执照。
 
-This article focuses on the core PIPL requirements directly related to user data management and introduces how Autional helps product teams address these provisions.
+本文聚焦与用户数据管理直接相关的 PIPL 核心要求，并介绍 Autional 如何帮助产品团队满足这些条款。
 
-## I. Informed Consent (PIPL Articles 13-17)
+## 一、告知同意（PIPL 第 13-17 条）
 
-### Legal Requirements
+### 法律要求
 
-Before processing personal information, a processor must inform the individual in a prominent, clear, and understandable manner of: the processor's name and contact information, the purpose and method of processing, the types of personal information involved, the retention period, and must obtain the individual's **separate consent**.
+处理个人信息前，处理者必须以显著、清晰、易懂的方式向个人告知：处理者的名称与联系方式、处理目的与方式、涉及的个人信息种类、保存期限，并取得个人的**单独同意**。
 
-For processing sensitive personal information (biometric data, financial accounts, travel records, etc.), **separate consent** must be obtained from the individual. For minors under 14, consent must be obtained from their guardian.
+处理敏感个人信息（生物识别数据、金融账户、行踪轨迹等）的，必须取得个人的**单独同意**。不满 14 周岁未成年人的个人信息，须取得其监护人的同意。
 
-### Autional's Approach
+### Autional 的做法
 
-**Built-in Informed Consent Management**:
+**内置的告知同意管理**：
 
-- **Consent records**: Autional's identity-service automatically creates consent records during user registration and login, precisely recording the time, version, scope, and IP address of consent
-- **Granular consent**: Supports separate consent by information type (basic profile, contact info, location data, behavioral data) rather than "blanket consent"
-- **Revocation mechanism**: Users can withdraw consent at any time—the system automatically stops corresponding data processing and records the revocation
-- **Version management**: When the privacy policy updates, the system automatically pushes new consent requests to all affected users. User data for those who haven't provided new-version consent is suspended
+- **同意记录**：Autional 的 identity-service 在用户注册与登录时自动创建同意记录，精确记录同意的时间、版本、范围与 IP 地址
+- **精细化同意**：支持按信息类型（基本资料、联系方式、位置数据、行为数据）分别同意，而非「一揽子同意」
+- **撤回机制**：用户可随时撤回同意——系统自动停止相应的数据处理并记录撤回动作
+- **版本管理**：隐私政策更新时，系统自动向所有受影响的用户推送新的同意请求。未同意新版本的用户，其数据处理将被暂停
 
-> **PIPL Article 22**: When transferring personal information due to merger, division, dissolution, bankruptcy declaration, etc., the processor shall inform individuals of the recipient's name and contact information.
+> **PIPL 第 22 条**：因合并、分立、解散、被宣告破产等原因需要转移个人信息的，处理者应当向个人告知接收方的名称和联系方式。
 >
-> Autional's tenant change API automatically generates data transfer notification templates during data transfer, ensuring notification obligations are fulfilled before changes take effect.
+> Autional 的租户变更 API 会在数据转移时自动生成数据转移通知模板，确保在变更生效前完成告知义务。
 
-## II. Data Subject Rights (PIPL Articles 44-48)
+## 二、数据主体权利（PIPL 第 44-48 条）
 
-### Legal Requirements
+### 法律要求
 
-Individuals have the following rights over their personal information:
+个人对其个人信息享有以下权利：
 
-- **Right to know and decide** (Article 44): The right to know about and decide on the processing of their personal information
-- **Right to access and copy** (Article 45): The right to request access to and a copy of their personal information
-- **Right to data portability** (Article 45): The right to request transfer of personal information to another designated processor
-- **Right to correct** (Article 46): The right to request correction when information is inaccurate or incomplete
-- **Right to delete** (Article 47): The right to request deletion of personal information under specific circumstances
+- **知情权与决定权**（第 44 条）：对其个人信息的处理享有知情权、决定权
+- **查阅、复制权**（第 45 条）：有权查阅、复制其个人信息
+- **数据可携带权**（第 45 条）：有权请求将其个人信息转移至指定的其他处理者
+- **更正权**（第 46 条）：个人信息不准确或不完整的，有权请求更正、补充
+- **删除权**（第 47 条）：在特定情形下有权请求删除个人信息
 
-### Autional's Approach
+### Autional 的做法
 
-**DSAR Automation Workflow**:
+**DSAR 自动化流程**：
 
-Autional has a built-in complete Data Subject Access Request (DSAR) processing pipeline:
+Autional 内置完整的个人信息查阅请求（DSAR）处理流水线：
 
 ```
 User submits request → Identity verification (MFA) → Data aggregation (multi-service parallel) → Generation/Execution → Notify user
 ```
 
-1. **Self-service access and export**: Users submit data export requests through the End-User Portal or API. The system calls each microservice (identity, profile, session, audit, etc.) in parallel via internal APIs, aggregates all user data, and generates a machine-readable JSON export package
-2. **Data portability**: The export package uses standardized JSON Schema that can be directly imported into other compatible systems, satisfying data portability rights
-3. **Self-service correction**: Users can directly modify basic information (display name, avatar, contact info, etc.), with each correction automatically logged in the audit trail
-4. **Automated deletion**: Data deletion requests automatically trigger: account anonymization, cascading cleanup of related data, and deletion notifications for data shared with third parties. Deletion operations retain audit records
+1. **自助查阅与导出**：用户通过终端用户门户或 API 提交数据导出请求。系统经内部 API 并行调用各微服务（identity、profile、session、audit 等），汇总全部用户数据，生成机器可读的 JSON 导出包
+2. **数据可携带**：导出包采用标准化的 JSON Schema，可直接导入其他兼容系统，满足数据可携带权
+3. **自助更正**：用户可直接修改基本信息（显示名、头像、联系方式等），每次更正都会自动记入审计日志
+4. **自动化删除**：数据删除请求会自动触发：账号匿名化、关联数据的级联清理，以及针对已共享给第三方的数据的删除通知。删除操作仍保留审计记录
 
-**PIPL Article 47 Deletion Trigger Scenarios**:
+**PIPL 第 47 条触发删除的情形**：
 
-| Scenario | Autional Behavior |
+| 情形 | Autional 的行为 |
 |----------|-----------------|
-| Processing purpose achieved or unachievable | Configurable data retention policies, automatic cleanup on expiry |
-| Processor stops providing products/services | Tenant deactivation triggers cascading data cleanup |
-| Retention period expires | Automatic deletion or anonymization per configured retention period |
-| Individual withdraws consent | Stop processing and trigger related data cleanup |
-| Illegal processing | Manual deletion triggered via compliance review API |
+| 处理目的已实现或无法实现 | 可配置的数据保留策略，到期自动清理 |
+| 处理者停止提供产品或服务 | 租户停用触发数据级联清理 |
+| 保存期限届满 | 按配置的保留期自动删除或匿名化 |
+| 个人撤回同意 | 停止处理并触发相关数据清理 |
+| 违法处理 | 经合规审查 API 手动触发删除 |
 
-## III. Data Minimization (PIPL Article 6)
+## 三、最小必要（PIPL 第 6 条）
 
-### Legal Requirements
+### 法律要求
 
-The collection of personal information shall be limited to the minimum scope necessary to achieve the processing purpose. Excessive collection is prohibited.
+收集个人信息应当限于实现处理目的的最小范围，不得过度收集。
 
-### Autional's Approach
+### Autional 的做法
 
-**Configurable Field Policies**:
+**可配置的字段策略**：
 
-- Administrators can configure required and optional fields on registration forms via Admin Console, collecting only business-essential information
-- Data classification labels (basic profile, contact info, behavioral data, sensitive information) help identify and tag data at different levels
-- Data catalog functionality automatically scans user data fields across all services and generates a data map
+- 管理员可通过管理控制台配置注册表单的必填与选填字段，只收集业务必需的信息
+- 数据分类标签（基本资料、联系方式、行为数据、敏感信息）帮助识别并分级标注数据
+- 数据目录功能自动扫描各服务的用户数据字段，生成数据地图
 
-**Periodic Data Cleanup**: Configurable data lifecycle policies automatically anonymize or delete overdue user data, preventing indefinite retention of unnecessary data.
+**周期性数据清理**：可配置的数据生命周期策略会自动匿名化或删除逾期的用户数据，避免不必要的数据被无限期保留。
 
-## IV. Cross-Border Data Transfers (PIPL Articles 38-42)
+## 四、跨境数据传输（PIPL 第 38-42 条）
 
-### Legal Requirements
+### 法律要求
 
-When personal information must be provided overseas, one of the following conditions must be met:
-- Passing a security assessment organized by the national cyberspace administration
-- Obtaining personal information protection certification from a professional body
-- Signing a standard contract with the overseas recipient
-- Other conditions stipulated by laws or the cyberspace administration
+向境外提供个人信息的，应当满足下列条件之一：
+- 通过国家网信部门组织的安全评估
+- 取得专业机构作出的个人信息保护认证
+- 与境外接收方订立标准合同
+- 法律或国家网信部门规定的其他条件
 
-### Autional's Approach
+### Autional 的做法
 
-**Cross-Border Data Tracking**:
+**跨境数据追踪**：
 
-- **Data residency configuration**: Tenant-level data residency policies specifying geographic storage regions
-- **Cross-border transfer logging**: Every cross-border data transfer (e.g., calling overseas third-party APIs) is automatically recorded in the audit log
-- **Transfer reports**: The compliance module can generate cross-border data transfer reports for security assessment filings and individual notifications
+- **数据驻留配置**：租户级的数据驻留策略，指定数据的存储地域
+- **跨境传输留痕**：每一次跨境数据传输（例如调用境外第三方 API）都会自动记入审计日志
+- **传输报告**：合规模块可生成跨境数据传输报告，用于安全评估申报与向个人告知
 
-## V. Security Incident Notification (PIPL Article 57)
+## 五、安全事件通知（PIPL 第 57 条）
 
-### Legal Requirements
+### 法律要求
 
-In the event of personal information leakage, tampering, or loss, the processor shall immediately take remedial measures and notify the relevant supervisory authorities and affected individuals. The notification shall include: types of information leaked, causes, potential harm, remedial measures taken, measures individuals can take to mitigate harm, and the processor's contact information.
+发生个人信息泄露、篡改、丢失的，处理者应当立即采取补救措施，并通知履行个人信息保护职责的部门和个人。通知内容应当包括：泄露的个人信息种类、原因、可能造成的危害、已采取的补救措施、个人可以采取的减轻危害的措施，以及处理者的联系方式。
 
-The industry-recognized notification deadline is **72 hours**.
+业界公认的通知时限是 **72 小时**。
 
-### Autional's Approach
+### Autional 的做法
 
-**Automated Alerts and Notification Templates**:
+**自动化告警与通知模板**：
 
-1. **Real-time detection**: audit-service's anomaly detection engine monitors audit event streams in real time, identifying suspicious data access patterns—abnormal bulk exports, off-hours privilege escalation, large-scale access from unusual locations
-2. **72-hour notification framework**:
-   - Automatically creates a Security Incident upon detection
-   - Pre-built notification templates: user notifications, regulatory reports
-   - Auto-populates known information (incident time, data types affected, quantity estimates), speeding up notification preparation
-3. **Incident tracing**: Hash-chained audit logs enable rapid tracing of breach scope—which user data was accessed? When did it start? Who performed the operation?
-4. **SIEM integration**: Security events are automatically pushed to SIEM systems, ensuring security operations teams respond immediately
+1. **实时检测**：audit-service 的异常检测引擎实时监控审计事件流，识别可疑的数据访问模式——异常的批量导出、非工作时间的权限提升、来自非常规位置的大规模访问
+2. **72 小时通知框架**：
+   - 检测到事件时自动创建安全事件
+   - 预置通知模板：用户通知、监管报告
+   - 自动填充已知信息（事件时间、受影响的数据类型、数量预估），加快通知准备
+3. **事件溯源**：哈希链审计日志可快速追溯泄露范围——哪些用户数据被访问？从何时开始？由谁执行？
+4. **SIEM 集成**：安全事件自动推送到 SIEM 系统，确保安全运营团队第一时间响应
 
-## PIPL Compliance Checklist
+## PIPL 合规自查清单
 
-Autional readiness status after enablement:
+启用后 Autional 的达成情况：
 
-- ✅ Informed consent: Consent records cover all data processing scenarios, supporting granular authorization and revocation
-- ✅ DSAR automation: Users can self-service access, export, correct, and delete personal information
-- ✅ Data minimization: Configurable field policies with periodic automatic cleanup of overdue data
-- ✅ Cross-border transfers: Data residency configuration + cross-border transfer logging + exportable transfer reports
-- ✅ Security incident notification: Real-time detection + 72-hour notification framework + audit trail tracing
-- ✅ Third-party sharing tracking: Data sharing records automatically maintained, sharing scope queryable at any time
+- ✅ 告知同意：同意记录覆盖全部数据处理场景，支持精细化授权与撤回
+- ✅ DSAR 自动化：用户可自助查阅、导出、更正、删除个人信息
+- ✅ 最小必要：可配置字段策略，逾期数据周期性自动清理
+- ✅ 跨境传输：数据驻留配置 + 跨境传输留痕 + 可导出的传输报告
+- ✅ 安全事件通知：实时检测 + 72 小时通知框架 + 审计追溯
+- ✅ 第三方共享追踪：数据共享记录自动维护，共享范围随时可查
 
 ---
 
-PIPL is not a one-time project—it's an ongoing compliance obligation. Autional embeds PIPL compliance requirements into the product's default behavior. Instead of implementing data protection features one by one in each business system, you build the compliance foundation at the identity layer, uniformly and comprehensively. You focus on business innovation; Autional guards the bottom line of data privacy.
+PIPL 合规不是一次性项目，而是持续的义务。Autional 把 PIPL 的合规要求嵌入产品的默认行为中。你无需在各个业务系统里逐个实现数据保护功能，而是在身份层统一、完整地打好合规地基。你专注业务创新，数据隐私的底线交给 Autional 守护。

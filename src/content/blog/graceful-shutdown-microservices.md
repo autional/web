@@ -1,27 +1,27 @@
 ---
-title: "How to Gracefully Shutdown 16 Microservices? Autional's Unified Bootstrapper Revealed"
+title: "27 个微服务如何优雅停机？Autional 统一启动框架拆解"
 date: "2026-05-12"
 category: "Architecture"
-tags: ["Graceful Shutdown", "Operations", "Reliability"]
-readTime: "7 min"
-excerpt: "When Kubernetes sends SIGTERM, does your microservice die immediately or gracefully wrap up within 30 seconds? Autional's unified Application bootstrapper ensures 16 services shut down gracefully—including HTTP request draining, MQ message completion, gRPC connection closure, and database pool release."
+tags: ["优雅停机", "运维", "可靠性"]
+readTime: "7 分钟"
+excerpt: "当 Kubernetes 发出 SIGTERM 时，你的微服务是直接暴毙，还是在 30 秒内优雅收尾？Autional 的统一 Application 启动框架让 27 个服务都能优雅停机——涵盖 HTTP 请求排空、MQ 消息处理完成、gRPC 连接关闭与数据库连接池释放。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-Service restarts are the norm in production—Kubernetes rolling updates, node evictions, resource scaling—each sends a SIGTERM signal to the Pod. A microservice that doesn't handle SIGTERM will terminate immediately, leading to:
+服务重启在生产环境是常态——Kubernetes 滚动更新、节点驱逐、资源扩缩容——每一次都会向 Pod 发送 SIGTERM 信号。不处理 SIGTERM 的微服务会立即终止，导致：
 
-- In-flight HTTP requests being interrupted, clients seeing connection reset errors
-- Messages taken from RabbitMQ but not yet processed being permanently lost (auto-acked)
-- gRPC streams cut off mid-way, downstream services receiving `UNAVAILABLE` errors
-- Database connection pool violently closed, uncommitted transactions rolled back
+- 处理中的 HTTP 请求被中断，客户端看到连接重置错误
+- 已从 RabbitMQ 取出但尚未处理完的消息永久丢失（自动 ack）
+- gRPC 流中途断开，下游服务收到 `UNAVAILABLE` 错误
+- 数据库连接池被暴力关闭，未提交的事务被回滚
 
-Autional's 16 microservices achieve **zero-downtime graceful shutdown** through the unified `micro-middleware/app` bootstrapper.
+Autional 的 27 个微服务通过统一的 `micro-middleware/app` 启动框架实现了 **零停机优雅停机**。
 
-## Wild Shutdown vs Graceful Shutdown
+## 暴力停机 vs 优雅停机
 
-### Wild Shutdown (Nothing Done)
+### 暴力停机（什么都没做）
 
 ```
 Timeline:
@@ -32,9 +32,9 @@ T+0s   2 database transactions uncommitted → data inconsistency
 T+0s   gRPC stream disconnected → downstream retries (avalanche risk)
 ```
 
-This is the most common and most dangerous scenario—a simple `go run cmd/server/main.go` with no signal handling and no shutdown logic.
+这是最常见也最危险的场景——一个简单的 `go run cmd/server/main.go`，没有信号处理，也没有停机逻辑。
 
-### Graceful Shutdown (Autional Pattern)
+### 优雅停机（Autional 模式）
 
 ```
 Timeline:
@@ -49,13 +49,13 @@ T+12s  Close database connection pool (LIFO)
 T+12s  Process exits
 ```
 
-Consumers are unaware. Kubernetes `terminationGracePeriodSeconds` is set to 30 seconds, providing ample buffer time.
+而消费方对此毫无感知。Kubernetes 的 `terminationGracePeriodSeconds` 设为 30 秒，留出了充足的缓冲时间。
 
-## Autional Unified Bootstrapper Design
+## Autional 统一启动框架设计
 
-### Application Builder Pattern
+### Application Builder 模式
 
-Each service builds its startup configuration via a Builder in `main.go`:
+每个服务在 `main.go` 中通过 Builder 构建启动配置：
 
 ```go
 import app_pkg "gitee.com/linmes/authms/micro-middleware/app"
@@ -84,11 +84,11 @@ func main() {
 }
 ```
 
-Each `WithServer` and `WithCloser` registers a **named shutdown callback**. During shutdown, they execute in **reverse registration order** (LIFO), ensuring "first created, first opened, and opened resources close in dependency order":
+每个 `WithServer` 与 `WithCloser` 都注册了一个**具名停机回调**。停机时它们按**注册顺序的逆序**（LIFO）执行，确保「先创建、先打开的资源后关闭」，符合依赖顺序：
 
-### WithServer: Lifecycle Management
+### WithServer：生命周期管理
 
-`WithServer` registers components implementing the `app.Server` interface:
+`WithServer` 注册实现了 `app.Server` 接口的组件：
 
 ```go
 type Server interface {
@@ -97,24 +97,24 @@ type Server interface {
 }
 ```
 
-Common Server implementations in Autional:
+Autional 中常见的 Server 实现：
 
-| Component | Implementation | Purpose |
+| 组件 | 实现 | 用途 |
 |------|------|------|
-| Gin Router | `app.NewHTTPServer(addr, handler)` | HTTP service |
-| gRPC Service | `grpc_mw.Server` via `app.NewGRPCServer` wrapper | gRPC endpoints |
-| MQ Consumer | `consumer_pkg.NewServer(consumer)` | RabbitMQ consumption |
-| Health Check | `health.StartStandaloneServer` | Pure health probe |
+| Gin Router | `app.NewHTTPServer(addr, handler)` | HTTP 服务 |
+| gRPC 服务 | 经 `app.NewGRPCServer` 包装的 `grpc_mw.Server` | gRPC 端点 |
+| MQ 消费者 | `consumer_pkg.NewServer(consumer)` | RabbitMQ 消费 |
+| 健康检查 | `health.StartStandaloneServer` | 纯健康探针 |
 
-On shutdown, `app.Run` calls each Server's `Shutdown(ctx)` in reverse order, passing the context timeout (default 30 seconds) to each component.
+停机时，`app.Run` 按逆序调用每个 Server 的 `Shutdown(ctx)`，并把上下文超时（默认 30 秒）传给每个组件。
 
-### WithCloser vs WithCleanupNamed
+### WithCloser 与 WithCleanupNamed
 
-Autional distinguishes two cleanup methods:
+Autional 区分两种清理方式：
 
-- `WithCloser(name, fn)` — simple `func() error` closure for single-step cleanup (close DB, close Redis)
-- `WithCleanupNamed(name, fn)` — same as Closer but semantically for "side-effect cleanup" (e.g., audit client flush buffer)
-- Deprecated: `WithCleanup(func())` — no name, no error return, not observable
+- `WithCloser(name, fn)` —— 简单的 `func() error` 闭包，用于单步清理（关闭 DB、关闭 Redis）
+- `WithCleanupNamed(name, fn)` —— 与 Closer 相同，但语义上用于「副作用清理」（如审计客户端刷缓冲区）
+- 已废弃：`WithCleanup(func())` —— 没有名称、不返回错误、不可观测
 
 ```go
 // Correct: returns error, has a name
@@ -127,11 +127,11 @@ app.WithCloser("db", func() error {
 app.WithCleanup(func() { db.Close() })
 ```
 
-## Shutdown Sequence in Detail
+## 停机时序详解
 
-### Step 1: Stop Accepting New Requests (0-1 sec)
+### 第一步：停止接受新请求（0-1 秒）
 
-Upon receiving SIGTERM, `app.Run` immediately calls `http.Server.Shutdown(ctx)`:
+收到 SIGTERM 后，`app.Run` 立即调用 `http.Server.Shutdown(ctx)`：
 
 ```go
 func (a *Application) Run(port int) {
@@ -158,13 +158,13 @@ func (a *Application) Run(port int) {
 }
 ```
 
-HTTP Server Shutdown behavior:
-- Closes the listening socket → new connections rejected, returns 503
-- Waits for all in-flight requests to complete or timeout (`ctx` deadline)
+HTTP Server 的 Shutdown 行为：
+- 关闭监听套接字 → 新连接被拒绝，返回 503
+- 等待所有处理中的请求完成或超时（`ctx` 截止时间）
 
-### Step 2: Drain MQ Consumers (3-8 sec)
+### 第二步：排空 MQ 消费者（3-8 秒）
 
-MQ consumers achieve graceful shutdown through `consumer_pkg.Server`:
+MQ 消费者通过 `consumer_pkg.Server` 实现优雅停机：
 
 ```go
 // internal implementation of consumer_pkg.NewServer
@@ -178,11 +178,11 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 ```
 
-In Autional's consumer architecture, messages are only acked after successful processing (manual acknowledgment mode). So even if the MQ consumer hasn't finished processing messages during process shutdown, messages are re-queued (not acked) and are not lost.
+在 Autional 的消费者架构中，消息只有在处理成功后才 ack（手动确认模式）。因此即使进程停机时 MQ 消费者还没处理完消息，消息也会被重新入队（未被 ack），不会丢失。
 
-For long-running messages (e.g., compliance report generation, potentially 30+ seconds), context cancellation interrupts processing, and the message returns to the queue to be picked up by another Pod.
+对于耗时较长的消息（如合规报告生成，可能超过 30 秒），上下文取消会中断处理，消息回到队列由另一个 Pod 接手。
 
-### Step 3: gRPC GracefulStop (8-10 sec)
+### 第三步：gRPC 优雅停止（8-10 秒）
 
 ```go
 func (s *GRPCServer) Shutdown(ctx context.Context) error {
@@ -202,11 +202,11 @@ func (s *GRPCServer) Shutdown(ctx context.Context) error {
 }
 ```
 
-gRPC's `GracefulStop` ensures ongoing stream transfers can complete fully, while `Stop` is the hard-close fallback.
+gRPC 的 `GracefulStop` 确保进行中的流传输能完整结束，而 `Stop` 是超时后的强制关闭兜底。
 
-### Step 4: Close Infrastructure Connection Pools (10-12 sec)
+### 第四步：关闭基础设施连接池（10-12 秒）
 
-Closed in LIFO order:
+按 LIFO 顺序关闭：
 
 ```
 Close order (reverse of registration):
@@ -217,7 +217,7 @@ Close order (reverse of registration):
     ↑ sql.DB.Close() waits for all borrowed goroutines to return connections
 ```
 
-Each step is logged:
+每一步都会记录日志：
 
 ```
 INFO shutting down server name=http
@@ -230,9 +230,9 @@ INFO closing name=db
 INFO shutdown complete
 ```
 
-If a Closer returns an error, it does not skip subsequent Closers—all cleanup steps are executed. This is defensive design: even if Redis connection is already broken causing Close to fail, the DB connection pool still needs to be released normally.
+如果某个 Closer 返回错误，它不会跳过后续的 Closer——所有清理步骤都会执行。这是防御性设计：即使 Redis 连接已经断开导致 Close 失败，数据库连接池仍然需要正常释放。
 
-## Timeout and Fallback
+## 超时与兜底
 
 ```go
 const defaultShutdownTimeout = 30 * time.Second
@@ -251,17 +251,17 @@ go func() {
 }()
 ```
 
-Why set a timeout:
+为什么要设超时：
 
-- Kubernetes default `terminationGracePeriodSeconds` is 30 seconds
-- If graceful shutdown doesn't complete within 30 seconds, Kubernetes sends SIGKILL to force-kill the Pod
-- Autional's 30-second default aligns with this, but can be customized via `WithShutdownTimeout`
+- Kubernetes 默认的 `terminationGracePeriodSeconds` 是 30 秒
+- 如果优雅停机没能在 30 秒内完成，Kubernetes 会发送 SIGKILL 强制杀死 Pod
+- Autional 的 30 秒默认值与之一致，也可通过 `WithShutdownTimeout` 自定义
 
-## Verified in Production
+## 生产环境实证
 
-Autional's graceful shutdown performance in production:
+Autional 的优雅停机在生产环境的表现：
 
-**Scenario 1: Normal Rolling Update**
+**场景一：正常滚动更新**
 
 ```
 Pod identity-service-7f8b9c-abc12 receives SIGTERM
@@ -273,9 +273,9 @@ Pod identity-service-7f8b9c-abc12 receives SIGTERM
 → 5.0s: Process exits
 ```
 
-The gateway load balancer detects Pod termination and automatically routes traffic to the new Pod. Zero errors, zero 5xx.
+网关负载均衡器检测到 Pod 终止，自动把流量路由到新 Pod。零错误、零 5xx。
 
-**Scenario 2: Database Connection Failure (Fallback Test)**
+**场景二：数据库连接故障（兜底测试）**
 
 ```
 Pod billing-service-6c3d9a-xyz78 receives SIGTERM
@@ -288,7 +288,7 @@ Pod billing-service-6c3d9a-xyz78 receives SIGTERM
 → 0.7s: Process exits (despite db.Close failure)
 ```
 
-Because `db.Close()` returned an error, but the `WithCloser` implementation **always calls all Closers**, never interrupting due to a single failure:
+因为 `db.Close()` 返回了错误，但 `WithCloser` 的实现会**始终调用所有 Closer**，绝不因单步失败而中断：
 
 ```go
 for _, closer := range s.closers {  // reverse order
@@ -300,28 +300,28 @@ for _, closer := range s.closers {  // reverse order
 }
 ```
 
-## Why This Matters
+## 为什么这很重要
 
-### User Experience
+### 用户体验
 
-Zero-downtime graceful shutdown means: users in the middle of two-factor authentication (MFA), submitting a password reset request, or checking wallet balances—none of these in-progress operations are interrupted by deployments. Users don't notice a thing.
+零停机优雅停机意味着：正在进行 MFA 多因素认证、正在提交口令重置请求、正在查看钱包余额的用户——这些进行中的操作都不会被发布打断。用户毫无感知。
 
-### Data Integrity
+### 数据完整性
 
-MQ messages are not lost: unacked messages are re-queued after shutdown and taken over by new Pods. Database transactions don't hang: connection pool shuts down gracefully, waiting for all goroutines to return connections and complete transactions.
+MQ 消息不丢失：未 ack 的消息在停机后重新入队，由新 Pod 接手。数据库事务不会悬挂：连接池优雅关闭，等待所有 goroutine 归还连接并完成事务。
 
-### Operations-Friendly
+### 运维友好
 
-The complete shutdown sequence is recorded in logs. If a Pod consistently fails to shut down, operations can quickly locate the problematic component from "close resource failed name=xxx" logs.
+完整的停机时序都记录在日志里。如果某个 Pod 持续停机失败，运维可以从 `close resource failed name=xxx` 这类日志快速定位到问题组件。
 
-## Summary
+## 小结
 
-Autional's `micro-middleware/app` bootstrapper uses less than 300 lines of code to uniformly manage the lifecycle of 16 microservices:
+Autional 的 `micro-middleware/app` 启动框架用不到 300 行代码，统一管理了 27 个微服务的生命周期：
 
-- **Declarative Registration**: Builder pattern with `WithServer` + `WithCloser`
-- **Signal-Driven**: Listens for SIGTERM/SIGINT, automatically triggers shutdown sequence
-- **Tiered Gracefulness**: HTTP → MQ → gRPC → Infrastructure, orderly shutdown
-- **Fallback Mechanism**: Hard exit on timeout + single-step failure doesn't interrupt subsequent cleanup
-- **Full Logging**: Every component shutdown has name and error recorded
+- **声明式注册**：Builder 模式的 `WithServer` + `WithCloser`
+- **信号驱动**：监听 SIGTERM/SIGINT，自动触发停机时序
+- **分层优雅**：HTTP → MQ → gRPC → 基础设施，有序停机
+- **兜底机制**：超时强制退出 + 单步失败不中断后续清理
+- **完整日志**：每个组件的停机都有名称与错误记录
 
-If you're building microservices in Go, there's no need to reinvent the wheel—this pattern can be directly copied into your project. The core principle is just one rule: **Never let SIGTERM directly kill your in-flight requests.**
+如果你在用 Go 写微服务，不必重新造轮子——这套模式可以直接照搬到你的项目里。核心原则只有一条：**永远不要让 SIGTERM 直接杀死你正在处理的请求。**

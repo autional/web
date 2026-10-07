@@ -1,60 +1,61 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
-const codeSample = `<span class="text-slate-500">// app.tsx</span>
-<span class="text-sky-300">import</span> {
-  <span class="text-white">AuthProvider</span>,
-} <span class="text-sky-300">from</span> <span class="text-amber-300">'@autional/react'</span>;
+import { SITE_FACTS } from '../lib/site-facts';
+const codeSample = `<span class="text-syntax-comment">// app.tsx</span>
+<span class="text-syntax-keyword">import</span> {
+  <span class="text-white">AutionalProvider</span>,
+} <span class="text-syntax-keyword">from</span> <span class="text-syntax-string">'@autional/react'</span>;
 
-<span class="text-sky-300">export function</span> <span class="text-white">App</span>() {
-  <span class="text-fuchsia-300">return</span> (
-    <span class="text-sky-200">&lt;AuthProvider</span>
-      <span class="text-emerald-300">tenant</span>=<span class="text-amber-300">"workspace-eu"</span>
-      <span class="text-emerald-300">features</span>=<span class="text-white">{[
-        'sso',
-        'passkey',
-        'audit',
-      ]}</span>
-    <span class="text-sky-200">&gt;</span>
-      <span class="text-sky-200">&lt;YourProduct /&gt;</span>
-    <span class="text-sky-200">&lt;/AuthProvider&gt;</span>
+<span class="text-syntax-keyword">const</span> <span class="text-white">config</span> = {
+  <span class="text-syntax-function">appId</span>: <span class="text-syntax-string">'my-app'</span>,
+  <span class="text-syntax-function">issuer</span>: <span class="text-syntax-string">'https://api.autional.cn'</span>,
+};
+
+<span class="text-syntax-keyword">export function</span> <span class="text-white">App</span>() {
+  <span class="text-syntax-keyword">return</span> (
+    <span class="text-syntax-tag">&lt;AutionalProvider</span>
+      <span class="text-syntax-function">config</span>=<span class="text-white">{config}</span>
+    <span class="text-syntax-tag">&gt;</span>
+      <span class="text-syntax-tag">&lt;YourProduct /&gt;</span>
+    <span class="text-syntax-tag">&lt;/AutionalProvider&gt;</span>
   );
 }`;
 
 const overviewStats = [
-  { value: '24', label: 'Identity Services' },
-  { value: '1,400+', label: 'API Endpoints' },
-  { value: '99.95%', label: 'SLA Ready' },
-  { value: '<150ms', label: 'Median Response' },
+  { value: `${SITE_FACTS.serviceCount}`, label: '身份服务' },
+  { value: '1,400+', label: 'API 端点' },
+  { value: '99.95%', label: 'SLA 就绪' },
+  { value: '<150ms', label: '响应时间中位数' },
 ];
 
 const solutionCards = [
   {
-    eyebrow: 'Authentication',
-    title: 'Brand-ready sign-in experiences',
-    description: 'Passkey, OTP, social login, magic link, and adaptive MFA with consistent web styling.',
+    eyebrow: '认证',
+    title: '符合品牌调性的登录体验',
+    description: '通行密钥（Passkey）、OTP、社交登录、Magic Link 与自适应 MFA，Web 端样式保持统一。',
   },
   {
-    eyebrow: 'Enterprise Access',
-    title: 'SSO, SCIM, and tenant isolation',
-    description: 'Launch from startup MVP to enterprise rollout without swapping your identity layer later.',
+    eyebrow: '企业级访问',
+    title: 'SSO、SCIM 与租户隔离',
+    description: '从初创 MVP 一路走到企业级推广，无需日后更换身份层。',
   },
   {
-    eyebrow: 'Observability',
-    title: 'Audit, policy, and security insights',
-    description: 'Visual monitoring, event trails, and compliance controls packaged for SaaS operations.',
+    eyebrow: '可观测性',
+    title: '审计、策略与安全洞察',
+    description: '面向 SaaS 运营的可视化监控、事件追踪与合规控制。',
   },
 ];
 
 const capabilities = [
-  ['Adaptive MFA', 'Risk signals, step-up verification, and passkey fallback in one flow.'],
-  ['Organization Model', 'Tenant boundary, delegated admin, role templates, and white-label controls.'],
-  ['Identity APIs', 'REST, SDK, webhook, and event streams for product teams shipping fast.'],
-  ['Compliance Layer', 'Structured audit records, retention strategy, and policy-based access decisions.'],
-  ['Developer Velocity', 'OpenAPI-first contracts and generated SDKs that match your shipping pace.'],
-  ['Global Delivery', 'SaaS-ready architecture that scales across regions and customer segments.'],
+  ['自适应 MFA', '风险信号、步进式验证与通行密钥（Passkey）回退，统一在一套流程中。'],
+  ['组织模型', '租户边界、委派管理、角色模板与白标控制。'],
+  ['身份 API', 'REST、SDK、Webhook 与事件流，助力产品团队快速交付。'],
+  ['合规层', '结构化审计记录、保留策略与基于策略的访问决策。'],
+  ['开发者效率', 'OpenAPI 优先的契约与自动生成的 SDK，跟得上你的交付节奏。'],
+  ['全球交付', '面向 SaaS 的架构，可跨区域、跨客户群扩展。'],
 ];
 ---
-<Layout title="Autional — Identity for AI-Generated Applications" description="Open-source identity infrastructure. Authentication, accounts, multi-tenancy, and access control. Build with AI, ship with confidence." keywords="Autional, identity, authentication, IAM, SSO, MFA, multi-tenant, open source, AI, SaaS, enterprise">
+<Layout title="Autional — 面向 AI 生成应用的身份层" description="面向 AI 生成应用的身份层。认证、账户、多租户与访问控制，为用 AI 构建产品的团队而设计。" keywords="Autional, 身份, 认证, IAM, SSO, MFA, 多租户, 开源, AI, SaaS, 企业">
   <section class="relative overflow-hidden px-4 pb-12 pt-10 sm:px-6 lg:px-8 lg:pb-16 lg:pt-16">
     <div class="absolute inset-x-0 top-0 -z-10 h-[34rem] bg-brand-radial"></div>
     <div class="absolute left-1/2 top-20 -z-10 hidden h-80 w-80 -translate-x-10 rounded-full bg-amber-300/20 blur-3xl lg:block"></div>
@@ -62,57 +63,39 @@ const capabilities = [
       <div>
         <div class="brand-kicker">
           <span class="h-2 w-2 rounded-full bg-amber-400"></span>
-          SaaS Identity Design System
+          开源 · AGPL-3.0
         </div>
-        <h1 class="mt-7 max-w-3xl text-5xl font-extrabold leading-[1.14] tracking-tight text-primary-900 dark:text-white sm:text-6xl sm:leading-[1.08] lg:text-7xl lg:leading-[1.05]">
-          Your AI App Needs Users.
-          <span class="mt-2 block text-sky-500">Autional Makes It Feel Native.</span>
+        <h1 class="mt-6 max-w-3xl text-5xl font-extrabold leading-[var(--line-height-display-xl)] tracking-tight text-primary-900 dark:text-white sm:text-6xl sm:leading-[var(--line-height-display-xl)] lg:text-7xl lg:leading-[var(--line-height-display-2xl)]">
+          你的 AI 应用需要用户。
+          <span class="mt-2 block text-sky-500">Autional 让它浑然天成。</span>
         </h1>
-        <p class="mt-7 max-w-2xl text-lg leading-8 text-neutral-600 dark:text-sky-50/72">
-          Autional gives AI-native products a complete identity layer with the polish of a product brand system:
-          authentication, organizations, access control, audit, and developer APIs aligned in one modern interface.
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-neutral-600 dark:text-sky-50/72">
+          Autional 为 AI 生成应用提供完整的身份层：认证、组织、访问控制、审计与开发者 API，
+          统一在一个连贯的系统中。
         </p>
         <div class="mt-10 flex flex-wrap gap-4">
-          <a href="/docs" class="brand-button-primary">Explore Docs</a>
-          <a href="/contact" class="brand-button-secondary">Talk to Us</a>
-        </div>
-        <div class="mt-10 grid max-w-2xl gap-4 sm:grid-cols-3">
-          <div class="rounded-3xl border border-primary-100 bg-white/80 px-5 py-4 shadow-soft dark:border-white/10 dark:bg-white/5">
-            <div class="text-sm font-medium text-neutral-500 dark:text-sky-100/70">Brand palette</div>
-            <div class="mt-2 flex gap-2">
-              <span class="h-8 w-8 rounded-2xl bg-primary-700"></span>
-              <span class="h-8 w-8 rounded-2xl bg-sky-300"></span>
-              <span class="h-8 w-8 rounded-2xl bg-amber-400"></span>
-            </div>
-          </div>
-          <div class="rounded-3xl border border-primary-100 bg-white/80 px-5 py-4 shadow-soft dark:border-white/10 dark:bg-white/5">
-            <div class="text-sm font-medium text-neutral-500 dark:text-sky-100/70">Visual language</div>
-            <div class="mt-2 text-xl font-semibold text-primary-900 dark:text-white">Dashboard-first</div>
-          </div>
-          <div class="rounded-3xl border border-primary-100 bg-white/80 px-5 py-4 shadow-soft dark:border-white/10 dark:bg-white/5">
-            <div class="text-sm font-medium text-neutral-500 dark:text-sky-100/70">Experience</div>
-            <div class="mt-2 text-xl font-semibold text-primary-900 dark:text-white">Clear, secure, premium</div>
-          </div>
+          <a href="/docs" class="brand-button-primary">浏览文档</a>
+          <a href="/contact" class="brand-button-secondary">联系我们</a>
         </div>
       </div>
 
-      <div class="brand-shell brand-grid relative overflow-hidden p-5 sm:p-7">
+      <div class="brand-shell brand-grid relative overflow-hidden p-5 sm:p-6">
         <div class="absolute inset-x-0 top-0 h-28 bg-gradient-to-r from-primary-700 via-primary-600 to-sky-500"></div>
-        <div class="relative mt-16 rounded-[28px] bg-white p-5 shadow-brand dark:bg-slate-950/90">
+        <div class="relative mt-16 rounded-xl bg-white p-5 shadow-brand dark:bg-slate-950/90">
           <div class="flex items-center justify-between gap-4 border-b border-primary-100 pb-4 dark:border-white/10">
             <div class="flex items-center gap-3">
-              <img src="/logo-mark.svg" alt="Autional mark" class="h-11 w-11 rounded-2xl" />
+              <img src="/logo-mark.svg" alt="Autional 徽标" class="h-11 w-11 rounded-md" />
               <div>
-                <div class="text-sm font-semibold uppercase tracking-[0.16em] text-primary-500">Identity Command</div>
-                <div class="text-xl font-bold text-primary-900 dark:text-white">Operational Overview</div>
+                <div class="text-sm font-semibold uppercase tracking-[0.16em] text-primary-500">身份指挥中心</div>
+                <div class="text-xl font-bold text-primary-900 dark:text-white">运营总览</div>
               </div>
             </div>
-            <div class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">All systems healthy</div>
+            <div class="rounded-full bg-[var(--color-success-soft)] px-3 py-1 text-xs font-semibold text-[var(--color-success-text)]">所有系统正常</div>
           </div>
 
           <div class="mt-5 grid gap-4 sm:grid-cols-2">
             {overviewStats.map((item) => (
-              <div class="rounded-3xl border border-primary-100 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/5">
+              <div class="rounded-lg border border-primary-100 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/5">
                 <div class="text-xs font-semibold uppercase tracking-[0.18em] text-primary-500">{item.label}</div>
                 <div class="mt-3 text-3xl font-bold text-primary-900 dark:text-white">{item.value}</div>
               </div>
@@ -120,28 +103,28 @@ const capabilities = [
           </div>
 
           <div class="mt-5 grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-            <div class="rounded-3xl border border-primary-100 p-5 dark:border-white/10">
-              <div class="text-sm font-semibold text-primary-900 dark:text-white">Authentication Mix</div>
-              <div class="mx-auto mt-5 flex h-40 w-40 items-center justify-center rounded-full" style="background: conic-gradient(#003153 0deg 120deg, #87CEEB 120deg 220deg, #FFBF00 220deg 290deg, #61B8DF 290deg 360deg);">
-                <div class="flex h-24 w-24 items-center justify-center rounded-full bg-white text-center text-xs font-semibold text-neutral-600 shadow-inner dark:bg-slate-950 dark:text-sky-100/80">
-                  Risk-aware
+            <div class="rounded-lg border border-primary-100 p-5 dark:border-white/10">
+              <div class="text-sm font-semibold text-primary-900 dark:text-white">认证方式分布</div>
+              <div class="mx-auto mt-5 flex h-40 w-40 items-center justify-center rounded-full" style="background: conic-gradient(var(--color-primary-700) 0deg 120deg, var(--color-sky-500) 120deg 220deg, var(--color-amber-500) 220deg 290deg, var(--color-sky-600) 290deg 360deg);">
+                <div class="flex h-24 w-24 items-center justify-center rounded-full bg-white text-center text-xs font-semibold text-neutral-600 dark:bg-slate-950 dark:text-sky-100/80">
+                  风险感知
                   <br />
-                  sign-ins
+                  登录
                 </div>
               </div>
               <div class="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
                 <span class="rounded-full bg-primary-50 px-3 py-1 text-primary-700 dark:bg-white/10 dark:text-sky-100">SSO 33%</span>
-                <span class="rounded-full bg-sky-50 px-3 py-1 text-sky-700 dark:bg-white/10 dark:text-sky-100">Passkey 28%</span>
-                <span class="rounded-full bg-amber-50 px-3 py-1 text-amber-700 dark:bg-white/10 dark:text-amber-200">OTP 19%</span>
+                <span class="rounded-full bg-[var(--color-primary-50)] px-3 py-1 text-[var(--color-primary-700)]">Passkey 28%</span>
+                <span class="rounded-full bg-[var(--color-warning-soft)] px-3 py-1 text-[var(--color-warning-text)]">OTP 19%</span>
               </div>
             </div>
-            <div class="rounded-3xl border border-primary-100 p-5 dark:border-white/10">
+            <div class="rounded-lg border border-primary-100 p-5 dark:border-white/10">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-sm font-semibold text-primary-900 dark:text-white">Verification Volume</div>
-                  <div class="mt-1 text-xs text-neutral-500 dark:text-sky-100/70">Daily trend from brand dashboard</div>
+                  <div class="text-sm font-semibold text-primary-900 dark:text-white">验证量</div>
+                  <div class="mt-1 text-xs text-[var(--color-text-muted)] dark:text-sky-100/70">品牌仪表盘的每日趋势</div>
                 </div>
-                <div class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">+12.5%</div>
+                <div class="rounded-full bg-[var(--color-success-soft)] px-3 py-1 text-xs font-semibold text-[var(--color-success-text)]">+12.5%</div>
               </div>
               <div class="mt-6 flex h-40 items-end gap-3">
                 {[42, 60, 56, 78, 72, 95, 88, 110].map((height, idx) => (
@@ -173,10 +156,10 @@ const capabilities = [
   <section class="px-4 py-16 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl text-center">
       <div class="brand-card inline-block px-10 py-8">
-        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-primary-500 mb-4">Built With</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-primary-500 mb-4">技术栈</p>
         <div class="flex flex-wrap items-center justify-center gap-3">
           {['Go','TypeScript','PostgreSQL','Redis','RabbitMQ','MongoDB','Docker','Prometheus'].map(t => (
-            <span class="rounded-full border border-primary-100 bg-white/95 px-4 py-2 text-sm font-medium text-primary-700 shadow-soft transition hover:shadow-card hover:-translate-y-0.5">{t}</span>
+            <span class="rounded-full border border-primary-100 bg-white/95 px-4 py-2 text-sm font-medium text-primary-700 shadow-soft transition hover:-translate-y-0.5 hover:border-neutral-300">{t}</span>
           ))}
         </div>
       </div>
@@ -186,9 +169,9 @@ const capabilities = [
   <section class="px-4 py-20 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl">
       <div class="max-w-3xl">
-        <div class="brand-kicker">Brand-led Experience</div>
-        <h2 class="mt-6 text-3xl font-bold leading-[1.34] tracking-tight text-primary-900 dark:text-white sm:text-5xl sm:leading-[1.24]">Designed like a premium SaaS platform, not a default infrastructure tool.</h2>
-        <p class="mt-5 text-lg leading-8 text-neutral-600 dark:text-sky-50/72">The updated site uses the same visual language shown in your design materials: confident deep blue surfaces, sky-blue emphasis, amber highlights, compact data cards, and cleaner information hierarchy.</p>
+        <div class="brand-kicker">核心能力</div>
+        <h2 class="mt-6 text-3xl font-bold leading-[var(--line-height-heading-lg)] tracking-tight text-primary-900 dark:text-white sm:text-5xl sm:leading-[var(--line-height-display-xl)]">从第一个登录框，到企业级访问治理。</h2>
+        <p class="mt-5 text-lg leading-8 text-neutral-600 dark:text-sky-50/72">认证、组织、访问控制、审计与开发者 API，按你的产品节奏逐步接入，无需中途更换身份层。</p>
       </div>
 
       <div class="mt-12 grid gap-6 lg:grid-cols-3">
@@ -212,13 +195,13 @@ const capabilities = [
     <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr]">
       <div class="brand-card overflow-hidden">
         <div class="bg-gradient-to-r from-primary-800 via-primary-700 to-sky-500 px-8 py-8 text-white">
-          <div class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-100">Implementation Snapshot</div>
-          <h2 class="mt-4 text-3xl font-bold sm:text-4xl">One provider, full identity system.</h2>
-          <p class="mt-4 max-w-lg text-sm leading-7 text-sky-50/82">The new presentation keeps technical credibility but frames it with stronger product design. It feels more like a company with a real system behind it.</p>
+          <div class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-100">实现速览</div>
+          <h2 class="mt-4 text-3xl font-bold sm:text-4xl">一个提供方，完整的身份体系。</h2>
+          <p class="mt-4 max-w-lg text-sm leading-7 text-sky-50/82">几行代码即可跑通第一个登录流程，随后按需接入组织、审计与开发者 API。</p>
         </div>
-        <div class="bg-[#07192c] p-8">
-          <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-5 text-[13px] leading-8 text-slate-100 shadow-inner sm:text-sm" set:html={codeSample}></pre>
-          <div class="mt-5 rounded-2xl border border-sky-300/15 bg-slate-900 px-4 py-3 text-sm font-mono font-medium text-sky-100 break-all sm:break-normal">$ npm install @autional/react @autional/core</div>
+        <div class="bg-primary-900 p-8">
+          <pre class="overflow-x-auto rounded-md border border-white/10 bg-slate-950/70 p-5 text-[13px] leading-8 text-syntax-plain sm:text-sm" set:html={codeSample}></pre>
+          <div class="mt-5 rounded-md border border-sky-300/15 bg-slate-900 px-4 py-3 text-sm font-mono font-medium text-sky-100 break-all sm:break-normal">$ npm install @autional/react</div>
         </div>
       </div>
 
@@ -226,8 +209,8 @@ const capabilities = [
         {capabilities.map(([title, desc], idx) => (
           <article class="brand-card p-6">
             <div class="flex items-center justify-between">
-              <div class="rounded-2xl bg-primary-50 px-3 py-2 text-sm font-bold text-primary-700 dark:bg-white/10 dark:text-sky-100">0{idx + 1}</div>
-              <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary-700 via-sky-400 to-amber-400 opacity-90"></div>
+              <div class="rounded-md bg-primary-50 px-3 py-2 text-sm font-bold text-primary-700 dark:bg-white/10 dark:text-sky-100">0{idx + 1}</div>
+              <div class="h-10 w-10 rounded-md bg-gradient-to-br from-primary-700 via-sky-400 to-amber-400 opacity-90"></div>
             </div>
             <h3 class="mt-5 text-xl font-bold text-primary-900 dark:text-white">{title}</h3>
             <p class="mt-3 text-sm leading-7 text-neutral-600 dark:text-sky-50/72">{desc}</p>
@@ -238,16 +221,16 @@ const capabilities = [
   </section>
 
   <section class="px-4 py-20 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl rounded-[36px] bg-primary-900 px-8 py-14 text-white shadow-brand sm:px-12">
+    <div class="mx-auto max-w-7xl rounded-xxl bg-primary-900 px-8 py-12 text-white shadow-brand sm:px-12">
       <div class="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
         <div>
-          <div class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-100">Ready for launch</div>
-          <h2 class="mt-4 text-3xl font-bold sm:text-5xl">A stronger homepage now matches the Autional brand system.</h2>
-          <p class="mt-5 max-w-2xl text-lg leading-8 text-sky-50/78">This refresh shifts the website closer to the design references: sharper identity, clearer dashboard storytelling, and more premium enterprise product cues.</p>
+          <div class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-100">开始使用</div>
+          <h2 class="mt-4 text-3xl font-bold sm:text-5xl">用 Autional 为你的产品补上身份层。</h2>
+          <p class="mt-5 max-w-2xl text-lg leading-8 text-sky-50/78">当前自托管开源可用；云托管在路线图中（即将推出）。浏览文档了解接入方式，或到 GitHub 查看开源代码。</p>
         </div>
         <div class="flex flex-wrap gap-4">
-          <a href="/docs" class="inline-flex items-center justify-center rounded-full bg-white px-7 py-3 text-sm font-semibold text-primary-700 transition hover:bg-sky-50">View Documentation</a>
-          <a href="https://github.com/autional/web" class="inline-flex items-center justify-center rounded-full border border-white/20 px-7 py-3 text-sm font-semibold text-white transition hover:bg-white/10">GitHub</a>
+          <a href="/docs" class="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-primary-700 transition hover:bg-sky-50">查看文档</a>
+          <a href="https://github.com/autional-cn" class="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">GitHub</a>
         </div>
       </div>
     </div>

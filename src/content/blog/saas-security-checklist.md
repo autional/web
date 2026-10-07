@@ -1,254 +1,254 @@
 ---
-title: "SaaS Security Self-Checklist: 30 Identity Security Items You Must Check"
+title: "SaaS 安全自查清单：30 项身份安全必查项"
 date: "2026-05-28"
 category: "Security"
-tags: ["Security Checklist", "SaaS", "Best Practices"]
-readTime: "8 min"
-excerpt: "A 30-item identity security checklist for SaaS product owners and technical decision-makers. Covers eight domains: password policy, MFA enforcement, session management, API security, audit logging, data encryption, access control, and supply chain security. Each item includes 'What to check' and 'How Autional does it.' Complete a systematic security self-audit in 30 minutes."
+tags: ["安全清单", "SaaS", "最佳实践"]
+readTime: "8 分钟"
+excerpt: "一份面向 SaaS 产品负责人与技术决策者的 30 项身份安全清单，覆盖密码策略、MFA 强制、会话管理、API 安全、审计日志、数据加密、访问控制、供应链安全八大领域。每一项都包含「检查什么」与「Autional 怎么做」，30 分钟完成一次系统性的安全自查。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-Identity security is the first and most important line of defense for SaaS products. According to Verizon's 2025 Data Breach Investigations Report, 86% of SaaS data breaches involve compromised or misused identity credentials.
+身份安全是 SaaS 产品的第一道防线，也是最重要的防线。Verizon 的《2025 数据泄露调查报告》显示，86% 的 SaaS 数据泄露事件涉及身份凭据被攻破或滥用。
 
-This checklist covers 8 security domains and 30 specific checks. Each item has three parts: **What to check** (assessment criteria), **Why it matters** (risk description), and **How Autional does it** (reference implementation).
+本清单覆盖 8 个安全领域、30 个具体检查项。每一项包含三个部分：**检查什么**（评估标准）、**为什么重要**（风险说明）、**Autional 怎么做**（参考实现）。
 
-> **Compliance Note**: The "How Autional does it" sections describe design goals and reference implementations of the Autional platform and do not constitute legal statements of security compliance. The ultimate responsibility for security compliance rests with each SaaS product provider.
+> **合规说明**：「Autional 怎么做」部分描述的是 Autional 平台的设计目标与参考实现，不构成安全合规的法律声明。安全合规的最终责任由各 SaaS 产品提供方承担。
 
-## I. Password Policy (6 Items)
+## 一、密码策略（6 项）
 
-### 1. Enforce Minimum Password Length ≥ 8 Characters
+### 1. 强制最小密码长度 ≥ 8 位
 
-**What to check**: Does your system allow short passwords (6 characters or fewer)? Is a minimum length enforced?
+**检查什么**：系统是否允许设置短密码（6 位及以下）？是否强制了最小长度？
 
-**Why it matters**: An 8-character random password takes about 8 days to brute-force (SHA-256 GPU), while a 6-character one takes only 30 minutes. Each additional character makes cracking exponentially harder.
+**为什么重要**：8 位随机密码暴力破解约需 8 天（SHA-256 GPU），而 6 位只需 30 分钟。每多一位，破解难度呈指数级上升。
 
-**How Autional does it**: identity-service defaults to a minimum password length of 8. Tenant admins can adjust it to 12, 16, or even 20 characters via password policy. Length is enforced during registration and password changes.
+**Autional 怎么做**：identity-service 默认最小密码长度为 8。租户管理员可通过密码策略调整为 12、16 甚至 20 位。注册与改密时强制校验长度。
 
-### 2. Block Commonly Used Weak Passwords
+### 2. 拦截常用弱密码
 
-**What to check**: Does the system accept passwords like `123456`, `password`, `admin123`?
+**检查什么**：系统是否接受 `123456`、`password`、`admin123` 这类密码？
 
-**Why it matters**: NordPass statistics show `123456` remains the most commonly used password globally. These are the first entries in attackers' dictionary attacks.
+**为什么重要**：NordPass 的统计显示，`123456` 依然是全球使用最多的密码。这些是攻击者字典攻击的第一批条目。
 
-**How Autional does it**: Built-in blacklist of 100,000 commonly used weak passwords based on Have I Been Pwned's Pwned Passwords dataset. Passwords are checked in real-time against the blacklist during setup. The blacklist updates regularly.
+**Autional 怎么做**：内置基于 Have I Been Pwned 的 Pwned Passwords 数据集的 10 万条常用弱密码黑名单。设置密码时实时比对黑名单，黑名单定期更新。
 
-### 3. Use bcrypt/scrypt/argon2 for Password Hashing
+### 3. 使用 bcrypt/scrypt/argon2 做密码哈希
 
-**What to check**: How are passwords stored in the database? Hashed or plaintext? If hashed, is it MD5/SHA1 or bcrypt?
+**检查什么**：密码在数据库中如何存储？明文还是哈希？如果是哈希，是 MD5/SHA1 还是 bcrypt？
 
-**Why it matters**: In the 2012 LinkedIn breach of 6.5M passwords, unsalted SHA-1 was used—90% were cracked within 72 hours.
+**为什么重要**：2012 年 LinkedIn 泄露的 650 万条密码使用了无盐 SHA-1——其中 90% 在 72 小时内即被破解。
 
-**How Autional does it**: Default bcrypt (cost factor=12), hashes automatically include random salt. Argon2id interface is reserved for transparent upgrades—user's hash is auto-migrated on next login.
+**Autional 怎么做**：默认 bcrypt（cost factor=12），哈希自动包含随机盐。预留 Argon2id 接口以便透明升级——用户下次登录时自动迁移哈希。
 
-### 4. Password Expiration Policy
+### 4. 密码过期策略
 
-**What to check**: Is there a periodic password expiration mechanism (e.g., 90 days)? Password history (preventing reuse of the last N passwords)?
+**检查什么**：是否有定期密码过期机制（如 90 天）？是否有密码历史（禁止重复使用最近 N 个密码）？
 
-**Why it matters**: Password leaks can be silent—a password leaked six months ago might never have been used by an attacker. Mandatory periodic changes reduce the window of risk.
+**为什么重要**：密码泄露可能是无声的——半年前泄露的密码，攻击者也许一直没用。强制定期更换可以压缩风险窗口。
 
-**How Autional does it**: Configurable password expiration (30/60/90/180 days), password history (stores last 5-24 password hashes).
+**Autional 怎么做**：可配置的密码有效期（30/60/90/180 天）、密码历史（保存最近 5-24 个密码哈希）。
 
-### 5. Account Lockout Mechanism
+### 5. 账号锁定机制
 
-**What to check**: After N consecutive failed attempts, is the account temporarily locked? Is the lock duration reasonable?
+**检查什么**：连续失败 N 次后，账号是否会被临时锁定？锁定时长是否合理？
 
-**Why it matters**: A login endpoint without lockout is completely defenseless against brute-force attacks. Attackers can try password combinations indefinitely.
+**为什么重要**：没有锁定的登录端点对暴力破解毫无防御。攻击者可以无限次尝试密码组合。
 
-**How Autional does it**: Default: 5 failures → 30-minute lockout. Progressive lockout: 1st: 5 min, 2nd: 30 min, 3rd: 2 hours, 4th: requires admin unlock.
+**Autional 怎么做**：默认 5 次失败 → 锁定 30 分钟。递进式锁定：第 1 次 5 分钟，第 2 次 30 分钟，第 3 次 2 小时，第 4 次需管理员解锁。
 
-### 6. Password Strength Indicator
+### 6. 密码强度指示器
 
-**What to check**: Is there a strength indicator when users set a password? Does it suggest including uppercase, numbers, special characters?
+**检查什么**：用户设置密码时是否有强度提示？是否会建议包含大写字母、数字与特殊字符？
 
-**Why it matters**: If users don't know why their password is weak, they won't actively choose strong ones. A good strength indicator can reduce weak password rates by 40%.
+**为什么重要**：如果用户不知道自己密码弱在哪里，就不会主动选择强密码。好的强度指示器可以将弱密码率降低 40%。
 
-**How Autional does it**: The login page (auth-pages) has a built-in password strength indicator that evaluates and displays strength in real-time (Weak/Medium/Strong/Very Strong), based on password entropy rather than simple rules.
+**Autional 怎么做**：登录页（auth-pages）内置密码强度指示器，基于密码熵而非简单规则，实时评估并展示强度（弱/中/强/极强）。
 
-## II. Multi-Factor Authentication (5 Items)
+## 二、多因素认证（5 项）
 
-### 7. Is MFA Enabled Globally or Per User Group?
+### 7. MFA 是全局启用还是按用户群启用？
 
-**What to check**: Is MFA globally mandatory or optional? Can it be mandatory for admins and optional for regular users?
+**检查什么**：MFA 是全局强制还是可选？能否对管理员强制、对普通用户可选？
 
-**Why it matters**: MFA can prevent 99.9% of account compromises. But blanket enforcement on all users may drive some away. The best strategy: mandatory for privileged roles, recommended for regular users.
+**为什么重要**：MFA 可以阻止 99.9% 的账号失陷。但对所有用户一刀切强制，可能把一部分用户挡在门外。最佳策略是：特权角色强制执行，普通用户推荐使用。
 
-**How Autional does it**: MFA policy can be configured per tenant, role group, or individual user. MFA (WebAuthn) is mandatory for admins by default; regular users can optionally enable TOTP.
+**Autional 怎么做**：MFA 策略可按租户、角色组或单个用户配置。管理员默认强制 MFA（WebAuthn）；普通用户可选启用 TOTP。
 
-### 8. Which MFA Methods Are Supported?
+### 8. 支持哪些 MFA 方式？
 
-**What to check**: Does the system support TOTP? FIDO2/WebAuthn hardware keys? SMS OTP?
+**检查什么**：系统是否支持 TOTP？FIDO2/WebAuthn 硬件密钥？短信 OTP？
 
-**Why it matters**: Different MFA methods have vastly different security levels. SMS OTP can be bypassed via SIM swap attacks, while FIDO2 has protocol-level phishing resistance.
+**为什么重要**：不同 MFA 方式的安全等级差异巨大。短信 OTP 可通过 SIM 卡交换攻击绕过，而 FIDO2 具备协议级的抗钓鱼能力。
 
-**How Autional does it**: mfa-service fully supports TOTP, WebAuthn (FIDO2), HOTP, SMS OTP, and Backup Codes. Admins can configure the allowed MFA method list.
+**Autional 怎么做**：mfa-service 完整支持 TOTP、WebAuthn（FIDO2）、HOTP、短信 OTP 与备用码。管理员可以配置允许使用的 MFA 方式列表。
 
-### 9. Is There an MFA Recovery Mechanism?
+### 9. 是否有 MFA 恢复机制？
 
-**What to check**: How do users recover when they lose their MFA device (new phone, damaged hardware key)? Are there Backup Codes or an admin reset channel?
+**检查什么**：用户丢失 MFA 设备（换手机、硬件密钥损坏）时如何恢复？是否有备用码或管理员重置通道？
 
-**Why it matters**: Without a recovery mechanism, users can be permanently locked out if they lose their device. But if the recovery mechanism is too weak (e.g., just answering security questions), protection is meaningless.
+**为什么重要**：没有恢复机制，用户一旦丢失设备就会被永久锁在门外。但如果恢复机制太弱（例如只回答安全问题），防护就形同虚设。
 
-**How Autional does it**: Three recovery mechanisms: (1) 10 one-time Backup Codes auto-generated on MFA registration; (2) Admin approval workflow to reset MFA; (3) Support for multiple MFA devices per user (primary + backup).
+**Autional 怎么做**：三种恢复机制：（1）注册 MFA 时自动生成 10 个一次性备用码；（2）管理员审批流重置 MFA；（3）支持一个用户绑定多个 MFA 设备（主设备 + 备用设备）。
 
-### 10. Is There an MFA Skip/Remember Device Mechanism?
+### 10. 是否有 MFA 跳过/记住设备机制？
 
-**What to check**: Can users skip MFA for a period (e.g., "Trust this device for 30 days")?
+**检查什么**：用户是否可以在一段时间内跳过 MFA（例如「信任此设备 30 天」）？
 
-**Why it matters**: If MFA is required every single login, users get frustrated and may try to bypass it. Trusted device mechanisms balance convenience and security.
+**为什么重要**：如果每次登录都要 MFA，用户会不胜其烦，甚至试图绕过。信任设备机制能在便利与安全之间取得平衡。
 
-**How Autional does it**: Supports "Remember this device"—records a device fingerprint hash, re-requires MFA after a configurable number of days or when the device fingerprint changes.
+**Autional 怎么做**：支持「记住此设备」——记录设备指纹哈希，超过可配置的天数或设备指纹发生变化时，重新要求 MFA。
 
-### 11. Adaptive MFA: Adjust Authentication Strength Based on Risk?
+### 11. 自适应 MFA：能否按风险调整认证强度？
 
-**What to check**: Can the system identify anomalous login behavior (new location, new device, unusual time) and automatically escalate authentication requirements?
+**检查什么**：系统能否识别异常登录行为（新位置、新设备、非常规时间），并自动提升认证要求？
 
-**Why it matters**: Traditional MFA treats everyone the same. The same user logging in from the corporate network vs. an overseas location faces the same verification—the former is interrupted unnecessarily, the latter is under-protected.
+**为什么重要**：传统 MFA 对所有人一视同仁。同一用户从公司内网登录与从境外登录面临同样的验证——前者被打扰，后者却防护不足。
 
-**How Autional does it**: The adaptive MFA engine uses a 7-dimensional risk score (device fingerprint, IP reputation, geolocation, behavior patterns, time factors, failure history, sensitive operation context) to dynamically determine authentication strength. Low risk: skip MFA; high risk: mandate WebAuthn.
+**Autional 怎么做**：自适应 MFA 引擎使用 7 维风险评分（设备指纹、IP 信誉、地理位置、行为模式、时间因素、失败历史、敏感操作上下文）动态决定认证强度。低风险跳过 MFA，高风险强制 WebAuthn。
 
-## III. Session Management (4 Items)
+## 三、会话管理（4 项）
 
-### 12. Absolute Timeout and Idle Timeout?
+### 12. 是否有绝对超时与空闲超时？
 
-**What to check**: Are login sessions permanent? Is there an auto-logout mechanism for inactivity?
+**检查什么**：登录会话是否永久有效？是否有无操作自动登出机制？
 
-**Why it matters**: Sessions that never expire mean a forgotten browser tab could still access enterprise systems months later. Extremely risky.
+**为什么重要**：永不过期的会话意味着一个被遗忘的浏览器标签页几个月后仍能访问企业系统，风险极高。
 
-**How Autional does it**: session-service supports dual timeout: absolute timeout (e.g., force re-authentication after 8 hours) and idle timeout (e.g., logout after 30 minutes of inactivity). Both are tenant-configurable.
+**Autional 怎么做**：session-service 支持双重超时：绝对超时（如 8 小时后强制重新认证）与空闲超时（如 30 分钟无操作后登出）。两者均可按租户配置。
 
-### 13. Single-Device Login or Concurrency Limits?
+### 13. 是否限制单设备登录或并发数？
 
-**What to check**: Can the same user log in on multiple devices simultaneously? Is there a maximum concurrent session limit?
+**检查什么**：同一用户能否在多台设备同时登录？是否有最大并发会话数限制？
 
-**How Autional does it**: session-service globally tracks all active sessions per user. Admins can set a maximum concurrent session count (e.g., 3); when exceeded, the earliest session is forcibly terminated or new logins are rejected.
+**Autional 怎么做**：session-service 全局跟踪每个用户的所有活跃会话。管理员可设置最大并发会话数（如 3），超出后强制终止最早会话或拒绝新登录。
 
-### 14. Can Sessions Be Immediately Revoked?
+### 14. 会话能否被立即吊销？
 
-**What to check**: When a security event is detected (e.g., compromised account), can an admin immediately terminate all active sessions for that user?
+**检查什么**：发现安全事件（如账号失陷）时，管理员能否立即终止该用户的所有活跃会话？
 
-**Why it matters**: JWT's biggest weakness is the inability to instantly revoke—you must wait for token expiry or introduce a blacklist. Instant revocation is a fundamental requirement for security incident response.
+**为什么重要**：JWT 最大的弱点是无法即时吊销——必须等令牌过期或引入黑名单。即时吊销是安全事件响应的基本要求。
 
-**How Autional does it**: session-service provides `DELETE /sessions?user_id=X` API to immediately terminate all active sessions. The JWT's `jti` is bound to the Session ID; gateway-service verifies session validity against session-service for sensitive operations.
+**Autional 怎么做**：session-service 提供 `DELETE /sessions?user_id=X` API 立即终止所有活跃会话。JWT 的 `jti` 与 Session ID 绑定；敏感操作时 gateway-service 会向 session-service 校验会话有效性。
 
-### 15. Are Session Cookies Set with Secure, HttpOnly, SameSite?
+### 15. 会话 Cookie 是否设置了 Secure、HttpOnly、SameSite？
 
-**What to check**: Are session cookie attributes configured securely?
+**检查什么**：会话 Cookie 的属性是否安全配置？
 
-**How Autional does it**: `Set-Cookie` response headers enforce `Secure=true; HttpOnly=true; SameSite=Lax`. In HTTPS-only environments, cookies are inaccessible to JavaScript and cannot be carried in cross-site requests.
+**Autional 怎么做**：`Set-Cookie` 响应头强制 `Secure=true; HttpOnly=true; SameSite=Lax`。在纯 HTTPS 环境下，Cookie 无法被 JavaScript 读取，也无法随跨站请求携带。
 
-## IV. API Security (4 Items)
+## 四、API 安全（4 项）
 
-### 16. Are Login and API Endpoints Rate-Limited?
+### 16. 登录与 API 端点是否限流？
 
-**What to check**: Is there rate limiting on the login endpoint? Is there global rate limiting on APIs?
+**检查什么**：登录端点是否有限流？API 是否有全局限流？
 
-**How Autional does it**: gateway-service implements three-layer rate limiting: IP-level (60s window, 30 requests), user-level (5min window, 10 requests), global-level (10s window, 500 requests). Redis-backed distributed rate limiting enables shared counting across multiple gateway instances.
+**Autional 怎么做**：gateway-service 实现三层限流：IP 级（60 秒窗口，30 次请求）、用户级（5 分钟窗口，10 次请求）、全局级（10 秒窗口，500 次请求）。基于 Redis 的分布式限流实现跨网关实例的共享计数。
 
-### 17. Do Inter-Service APIs Use Internal Authentication?
+### 17. 服务间 API 是否使用内部认证？
 
-**What to check**: Do microservice-to-microservice API calls require authentication? Or are they exposed (assuming the internal network is safe)?
+**检查什么**：微服务之间的 API 调用是否需要认证？还是直接暴露（假设内网安全）？
 
-**Why it matters**: Zero-trust architecture requires internal API authentication even within the network. "Safe inside the castle walls" is an outdated security model. Once attackers breach outer defenses, unauthenticated internal APIs are defenseless.
+**为什么重要**：零信任架构要求即使在网络内部，内部 API 也要认证。「城墙之内皆安全」是过时的安全模型。一旦攻击者突破外围防御，未认证的内部 API 毫无还手之力。
 
-**How Autional does it**: Internal APIs enforce `X-API-Key` authentication via the `auth_mw.InternalAPIKeyAuth()` middleware. Internal API keys are injected through environment variables, not read from config files.
+**Autional 怎么做**：内部 API 通过 `auth_mw.InternalAPIKeyAuth()` 中间件强制 `X-API-Key` 认证。内部 API 密钥通过环境变量注入，不从配置文件读取。
 
-### 18. Are API Keys Stored and Used Correctly?
+### 18. API 密钥的存储与使用是否正确？
 
-**What to check**: Are API keys stored in plaintext or hashed in the database? Can the full key be viewed again after creation?
+**检查什么**：API 密钥在数据库中明文存储还是哈希存储？创建后能否再次查看完整密钥？
 
-**How Autional does it**: API keys are stored as SHA-256 hashes. The full key is shown to the user only once at creation time. After that, only a prefix is visible (e.g., `tk_a1b2c3d4****`). Verification compares hashes, not plaintext.
+**Autional 怎么做**：API 密钥以 SHA-256 哈希存储。完整密钥仅在创建时向用户展示一次，之后只可见前缀（如 `tk_a1b2c3d4****`）。校验时比对哈希，而非明文。
 
-### 19. Is an IP Whitelist Supported?
+### 19. 是否支持 IP 白名单？
 
-**What to check**: Can API keys be restricted to specific IP addresses or IP ranges?
+**检查什么**：API 密钥能否限制到特定 IP 或 IP 段？
 
-**How Autional does it**: Each API key can have a configured IP whitelist. gateway-service checks the requesting IP against the whitelist during API key verification.
+**Autional 怎么做**：每个 API 密钥都可配置 IP 白名单。gateway-service 在校验 API 密钥时比对请求 IP 是否在白名单内。
 
-## V. Audit Logging (3 Items)
+## 五、审计日志（3 项）
 
-### 20. Are All Authentication-Related Events Recorded?
+### 20. 认证相关事件是否全部记录？
 
-**What to check**: Are login success/failure, password changes, MFA registration/verification, permission changes, etc. fully logged in the audit trail?
+**检查什么**：登录成功/失败、改密、MFA 注册/校验、权限变更等是否完整记入审计日志？
 
-**How Autional does it**: audit-service records comprehensive audit logs for all authentication events (who, what action, when, what IP, what result). Logs use a hash chain to ensure immutability.
+**Autional 怎么做**：audit-service 对所有认证事件记录完整审计日志（谁、做了什么、何时、来自哪个 IP、结果如何）。日志使用哈希链保证不可篡改。
 
-### 21. Are Audit Logs Tamper-Proof?
+### 21. 审计日志是否防篡改？
 
-**What to check**: Can administrators with database access delete or modify audit logs?
+**检查什么**：拥有数据库权限的管理员能否删除或修改审计日志？
 
-**How Autional does it**: audit-service uses a hash chain (each log's hash includes the previous log's hash) and a Merkle tree to provide cryptographic integrity proof for audit logs. Any insertion, deletion, or modification of a single log breaks the hash chain and is detectable.
+**Autional 怎么做**：audit-service 使用哈希链（每条日志的哈希包含上一条日志的哈希）与 Merkle 树，为审计日志提供密码学完整性证明。任何一条日志被插入、删除或修改，都会破坏哈希链并被检出。
 
-### 22. Is PII Masked in Logs?
+### 22. 日志中的 PII 是否脱敏？
 
-**What to check**: Are sensitive details like passwords, tokens, or ID numbers accidentally recorded in logs?
+**检查什么**：密码、令牌、证件号等敏感细节是否被误记入日志？
 
-**How Autional does it**: The logging middleware auto-masks PII fields (phone numbers, email addresses, ID numbers) and sensitive fields (password_hash, access_token, api_key). Only masked versions are retained.
+**Autional 怎么做**：日志中间件自动脱敏 PII 字段（手机号、邮箱、证件号）与敏感字段（password_hash、access_token、api_key），只保留脱敏后的版本。
 
-## VI. Data Encryption (3 Items)
+## 六、数据加密（3 项）
 
-### 23. Are There Unencrypted PII Fields in the Database?
+### 23. 数据库中是否有未加密的 PII 字段？
 
-**What to check**: Are users' phone numbers, email addresses, ID numbers, etc. stored in plaintext or ciphertext in the database?
+**检查什么**：用户的手机号、邮箱、证件号等在数据库中是明文还是密文？
 
-**How Autional does it**: PII fields use AES-256-GCM field-level encryption. Encryption keys are managed via cloud KMS, existing only in process memory—never in plaintext on disk.
+**Autional 怎么做**：PII 字段使用 AES-256-GCM 字段级加密。加密密钥经云 KMS 管理，只存在于进程内存中，绝不以明文落盘。
 
-### 24. Is There an Encryption Key Rotation Mechanism?
+### 24. 是否有加密密钥轮换机制？
 
-**What to check**: How often are encryption keys (for PII encryption, JWT signing) rotated?
+**检查什么**：加密密钥（用于 PII 加密、JWT 签名）多久轮换一次？
 
-**How Autional does it**: Data Encryption Keys (DEK) rotate every 90 days; KMS master keys rotate every year. JWT signing keys use JWK format with auto-generated `kid` (Key ID), supporting smooth transition during key rotation.
+**Autional 怎么做**：数据加密密钥（DEK）每 90 天轮换一次；KMS 主密钥每年轮换一次。JWT 签名密钥采用 JWK 格式并自动生成 `kid`（Key ID），支持密钥轮换期间的平滑过渡。
 
-### 25. Is Data Encrypted in Transit?
+### 25. 数据传输是否加密？
 
-**What to check**: Is all API communication over HTTPS/TLS? Is inter-service communication encrypted?
+**检查什么**：所有 API 通信是否走 HTTPS/TLS？服务间通信是否加密？
 
-**How Autional does it**: External APIs enforce HTTPS (HTTP requests auto-redirect). Internal gRPC communication uses mTLS (mutual TLS), with both server and client verifying each other's certificates.
+**Autional 怎么做**：对外 API 强制 HTTPS（HTTP 请求自动重定向）。内部 gRPC 通信使用 mTLS（双向 TLS），服务端与客户端互相校验证书。
 
-## VII. Access Control (3 Items)
+## 七、访问控制（3 项）
 
-### 26. Is the Principle of Least Privilege Implemented?
+### 26. 是否落实最小权限原则？
 
-**What to check**: Do users have more permissions than they need? Are admin accounts used for daily operations?
+**检查什么**：用户是否拥有超出所需的权限？是否存在用管理员账号做日常操作的情况？
 
-**How Autional does it**: RBAC (Role-Based Access Control) system with predefined roles (Super Admin, Admin, Security Admin) and custom roles. Permissions can be granular down to individual API endpoints. Supports permission simulation and reverse query.
+**Autional 怎么做**：RBAC（基于角色的访问控制）系统，内置预定义角色（超级管理员、管理员、安全管理员）与自定义角色。权限可精细到单个 API 端点。支持权限模拟与反向查询。
 
-### 27. Is Multi-Tenant Data Isolation in Place?
+### 27. 是否有租户数据隔离？
 
-**What to check**: Are different tenants' data fully isolated? Can one tenant access another's data?
+**检查什么**：不同租户的数据是否完全隔离？一个租户能否访问另一个租户的数据？
 
-**How Autional does it**: All database queries enforce `WHERE tenant_id = ?`. Middleware extracts `tenant_id` from JWT and injects it into context; the Service layer auto-injects tenant filtering on all queries. Cross-tenant data access is architecturally impossible.
+**Autional 怎么做**：所有数据库查询强制 `WHERE tenant_id = ?`。中间件从 JWT 中提取 `tenant_id` 注入上下文；Service 层在所有查询上自动注入租户过滤。跨租户访问数据在架构上不可能发生。
 
-### 28. Is There Separation of Duties (SoD) Control?
+### 28. 是否有职责分离（SoD）控制？
 
-**What to check**: Are there conflicting roles that cannot be held by the same user simultaneously (e.g., approver and applicant)?
+**检查什么**：是否存在不能由同一人兼任的互斥角色（如审批人与申请人）？
 
-**How Autional does it**: The RBAC system supports Static SoD (Separation of Duties), defining mutually exclusive role pairs (e.g., "Admin" and "Auditor"). When a user is assigned conflicting roles, the system rejects the operation and triggers an alert.
+**Autional 怎么做**：RBAC 系统支持静态职责分离（SoD），可定义互斥的角色对（如「管理员」与「审计员」）。当给用户分配互斥角色时，系统拒绝该操作并触发告警。
 
-## VIII. Supply Chain & Compliance (2 Items)
+## 八、供应链与合规（2 项）
 
-### 29. Are Third-Party Dependencies Regularly Audited?
+### 29. 第三方依赖是否定期审计？
 
-**What to check**: Do your open-source libraries and SaaS dependencies have known vulnerabilities? When was the last audit?
+**检查什么**：你的开源库与 SaaS 依赖是否存在已知漏洞？上次审计是什么时候？
 
-**How Autional does it**: All Go dependencies use `go mod tidy` with regular `govulncheck` scanning. Docker images are based on minimal Distroless base images, reducing the attack surface.
+**Autional 怎么做**：所有 Go 依赖使用 `go mod tidy` 管理，并定期执行 `govulncheck` 扫描。Docker 镜像基于最小化的 Distroless 基础镜像构建，减小攻击面。
 
-### 30. Are There Compliance Certifications or Framework Benchmarks?
+### 30. 是否有合规认证或框架对标？
 
-**What to check**: Which security frameworks does your system align with (SOC 2, ISO 27001, MLPS 2.0)? Is there a certification plan?
+**检查什么**：你的系统对标哪些安全框架（SOC 2、ISO 27001、等保 2.0）？是否有认证计划？
 
-**How Autional does it**: Autional is pursuing SOC 2 Type II certification. It has built-in capabilities for MLPS Level 3 requirements including identity authentication, access control, security audit, and data encryption. Provides automated compliance evidence collection and export.
+**Autional 怎么做**：Autional 正在推进 SOC 2 Type II 认证。内置满足等保三级要求的能力，覆盖身份鉴别、访问控制、安全审计、数据加密。提供自动化的合规证据收集与导出。
 
-## Self-Assessment Scoring
+## 自评打分
 
-Score 1 point for each item passed, total 30 points.
+每通过一项计 1 分，满分 30 分。
 
-| Score | Level | Action |
+| 得分 | 等级 | 行动 |
 |-------|-------|--------|
-| 25-30 | Security mature | Maintain and continuously monitor |
-| 18-24 | Basically adequate | Fill gaps, prioritize 1-star and 2-star items |
-| 10-17 | At risk | Immediate security hardening project required |
-| 0-9 | Critical | Your system is exposed—urgent action needed |
+| 25-30 | 安全成熟 | 保持并持续监控 |
+| 18-24 | 基本达标 | 补齐短板，优先处理一星与二星项 |
+| 10-17 | 存在风险 | 需要立即启动安全加固项目 |
+| 0-9 | 危险 | 系统处于暴露状态，需紧急处置 |
 
-The goal of this checklist isn't to score 30 points—it's to identify your security blind spots. Every missing item corresponds to a real potential security incident.
+这份清单的目标不是拿满 30 分，而是找出你的安全盲区。每一个缺失项，都对应着一次真实可能发生的安全事件。

@@ -1,6 +1,8 @@
 ---
+import { getCollection } from 'astro:content';
 import ClientShell from '../components/ClientShell.tsx';
-// CookieConsent unmounted (2026-09-29): this site sets no cookies and runs no trackers, so the banner was misleading; component kept for a future analytics integration
+// CookieConsent 已下架 (2026-09-29)：站点零 cookie、无追踪脚本，文案与事实不符；组件文件保留待将来接入分析时恢复
+import { buildSearchIndex } from '../lib/search-index';
 import '../styles/global.css';
 export interface Props {
   title: string;
@@ -10,20 +12,31 @@ export interface Props {
   keywords?: string;
   jsonLd?: Record<string, any>[];
   noIndex?: boolean;
+  /** 页面语言（T-03 单源：/ai/en 传 en，其余缺省 zh-CN） */
+  lang?: string;
+  /** hreflang 单源：语言变体页传入全量（含自指与 x-default）；缺省自动生成 zh-CN 自指 + x-default */
+  alternates?: { hreflang: string; href: string }[];
 }
 const {
   title,
-  description = 'Autional — Enterprise Identity & Access Management',
+  description = '面向 AI 生成应用的身份层 — 认证、SSO、MFA、通行密钥、多租户、审计与开发者 API。',
   ogType = 'website',
   image,
   keywords,
   jsonLd = [],
   noIndex = false,
+  lang = 'zh-CN',
+  alternates,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const siteUrl = Astro.site!;
 const ogImage = image || '/og-default.png';
 const fullImageUrl = new URL(ogImage, siteUrl).href;
+
+const hreflangLinks = alternates ?? [
+  { hreflang: 'zh-CN', href: canonical.href },
+  { hreflang: 'x-default', href: canonical.href },
+];
 
 const defaultJsonLd = {
   '@context': 'https://schema.org',
@@ -31,22 +44,44 @@ const defaultJsonLd = {
   name: 'Autional',
   url: siteUrl.href,
   logo: new URL('/logo-mark.svg', siteUrl).href,
-  description: 'Enterprise Identity & Access Management platform — authentication, SSO, MFA, multi-tenancy, audit, and developer APIs.',
+  description: '面向 AI 生成应用的身份层 — 认证、SSO、MFA、多租户、审计与开发者 API。',
   sameAs: [
-    'https://github.com/autional',
+    'https://github.com/autional-cn',
     'https://twitter.com/autional',
     'https://www.linkedin.com/company/autional',
   ],
 };
 
 const allJsonLd = [defaultJsonLd, ...jsonLd];
+
+// 站内搜索索引：构建期生成（静态页 + 全量博客文章）——单一来源，见 src/lib/search-index.ts
+const blogPosts = await getCollection('blog', ({ data }) => data.status === 'verified');
+const searchIndex = buildSearchIndex(blogPosts);
 ---
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html><html lang={lang}>
 <head>
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script is:inline>
+    // 主题恢复（TH-01）：首帧前执行，深色偏好/显式选择均不白闪
+    (() => {
+      try {
+        const saved = localStorage.getItem('autional-theme');
+        const dark = saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="https://cdn.autional.cn/ui/v0.1.0-rc.de498ca0/tokens.css" />
   <title>{title}</title><meta name="description" content={description} />
   {keywords && <meta name="keywords" content={keywords} />}
-  <link rel="canonical" href={canonical.href} /><link rel="icon" type="image/png" sizes="680x680" href="/favicon-master-blue-v7.png?v=7" /><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=7" /><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=7" /><link rel="shortcut icon" type="image/png" href="/favicon-32x32.png?v=7" /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=7" /><link rel="manifest" href="/site.webmanifest?v=7" /><meta name="theme-color" content="#ffffff" />
+  <link rel="canonical" href={canonical.href} />
+  <link rel="icon" href="https://cdn.autional.cn/ui/v0.1.0-rc.de498ca0/icons/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.autional.cn/ui/v0.1.0-rc.de498ca0/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.autional.cn/ui/v0.1.0-rc.de498ca0/icons/favicon-16x16.png">
+  <link rel="icon" type="image/svg+xml" href="https://cdn.autional.cn/ui/v0.1.0-rc.de498ca0/icons/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.autional.cn/ui/v0.1.0-rc.de498ca0/icons/apple-touch-icon.png">
+  <link rel="manifest" href="https://cdn.autional.cn/ui/v0.1.0-rc.de498ca0/icons/site.webmanifest" />
+  <meta name="theme-color" content="#ffffff" />
   <meta property="og:title" content={title} /><meta property="og:description" content={description} />
   <meta property="og:url" content={canonical.href} /><meta property="og:type" content={ogType} />
   <meta property="og:site_name" content="Autional" />
@@ -56,77 +91,77 @@ const allJsonLd = [defaultJsonLd, ...jsonLd];
   <meta name="twitter:image" content={fullImageUrl} />
   <meta name="twitter:site" content="@autional" />
   <meta name="twitter:creator" content="@autional" />
-  <link rel="alternate" hreflang="en" href={canonical.href} />
-  <link rel="alternate" hreflang="x-default" href={canonical.href} />
+  {hreflangLinks.map((alt) => <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />)}
   {noIndex && <meta name="robots" content="noindex, follow" />}
   {allJsonLd.map((item) => (
     <script is:inline type="application/ld+json" set:html={JSON.stringify(item)} />
   ))}
-  <link rel="alternate" type="application/rss+xml" title="Autional Blog" href="/rss.xml" />
+  <link rel="alternate" type="application/rss+xml" title="Autional 博客" href="/rss.xml" />
 </head>
 <body class="flex min-h-screen flex-col text-neutral-900 dark:text-white">
-  <header class="sticky top-0 z-50 px-3 py-3 sm:px-6">
-    <div class="relative mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/70 bg-white/80 px-4 py-3 shadow-soft backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/70 sm:px-6">
+  {/* 顶栏高度此前由内层胶囊的 py-3 撑开（约 48px），与其余 13 个门户的 64px 不一致。
+       改为令牌高度 + flex 居中；内层胶囊用 h-full 填满**减去 py-2 后的内容盒**（48px），
+       于是外框 64px、胶囊仍悬浮——保留本站的营销站观感，同时与外框节奏对齐。 */}
+    <header class="sticky top-0 z-50 flex h-[var(--layout-header-height)] items-center px-3 py-2 sm:px-6">
+    <div class="relative mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/70 bg-white/80 h-full px-4 shadow-soft backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/70 sm:px-6">
       <a href="/" class="flex items-center gap-3">
-        <img src="/logo-mark.svg" alt="Autional logo" class="h-10 w-10 object-contain drop-shadow-[0_8px_18px_rgba(0,49,83,0.18)]" />
+        <img src="/logo-mark.svg" alt="Autional 徽标" class="h-10 w-10 object-contain drop-shadow-[0_8px_18px_rgba(0,49,83,0.18)]" />
         <div class="hidden sm:block">
-          <div class="text-[1.9rem] font-extrabold tracking-[-0.04em] text-primary-900 dark:text-white">Autional</div>
+          <div class="text-[1.9rem] font-extrabold tracking-[var(--letter-spacing-display-lg)] text-primary-900 dark:text-white">Autional</div>
         </div>
       </a>
       <nav class="hidden items-center gap-1 md:flex">
-        <a href="/features" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">Features</a>
+        <a href="/features" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">功能特性</a>
         <a href="/sdk" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">SDK</a>
-        <a href="/ai" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">AI Onboarding</a>
-        <a href="/pricing" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">Pricing</a>
-        <a href="/docs" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">Docs</a>
-        <a href="/blog" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">Blog</a>
-        <a href="https://github.com/autional/web" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">GitHub</a>
+        <a href="/ai" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">AI 接入</a>
+        <a href="/pricing" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">定价</a>
+        <a href="/docs" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">文档</a>
+        <a href="/blog" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">博客</a>
+        <a href="https://github.com/autional-cn" class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white">GitHub</a>
       </nav>
-      <ClientShell client:load />
+      <ClientShell client:load searchIndex={searchIndex} />
     </div>
   </header>
   <main class="flex-1" id="main-content"><slot /></main>
   <footer class="mt-12 px-4 pb-6 sm:px-6">
-    <div class="mx-auto max-w-7xl rounded-[32px] bg-primary-900 px-6 py-12 text-white shadow-brand sm:px-10">
+    <div class="mx-auto max-w-7xl rounded-xxl bg-primary-900 px-6 py-12 text-white shadow-brand sm:px-10">
       <div class="grid grid-cols-1 gap-10 md:grid-cols-5">
         <div class="md:col-span-2">
           <a href="/" class="inline-flex items-center">
-            <div class="text-[2rem] font-extrabold tracking-[-0.04em] text-white">Autional</div>
+            <div class="text-[2rem] font-extrabold tracking-[var(--letter-spacing-display-lg)] text-white">Autional</div>
           </a>
-          <p class="mt-5 max-w-sm text-sm leading-7 text-sky-100/82">AI-powered identity infrastructure for modern SaaS platforms. Authentication, SSO, passkey, tenant isolation, audit, and developer APIs in one coherent system.</p>
-          <div class="mt-6 flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-sky-100/70">
-            <span class="rounded-full border border-white/10 px-3 py-1.5">Prussian Blue</span>
-            <span class="rounded-full border border-white/10 px-3 py-1.5">Sky Blue</span>
-            <span class="rounded-full border border-white/10 px-3 py-1.5 text-amber-300">Amber</span>
-          </div>
+          <p class="mt-5 max-w-sm text-sm leading-7 text-sky-100/82">面向 AI 生成应用的身份层。认证、SSO、通行密钥（Passkey）、租户隔离、审计与开发者 API，统一在一个连贯的系统中。</p>
         </div>
-        <div><h3 class="text-sm font-semibold text-white">Platform</h3><ul class="mt-4 space-y-3">
-          <li><a href="/features" class="text-sm text-sky-100/72 transition-colors hover:text-white">Features</a></li>
-          <li><a href="/pricing" class="text-sm text-sky-100/72 transition-colors hover:text-white">Pricing</a></li>
-          <li><a href="/compare" class="text-sm text-sky-100/72 transition-colors hover:text-white">Compare</a></li>
-          <li><a href="/roadmap" class="text-sm text-sky-100/72 transition-colors hover:text-white">Roadmap</a></li>
+        <div><h3 class="text-sm font-semibold text-white">平台</h3><ul class="mt-4 space-y-3">
+          <li><a href="/features" class="text-sm text-sky-100/72 transition-colors hover:text-white">功能特性</a></li>
+          <li><a href="/pricing" class="text-sm text-sky-100/72 transition-colors hover:text-white">定价</a></li>
+          <li><a href="/compare" class="text-sm text-sky-100/72 transition-colors hover:text-white">对比</a></li>
+          <li><a href="/roadmap" class="text-sm text-sky-100/72 transition-colors hover:text-white">路线图</a></li>
+          <li><a href="/showcase" class="text-sm text-sky-100/72 transition-colors hover:text-white">演示与展示</a></li>
         </ul></div>
-        <div><h3 class="text-sm font-semibold text-white">Developers</h3><ul class="mt-4 space-y-3">
-          <li><a href="/docs" class="text-sm text-sky-100/72 transition-colors hover:text-white">Documentation</a></li>
+        <div><h3 class="text-sm font-semibold text-white">开发者</h3><ul class="mt-4 space-y-3">
+          <li><a href="/docs" class="text-sm text-sky-100/72 transition-colors hover:text-white">文档</a></li>
           <li><a href="/sdk" class="text-sm text-sky-100/72 transition-colors hover:text-white">SDK</a></li>
-          <li><a href="/ai" class="text-sm text-sky-100/72 transition-colors hover:text-white">AI Onboarding</a></li>
-          <li><a href="https://docs.autional.com" class="text-sm text-sky-100/72 transition-colors hover:text-white">Docs Portal</a></li>
-          <li><a href="https://developer.autional.com" class="text-sm text-sky-100/72 transition-colors hover:text-white">Dev Portal</a></li>
-          <li><a href="https://reference.autional.com" class="text-sm text-sky-100/72 transition-colors hover:text-white">API Reference</a></li>
-          <li><a href="https://wiki.autional.com" class="text-sm text-sky-100/72 transition-colors hover:text-white">API Wiki</a></li>
+          <li><a href="/ai" class="text-sm text-sky-100/72 transition-colors hover:text-white">AI 接入</a></li>
+          <li><a href="https://docs.autional.cn" class="text-sm text-sky-100/72 transition-colors hover:text-white">文档门户</a></li>
+          <li><a href="https://developer.autional.cn" class="text-sm text-sky-100/72 transition-colors hover:text-white">开发者门户</a></li>
+          <li><a href="https://reference.autional.cn" class="text-sm text-sky-100/72 transition-colors hover:text-white">API 参考</a></li>
+          <li><a href="https://wiki.autional.cn" class="text-sm text-sky-100/72 transition-colors hover:text-white">API Wiki</a></li>
         </ul></div>
-        <div><h3 class="text-sm font-semibold text-white">Company</h3><ul class="mt-4 space-y-3">
-          <li><a href="/about" class="text-sm text-sky-100/72 transition-colors hover:text-white">About</a></li>
-          <li><a href="/blog" class="text-sm text-sky-100/72 transition-colors hover:text-white">Blog</a></li>
-          <li><a href="/contact" class="text-sm text-sky-100/72 transition-colors hover:text-white">Contact</a></li>
+        <div><h3 class="text-sm font-semibold text-white">公司</h3><ul class="mt-4 space-y-3">
+          <li><a href="/about" class="text-sm text-sky-100/72 transition-colors hover:text-white">关于我们</a></li>
+          <li><a href="/blog" class="text-sm text-sky-100/72 transition-colors hover:text-white">博客</a></li>
+          <li><a href="/faq" class="text-sm text-sky-100/72 transition-colors hover:text-white">常见问题</a></li>
+          <li><a href="/changelog" class="text-sm text-sky-100/72 transition-colors hover:text-white">更新日志</a></li>
+          <li><a href="/contact" class="text-sm text-sky-100/72 transition-colors hover:text-white">联系我们</a></li>
         </ul></div>
       </div>
       <div class="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-sky-100/68 sm:flex-row sm:items-center sm:justify-between">
-        <p>&copy; 2026 Autional. All rights reserved.</p>
+        <p>&copy; 2026 Autional. 保留所有权利。</p>
         <div class="flex flex-wrap gap-4">
-          <a href="/privacy" class="transition-colors hover:text-white">Privacy</a>
-          <a href="/terms" class="transition-colors hover:text-white">Terms</a>
-          <a href="/trust" class="transition-colors hover:text-white">Trust</a>
+          <a href="/privacy" class="transition-colors hover:text-white">隐私政策</a>
+          <a href="/terms" class="transition-colors hover:text-white">服务条款</a>
+          <a href="/trust" class="transition-colors hover:text-white">信任中心</a>
         </div>
       </div>
     </div>

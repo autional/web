@@ -1,32 +1,32 @@
 ---
-title: "Rate Limiting in Practice: How to Protect Login Endpoints from Being Overwhelmed"
+title: "限流实战：如何保护登录端点不被压垮"
 date: "2026-05-23"
 category: "Tech"
-tags: ["Rate Limiting", "DDoS", "Security"]
-readTime: "9 min"
-excerpt: "Login endpoints are attackers' favorite targets. From token buckets to sliding windows, from IP-level to user-level rate limiting, from single-node to distributed rate limiting—this article walks through a real brute-force attack scenario, layer by layer, showing the evolution of rate-limiting strategies and how Autional gateway-service provides configurable multi-dimensional protection for every tenant."
+tags: ["限流", "DDoS", "安全"]
+readTime: "9 分钟"
+excerpt: "登录端点是攻击者最爱的靶子。从令牌桶到滑动窗口，从 IP 级到用户级，从单机到分布式——本文通过一次真实的暴力破解场景，逐层剖析限流策略的演进，以及 Autional gateway-service 如何为每个租户提供可配置的多维防护。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-It's 3 AM on a Tuesday. Your ops channel explodes. CPU spikes to 95%, and the p99 latency on your login endpoint goes from 50ms to 12 seconds. Logs show `/auth/login` receiving 3,000 requests per second from a botnet spread across 200+ IPs worldwide. Attackers are brute-forcing your login with a leaked password database.
+周二凌晨 3 点，你的运维群炸了。CPU 飙到 95%，登录端点的 p99 延迟从 50ms 涨到 12 秒。日志显示 `/auth/login` 每秒收到 3000 次请求，来源是分布在全球 200 多个 IP 上的僵尸网络。攻击者正拿着泄露的密码库暴力破解你的登录。
 
-You have no rate limiting configured. Your login endpoint is in the open.
+你没有配置任何限流。你的登录端点完全暴露在外。
 
-## Rate Limiting Is Not Optional
+## 限流不是可选项
 
-Login endpoints are special and must be protected:
+登录端点很特殊，必须加以保护：
 
-1. **CPU-intensive**: Password verification requires bcrypt/argon2 computation, far more expensive than regular APIs. A single bcrypt verification consumes roughly 50-100ms of CPU. Three thousand concurrent requests means 150-300 CPU cores of sustained consumption.
-2. **State-changing**: Failed login attempts update `failed_attempts` counters, write audit logs, and trigger failure-count checks. These database write operations become bottlenecks under high concurrency.
-3. **Security risk**: Without rate limiting, attackers can try tens of thousands of password combinations in minutes. Even strong passwords eventually fall before enough attempts.
+1. **CPU 密集**：密码校验需要执行 bcrypt/argon2 运算，开销远高于普通 API。一次 bcrypt 校验大约消耗 50-100ms 的 CPU。每秒三千次并发请求，意味着 150-300 个 CPU 核心的持续消耗。
+2. **有状态写入**：登录失败会更新 `failed_attempts` 计数器、写审计日志、触发失败次数检查。这些数据库写操作在高并发下会成为瓶颈。
+3. **安全风险**：没有限流，攻击者可以在几分钟内尝试数万种密码组合。再强的密码，在足够多的尝试次数面前也终会失守。
 
-## The Evolution of Rate-Limiting Algorithms
+## 限流算法的演进
 
-### First Generation: Fixed Window Counter
+### 第一代：固定窗口计数器
 
-The simplest approach: count requests within a fixed time window (e.g., 1 minute) and reject requests beyond a threshold.
+最简单的做法：在固定时间窗口（例如 1 分钟）内统计请求数，超过阈值的请求直接拒绝。
 
 ```
 Logic:
@@ -36,9 +36,9 @@ Logic:
     if count > 100: return 429 Too Many Requests
 ```
 
-**Problem: Boundary Burst**
+**问题：边界突发**
 
-Fixed windows have a serious flaw—burst traffic at window boundaries is unrestricted.
+固定窗口有一个严重缺陷——窗口边界处的突发流量不受限制。
 
 ```
 Timeline:  |──── Minute 1 ────|──── Minute 2 ────|
@@ -51,9 +51,9 @@ Requests:      98 (59s)   100 (1s)   100 (1s)
 In 2 seconds, attackers can send 200 requests, while your rate limit intends 100 per minute.
 ```
 
-### Second Generation: Sliding Window
+### 第二代：滑动窗口
 
-Sliding windows solve the boundary burst problem by subdividing the time window into smaller slots.
+滑动窗口把时间窗口切分成更小的槽位，从而解决边界突发问题。
 
 ```
 Timeline (1-min window, 6 slots, 10s each):
@@ -75,11 +75,11 @@ Next 10 seconds, window advances:
 Current total = 20+18+12+8+5+0 = 63 < 100 → Pass
 ```
 
-Sliding windows are far more accurate than fixed windows, but in high-precision scenarios, granularity determines accuracy and storage cost scales with it.
+滑动窗口比固定窗口精确得多，但在高精度场景下，粒度决定精度，存储成本也随之上升。
 
-### Third Generation: Token Bucket
+### 第三代：令牌桶
 
-The token bucket is the industry's most popular rate-limiting algorithm and the default in Autional gateway-service.
+令牌桶是业界最流行的限流算法，也是 Autional gateway-service 的默认选择。
 
 ```
 Token Bucket Model:
@@ -100,15 +100,16 @@ Token Bucket Model:
       No token → Reject
 ```
 
-Core parameters:
-- **Rate r**: Tokens added per second (steady-state rate)
-- **Capacity b**: Max tokens the bucket can hold (allowed burst)
+核心参数：
 
-This is the beauty of the token bucket—**controlled bursts**. With `r=10, b=100`: normally 10 requests/second; but if the bucket accumulates 100 tokens (after idle time), it can handle 100 requests instantly without violating the long-term average rate.
+- **速率 r**：每秒补充的令牌数（稳态速率）
+- **容量 b**：桶中最多可容纳的令牌数（允许的突发量）
 
-### Fourth Generation: Leaky Bucket
+这正是令牌桶的精妙之处——**可控的突发**。当 `r=10, b=100` 时：正常情况下每秒放行 10 个请求；但如果桶在空闲期攒满了 100 个令牌，就能瞬间承接 100 个请求，同时不违背长期平均速率。
 
-The leaky bucket is the mirror image of the token bucket: token bucket refills at a fixed rate and allows bursts; leaky bucket processes requests at a fixed rate and smooths output.
+### 第四代：漏桶
+
+漏桶是令牌桶的镜像：令牌桶以固定速率补充令牌并允许突发；漏桶则以固定速率处理请求，把输出削峰填谷。
 
 ```
     Requests in (any rate)
@@ -123,20 +124,20 @@ The leaky bucket is the mirror image of the token bucket: token bucket refills a
       Fixed-rate outflow
 ```
 
-The leaky bucket suits traffic-shaping scenarios—where you need a steady request rate delivered to downstream services. But for bursts, the leaky bucket drops rather than queues, resulting in worse UX than the token bucket.
+漏桶适合流量整形的场景——需要向下游服务输出稳定请求速率时。但面对突发流量，漏桶会直接丢弃而非排队，用户体验不如令牌桶。
 
-Autional gateway-service defaults to the token bucket, with config options allowing tenant admins to switch algorithms based on traffic patterns.
+Autional gateway-service 默认使用令牌桶，并提供配置项，允许租户管理员根据流量特征切换算法。
 
-## Multi-Dimensional Rate Limiting: Beyond IP
+## 多维度限流：不止于 IP
 
-IP-based rate limiting is the most common practice, but has two limitations:
+基于 IP 的限流是最常见的做法，但它有两个局限：
 
-1. **NAT/proxy users share the same IP**: 200 people in one company accessing your service through one egress IP—IP-level limiting can falsely block legitimate users.
-2. **Attackers use IP pools**: Attackers with many IP addresses can launch low-frequency, organized attacks on a single account, each IP well below the threshold.
+1. **NAT/代理后的用户共用同一 IP**：同一家公司 200 人通过一个出口 IP 访问你的服务——IP 级限流会误伤正常用户。
+2. **攻击者使用 IP 池**：手握大量 IP 的攻击者可以对单个账号发起低频、有组织的攻击，每个 IP 都远低于阈值。
 
-A mature rate-limiting strategy requires multiple layers:
+成熟的限流策略需要多层配合：
 
-### Layer 1: IP-Level Rate Limiting
+### 第一层：IP 级限流
 
 ```
 IP-level parameters (Autional defaults):
@@ -145,9 +146,9 @@ IP-level parameters (Autional defaults):
   - Algorithm: sliding window
 ```
 
-This is the outermost defense against large-scale distributed attacks. When a single IP's request volume is abnormal, it's directly rejected.
+这是抵御大规模分布式攻击的最外层防线。当单个 IP 的请求量异常时，直接拒绝。
 
-### Layer 2: User-Level Rate Limiting
+### 第二层：用户级限流
 
 ```
 User-level parameters:
@@ -156,9 +157,9 @@ User-level parameters:
   - Algorithm: token bucket (r=0.03/s, b=10)
 ```
 
-This is the core defense layer. Even if attackers use different IPs to target the same account, the account is limited to 10 attempts per 5 minutes. This is critical for stopping targeted brute-force attacks.
+这是核心防御层。即使攻击者用不同 IP 针对同一账号，该账号每 5 分钟也最多只能尝试 10 次。这对阻断定向暴力破解至关重要。
 
-### Layer 3: Global Rate Limiting
+### 第三层：全局限流
 
 ```
 Global parameters:
@@ -166,9 +167,9 @@ Global parameters:
   - Threshold: 500 requests / window (entire login endpoint)
 ```
 
-This is the disaster protection layer. When overall login request volume far exceeds normal levels (indicating a DDoS attack), it prioritizes availability for other business endpoints.
+这是灾难保护层。当整体登录请求量远超正常水平（说明正在遭受 DDoS 攻击）时，优先保障其他业务端点的可用性。
 
-### Autional Gateway-Service Three-Layer Example
+### Autional gateway-service 三层配置示例
 
 ```yaml
 # Tenant admin configuration in Autional admin console
@@ -190,11 +191,11 @@ rate_limiting:
     block_strategy: progressive  # 1st: 1min, 2nd: 5min, 3rd: 30min
 ```
 
-## Distributed Rate Limiting: Multiple Gateway Instances
+## 分布式限流：多网关实例
 
-Single-instance rate limiting isn't enough in a microservice architecture—with 3 gateway instances each having a 30/min IP threshold, attackers can send 30 requests to each instance, totaling 90/min, easily bypassing the limit.
+在微服务架构下，单实例限流是不够的——3 个网关实例各自有 30 次/分钟的 IP 阈值，攻击者向每个实例各发 30 次，合计 90 次/分钟，轻松绕过限制。
 
-Distributed rate limiting relies on shared counter storage. Redis is the natural choice:
+分布式限流依赖共享的计数存储，Redis 是天然之选：
 
 ```
 Distributed rate limiting with Redis:
@@ -223,11 +224,11 @@ EVAL "
 " 1 "ratelimit:login:ip:192.168.1.1" 60 30 1715692800000
 ```
 
-Autional gateway-service has this Redis rate limiter built in—developers don't need to implement it themselves. It auto-enables distributed mode via `redis` connection info in the gateway config; if Redis is unavailable, it gracefully degrades to local rate limiting (each instance counts independently) and triggers an alert.
+Autional gateway-service 内置了这套 Redis 限流器，开发者无需自己实现。只要在网关配置中提供 `redis` 连接信息，就会自动启用分布式模式；若 Redis 不可用，则优雅降级为本地限流（各实例独立计数）并触发告警。
 
-## Real-World Scenario: Complete Brute-Force Defense Chain
+## 真实场景：一次完整的暴力破解防御链
 
-Back to the attack scenario at the beginning. Here's Autional's layered response:
+回到开头的攻击场景。以下是 Autional 的逐层响应：
 
 ```
 Time: 03:00:00
@@ -262,24 +263,25 @@ Attack traffic subsides.
 → Audit log has a complete record of the entire attack
 ```
 
-## Golden Rules of Rate Limiting Configuration
+## 限流配置的黄金法则
 
-### 1. Never Rely Solely on IP Rate Limiting
+### 1. 不要只依赖 IP 限流
 
-IP rate limiting is only the first line of defense, not the only line. It must be paired with user-level rate limiting.
+IP 限流只是第一道防线，不是唯一一道。它必须与用户级限流配合使用。
 
-### 2. Thresholds Should Come From Data
+### 2. 阈值应来自数据
 
-Don't guess thresholds. Analyze your normal traffic patterns:
-- How many login attempts does a normal user make in 1 minute? (Use p99, not average)
-- How many logins per hour for a normal user? (Use max)
-- What are the p95 and p99 request rates for your login endpoint?
+不要凭感觉猜阈值，而要分析你的正常流量特征：
 
-Set thresholds at 3-5x the normal p99—enough buffer for abnormal behavior but effective at stopping attacks.
+- 正常用户 1 分钟内会发起多少次登录尝试？（用 p99，不要用平均值）
+- 正常用户每小时登录多少次？（取最大值）
+- 你的登录端点请求速率的 p95 与 p99 分别是多少？
 
-### 3. Keep Error Messages Consistent
+把阈值设在正常 p99 的 3-5 倍——既能容忍异常行为，又能有效拦截攻击。
 
-When rate limiting is triggered, error messages should not distinguish between "wrong password" and "too many requests," because attackers can infer strategy from responses:
+### 3. 错误信息保持一致
+
+触发限流后，错误信息不应区分「密码错误」与「请求过多」，因为攻击者可以从响应中反推策略：
 
 ```json
 // Bad: leaks rate-limiting policy
@@ -289,11 +291,11 @@ When rate limiting is triggered, error messages should not distinguish between "
 { "error": "Authentication failed. Please try again later." }
 ```
 
-Autional returns a standard `429 Too Many Requests` status code with a `Retry-After` header, but the response body stays consistent with normal authentication failures, not exposing rate-limiting details.
+Autional 返回标准的 `429 Too Many Requests` 状态码与 `Retry-After` 响应头，但响应体与普通认证失败保持一致，不暴露限流细节。
 
-### 4. Progressive Penalties
+### 4. 递进式惩罚
 
-Don't block for 24 hours on the first threshold breach. Use a progressive strategy:
+不要在第一次触发阈值时就封禁 24 小时，而应采用递进策略：
 
 ```
 1st trigger: wait 1 minute
@@ -303,21 +305,21 @@ Don't block for 24 hours on the first threshold breach. Use a progressive strate
 5th trigger: account temporarily locked, contact admin
 ```
 
-This strategy minimizes punishment for legitimate users who occasionally mistype their password, while applying escalating deterrence against malicious attackers.
+这一策略对偶尔输错密码的正常用户尽量轻罚，同时对恶意攻击者逐级加大威慑。
 
-### 5. Monitoring and Alerting
+### 5. 监控与告警
 
-Rate limiting isn't "set and forget." You need:
+限流不是「配好就不管」的事。你需要：
 
-- Monitor rate limit trigger frequency (if triggered daily, you may need to adjust thresholds or investigate)
-- Monitor the number of rate-limited IPs (a surge means an attack)
-- Monitor the number of rate-limited accounts (many different accounts could mean credential stuffing)
-- Set alerts: when rate limit trigger rate exceeds 10x normal levels, send an alert
+- 监控限流触发频次（如果每天都在触发，可能需要调整阈值或排查原因）
+- 监控被限流的 IP 数量（激增意味着正在被攻击）
+- 监控被限流的账号数量（大量不同账号可能是撞库）
+- 设置告警：限流触发率超过正常水平 10 倍时发出告警
 
-## Summary
+## 总结
 
-Rate limiting is identity security infrastructure, not an optional add-on. A login endpoint without rate limiting is like a door without a lock—it just hasn't been noticed by attackers yet.
+限流是身份安全的基础设施，不是可选的附加项。没有限流的登录端点就像一扇没有锁的门——只是还没被攻击者注意到。
 
-Autional gateway-service's built-in distributed rate limiting provides three layers of protection (IP-level, user-level, global-level), supports both token bucket and sliding window algorithms, and achieves cross-instance precise counting via Redis. Each tenant can independently configure based on their own security needs and traffic characteristics.
+Autional gateway-service 内置的分布式限流提供三层防护（IP 级、用户级、全局级），支持令牌桶与滑动窗口两种算法，并通过 Redis 实现跨实例的精确计数。每个租户都可以根据自身的安全需求与流量特征独立配置。
 
-Arm your login endpoint with armor.
+给你的登录端点穿上盔甲。

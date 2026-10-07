@@ -1,170 +1,170 @@
 ---
-title: "Government IT Identity: Level 3 Classified Protection + SM Algorithms + Xinchuang Adaptation"
+title: "政务信息化身份：等保三级 + SM 算法 + 信创适配"
 date: "2026-06-01"
 category: "Compliance"
-tags: ["Government", "Xinchuang", "SM Algorithms"]
-readTime: "10 min"
-excerpt: "Government information systems have unique technical requirements for identity authentication: Level 3 Classified Protection is the baseline, SM2/SM3/SM4 algorithms are mandatory, and Xinchuang environment adaptation is a deployment prerequisite. This article analyzes the strategy for building identity systems in government scenarios and how Autional supports these requirements."
+tags: ["政府", "信创", "SM 算法"]
+readTime: "10 分钟"
+excerpt: "政务信息系统对身份认证有独特的技术要求：等保三级是基线，SM2/SM3/SM4 算法是硬性要求，信创环境适配是部署前提。本文分析政务场景下身份系统的建设策略，以及 Autional 如何支撑这些要求。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Compliance Notice**: The technical capabilities described in this article—SM algorithms, Level 3 Classified Protection, Xinchuang adaptation—represent the design goals of the Autional platform and do not constitute Classified Protection certification or Xinchuang product certification. The ultimate compliance responsibility for government systems lies with the system operator based on specific project requirements. Compliant use of SM algorithms must follow the latest specifications from the State Cryptography Administration.
+> **合规声明**：本文所述的技术能力——SM 算法、等保三级、信创适配——为 Autional 平台的设计目标，不构成等保测评认证或信创产品认证。政务系统的最终合规责任由系统运营者根据具体项目要求承担。SM 算法的合规使用须遵循国家密码管理局的最新规范。
 
-## The Uniqueness of Government IT
+## 政务信息化的特殊性
 
-Government IT modernization has a characteristic often overlooked by outsiders: **it is not about making choices from "zero," but finding optimal solutions within a strictly constrained technical framework.**
+政务信息化建设有一个常被外部忽视的特点：**它不是从「零」开始做选择，而是在一个强约束的技术框架内寻找最优解。**
 
-This framework is defined by three factors:
-1. **Classified Protection 2.0** defines security levels and protection requirements—government systems are typically rated at Level 3 or above
-2. **Cryptography Law + SM Standards** mandate the cryptographic algorithms that must be used—SM2 (asymmetric), SM3 (hash), SM4 (symmetric)
-3. **Xinchuang Catalog** restricts the hardware architectures, operating systems, and foundational software that can be used
+这个框架由三个因素定义：
+1. **等保 2.0** 定义了安全等级与保护要求——政务系统通常定级在三级及以上
+2. **《密码法》+ SM 标准** 规定了必须使用的密码算法——SM2（非对称）、SM3（哈希）、SM4（对称）
+3. **信创目录** 限定了可采用的硬件架构、操作系统与基础软件
 
-Combined with the unique requirements of government scenarios such as intranet deployment, offline operation, and classified information protection, this creates a technical environment fundamentally different from internet SaaS development.
+再加上内网部署、离线运行、涉密信息保护等政务场景的特殊要求，共同构成了一个与互联网 SaaS 开发截然不同的技术环境。
 
-## Level 3 Classified Protection: Security Baseline for Government Systems
+## 等保三级：政务系统的安全基线
 
-Classified Protection 2.0 divides information system security levels into five tiers. Level 3 (Security Mark Protection Level) is the minimum requirement for most government systems. Compared to Level 2, the core differences at Level 3 are:
+等保 2.0 把信息系统安全等级划分为五级。三级（安全标记保护级）是大多数政务系统的最低要求。相比二级，三级的核心差异在于：
 
-**Mandatory Access Control (MAC)**: Beyond Discretionary Access Control (DAC)—where users decide who accesses their own data—the system enforces access rules based on security labels.
+**强制访问控制（MAC）**：在自主访问控制（DAC）——即由用户自行决定谁可以访问自己的数据——之外，系统还要基于安全标记强制执行访问规则。
 
-**Security Labels**: Both subjects (users) and objects (data) must be bound to security labels. Access decisions are based on label comparisons.
+**安全标记**：主体（用户）与客体（数据）都必须绑定安全标记，访问决策基于标记比对。
 
-**Formal Security Policy Model**: Access control policies must have a formal description and rigorous implementation.
+**形式化安全策略模型**：访问控制策略必须有形式化描述与严格实现。
 
-For the identity system, this means:
-- Each user must be bound to a security level label
-- Each piece of data must be bound to a classification label (Public / Internal / Secret / Confidential / Top Secret)
-- Access decisions are based on the Bell-LaPadula model (no read up, no write down) or equivalent implementation
+对身份系统而言，这意味着：
+- 每个用户必须绑定安全级别标记
+- 每条数据必须绑定密级标记（公开 / 内部 / 秘密 / 机密 / 绝密）
+- 访问决策基于 Bell-LaPadula 模型（不下读、不上写）或等效实现
 
-Autional provides enhanced access control for this:
-- User security level labels are implemented through RBAC role attributes
-- Resource security labels are implemented through database metadata fields
-- Access decisions are enforced in the identity-service permission check engine
+Autional 为此提供了增强的访问控制：
+- 用户安全级别标记通过 RBAC 角色属性实现
+- 资源安全标记通过数据库元数据字段实现
+- 访问决策在 identity-service 的权限校验引擎中强制执行
 
-### Specific Classified Protection Requirements for Identity Authentication
+### 等保对身份鉴别的具体要求
 
-**Identity Authentication**:
-- Unique identifiers + complexity policy + periodic rotation
-- Two or more combined authentication techniques (password + certificate/biometric/USB Key)
-- Login failure lockout + session timeout
+**身份鉴别**：
+- 唯一标识 + 复杂度策略 + 定期更换
+- 两种或两种以上组合的鉴别技术（口令 + 证书/生物特征/USB Key）
+- 登录失败锁定 + 会话超时
 
-**Access Control**:
-- Need-to-know permission assignment (principle of least privilege)
-- Remove/rename default accounts
-- Timely cleanup of expired/excess accounts
-- Subject-object security labels
+**访问控制**：
+- 知必所需的权限分配（最小权限原则）
+- 删除/重命名默认账号
+- 及时清理过期/多余账号
+- 主体客体安全标记
 
-**Security Audit**:
-- Audit scope covers all users and security events
-- Audit records include date, time, type, subject identifier, object identifier, and event result
-- Audit records are protected against unauthorized modification and deletion
+**安全审计**：
+- 审计范围覆盖所有用户与安全事件
+- 审计记录包含日期、时间、类型、主体标识、客体标识与事件结果
+- 审计记录受保护，防止未授权的修改与删除
 
-**Communication Confidentiality**:
-- Encrypted transmission of authentication information during communication
-- Use of cryptographic techniques to ensure integrity and confidentiality of communication data
+**通信保密性**：
+- 通信过程中对鉴别信息加密传输
+- 采用密码技术保证通信数据的完整性与保密性
 
-Autional coverage of these requirements:
+Autional 对这些要求的覆盖：
 
-| Classified Protection Requirement | Autional Implementation |
+| 等保要求 | Autional 实现 |
 |---------|----------------------|
-| Two or more authentication methods | password + SM2 certificate + TOTP, or password + USB Key (FIDO2) |
-| Mandatory Access Control | RBAC + security label binding |
-| Security Audit | audit-service hash chain + tamper-proof storage |
-| Communication Encryption | TLS 1.3 (SM2/SM4 cipher suites) + mTLS |
-| Session Security | session-service idle/absolute timeout + device binding |
+| 两种以上鉴别方式 | 口令 + SM2 证书 + TOTP，或口令 + USB Key（FIDO2） |
+| 强制访问控制 | RBAC + 安全标记绑定 |
+| 安全审计 | audit-service 哈希链 + 防篡改存储 |
+| 通信加密 | TLS 1.3（SM2/SM4 密码套件）+ mTLS |
+| 会话安全 | session-service 空闲/绝对超时 + 设备绑定 |
 
-## SM Algorithms: Cryptographic Adaptation in Identity Systems
+## SM 算法：身份系统中的密码改造
 
-Article 27 of the Cryptography Law, effective January 1, 2020, clearly states: "Operators of critical information infrastructure shall, in accordance with laws, regulations, and cryptography-related standards, use commercial cryptography for protection."
+2020 年 1 月 1 日起施行的《密码法》第二十七条明确规定：「法律、行政法规和国家有关规定要求使用商用密码进行保护的关键信息基础设施，其运营者应当使用商用密码进行保护。」
 
-For government systems, this means must use commercial cryptographic algorithms approved by the State Cryptography Administration (i.e., SM algorithms replacing international algorithms):
+对政务系统而言，这意味着必须使用国家密码管理局认可的商用密码算法（即用 SM 算法替代国际算法）：
 
-### SM2: Elliptic Curve Public Key Cryptography Algorithm
+### SM2：椭圆曲线公钥密码算法
 
-SM2 replaces RSA and ECDSA, applied in:
-- **Digital Signatures**: JWT token signing, API request signing, data integrity signatures
-- **Key Agreement**: Key exchange during TLS handshake
-- **Certificate System**: SM2-based PKI system
+SM2 替代 RSA 与 ECDSA，应用于：
+- **数字签名**：JWT 令牌签名、API 请求签名、数据完整性签名
+- **密钥协商**：TLS 握手过程中的密钥交换
+- **证书体系**：基于 SM2 的 PKI 体系
 
-In Autional, SM2 application scenarios include:
-- identity-service JWT signing: using SM2 signatures instead of HS256/RS256
-- mfa-service Passkey: leveraging SM2's signature mechanism for passwordless authentication
-- Service-to-service communication: mutual authentication via SM2 certificates
+在 Autional 中，SM2 的应用场景包括：
+- identity-service 的 JWT 签名：使用 SM2 签名替代 HS256/RS256
+- mfa-service 的 Passkey：利用 SM2 的签名机制实现免密认证
+- 服务间通信：通过 SM2 证书实现双向认证
 
-### SM3: Cryptographic Hash Algorithm
+### SM3：密码杂凑算法
 
-SM3 replaces SHA-256, applied in:
-- **Password Hashing**: salted hash storage of user passwords
-- **Data Integrity**: digital digests of files/records
-- **Blockchain/Hash Chain**: audit-service hash chain verification
+SM3 替代 SHA-256，应用于：
+- **口令哈希**：用户口令的加盐哈希存储
+- **数据完整性**：文件/记录的数字摘要
+- **区块链/哈希链**：audit-service 的哈希链校验
 
-### SM4: Block Cipher Algorithm
+### SM4：分组密码算法
 
-SM4 replaces AES, applied in:
-- **Data Transmission Encryption**: data encryption in TLS
-- **Data-at-Rest Encryption**: field-level encryption in databases
-- **Config File Encryption**: encrypted storage of sensitive configurations like keys
+SM4 替代 AES，应用于：
+- **数据传输加密**：TLS 中的数据加密
+- **数据存储加密**：数据库中的字段级加密
+- **配置文件加密**：密钥等敏感配置的加密存储
 
-### Challenges and Technical Solutions for SM Algorithm Migration
+### SM 算法迁移的挑战与技术解法
 
-Migrating from international algorithms (RSA/AES/SHA) to SM algorithms is a systemic engineering challenge:
+从国际算法（RSA/AES/SHA）迁移到 SM 算法是一项系统性工程挑战：
 
-**Challenge 1: Algorithm Performance Differences**. SM2 signing is 2-3x slower than ECDSA due to differences in elliptic curve parameters and protocol details. Solution: Autional performs batch pre-signing during JWT generation and pools identity tokens for reuse.
+**挑战一：算法性能差异**。由于椭圆曲线参数与协议细节的不同，SM2 签名比 ECDSA 慢 2-3 倍。解法：Autional 在生成 JWT 时进行批量预签名，并池化身份令牌以供复用。
 
-**Challenge 2: Cryptographic Library Dependency**. The Go standard library does not include SM algorithms, requiring third-party libraries like `tjfoc/gmsm` or `emmansun/gmsm`. The maintainers and maturity of these libraries need assessment. Autional uses independently security-audited versions of SM libraries with continuous CI verification.
+**挑战二：密码库依赖**。Go 标准库不包含 SM 算法，需要 `tjfoc/gmsm` 或 `emmansun/gmsm` 等第三方库，而这些库的维护者与成熟度需要评估。Autional 使用经过独立安全审计的 SM 库版本，并做持续的 CI 验证。
 
-**Challenge 3: TLS Adaptation**. Standard TLS handshake uses ECDHE + RSA/AES, while SM TLS should use ECDHE + SM2/SM4. However, the SM TLS implementation (GM/T 0024 SSL VPN Technical Specification) is not fully compatible with international TLS 1.3. Autional adopts a dual-protocol-stack approach: intranet communication uses SM TLS, extranet communication uses standard TLS 1.3.
+**挑战三：TLS 适配**。标准 TLS 握手使用 ECDHE + RSA/AES，而 SM TLS 应使用 ECDHE + SM2/SM4。但 SM TLS 的实现规范（GM/T 0024《SSL VPN 技术规范》）与国际 TLS 1.3 并不完全兼容。Autional 采用双协议栈方案：内网通信使用 SM TLS，外网通信使用标准 TLS 1.3。
 
-## Xinchuang Adaptation: From "Runnable" to "Usable"
+## 信创适配：从「跑得起来」到「用得顺手」
 
-Xinchuang (Information Technology Application Innovation) aims to achieve independent control of key technologies and products. This affects deployment environment choices:
+信创（信息技术应用创新）旨在实现关键技术与产品的自主可控，这直接影响部署环境的选择：
 
-- **CPU Architecture**: x86 → ARM (Kunpeng, Phytium) / LoongArch (Loongson)
-- **OS**: Windows → Kylin / Tongxin UOS
-- **Database**: SQL Server/Oracle → DM (DaMeng) / Kingbase / GaussDB
+- **CPU 架构**：x86 → ARM（鲲鹏、飞腾）/ LoongArch（龙芯）
+- **操作系统**：Windows → 麒麟 / 统信 UOS
+- **数据库**：SQL Server/Oracle → DM（达梦）/ 人大金仓 / GaussDB
 
-For Autional, the core work of Xinchuang adaptation includes:
+对 Autional 而言，信创适配的核心工作包括：
 
-### Build Adaptation
+### 编译适配
 
-Go 1.25 natively supports Linux ARM64, enabling direct cross-compilation:
+Go 1.25 原生支持 Linux ARM64，可直接交叉编译：
 ```bash
 GOOS=linux GOARCH=arm64 go build -o identity-service-linux-arm64 ./cmd/server
 ```
 
-### Database Adaptation
+### 数据库适配
 
-Autional supports database driver switching through the infra-client/gorm factory pattern. Adapting to DaMeng database requires only:
-1. Importing DaMeng's GORM driver
-2. Configuring the database connection string
-3. Verifying SQL syntax compatibility of AutoMigrate output
+Autional 通过 infra-client/gorm 的工厂模式支持数据库驱动切换。适配达梦数据库只需：
+1. 引入达梦的 GORM 驱动
+2. 配置数据库连接串
+3. 验证 AutoMigrate 输出的 SQL 语法兼容性
 
-### Storage Adaptation
+### 存储适配
 
-- File storage: switching from MinIO/S3 to domestic object storage (e.g.,杉岩, XSKY)
-- Cache: switching from Redis to Redis-protocol-compatible domestic caches (e.g., Garnet, Tendis)
+- 文件存储：从 MinIO/S3 切换到国产对象存储（如杉岩、XSKY）
+- 缓存：从 Redis 切换到兼容 Redis 协议的国产缓存（如 Garnet、Tendis）
 
-### Middleware Adaptation
+### 中间件适配
 
-- Message queue: switching from RabbitMQ to RocketMQ or domestic Pulsar distributions
-- API gateway: retaining gateway-service, but switching underlying communication to SM TLS
+- 消息队列：从 RabbitMQ 切换到 RocketMQ 或国产 Pulsar 发行版
+- API 网关：保留 gateway-service，但底层通信切换为 SM TLS
 
-## Intranet Deployment and Offline Operation
+## 内网部署与离线运行
 
-Many government systems require fully offline operation (no internet connection), which poses unique challenges for identity systems:
+许多政务系统要求完全离线运行（不连接互联网），这对身份系统提出了独特挑战：
 
-**Passkey and Biometrics**: FIDO2/WebAuthn Passkeys typically require platform sync services (e.g., iCloud Keychain) for cross-device synchronization. Offline environments need alternatives:
-- Using SM2-based hardware keys (similar to USB tokens) via USB/NFC connection
-- Fully local facial recognition without relying on cloud APIs
+**Passkey 与生物识别**：FIDO2/WebAuthn 的通行密钥通常依赖平台同步服务（如 iCloud Keychain）实现跨设备同步。离线环境需要替代方案：
+- 使用基于 SM2 的硬件密钥（类似 USB Token），通过 USB/NFC 连接
+- 完全本地化的人脸识别，不依赖云端 API
 
-**Software Updates**: Software updates in offline environments must use secure offline media (e.g., encrypted discs, signed USB drives). Autional needs to provide offline patch verification and installation mechanisms.
+**软件更新**：离线环境中的软件更新必须通过安全的离线介质（如加密光盘、带签名的 U 盘）。Autional 需要提供离线补丁包校验与安装机制。
 
-**Time Synchronization**: JWT tokens, TOTP codes, and session timeouts all depend on accurate time. Offline environments must ensure time consistency through local NTP servers or GPS timing.
+**时间同步**：JWT 令牌、TOTP 验证码、会话超时都依赖准确的时间。离线环境必须通过本地 NTP 服务器或 GPS 授时确保时间一致性。
 
-## Conclusion
+## 结语
 
-Building identity authentication for government systems is a "dance in chains" engineering challenge—constructing secure and practical identity infrastructure under the multiple constraints of Classified Protection regulations, SM standards, and Xinchuang catalog requirements.
+为政务系统构建身份认证，是一项「戴着镣铐跳舞」的工程挑战——要在等保法规、SM 标准与信创目录的多重约束下，构建既安全又实用的身份基础设施。
 
-Autional provides an out-of-the-box identity solution for government IT modernization through complete SM algorithm support (SM2/SM3/SM4), multi-CPU architecture compilation adaptation, domestic database and middleware integration, offline deployment capabilities, and enhanced audit and access control—without requiring "building from scratch."
+Autional 通过完整的 SM 算法支持（SM2/SM3/SM4）、多 CPU 架构的编译适配、国产数据库与中间件对接、离线部署能力，以及增强的审计与访问控制，为政务信息化建设提供开箱即用的身份方案——无需「从零造轮子」。

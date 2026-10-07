@@ -1,10 +1,10 @@
 # Autional Website
 
-**Domain**: www.autional.com
+**Domain**: www.autional.cn
 **Stack**: Astro 5 SSG + React 19 + Tailwind 3.4
-**Repository**: [github.com/autional/web](https://github.com/autional/web)
+**Repository**: [github.com/autional-cn/web](https://github.com/autional-cn/web)
 
-Marketing website for [Autional](https://www.autional.com) — Enterprise Identity & Access Management.
+Marketing website for [Autional](https://www.autional.cn) — Enterprise Identity & Access Management.
 
 ## Development
 

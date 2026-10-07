@@ -1,80 +1,63 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
-const packages = [
-  { cat: 'Core', pkgs: [{ name: '@autional/core', desc: 'Token management, API client, auth flows', install: 'npm install @autional/core', repo: 'https://github.com/autional/sdk' }] },
-  { cat: 'Frameworks', pkgs: [
-    { name: '@autional/react', desc: 'React — AuthProvider, useAuth, RequireAuth', install: 'npm install @autional/react @autional/core', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/vue', desc: 'Vue 3 — plugin, composables, guards', install: 'npm install @autional/vue @autional/core', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/next', desc: 'Next.js App Router — middleware, server components', install: 'npm install @autional/next @autional/core', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/node', desc: 'Node.js server middleware, token verification', install: 'npm install @autional/node', repo: 'https://github.com/autional/sdk' },
-  ]},
-  { cat: 'Mobile', pkgs: [
-    { name: '@autional/miniapp', desc: 'WeChat Mini Program adapter', install: 'npm install @autional/miniapp @autional/core', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/react-native', desc: 'React Native — secure token storage, biometric', install: 'npm install @autional/react-native @autional/core', repo: 'https://github.com/autional/sdk' },
-  ]},
-  { cat: 'Plugins', pkgs: [
-    { name: '@autional/plugin-mfa', desc: 'MFA setup flows, device management', install: 'npm install @autional/plugin-mfa', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/plugin-passkey', desc: 'Passkey registration and assertion', install: 'npm install @autional/plugin-passkey', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/plugin-tenant', desc: 'Multi-tenant organization management', install: 'npm install @autional/plugin-tenant', repo: 'https://github.com/autional/sdk' },
-  ]},
-  { cat: 'API Clients (auto-generated)', pkgs: [
-    { name: '@autional/api-identity', desc: 'Identity service TypeScript client', install: 'npm install @autional/api-identity', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/api-mfa', desc: 'MFA / WebAuthn / adaptive auth', install: 'npm install @autional/api-mfa', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/api-oauth', desc: 'OAuth / OIDC authorization server', install: 'npm install @autional/api-oauth', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/api-session', desc: 'Session and token management', install: 'npm install @autional/api-session', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/api-profile', desc: 'User profile, privacy, preferences', install: 'npm install @autional/api-profile', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/api-tenant', desc: 'Tenant, organization, department CRUD', install: 'npm install @autional/api-tenant', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/api-rbac', desc: 'RBAC roles, permissions, assignments', install: 'npm install @autional/api-rbac', repo: 'https://github.com/autional/sdk' },
-    { name: '@autional/api-billing', desc: 'Subscription billing, plans, metering', install: 'npm install @autional/api-billing', repo: 'https://github.com/autional/sdk' },
-    { name: '+11 more', desc: 'audit, compliance, wallet, point, pay, storage, etc.', install: '', repo: 'https://github.com/autional/sdk' },
-  ]},
-];
-const quickstarts = [
-  { lang: 'React', code: 'import { AuthProvider } from \'@autional/react\';\n\nfunction App() {\n  return (\n    <AuthProvider>\n      <YourApp />\n    </AuthProvider>\n  );\n}', install: 'npm install @autional/react @autional/core' },
-  { lang: 'Vue', code: 'import { createApp } from \'vue\'\nimport AutionalPlugin from \'@autional/vue\'\n\nconst app = createApp(App)\napp.use(AutionalPlugin)\napp.mount(\'#app\')', install: 'npm install @autional/vue @autional/core' },
-  { lang: 'Node.js', code: 'import { verifyToken } from \'@autional/node\';\n\napp.use(async (req, res, next) => {\n  const user = await verifyToken(req);\n  req.user = user;\n  next();\n});', install: 'npm install @autional/node' },
-];
+import { SITE_FACTS } from '../lib/site-facts';
+
+// 已发布软件包以 npm 实查为准（单一来源：src/lib/site-facts.ts）
+const pkgMeta: Record<string, { desc: string; install: string }> = {
+  '@autional/react': { desc: 'React —— AutionalProvider、useAutional、RequireAuth', install: 'npm install @autional/react' },
+  '@autional/onboard': { desc: '项目初始化 CLI', install: 'npx @autional/onboard' },
+  '@autional/ui': { desc: 'React 组件库 —— 门户与管理面组件', install: 'npm install @autional/ui' },
+  '@autional/tokens': { desc: '设计令牌 —— 颜色、排版与间距 CSS 变量', install: 'npm install @autional/tokens' },
+  '@autional/tailwind-preset': { desc: 'Tailwind 预设 —— 接入设计令牌', install: 'npm install @autional/tailwind-preset' },
+  '@autional/shared': { desc: '共享运行时工具 —— 多门户通用逻辑', install: 'npm install @autional/shared' },
+  '@autional/eslint-config': { desc: 'ESLint 共享配置', install: 'npm install -D @autional/eslint-config' },
+  '@autional/tsconfig': { desc: 'TypeScript 共享配置', install: 'npm install -D @autional/tsconfig' },
+};
+const published = SITE_FACTS.publishedPackages.map((p) => ({
+  ...p,
+  ...(pkgMeta[p.name] ?? { desc: '', install: `npm install ${p.name}` }),
+}));
+const quickstart = {
+  lang: 'React',
+  code: 'import { AutionalProvider } from \'@autional/react\';\n\nconst config = { appId: \'my-app\', issuer: \'https://api.autional.cn\' };\n\nfunction App() {\n  return (\n    <AutionalProvider config={config}>\n      <YourApp />\n    </AutionalProvider>\n  );\n}',
+  install: 'npm install @autional/react',
+};
 ---
-<Layout title="SDK — Autional" description="Autional SDK: 30+ packages for React, Vue, Next.js, Node.js, and more." keywords="Autional, SDK, React, Vue, Next.js, Node.js, authentication, TypeScript, npm, open source">
+<Layout title="SDK — Autional" description="Autional SDK：已发布的 npm 软件包与设计系统工具，一行代码接入身份能力。" keywords="Autional, SDK, React, npm, 认证, TypeScript, 开源, 设计系统">
   <section class="mx-auto max-w-6xl px-4 py-20">
     <div class="text-center mb-16">
       <h1 class="text-4xl font-bold sm:text-5xl">SDK</h1>
-      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">30+ npm packages. One line to add identity to your app. React, Vue, Next.js, Node.js, and 19 auto-generated API clients.</p>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">已发布的 npm 软件包，均可直接安装：React 适配、项目初始化 CLI、设计系统与工程配置工具，以及 Vue、Next.js、Node 等更多框架适配。</p>
     </div>
 
-    <!-- Quickstarts -->
-    <div class="mb-20"><h2 class="text-2xl font-bold mb-8 text-center">One-Line Quickstart</h2>
-      {quickstarts.map(q => (
-        <div class="mb-6"><div class="flex items-center gap-3 mb-2"><span class="rounded-full bg-primary-50 text-primary-700 px-3 py-0.5 text-xs font-medium">{q.lang}</span></div>
-          <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-5 overflow-x-auto">
-            <pre class="text-sm text-green-400 font-mono leading-relaxed">{q.code}</pre>
-            <p class="mt-3 text-xs text-neutral-500 font-mono border-t border-neutral-700 pt-3"><span class="text-green-400">$</span> {q.install}</p>
-          </div>
+    <!-- Quickstart -->
+    <div class="mb-20"><h2 class="text-2xl font-bold mb-8 text-center">一行代码快速开始</h2>
+      <div class="mx-auto max-w-3xl">
+        <div class="flex items-center gap-3 mb-2"><span class="rounded-full bg-primary-50 text-primary-700 px-3 py-0.5 text-xs font-medium">{quickstart.lang}</span></div>
+        <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-5 overflow-x-auto">
+          <pre class="text-sm text-syntax-plain font-mono leading-relaxed">{quickstart.code}</pre>
+          <p class="mt-3 text-xs text-neutral-500 font-mono border-t border-neutral-700 pt-3"><span class="text-syntax-comment">$</span> {quickstart.install}</p>
         </div>
-      ))}
+      </div>
     </div>
 
-    <!-- All Packages -->
-    <h2 class="text-2xl font-bold mb-8">All Packages</h2>
-    {packages.map(g => (
-      <div class="mb-12"><h3 class="text-lg font-semibold text-primary-600 mb-4">{g.cat}</h3>
-        <div class="grid gap-3 sm:grid-cols-2">{g.pkgs.map(p => (
-          <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 flex flex-col justify-between">
-            <div><code class="text-sm font-mono font-semibold text-primary-700 dark:text-primary-300">{p.name}</code><p class="mt-1 text-sm text-neutral-500">{p.desc}</p></div>
-            <div class="mt-3 flex items-center gap-2 text-xs">{p.install && <code class="text-neutral-400 bg-neutral-50 dark:bg-slate-900 px-2 py-1 rounded">{p.install}</code>}<a href={p.repo} class="text-primary-600 hover:underline ml-auto">Source →</a></div>
-          </div>
-        ))}</div>
+    <!-- Published Packages -->
+    <h2 class="text-2xl font-bold mb-8">已发布的 npm 软件包</h2>
+    <div class="grid gap-3 sm:grid-cols-2">{published.map(p => (
+      <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 flex flex-col justify-between">
+        <div><code class="text-sm font-mono font-semibold text-primary-700 dark:text-primary-300">{p.name}</code><span class="ml-2 rounded-xs bg-neutral-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-mono text-neutral-500">{p.version}</span><p class="mt-1 text-sm text-neutral-500">{p.desc}</p></div>
+        <div class="mt-3 text-xs"><code class="text-neutral-400 bg-neutral-50 dark:bg-slate-900 px-2 py-1 rounded-xs">{p.install}</code></div>
       </div>
-    ))}
-    
+    ))}</div>
+
     <!-- CTA -->
     <div class="mt-16 text-center">
       <div class="brand-card inline-block px-10 py-8">
-        <p class="text-lg font-semibold text-primary-900 dark:text-white">Ready to integrate?</p>
-        <p class="mt-2 text-sm text-neutral-500">Pick your framework and add auth in one line.</p>
+        <p class="text-lg font-semibold text-primary-900 dark:text-white">准备好集成了吗？</p>
+        <p class="mt-2 text-sm text-neutral-500">从快速开始指南出发，或到 GitHub 查看开源代码。</p>
         <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
-          <a href="https://developer.autional.com/quickstart" class="brand-button-primary">Quickstart Guide →</a>
-          <a href="https://github.com/autional/sdk" class="rounded-full border border-neutral-300 dark:border-neutral-700 px-5 py-2.5 text-sm font-semibold text-neutral-700 dark:text-neutral-200 transition hover:bg-neutral-50 dark:hover:bg-white/10">View all on GitHub</a>
+          <a href="https://developer.autional.cn/quickstart" class="brand-button-primary">快速开始指南 →</a>
+          <a href="https://github.com/autional-cn" class="rounded-full border border-neutral-300 dark:border-neutral-700 px-5 py-2.5 text-sm font-semibold text-neutral-700 dark:text-neutral-200 transition hover:bg-neutral-50 dark:hover:bg-white/10">在 GitHub 上查看</a>
         </div>
       </div>
     </div>

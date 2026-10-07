@@ -1,0 +1,22 @@
+{
+  "nav.features": "功能",
+  "nav.pricing": "定价",
+  "nav.docs": "文档",
+  "nav.blog": "博客",
+  "nav.contact": "联系我们",
+  "nav.ai": "AI 接入",
+  "nav.sdk": "SDK",
+  "search.placeholder": "搜索页面、博客文章…",
+  "search.noResults": "未找到与「{{query}}」相关的结果",
+  "search.hotSearches": "热门搜索",
+  "search.resultCount": "{{count}} 条结果",
+  "search.closeHint": "按 ESC 关闭",
+  "search.hotTags": [
+    "SSO",
+    "MFA",
+    "通行密钥",
+    "多租户",
+    "API 文档",
+    "部署"
+  ]
+}

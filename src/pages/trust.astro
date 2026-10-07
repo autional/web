@@ -1,15 +1,15 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
 ---
-<Layout title="Trust & Compliance — Autional" description="Autional security practices, compliance frameworks, and trust center." keywords="Autional, trust, compliance, security, ISO 27001, SOC 2, GDPR, HIPAA, PCI DSS">
+<Layout title="信任与合规 — Autional" description="Autional 的安全实践、合规框架与信任中心。" keywords="Autional, 信任, 合规, 安全, ISO 27001, SOC 2, GDPR, HIPAA, PCI DSS">
   <section class="mx-auto max-w-4xl px-4 py-20">
-    <div class="text-center mb-16"><h1 class="text-4xl font-bold sm:text-5xl">Trust &amp; Compliance</h1><p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">Autional is built with security and compliance as core design principles — not afterthoughts.</p></div>
+    <div class="text-center mb-16"><h1 class="text-4xl font-bold sm:text-5xl">信任与合规</h1><p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">Autional 将安全与合规作为核心设计原则，而不是事后补充。</p></div>
     <div class="grid gap-6 sm:grid-cols-2 mb-16">
-      {[['🔐','Data Encryption','All sensitive fields encrypted with AES-256-GCM at rest. Key rotation supported. SM4-GCM for Chinese national standard compliance.'],['🔒','Password Security','argon2id hashing with per-tenant pepper. Password transmission supports ECDH symmetric and RSA asymmetric encryption.'],['📝','Audit Trail','Immutable Merkle hash chain audit logs. Every authentication event is cryptographically linked and verifiable.'],['🛡️','MFA & Access Control','TOTP, WebAuthn/FIDO2, SMS, email, push MFA. RBAC + ABAC + ReBAC + PIM authorization models.'],
-        ['🌐','Compliance Frameworks','Built-in data models and tooling for: ISO 27001, PCI DSS, HIPAA, SOX, GDPR, PSD2, PIPL, Dengbao 2.0.'],['🔑','Key Management','Centralized secret-service for encryption keys, JWT signing keys, and API keys. Hardware-backed key storage support.'],['🏗️','Architecture','24 independently deployable microservices. PostgreSQL, MongoDB, Redis, RabbitMQ. gRPC service mesh with OpenTelemetry tracing.'],['🔍','Vulnerability Management','Regular dependency scanning, penetration testing workflows, and security audit finding tracking built into the compliance service.']].map(([icon,t,d]) => (
+      {[['🔐','数据加密','所有敏感字段在静态存储时均以 AES-256-GCM 加密，支持密钥轮换。面向中国国家标准的合规场景提供 SM4-GCM。'],['🔒','密码安全','采用 argon2id 哈希，支持按租户配置 pepper。密码传输支持 ECDH 对称加密与 RSA 非对称加密。'],['📝','审计追踪','不可篡改的 Merkle 哈希链审计日志。每个认证事件都经过密码学链接，可验证。'],['🛡️','MFA 与访问控制','TOTP、WebAuthn/FIDO2、短信、邮件、推送 MFA。授权模型覆盖 RBAC + ABAC + ReBAC + PIM。'],
+        ['🌐','合规框架','为以下框架提供内置数据模型与工具：ISO 27001、PCI DSS、HIPAA、SOX、GDPR、PSD2、PIPL、等保 2.0。'],['🔑','密钥管理','集中式 secret-service 统一管理加密密钥、JWT 签名密钥与 API 密钥，敏感凭据不落业务代码。'],['🏗️','架构','27 个可独立部署的微服务。PostgreSQL、MongoDB、Redis、RabbitMQ。gRPC 服务网格配合 OpenTelemetry 链路追踪。'],['🔍','漏洞管理','定期依赖扫描、公开的漏洞披露渠道，以及内建于合规服务的安全审计发现跟踪。']].map(([icon,t,d]) => (
         <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-6"><div class="text-2xl mb-2">{icon}</div><h3 class="font-semibold mb-1">{t}</h3><p class="text-sm text-neutral-500 leading-relaxed">{d}</p></div>
       ))}
     </div>
-    <div class="rounded-2xl bg-neutral-50 dark:bg-slate-900 border border-neutral-200 dark:border-neutral-800 p-8"><h2 class="text-xl font-bold text-center mb-4">Compliance Disclaimer</h2><p class="text-sm text-neutral-500 leading-relaxed">The technical capabilities described above represent Autional's platform design goals and built-in tooling. Compliance certifications (ISO 27001, SOC 2, PCI DSS, etc.) are the responsibility of the deploying organization. Autional provides the technical foundation — achieving certification requires organization-specific controls, audits, and policies.</p></div>
+    <div class="rounded-md bg-neutral-50 dark:bg-slate-900 border border-neutral-200 dark:border-neutral-800 p-8"><h2 class="text-xl font-bold text-center mb-4">合规免责声明</h2><p class="text-sm text-neutral-500 leading-relaxed">上述技术能力代表 Autional 的平台设计目标与内置工具。合规认证（ISO 27001、SOC 2、PCI DSS 等）由部署方自行负责。Autional 提供技术基础 —— 通过认证还需要组织自身的控制措施、审计与制度。</p></div>
   </section>
 </Layout>

@@ -4,8 +4,8 @@ import { getCollection } from 'astro:content';
 export async function GET(context: { site: URL }) {
   const posts = await getCollection('blog', ({ data }) => data.status === 'verified');
   return rss({
-    title: 'Autional Blog',
-    description: 'Technical articles on identity, security, compliance, and architecture for AI-generated applications.',
+    title: 'Autional 博客',
+    description: '关于身份、安全、合规与架构的技术文章，面向 AI 生成的应用。',
     site: context.site,
     items: posts
       .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
@@ -15,6 +15,6 @@ export async function GET(context: { site: URL }) {
         description: post.data.excerpt,
         link: `/blog/${post.id.replace(/\.md$/, '')}/`,
       })),
-    customData: '<language>en-us</language>',
+    customData: '<language>zh-CN</language>',
   });
 }

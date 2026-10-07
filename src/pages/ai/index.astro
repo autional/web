@@ -3,96 +3,107 @@ import Layout from '../../layouts/LandingLayout.astro';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-// Build-time snapshot: byte-identical with the file served at /ai/skill.md
+// 构建期快照：与 /ai/skill.md 逐字节一致
 const skillMd = readFileSync(resolve(process.cwd(), 'public/ai/skill.md'), 'utf8');
 
-const promptEn = 'Fetch https://www.autional.com/ai/skill.md and follow it to add Autional login / multi-user to this project.';
-const promptZh = '请读取 https://www.autional.com/ai/skill.zh.md，并据此为当前项目接入 Autional 登录/多用户。';
+const promptZh = `请读取 https://www.autional.cn/ai/skill.md，并据此为当前项目接入 Autional 登录。
+若打不开，改用国内镜像：
+https://cdn.autional.cn/ai/latest/SKILL.md`;
+
+// hreflang 互指（T-03）：/ai（zh-CN 主）与 /ai/en 互指，x-default 指中文主版本
+const site = Astro.site!;
+const alternates = [
+  { hreflang: 'zh-CN', href: new URL('/ai/', site).href },
+  { hreflang: 'en', href: new URL('/ai/en/', site).href },
+  { hreflang: 'x-default', href: new URL('/ai/', site).href },
+];
 
 const phases = [
-  { n: '0', title: 'Safety net first', desc: 'Git branch, toolkit check, risk disclosure — every change is reversible.' },
-  { n: '1', title: 'Inspect your app', desc: 'Framework, existing auth, conflicts, and what the integration will change.' },
-  { n: '2', title: 'Design the policy', desc: 'Tenant naming, compliance-driven password policy, login methods.' },
-  { n: '3', title: 'Provision identity', desc: 'Tenant + application created in the developer portal; credentials handled once.' },
-  { n: '4', title: 'Install the SDK', desc: 'Framework-appropriate packages and environment variables.' },
-  { n: '5', title: 'Wire it in', desc: 'Provider, login UI, external-id mapping, user center — real code, then verify the build.' },
-  { n: '6-7', title: 'Test & verify', desc: 'Unit tests plus an 8-step end-to-end flow: register → login → profile → refresh → logout → revoked.' },
-  { n: '8', title: 'Hand over', desc: 'Change inventory, test accounts, and what to check in the portals.' },
+  { n: '0', title: '先建安全网', desc: 'git 分支、工具链检查、风险披露——所有改动可回退。' },
+  { n: '1', title: '盘点你的应用', desc: '框架、现有认证、冲突点，以及接入会影响什么。' },
+  { n: '2', title: '设计策略', desc: '租户命名、合规驱动的密码策略（等保/PIPL 档位）、登录方式。' },
+  { n: '3', title: '开通身份服务', desc: '在开发者门户创建租户与应用；凭证只处理一次。' },
+  { n: '4', title: '安装 SDK', desc: '按框架安装依赖包（npm 源可配 npmmirror）并注入环境变量。' },
+  { n: '5', title: '写入代码', desc: 'Provider、登录界面、外部 ID 映射、用户中心——真实代码，改完立即验证构建。' },
+  { n: '6-7', title: '测试与验证', desc: '单元测试 + 8 步端到端流程：注册 → 登录 → 资料 → 刷新 → 登出 → 吊销。' },
+  { n: '8', title: '交付清单', desc: '变更清单、测试账号，以及门户里要核对的项。' },
 ];
 
 const checklist = [
-  'Sign-up, sign-in, and sign-out work end-to-end',
-  'Session survives page reload; tokens refresh silently',
-  'Protected routes require login before rendering',
-  'Existing app data is still there after accounts are added',
-  'Build passes and unit tests are green',
-  'End-to-end flow verified: discovery → register → login → profile → refresh → logout → revoked token rejected',
-  'AUTIONAL_CHANGES.md lists every file that changed',
-  'Test accounts created for multi-user verification',
+  '注册、登录、登出全链路可用',
+  '刷新页面会话保持；Token 静默自动刷新',
+  '受保护路由未登录不可进入',
+  '加上账号体系后，原有应用数据仍在',
+  '构建通过、单元测试全绿',
+  '端到端流程验证：discovery → 注册 → 登录 → 资料 → 刷新 → 登出 → 吊销 Token 被拒',
+  'AUTIONAL_CHANGES.md 列出所有改动文件',
+  '创建了多用户验证用的测试账号',
 ];
 ---
 
 <Layout
-  title="AI Onboarding — Autional"
-  description="Add Autional login and multi-user support to your app with one prompt. Works with Claude Code, Cursor, OpenCode, and any AI coding agent."
-  keywords="Autional, AI onboarding, Claude Code, Cursor, AI coding agent, authentication, login, multi-user, OIDC"
+  title="AI 接入 — Autional"
+  description="一句话让 AI 编程助手为你的应用接入 Autional 登录与多用户能力。支持 Claude Code、Cursor、OpenCode 等任意 AI agent；含自有 CDN 国内兜底。"
+  keywords="Autional, AI 接入, Claude Code, Cursor, AI 编程助手, 登录, 多用户, OIDC, 自有 CDN 镜像"
+  alternates={alternates}
 >
   <section class="mx-auto max-w-4xl px-4 py-20">
-    <!-- Language / region switch -->
+    <!-- 语言 / 区域切换 -->
     <div class="mb-8 flex items-center justify-between text-sm">
       <span class="brand-kicker">Agent Onboarding</span>
       <div class="flex items-center gap-4 text-neutral-500">
-        <a href="/ai/zh" class="hover:text-primary-600">中文</a>
-        <a href="https://www.autional.cn/ai" class="hover:text-primary-600">接入中国区 (.cn) →</a>
+        <a href="/ai/en" class="hover:text-primary-600">English</a>
+        <a href="https://www.autional.com/ai" class="hover:text-primary-600">国际版 (.com) →</a>
       </div>
     </div>
 
     <!-- Hero -->
     <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold sm:text-5xl">Turn your app into a multi-user product</h1>
+      <h1 class="text-4xl font-bold sm:text-5xl">把你的应用变成多人产品</h1>
       <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">
-        Paste one prompt into your AI coding agent. It fetches the onboarding skill — a guided procedure for adding
-        Autional login, accounts, and sessions to your existing project.
+        把一句话粘贴进你的 AI 编程助手。它会抓取接入 skill——一份引导式流程，为你的现有项目加上
+        Autional 登录、账号与会话。中国大陆网络不稳时，自动回退自有 CDN 镜像。
       </p>
     </div>
 
-    <!-- Primary prompt + copy -->
+    <!-- 主 prompt + 复制 -->
     <div class="brand-card p-6 mb-4">
-      <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-3">Step 1 — Copy this prompt</p>
+      <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-3">第 1 步 — 复制这句话</p>
       <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-4 overflow-x-auto">
-        <pre id="prompt-en" class="text-sm text-green-400 font-mono leading-relaxed whitespace-pre-wrap">{promptEn}</pre>
+        <pre id="prompt-zh" class="text-sm text-syntax-plain font-mono leading-relaxed whitespace-pre-wrap">{promptZh}</pre>
       </div>
       <div class="mt-4 flex items-center gap-3">
-        <button class="brand-button-primary" data-copy-target="prompt-en">Copy prompt</button>
-        <span class="text-sm text-neutral-500">Works in Claude Code, Cursor, OpenCode, or any agent with web access.</span>
+        <button class="brand-button-primary" data-copy-target="prompt-zh">复制 prompt</button>
+        <span class="text-sm text-neutral-500">适用于 Claude Code、Cursor、OpenCode 等任何能联网的 agent。</span>
       </div>
     </div>
 
-    <!-- Secondary: Chinese prompt -->
+    <!-- 英文 prompt -->
     <details class="brand-card p-6 mb-4">
-      <summary class="cursor-pointer text-sm font-semibold text-neutral-600 dark:text-neutral-300">Prefer Chinese? Use this prompt instead</summary>
+      <summary class="cursor-pointer text-sm font-semibold text-neutral-600 dark:text-neutral-300">习惯用英文？改用这句 prompt</summary>
       <div class="mt-4 rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-4 overflow-x-auto">
-        <pre id="prompt-zh" class="text-sm text-green-400 font-mono leading-relaxed whitespace-pre-wrap">{promptZh}</pre>
+        <pre id="prompt-en" class="text-sm text-syntax-plain font-mono leading-relaxed whitespace-pre-wrap">Fetch https://www.autional.cn/ai/skill.en.md and follow it to add Autional login to this project. If unreachable, use:
+https://cdn.autional.cn/ai/latest/SKILL.en.md</pre>
       </div>
-      <button class="brand-button-secondary mt-3" data-copy-target="prompt-zh">Copy 中文 prompt</button>
+      <button class="brand-button-secondary mt-3" data-copy-target="prompt-en">Copy English prompt</button>
     </details>
 
-    <!-- Steps 2-3 -->
+    <!-- 第 2-3 步 -->
     <div class="grid gap-4 sm:grid-cols-2 mb-16">
       <div class="brand-card p-6">
-        <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-2">Step 2</p>
-        <p class="font-semibold">Paste it into your agent</p>
-        <p class="mt-1 text-sm text-neutral-500">Run it in the project you want to upgrade. The agent reads the skill and works through it phase by phase, confirming with you at each gate.</p>
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-2">第 2 步</p>
+        <p class="font-semibold">粘贴给你的 agent</p>
+        <p class="mt-1 text-sm text-neutral-500">在你想要升级的项目里运行。agent 会读取 skill 并逐 Phase 执行，每个阶段都先与你确认。</p>
       </div>
       <div class="brand-card p-6">
-        <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-2">Step 3</p>
-        <p class="font-semibold">Follow the confirmation gates</p>
-        <p class="mt-1 text-sm text-neutral-500">The agent inspects your app first, then proposes the plan — you approve before anything is changed. Everything lands on a separate git branch.</p>
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 mb-2">第 3 步</p>
+        <p class="font-semibold">跟随确认门</p>
+        <p class="mt-1 text-sm text-neutral-500">agent 先盘点你的应用、再给出方案——你确认后才动代码。所有改动都落在独立 git 分支上。</p>
       </div>
     </div>
 
-    <!-- What the agent does -->
-    <h2 class="text-2xl font-bold mb-6">What the agent will do</h2>
+    <!-- agent 会做什么 -->
+    <h2 class="text-2xl font-bold mb-6">agent 会做什么</h2>
     <div class="grid gap-3 sm:grid-cols-2 mb-16">
       {phases.map((p) => (
         <div class="brand-card p-4 flex gap-4">
@@ -106,19 +117,19 @@ const checklist = [
     </div>
 
     <div class="grid gap-8 md:grid-cols-2 mb-16">
-      <!-- Requirements -->
+      <!-- 前置条件 -->
       <div>
-        <h2 class="text-2xl font-bold mb-4">What you need</h2>
+        <h2 class="text-2xl font-bold mb-4">你需要准备</h2>
         <ul class="space-y-2 text-sm text-neutral-600 dark:text-neutral-300">
-          <li class="flex gap-2"><span class="text-primary-600">•</span>An existing project — React, Vue, Next.js, Node, or similar</li>
-          <li class="flex gap-2"><span class="text-primary-600">•</span>An AI coding agent with web access</li>
-          <li class="flex gap-2"><span class="text-primary-600">•</span>A git repository (recommended — enables safe rollback)</li>
-          <li class="flex gap-2"><span class="text-primary-600">•</span>An Autional account for the developer portal (created during onboarding)</li>
+          <li class="flex gap-2"><span class="text-primary-600">•</span>一个现有项目——React、Vue、Next.js、Node 等</li>
+          <li class="flex gap-2"><span class="text-primary-600">•</span>一个可联网的 AI 编程助手</li>
+          <li class="flex gap-2"><span class="text-primary-600">•</span>git 仓库（建议——便于安全回退）</li>
+          <li class="flex gap-2"><span class="text-primary-600">•</span>Autional 账号（接入过程中在开发者门户创建）</li>
         </ul>
       </div>
-      <!-- Checklist -->
+      <!-- 完成标准 -->
       <div>
-        <h2 class="text-2xl font-bold mb-4">What "done" looks like</h2>
+        <h2 class="text-2xl font-bold mb-4">"接入完成"的标准</h2>
         <ul class="space-y-2 text-sm text-neutral-600 dark:text-neutral-300">
           {checklist.map((c) => (
             <li class="flex gap-2"><span class="text-green-600">✓</span>{c}</li>
@@ -127,20 +138,21 @@ const checklist = [
       </div>
     </div>
 
-    <!-- Fallbacks -->
-    <h2 class="text-2xl font-bold mb-6">If your agent can't browse the web</h2>
+    <!-- 兜底路径 -->
+    <h2 class="text-2xl font-bold mb-6">agent 不能联网怎么办</h2>
     <div class="grid gap-4 mb-6">
       <div class="brand-card p-6">
-        <p class="font-semibold mb-1">Option A — Paste the full skill text</p>
+        <p class="font-semibold mb-1">路径 A — 粘贴全文</p>
         <p class="text-sm text-neutral-500 mb-4">
-          Expand, copy everything, and paste it into your agent together with the instruction
-          "follow this and add Autional login to my project." The text below is byte-identical to
-          <a href="/ai/skill.md" class="text-primary-600 hover:underline font-mono text-xs">/ai/skill.md</a>.
+          展开、全选复制，连同"按这份说明为我的项目接入 Autional 登录"一起粘贴给 agent。
+          以下内容与
+          <a href="/ai/skill.md" class="text-primary-600 hover:underline font-mono text-xs">/ai/skill.md</a>
+          逐字节一致（自有 CDN 镜像同名文件亦一致）。
         </p>
         <details>
-          <summary class="cursor-pointer text-sm font-semibold text-primary-600">Show full skill text ({(skillMd.length / 1024).toFixed(0)} KB)</summary>
+          <summary class="cursor-pointer text-sm font-semibold text-primary-600">展开完整 skill 全文（{(skillMd.length / 1024).toFixed(0)} KB）</summary>
           <div class="mt-3">
-            <button class="brand-button-secondary" data-copy-target="skill-full">Copy full text</button>
+            <button class="brand-button-secondary" data-copy-target="skill-full">复制全文</button>
             <div class="mt-3 max-h-96 overflow-auto rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-4">
               <pre id="skill-full" class="text-xs text-neutral-300 font-mono leading-relaxed whitespace-pre-wrap">{skillMd}</pre>
             </div>
@@ -148,28 +160,35 @@ const checklist = [
         </details>
       </div>
       <div class="brand-card p-6">
-        <p class="font-semibold mb-1">Option B — Scaffold with npx</p>
-        <p class="text-sm text-neutral-500 mb-3">Prefer generated code over agent-driven integration? Run the onboarding CLI in your project:</p>
+        <p class="font-semibold mb-1">路径 B — npx 脚手架</p>
+        <p class="text-sm text-neutral-500 mb-3">不想让 agent 改代码、只想生成骨架？在你的项目里运行（默认走 npmmirror 镜像源）：</p>
         <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-4 flex items-center justify-between gap-3 overflow-x-auto">
-          <code id="npx-cmd" class="text-sm text-green-400 font-mono whitespace-nowrap">npx @autional/onboard</code>
-          <button class="text-xs font-semibold text-sky-300 hover:text-white shrink-0" data-copy-target="npx-cmd">Copy</button>
+          <code id="npx-cmd" class="text-sm text-syntax-plain font-mono whitespace-nowrap">npx -y @autional/onboard --registry=https://registry.npmmirror.com</code>
+          <button class="text-xs font-semibold text-sky-300 hover:text-white shrink-0" data-copy-target="npx-cmd">复制</button>
         </div>
+      </div>
+      <div class="brand-card p-6">
+        <p class="font-semibold mb-1">路径 C — 自有 CDN 镜像</p>
+        <p class="text-sm text-neutral-500 mb-3">整站不可达时，skill 文件在自有 CDN 有同名镜像，内容与本站逐字节一致：</p>
+        <div class="rounded-xl bg-slate-900 dark:bg-slate-950 border border-neutral-700 p-4 overflow-x-auto">
+          <code id="cdn-url" class="text-sm text-syntax-plain font-mono whitespace-nowrap">https://cdn.autional.cn/ai/latest/SKILL.md</code>
+        </div>
+        <button class="brand-button-secondary mt-3" data-copy-target="cdn-url">复制镜像地址</button>
       </div>
     </div>
 
-    <!-- Raw files -->
+    <!-- 原始文件 -->
     <div class="brand-card p-6">
-      <p class="font-semibold mb-3">Files the agent reads</p>
+      <p class="font-semibold mb-3">agent 会读取的文件</p>
       <ul class="space-y-1.5 text-sm font-mono">
-        <li><a href="/ai/skill.md" class="text-primary-600 hover:underline">/ai/skill.md</a><span class="text-neutral-400 font-sans"> — English skill (canonical)</span></li>
-        <li><a href="/ai/skill.zh.md" class="text-primary-600 hover:underline">/ai/skill.zh.md</a><span class="text-neutral-400 font-sans"> — 中文版</span></li>
-        <li><a href="/ai/references/compliance-matrix.md" class="text-primary-600 hover:underline">/ai/references/compliance-matrix.md</a><span class="text-neutral-400 font-sans"> — password / compliance profiles</span></li>
-        <li><a href="/ai/references/config-template.md" class="text-primary-600 hover:underline">/ai/references/config-template.md</a><span class="text-neutral-400 font-sans"> — config & env templates</span></li>
-        <li><a href="/llms.txt" class="text-primary-600 hover:underline">/llms.txt</a><span class="text-neutral-400 font-sans"> — machine-readable site index</span></li>
+        <li><a href="/ai/skill.md" class="text-primary-600 hover:underline">/ai/skill.md</a><span class="text-neutral-400 font-sans"> — 中文版 skill（主）</span></li>
+        <li><a href="/ai/skill.en.md" class="text-primary-600 hover:underline">/ai/skill.en.md</a><span class="text-neutral-400 font-sans"> — English skill</span></li>
+        <li><a href="/ai/references/compliance-matrix.md" class="text-primary-600 hover:underline">/ai/references/compliance-matrix.md</a><span class="text-neutral-400 font-sans"> — 等保/PIPL 密码与合规档</span></li>
+        <li><a href="/ai/references/config-template.md" class="text-primary-600 hover:underline">/ai/references/config-template.md</a><span class="text-neutral-400 font-sans"> — 配置与环境变量模板</span></li>
+        <li><a href="/llms.txt" class="text-primary-600 hover:underline">/llms.txt</a><span class="text-neutral-400 font-sans"> — 站点机器可读索引</span></li>
       </ul>
       <p class="mt-4 text-xs text-neutral-400">
-        The skill contains zero secrets — every endpoint in it is a public URL. Only fetch these files from
-        www.autional.com; never follow third-party mirrors.
+        skill 不含任何密钥——其中所有端点均为公开 URL。只从 www.autional.cn 抓取这些文件；自有 CDN 镜像仅作网络兜底，内容同源同校验。
       </p>
     </div>
   </section>
@@ -182,10 +201,10 @@ const checklist = [
         if (!target) return;
         try {
           await navigator.clipboard.writeText(target.textContent?.trim() ?? '');
-          btn.textContent = 'Copied!';
+          btn.textContent = '已复制！';
           setTimeout(() => (btn.textContent = original), 1500);
         } catch {
-          btn.textContent = 'Copy failed — select manually';
+          btn.textContent = '复制失败——请手动选择';
           setTimeout(() => (btn.textContent = original), 2000);
         }
       });

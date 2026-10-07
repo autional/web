@@ -1,154 +1,154 @@
 ---
-title: "Financial Identity Compliance in Practice: PCI-DSS + MLPS + Transaction Security"
+title: "金融身份合规实战：PCI-DSS + 等保 + 交易安全"
 date: "2026-06-05"
 category: "Compliance"
-tags: ["Finance", "Compliance", "PCI-DSS"]
-readTime: "10 min"
-excerpt: "The financial industry faces the most stringent identity compliance requirements. This article provides an in-depth analysis of how PCI-DSS, China's MLPS (Multi-Level Protection Scheme), and KYC concretely constrain identity systems, and how to build compliant financial identity infrastructure using Autional's compliance-service and wallet-service."
+tags: ["金融", "合规", "PCI-DSS"]
+readTime: "10 分钟"
+excerpt: "金融行业面对最严苛的身份合规要求。本文深入剖析 PCI-DSS、中国等保（MLPS）与 KYC 如何具体约束身份系统，以及如何借助 Autional 的 compliance-service 与 wallet-service 构建合规的金融身份基础设施。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-> **Compliance Note**: The PCI-DSS-related technical capabilities described herein represent Autional platform design goals and do not constitute PCI-DSS compliance certification. PCI-DSS compliance requires a comprehensive security assessment (SAQ/RoC), and the ultimate compliance responsibility rests with the payment processor.
+> **合规说明**：本文所述的 PCI-DSS 相关技术能力为 Autional 平台的设计目标，不构成 PCI-DSS 合规认证。PCI-DSS 合规需要通过完整的安全评估（SAQ/RoC），最终合规责任由支付处理方承担。
 
-## Financial Identity: The Ceiling of Security Requirements
+## 金融身份：安全要求的最高天花板
 
-Financial industry information system security requirements are arguably the most demanding across all verticals. A payment platform must simultaneously meet PCI-DSS requirements for card data security, China's MLPS 2.0 system grading requirements, AML (Anti-Money Laundering) KYC identity verification requirements, and Personal Information Protection Law (PIPL) user data protection requirements.
+金融行业的信息系统安全要求，可以说是所有行业中最严苛的。一个支付平台必须同时满足：PCI-DSS 对卡数据安全的要求、中国等保 2.0 的等级保护要求、反洗钱（AML）的 KYC 身份核验要求，以及《个人信息保护法》（PIPL）对用户数据的保护要求。
 
-These compliance standards do not exist in isolation — they have significant overlap in identity authentication and access control. This article systematically breaks down the compliance framework for financial identity systems and analyzes how Autional meets these requirements through its microservice architecture.
+这些合规标准并非彼此孤立——它们在身份鉴别与访问控制上有大量重叠。本文系统拆解金融身份系统的合规框架，并分析 Autional 如何通过微服务架构满足这些要求。
 
-### Why "Good Enough" Won't Work for Financial Identity
+### 为什么金融身份不能「差不多就行」
 
-Consider this: in 2025, the average cost of a data breach in the financial industry was $5.9 million — 1.5 times the cross-industry average. Identity-related attacks (credential theft, session hijacking, privilege abuse) accounted for over 60% of breaches.
+试想一下：2025 年，金融行业数据泄露的平均成本为 590 万美元——是跨行业平均水平的 1.5 倍。与身份相关的攻击（凭证盗用、会话劫持、权限滥用）占泄露事件的 60% 以上。
 
-This isn't a "just add MFA" problem. Financial identity systems must address:
+这不是一个「加个 MFA 就行」的问题。金融身份系统必须回答：
 
-- Who has access to **Cardholder Data (CHD)**? Do they have a legitimate reason?
-- Is the **transaction initiator** truly the account holder? Did they pass strong authentication?
-- Can **operations staff** access the production database? Is every access fully recorded?
-- What are the **API caller's** permission boundaries? Is there a privilege escalation risk?
+- 谁有权访问**持卡人数据（CHD）**？他们有正当理由吗？
+- **交易发起人**真的是账户本人吗？他通过了强认证吗？
+- **运维人员**能访问生产数据库吗？每次访问是否被完整记录？
+- **API 调用方**的权限边界在哪里？是否存在越权风险？
 
-## PCI-DSS 4.0 Identity Authentication Requirements
+## PCI-DSS 4.0 的身份认证要求
 
-PCI-DSS (Payment Card Industry Data Security Standard) is developed by the PCI Security Standards Council. Since March 2024, PCI-DSS 4.0 has been the only valid compliance version.
+PCI-DSS（支付卡行业数据安全标准）由 PCI 安全标准委员会制定。自 2024 年 3 月起，PCI-DSS 4.0 是唯一有效的合规版本。
 
-### Requirement 7: Need-to-Know Access Restrictions
+### 要求 7：基于知必所需的访问限制
 
-PCI-DSS 4.0 Requirement 7.1.1 explicitly states: **Access control policies must be defined and implemented based on "need-to-know" principles.** This means:
+PCI-DSS 4.0 要求 7.1.1 明确指出：**访问控制策略必须基于「知必所需」（need-to-know）原则定义并实施。** 这意味着：
 
-1. Each role's permissions must be minimal
-2. Permission assignments must have an approval process
-3. Permission changes must have audit logs
-4. Privileged accounts must have additional controls
+1. 每个角色的权限必须最小化
+2. 权限分配必须有审批流程
+3. 权限变更必须有审计日志
+4. 特权账号必须有额外管控
 
-In practice, this means you can't give all ops staff root access, can't give all developers production database access, and can't give all support staff full card number visibility.
+落到实处就是：不能让所有运维人员都拿 root，不能让所有开发都能连生产数据库，不能让所有客服都能看到完整卡号。
 
-Autional's RBAC implementation fully covers these requirements. identity-service includes a permission system compliant with NIST RBAC standards (Core + Hierarchical + Static SoD):
+Autional 的 RBAC 实现完整覆盖了这些要求。identity-service 内置符合 NIST RBAC 标准（Core + Hierarchical + Static SoD）的权限体系：
 
-- **Hierarchical role inheritance**: `security_admin` inherits all `viewer` permissions but does not inherit `admin`'s configuration modification permissions
-- **Separation of Duties (SoD)**: `approver` and `initiator` are configured as mutually exclusive roles, preventing the same person from both initiating and approving
-- **Approval workflow**: High-risk permission assignments trigger approval (`pending → approved/rejected`), fully traceable
-- **Fine-grained permissions**: Not "can access the database," but "can execute `SELECT` on `transactions` table, but not `INSERT/UPDATE/DELETE`"
+- **层级角色继承**：`security_admin` 继承 `viewer` 的全部权限，但不继承 `admin` 的配置修改权限
+- **职责分离（SoD）**：`approver` 与 `initiator` 配置为互斥角色，防止同一人既发起又审批
+- **审批工作流**：高风险权限分配触发审批（`pending → approved/rejected`），全程可追溯
+- **细粒度权限**：不是「能访问数据库」，而是「能对 `transactions` 表执行 `SELECT`，但不能 `INSERT/UPDATE/DELETE`」
 
-### Requirement 8: User Identification and Authentication
+### 要求 8：用户身份标识与鉴别
 
-PCI-DSS 4.0 Requirement 8 is one of the longest sections in the entire standard, with extremely detailed identity authentication requirements:
+PCI-DSS 4.0 的要求 8 是整个标准中最长的章节之一，对身份鉴别提出了极为细致的要求：
 
-**8.2.1 — Strong Password Policy**: At least 12 characters, containing numbers and letters. Autional's password policy is fully configurable, supporting minimum length, complexity combinations, password history, and expiration time.
+**8.2.1——强口令策略**：至少 12 个字符，包含数字与字母。Autional 的口令策略完全可配置，支持最小长度、复杂度组合、历史口令与有效期。
 
-**8.3.1 — Multi-Factor Authentication**: All users accessing the CDE (Cardholder Data Environment) must use MFA. Autional's mfa-service provides four methods: TOTP, SMS, Email, and Passkey (WebAuthn), supporting dynamic triggering based on role, application, and risk level.
+**8.3.1——多因素认证**：所有访问 CDE（持卡人数据环境）的用户都必须使用 MFA。Autional 的 mfa-service 提供 TOTP、短信、邮件、Passkey（WebAuthn）四种方式，支持按角色、应用与风险等级动态触发。
 
-**8.3.4 — Account Lockout**: No more than 10 consecutive failed login attempts. Accounts are automatically locked after exceeding the threshold, with configurable lockout duration (e.g., 30 minutes or requiring manual admin unlock).
+**8.3.4——账号锁定**：连续登录失败不得超过 10 次。超过阈值后账号自动锁定，锁定时长可配置（如 30 分钟或需管理员手动解锁）。
 
-**8.3.5 — Session Management**: Idle sessions must re-authenticate within 15 minutes. Autional's session-service tracks both idle timeout and absolute timeout, forcing re-login when exceeded.
+**8.3.5——会话管理**：空闲会话必须在 15 分钟内重新鉴别。Autional 的 session-service 同时跟踪空闲超时与绝对超时，超时后强制重新登录。
 
-**8.3.10 — Service Account Management**: Accounts used for application-to-application interactions must have minimal privileges, with passwords rotated at least every 90 days. Autional's internal API key authentication middleware (`InternalAPIKeyAuth`) provides unified cross-service authentication, with keys injected via environment variables supporting dynamic rotation.
+**8.3.10——服务账号管理**：用于应用间交互的账号必须权限最小化，且口令至少每 90 天轮换一次。Autional 的内部 API Key 鉴权中间件（`InternalAPIKeyAuth`）提供统一的跨服务鉴别，密钥通过环境变量注入，支持动态轮换。
 
-### Requirement 10: Log and Monitor All Access
+### 要求 10：记录并监控所有访问
 
-PCI-DSS 4.0 Requirement 10.2.1 specifies auditable event types including:
-- All individual user accesses to cardholder data
-- All actions taken by any individual with root or administrative privileges
-- Access to all audit trails
-- Invalid logical access attempts
-- Use of and changes to identification and authentication mechanisms
-- Creation and deletion of system-level objects
+PCI-DSS 4.0 要求 10.2.1 规定了必须审计的事件类型，包括：
+- 所有个人用户对持卡人数据的访问
+- 任何拥有 root 或管理权限的个人所采取的所有操作
+- 对全部审计轨迹的访问
+- 无效的逻辑访问尝试
+- 身份标识与鉴别机制的使用与变更
+- 系统级对象的创建与删除
 
-Autional's audit-service provides a complete audit log infrastructure. Every login, every permission change, every sensitive data access generates an audit record with timestamp, user identifier, operation type, and result. Built on MongoDB's time-series write characteristics, audit-service supports high-throughput log writing and flexible compound queries.
+Autional 的 audit-service 提供完整的审计日志基础设施。每一次登录、每一次权限变更、每一次敏感数据访问都会产生审计记录，包含时间戳、用户标识、操作类型与结果。基于 MongoDB 的时序写入特性，audit-service 支持高吞吐日志写入与灵活的复合查询。
 
-## China's MLPS 2.0 Financial Industry Enhanced Requirements
+## 中国等保 2.0 金融行业增强要求
 
-Financial industry MLPS (Multi-Level Protection Scheme) ratings are typically no lower than Level 3 (Security Marking Protection Level), with core payment systems requiring Level 4 (Structured Protection Level). MLPS 2.0's additional requirements for financial identity systems include:
+金融行业的等保（MLPS）定级通常不低于三级（安全标记保护级），核心支付系统要求四级（结构化保护级）。等保 2.0 对金融身份系统的额外要求包括：
 
-### Transaction Signing and Non-Repudiation
+### 交易签名与不可否认性
 
-MLPS requires non-repudiation mechanisms for critical transactions: the transaction initiator cannot later deny having initiated the transaction. This is typically achieved through digital signatures.
+等保要求关键交易具备不可否认机制：交易发起人无法事后否认曾发起该交易。这通常通过数字签名实现。
 
-Autional's approach:
-- Critical operations (e.g., large transfers, permission changes) trigger secondary confirmation requiring the user's private key signature
-- Signature results are persistently stored alongside audit logs
-- Combined with audit-service's hash chain auditing capability, forming a complete evidence chain
+Autional 的做法：
+- 关键操作（如大额转账、权限变更）触发二次确认，要求用户私钥签名
+- 签名结果随审计日志持久化保存
+- 结合 audit-service 的哈希链审计能力，形成完整证据链
 
-### Operations Audit (Bastion Host Integration)
+### 运维审计（堡垒机对接）
 
-Financial institutions commonly require all operational activities to be performed through bastion hosts with screen recording for audit. Autional's identity system needs to integrate with bastion host systems:
+金融机构通常要求所有运维操作都通过堡垒机执行并录屏留痕。Autional 的身份系统需要与堡垒机系统对接：
 
-- Support LDAP/SCIM protocol for user and permission synchronization
-- Support SSO single sign-on to bastion hosts
-- Enforce MFA for operations login
+- 支持 LDAP/SCIM 协议同步用户与权限
+- 支持 SSO 单点登录到堡垒机
+- 运维登录强制 MFA
 
-## KYC and Identity Verification
+## KYC 与身份核验
 
-Another layer of identity requirements in the financial industry comes from AML/KYC (Anti-Money Laundering/Know Your Customer) compliance. This falls under business identity rather than technical identity, but the identity system must support this process:
+金融行业的另一层身份要求来自反洗钱/KYC（了解你的客户）合规。这属于业务身份而非技术身份的范畴，但身份系统必须支撑这一流程：
 
-- **Real-name authentication**: Interface with public security identity verification systems to validate name + ID number consistency
-- **Facial recognition**: Liveness detection + face comparison to ensure the operator is who they claim to be
-- **Document OCR**: Automatic extraction of ID card/passport information, reducing manual entry errors
-- **Risk scoring**: Risk score calculation based on device fingerprint, behavioral characteristics, and geolocation
+- **实名认证**：对接公安身份核验系统，校验姓名 + 身份证号一致性
+- **人脸识别**：活体检测 + 人脸比对，确保操作人是本人
+- **证件 OCR**：自动提取身份证/护照信息，减少人工录入错误
+- **风险评分**：基于设备指纹、行为特征与地理位置计算风险分
 
-Autional's design philosophy separates identity information management (identity-service) from identity verification processes (mfa-service + session-service). KYC-related data is stored in identity-service's `user_verifications` table, with sensitive fields (like ID numbers) using field-level encryption to ensure data remains unreadable even in the event of a database breach.
+Autional 的设计理念是把身份信息管理（identity-service）与身份核验流程（mfa-service + session-service）分开。KYC 相关数据存放在 identity-service 的 `user_verifications` 表中，敏感字段（如身份证号）使用字段级加密，确保即使数据库泄露也无法读取明文。
 
-## Autional's Complete Financial Solution
+## Autional 的金融完整方案
 
-Mapping the above requirements to Autional's specific services:
+把上述要求映射到 Autional 的具体服务：
 
-| Compliance Requirement | Autional Supporting Service | Implementation |
+| 合规要求 | Autional 支撑服务 | 实现方式 |
 |----------------------|--------------------------|----------------|
-| User identity uniqueness | identity-service | Multi-dimensional unique constraints on username/email/phone |
-| Strong password policy | identity-service | Fully configurable length, complexity, history, expiration |
-| Multi-factor authentication | mfa-service | TOTP, SMS, Email, Passkey, policy-driven |
-| Session security | session-service | Idle timeout, absolute timeout, concurrency limits, device binding |
-| Least privilege access | identity-service | NIST RBAC + SoD + approval workflow |
-| API security | oauth-service | OAuth 2.0 + OIDC, supporting client_credentials and authorization_code |
-| Audit logging | audit-service | MongoDB time-series writes + hash chain integrity verification |
-| Transaction non-repudiation | wallet-service | Critical operation signing + audit evidence chain |
-| Sensitive data protection | compliance-service | Field-level encryption + data masking + DSAR automation |
-| Cross-border compliance | compliance-service | Data transfer records + data residency policies + deletion audit |
+| 用户身份唯一性 | identity-service | username/email/phone 多维唯一约束 |
+| 强口令策略 | identity-service | 长度、复杂度、历史、有效期全可配置 |
+| 多因素认证 | mfa-service | TOTP、短信、邮件、Passkey，策略驱动 |
+| 会话安全 | session-service | 空闲超时、绝对超时、并发限制、设备绑定 |
+| 最小权限访问 | identity-service | NIST RBAC + SoD + 审批工作流 |
+| API 安全 | oauth-service | OAuth 2.0 + OIDC，支持 client_credentials 与 authorization_code |
+| 审计日志 | audit-service | MongoDB 时序写入 + 哈希链完整性校验 |
+| 交易不可否认 | wallet-service | 关键操作签名 + 审计证据链 |
+| 敏感数据保护 | compliance-service | 字段级加密 + 数据脱敏 + DSAR 自动化 |
+| 跨境合规 | compliance-service | 数据传输记录 + 数据驻留策略 + 删除审计 |
 
-## Deployment Recommendations: Financial Identity System Architecture
+## 部署建议：金融身份系统架构
 
-### Network Isolation
+### 网络隔离
 
-Financial identity services should be deployed in a separate network zone, communicating with business services through an internal API gateway. Autional's gateway architecture naturally supports this — gateway-service can be deployed at the network boundary, with internal microservices communicating via gRPC (with mTLS enabled).
+金融身份服务应部署在独立网络区域，通过内部 API 网关与业务服务通信。Autional 的网关架构天然支持这一点——gateway-service 可部署在网络边界，内部微服务之间通过 gRPC（启用 mTLS）通信。
 
-### Key Management
+### 密钥管理
 
-Keys (JWT signing keys, API Keys, encryption keys) must be injected securely — never hardcoded in code, never stored in plaintext in configuration files. Autional supports injecting all keys through environment variables, with production environments recommended to use HashiCorp Vault or cloud KMS services.
+密钥（JWT 签名密钥、API Key、加密密钥）必须安全注入——绝不硬编码在代码中，绝不明文存放在配置文件里。Autional 支持通过环境变量注入所有密钥，生产环境建议使用 HashiCorp Vault 或云 KMS 服务。
 
-### High Availability
+### 高可用
 
-Financial identity services cannot have single points of failure. All Autional microservices are stateless by design, supporting high availability through horizontal scaling:
-- identity-service and session-service: Stateless, linearly scalable
-- Session state stored in Redis (supports Cluster/Sentinel mode)
-- PostgreSQL supports master-slave replication and connection pooling (PgBouncer)
+金融身份服务不能有单点。Autional 所有微服务在设计上都是无状态的，通过水平扩展支持高可用：
+- identity-service 与 session-service：无状态，可线性扩展
+- 会话状态存放在 Redis（支持 Cluster/Sentinel 模式）
+- PostgreSQL 支持主从复制与连接池（PgBouncer）
 
-### Disaster Recovery and BC/DR
+### 容灾与 BC/DR
 
-Financial industry regulations typically require RPO < 15 minutes and RTO < 4 hours. Autional's data layer supports PostgreSQL streaming replication plus scheduled backups, with Redis supporting AOF persistence — meeting disaster recovery requirements.
+金融行业监管通常要求 RPO < 15 分钟、RTO < 4 小时。Autional 的数据层支持 PostgreSQL 流复制加定时备份，Redis 支持 AOF 持久化——满足容灾要求。
 
-## Summary
+## 小结
 
-Financial identity compliance is not optional — it's mandatory. PCI-DSS defines the technical baseline for payment security, China's MLPS 2.0 defines system security grading requirements, and KYC/AML defines business identity verification standards. Together, they form a complete compliance map for financial identity systems.
+金融身份合规不是可选项，而是必选项。PCI-DSS 定义了支付安全的技术基线，中国等保 2.0 定义了系统安全的等级要求，KYC/AML 定义了业务身份核验标准。三者共同构成了金融身份系统的完整合规地图。
 
-Autional's 15 microservices cover every key node in this map — from KYC identity verification during registration, to MFA authentication during login, to RBAC permission validation during operations, to post-event audit log archiving. This is not a system where you "just write a login page" — it's a compliance-oriented, engineered identity infrastructure.
+Autional 的 27 个微服务覆盖了这张地图上的每一个关键节点——从注册时的 KYC 身份核验，到登录时的 MFA 认证，到操作时的 RBAC 权限校验，再到事后的审计日志归档。这不是一个「写个登录页就行」的系统，而是一套面向合规、经过工程化的身份基础设施。

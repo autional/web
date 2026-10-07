@@ -1,60 +1,60 @@
 ---
-title: "The Identity Babel Tower of AI-Generated Apps: Why You Need Unified Authentication"
+title: "AI 生成应用的「身份巴别塔」：为什么你需要统一认证"
 date: "2026-05-08"
 category: "Project"
-tags: ["AI Apps", "Unified Auth", "SSO"]
-readTime: "9 min"
-excerpt: "AI coding tools can produce a fully functional application in hours, but when you have 3 or more AI-generated apps, identity authentication becomes a Babel Tower. This article explores how Autional's unified authentication layer solves this challenge."
+tags: ["AI 应用", "统一认证", "SSO"]
+readTime: "9 分钟"
+excerpt: "AI 编程工具能在几小时内产出一个功能完整的应用，但当你拥有 3 个甚至更多 AI 生成的应用时，身份认证就变成了一座巴别塔。本文探讨 Autional 的统一认证层如何解决这一挑战。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-The biblical story of the Tower of Babel is well-known: humanity, unable to communicate due to different languages, saw the tower collapse. In the world of software development in 2026, a new "Babel Tower" is quietly forming — **the Babel Tower of Identity Authentication**.
+巴别塔的圣经故事广为人知：人类因语言不通而无法协作，塔最终崩塌。在 2026 年的软件开发世界里，一座新的「巴别塔」正在悄然形成——**身份认证的巴别塔**。
 
-## The Explosion of AI Coding Tools
+## AI 编程工具的爆发
 
-AI coding tools like Cursor, Windsurf, Bolt, v0, and Lovable are reshaping software development productivity. A fully functional CRM system, ticket management platform, or data dashboard can now be generated from natural language descriptions in hours.
+Cursor、Windsurf、Bolt、v0、Lovable 等 AI 编程工具正在重塑软件开发的生产力。一个功能完整的 CRM 系统、工单管理平台或数据看板，如今可以在几小时内由自然语言描述生成。
 
-This brings a massive productivity dividend: business teams no longer need to wait for IT scheduling. A sales lead can generate an internal CRM in an afternoon with AI; an operations manager can quickly build a data analytics dashboard.
+这带来了巨大的生产力红利：业务团队不再需要等待 IT 排期。销售负责人可以在一个下午用 AI 生成一个内部 CRM；运营经理可以快速搭出一个数据分析看板。
 
-But every AI-generated app comes with a built-in problem: **it has its own login system.**
+但每个 AI 生成的应用都自带一个问题：**它有自己的登录体系。**
 
-## The Babel Tower Takes Shape
+## 巴别塔初现
 
-Imagine this scenario: your company uses 5 AI-generated applications —
+设想这样一个场景：你的公司使用了 5 个 AI 生成的应用——
 
-| App | Generation Tool | Auth Method |
+| 应用 | 生成工具 | 认证方式 |
 |-----|----------------|-------------|
-| CRM System | Cursor | Email + Password |
-| Ticket System | Bolt | Google OAuth |
-| Data Dashboard | v0 | Email + Password |
-| Approval Workflow | Cursor | GitHub OAuth |
-| Customer Portal | AI SDK | Email + Password |
+| CRM 系统 | Cursor | 邮箱 + 密码 |
+| 工单系统 | Bolt | Google OAuth |
+| 数据看板 | v0 | 邮箱 + 密码 |
+| 审批流 | Cursor | GitHub OAuth |
+| 客户门户 | AI SDK | 邮箱 + 密码 |
 
-Now the problems become clear:
+问题如今一目了然：
 
-- **5 sets of login passwords**: Employees need to remember 5 different passwords, or use 5 different third-party logins
-- **5 admin consoles**: When someone joins or leaves, admins need to create or delete accounts in 5 separate places
-- **0 unified audit logs**: Who logged into which system and when? What operations were performed? Dispersed records can't be correlated
-- **Uneven security**: Some apps have MFA, some don't. Some use bcrypt, some might still be using MD5
-- **No unified security policy**: Can't enforce consistent password complexity requirements, login failure locking, or session timeout policies across all apps
+- **5 套登录密码**：员工要记住 5 个不同的密码，或者使用 5 种不同的第三方登录
+- **5 个管理后台**：人员入职或离职时，管理员要在 5 个地方分别创建或删除账号
+- **0 份统一审计日志**：谁在何时登录了哪个系统？执行了什么操作？记录分散，无法关联
+- **安全水平参差不齐**：有的应用有 MFA，有的没有；有的用 bcrypt，有的可能还在用 MD5
+- **没有统一的安全策略**：无法在所有应用上强制一致的密码复杂度要求、登录失败锁定或会话超时策略
 
-This is the **Identity Babel Tower** — each app speaks its own authentication language, unable to work together. The more apps you have, the bigger the problem.
+这就是**身份巴别塔**——每个应用各说各的认证语言，无法协同。应用越多，问题越大。
 
-## From Babel Tower to a Unified Language: Autional's Solution
+## 从巴别塔到统一语言：Autional 的方案
 
-Autional's design philosophy is: **lift identity authentication out of the application layer and elevate it to the platform layer.** All AI-generated apps stop managing users themselves and instead delegate authentication to Autional via OAuth 2.0 / OpenID Connect protocols.
+Autional 的设计理念是：**把身份认证从应用层拿出来，提升到平台层。** 所有 AI 生成的应用都不再自己管理用户，而是通过 OAuth 2.0 / OpenID Connect 协议把认证委托给 Autional。
 
-### A Three-Step Transformation
+### 三步改造
 
-**Step 1: Register Your App in Autional (5 minutes)**
+**第 1 步：在 Autional 中注册应用（5 分钟）**
 
-Create an OAuth client in the Admin Console, obtain a Client ID and Client Secret. Configure the callback URL and required permission scopes.
+在管理控制台创建一个 OAuth 客户端，获得 Client ID 和 Client Secret。配置回调地址与所需的权限 scope。
 
-**Step 2: Integrate OAuth Login (30 minutes of code)**
+**第 2 步：接入 OAuth 登录（30 分钟写代码）**
 
-Add a "Sign in with Autional" button to your AI-generated app's login page, redirecting to Autional's authorization endpoint:
+在 AI 生成应用的登录页加一个「使用 Autional 登录」按钮，跳转到 Autional 的授权端点：
 
 ```
 GET https://auth.yourcompany.com/oauth/authorize?
@@ -64,58 +64,58 @@ GET https://auth.yourcompany.com/oauth/authorize?
   scope=openid profile email
 ```
 
-Users complete authentication on Autional's login page (supporting passwords, Passkey, TOTP, SMS, and more), then get redirected back to the app. The app exchanges the authorization code for an Access Token and ID Token.
+用户在 Autional 的登录页完成认证（支持密码、通行密钥（Passkey）、TOTP、短信等多种方式），然后被重定向回应用。应用用授权码换取访问令牌与 ID 令牌。
 
-**Step 3: Configure Security Policies in the Admin Console (2 minutes)**
+**第 3 步：在管理控制台配置安全策略（2 分钟）**
 
-Select security policies for this app:
+为该应用选择安全策略：
 
-- Force MFA?
-- Password complexity requirements?
-- Session timeout?
-- Approval required before login?
+- 是否强制 MFA？
+- 密码复杂度要求？
+- 会话超时时间？
+- 登录前是否需要审批？
 
-Save. Done.
+保存，完成。
 
-## The World After Unification
+## 统一之后的世界
 
-When all apps are connected to Autional, the previous chaos becomes clear order:
+当所有应用都接入 Autional 之后，先前的混乱变成了清晰的秩序：
 
-### At a Glance
+### 一览对比
 
-| Dimension | Before Unification | After Unification |
+| 维度 | 统一之前 | 统一之后 |
 |-----------|-------------------|-------------------|
-| User Login | 5 passwords / 5 third-party logins | One account for all systems |
-| User Management | 5 separate admin consoles | Centralized Admin Console |
-| Security Policy | Everyone fends for themselves | One config, all apply |
-| Audit Logs | Dispersed, uncorrelatable | Unified, cross-system correlation |
-| Compliance Reporting | Patchwork from multiple systems | One-click generation |
+| 用户登录 | 5 个密码 / 5 种第三方登录 | 一个账号通行所有系统 |
+| 用户管理 | 5 个分散的管理后台 | 集中式管理控制台 |
+| 安全策略 | 各自为战 | 一处配置，全局生效 |
+| 审计日志 | 分散、无法关联 | 统一、可跨系统关联 |
+| 合规报告 | 多系统拼凑 | 一键生成 |
 
-### Core Benefits
+### 核心收益
 
-**1. User Experience**: Employees or customers need just one account and one login to access all authorized apps. Supports SSO — log in to app A, switch to app B without re-authentication.
+**1. 用户体验**：员工或客户只需一个账号、一次登录，即可访问所有已授权的应用。支持 SSO——登录应用 A 后，切换到应用 B 无需重新认证。
 
-**2. Administrative Efficiency**:
-- Onboarding: Create one account in the Admin Console, assign roles and permissions, and the user can access all authorized apps
-- Offboarding: Deactivate one account, all app access is automatically revoked
-- Security audits: View the security posture of all apps in one place via the security-dashboard
+**2. 管理效率**：
+- 入职：在管理控制台创建一个账号、分配角色与权限，用户即可访问所有已授权的应用
+- 离职：停用这一个账号，所有应用访问权限自动吊销
+- 安全审计：通过 security-dashboard 一处查看所有应用的安全状况
 
-**3. Security Consistency**:
-- Password policies (complexity, history, expiration) are globally unified
-- MFA policies are finely controlled by user role and app sensitivity
-- Login failure locking and anomaly alerts cover all apps
+**3. 安全一致性**：
+- 密码策略（复杂度、历史记录、有效期）全局统一
+- MFA 策略按用户角色与应用敏感度精细控制
+- 登录失败锁定与异常告警覆盖所有应用
 
-**4. Compliance Readiness**:
-- Access logs from all apps are centralized in the audit-service, forming a complete audit chain
-- Hash chain protection ensures logs are tamper-proof, meeting MLPS 2.0, SOC 2, and PIPL audit requirements
-- DSAR data export requests cover all apps' user data in a single pass
+**4. 合规就绪**：
+- 所有应用的访问日志集中到 audit-service，形成完整审计链
+- 哈希链保护确保日志防篡改，满足等保 2.0、SOC 2 与 PIPL 的审计要求
+- DSAR 数据导出请求一次覆盖所有应用的用户数据
 
-### Architecture Diagram
+### 架构图
 
 ```
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│   CRM App    │  │  Ticket App  │  │ Data Dashboard│
-│ (AI-Generated)│  │ (AI-Generated)│  │ (AI-Generated)│
+│   CRM 应用    │  │   工单应用    │  │   数据看板    │
+│ (AI 生成)     │  │ (AI 生成)     │  │ (AI 生成)     │
 └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
        │                 │                 │
        └─────────────────┼─────────────────┘
@@ -123,27 +123,27 @@ When all apps are connected to Autional, the previous chaos becomes clear order:
                    OAuth 2.0 / OIDC
                         │
                  ┌──────┴──────┐
-                 │   Autional    │
-                 │ Unified Auth  │
+                 │   Autional  │
+                 │   统一认证   │
                  └──────┬──────┘
                         │
         ┌───────────────┼───────────────┐
         │               │               │
    ┌────┴────┐    ┌────┴────┐    ┌────┴────┐
-   │  RBAC   │    │   MFA   │    │  Audit  │
-   │ Permissions│  │ Multi-  │    │   Logs  │
-   │          │    │ Factor  │    │         │
+   │  RBAC   │    │   MFA   │    │  审计   │
+   │  权限    │    │ 多因素   │    │  日志   │
+   │         │    │         │    │         │
    └─────────┘    └─────────┘    └─────────┘
 ```
 
-## A New Division of Labor for the AI Era
+## AI 时代的新分工
 
-AI coding tools dramatically accelerate the **business logic** portion of applications — CRUD operations, data presentation, workflow orchestration. But **identity authentication** is an area that should not be repeatedly reinvented. It involves cryptography, protocol implementation, compliance requirements, and security auditing — a lapse in any one area can cause a serious security incident.
+AI 编程工具极大地加速了应用的**业务逻辑**部分——CRUD 操作、数据展示、工作流编排。但**身份认证**是一个不应该被反复重造的领域。它涉及密码学、协议实现、合规要求与安全审计——任何一个环节的疏漏都可能造成严重的安全事故。
 
-Autional's role is to fill this gap: **You use AI to generate business logic; Autional handles identity security.** This division of labor lets developers focus on business code that truly creates value, rather than reimplementing login, registration, password reset, MFA, permission management, and audit logging in every AI-generated app.
+Autional 的角色就是补上这块短板：**你用 AI 生成业务逻辑，Autional 负责身份安全。** 这种分工让开发者能够专注于真正创造价值的业务代码，而不必在每个 AI 生成的应用里重新实现登录、注册、找回密码、MFA、权限管理和审计日志。
 
-### Key Data Point
+### 一个关键数据
 
-- Security team statistics show that **68%** of self-built authentication systems contain at least one critical security vulnerability (OWASP Top 10 related)
+- 安全团队的统计显示，**68%** 的自研认证系统至少存在一个严重安全漏洞（与 OWASP Top 10 相关）
 
-AI is making application generation faster than ever. Don't let identity authentication become the bottleneck of this productivity revolution.
+AI 正在让应用生成变得前所未有的快。别让身份认证成为这场生产力革命的瓶颈。

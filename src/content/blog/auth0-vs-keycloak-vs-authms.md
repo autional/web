@@ -1,146 +1,148 @@
 ---
-title: "Auth0 vs Keycloak vs Autional: 2026 Identity Platform Comparison"
+title: "Auth0 vs Keycloak vs Autional：2026 年身份平台对比"
 date: "2026-06-17"
 category: "Product"
-tags: ["Competitive Analysis", "Auth0", "Keycloak"]
-readTime: "12 minutes"
-excerpt: "Auth0, Keycloak, and Autional are three representative identity platforms on the 2026 market, embodying SaaS closed-source, community open-source, and commercial open-source business models respectively. This article provides an in-depth 15-dimension comparison without bias — each product has its optimal use case, and the cost of choosing wrong is often not technical, but financial and compliance-related."
+tags: ["竞品分析", "Auth0", "Keycloak"]
+readTime: "12 分钟"
+excerpt: "Auth0、Keycloak 与 Autional 是 2026 年市场上三个有代表性的身份平台，分别代表 SaaS 闭源、社区开源与商业开源三种商业模式。本文不带偏见地从 15 个维度深入对比——每款产品都有其最优场景，而选错的代价往往不是技术性的，而是财务与合规性的。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-Choosing an identity platform may be one of the most important technical decisions a startup makes — even more important than choosing a programming language or database. The reason is simple: **changing databases is hard; changing identity platforms is even harder.** Once your user data, authentication logic, permission models, and OAuth integrations are deeply coupled with a platform, the migration cost alone is enough to make teams abandon the idea.
+选择身份平台，可能是创业公司最重要的技术决策之一——甚至比选择编程语言或数据库更重要。原因很简单：**更换数据库很难，更换身份平台更难。** 一旦你的用户数据、认证逻辑、权限模型与 OAuth 集成深度绑定某个平台，单是迁移成本就足以让团队放弃这个念头。
 
-The 2026 identity platform market features three representative products: **Auth0** (Okta, SaaS closed-source, global market share leader), **Keycloak** (Red Hat sponsored, Apache 2.0 open-source, Java ecosystem darling), and **Autional** (domestic Go microservice architecture, SaaS + open-source core, compliance-oriented). They represent three different product philosophies: **extreme ease-of-use vs extreme controllability vs compliance-first.**
+2026 年的身份平台市场有三个代表性产品：**Auth0**（Okta 旗下，SaaS 闭源，全球市场份额领先）、**Keycloak**（Red Hat 赞助，Apache 2.0 开源，Java 生态的宠儿）、**Autional**（国产 Go 微服务架构，开源核心 + 商业授权，面向合规）。它们代表了三种不同的产品哲学：**极致易用 vs 极致可控 vs 合规优先。**
 
-This article provides an objective comparison across 15 dimensions. Disclaimer: the author is an Autional team member, but we strive to be fair — because we believe helping users find the truly right product for their scenario is more important than pushing Autional on everyone.
+本文从 15 个维度做客观对比。免责声明：作者是 Autional 团队成员，但我们力求公平——因为我们相信，帮助用户找到真正适合其场景的产品，比把 Autional 推给所有人更重要。
 
-## Comparison Overview
+## 对比总览
 
-| Dimension | Auth0 | Keycloak | Autional |
+| 维度 | Auth0 | Keycloak | Autional |
 |-----------|-------|----------|--------|
-| License | Closed-source | Apache 2.0 | Open-source core (AGPL) + Commercial |
-| Deployment | SaaS Only | Self-hosted / Private Cloud | SaaS / Self-hosted / Private Deployment |
-| Language | Node.js | Java (WildFly/Quarkus) | Go |
-| Runtime Memory (Idle) | N/A (SaaS) | 400-800 MB | 50-80 MB (per service) |
-| Database | Managed (opaque) | PostgreSQL / MySQL / Oracle | PostgreSQL (per-service databases) |
-| Microservices | No (black box) | No (single app) | Yes (15 independent microservices) |
-| MFA Support | SMS / Email / TOTP / WebAuthn / Push | SMS / Email / TOTP / WebAuthn | SMS / Email / TOTP / WebAuthn / Biometrics |
-| SSO Protocols | OIDC / SAML / OAuth 2.0 / WS-Fed | OIDC / SAML / OAuth 2.0 | OIDC / SAML / OAuth 2.0 / CAS |
-| RBAC | Supported (requires additional payment) | Built-in | Built-in NIST RBAC (Core + Hierarchical + SoD) |
-| Multi-Tenancy | Supported | Supported (Realm) | Supported (Native multi-tenant + multi-app isolation) |
-| Audit Logging | Basic (additional payment) | Basic | Hash-chain tamper-proof audit + full event tracing |
-| Compliance Certifications | SOC 2 / ISO 27001 / GDPR | None built-in (self-certification required) | Built-in GDPR / PIPL / Dengbao / SOC 2 compliance modules |
-| China Market Readiness | Requires VPN / overseas hosting / no ICP support | Requires self-build / no built-in compliance | Natively adapted (data residency / Dengbao / Chinese cryptography) |
-| Pricing (annual, 10K MAU) | Higher (MAU tiered pricing) | Free (self-hosting costs separate) | ¥12,000-36,000 (Pro/Enterprise) |
-| Best For | Startups in EU/US markets | Technically capable mid-to-large teams | China market + compliance-conscious enterprises |
+| 许可证 | 闭源 | Apache 2.0 | 开源核心（AGPL-3.0）+ 商业版 |
+| 部署方式 | 仅 SaaS | 自托管 / 私有云 | 自托管 / 私有化部署（云托管在路线图中） |
+| 语言 | Node.js | Java（WildFly/Quarkus） | Go |
+| 运行内存（空闲） | 不适用（SaaS） | 400-800 MB | 50-80 MB（每服务） |
+| 数据库 | 托管（不透明） | PostgreSQL / MySQL / Oracle | PostgreSQL（每服务独立数据库） |
+| 微服务 | 否（黑盒） | 否（单体应用） | 是（27 个独立微服务） |
+| MFA 支持 | 短信 / 邮件 / TOTP / WebAuthn / Push | 短信 / 邮件 / TOTP / WebAuthn | 短信 / 邮件 / TOTP / WebAuthn / 生物识别 |
+| SSO 协议 | OIDC / SAML / OAuth 2.0 / WS-Fed | OIDC / SAML / OAuth 2.0 | OIDC / SAML / OAuth 2.0 / CAS |
+| RBAC | 支持（需额外付费） | 内置 | 内置 NIST RBAC（Core + Hierarchical + SoD） |
+| 多租户 | 支持 | 支持（Realm） | 支持（原生多租户 + 多应用隔离） |
+| 审计日志 | 基础（需额外付费） | 基础 | 哈希链防篡改审计 + 全事件追溯 |
+| 合规认证 | SOC 2 / ISO 27001 / GDPR | 无内置（需自行认证） | 内置 GDPR / PIPL / 等保 / SOC 2 合规模块 |
+| 中国市场适配 | 需翻墙 / 海外托管 / 不支持 ICP 备案 | 需自建 / 无内置合规 | 原生适配（数据驻留 / 等保 / 国密） |
+| 价格（年付，1 万 MAU） | 较高（按 MAU 阶梯计价） | 免费（自托管成本另计） | 自托管免费（云订阅在路线图中） |
+| 最适合 | 欧美市场的创业公司 | 技术能力较强的中大型团队 | 中国市场 + 有合规诉求的企业 |
 
-## In-Depth Dimension-by-Dimension Comparison
+## 逐维度深入对比
 
-### 1. Developer Experience (DX)
+### 1. 开发者体验（DX）
 
-**Auth0** wins. Auth0's documentation, SDKs, Quickstarts, and UI customization capabilities set the industry standard. Time from zero to "working" is typically less than an afternoon. Its developer-friendliness transforms "integrating identity" from a month-long project into a one-day task. If you're a 5-person startup that just wants to add login functionality fast and focus on your core product, Auth0 is the best choice.
+**Auth0** 胜出。Auth0 的文档、SDK、Quickstart 与 UI 定制能力是行业标杆。从零到「跑通」通常不超过一个下午。它对开发者友好的程度，把「接入身份」从一个月的工作量变成一天的任务。如果你是 5 人创业团队，只想快速加上登录功能并聚焦核心产品，Auth0 是最佳选择。
 
-**Keycloak** is moderate. Keycloak's documentation quality has improved significantly in recent years, but the Java tech stack adds complexity that's unfriendly to non-Java teams. The admin console UI is functional but somewhat clunky — teams needing custom login pages and email templates face a steep learning curve.
+**Keycloak** 中等。近些年 Keycloak 的文档质量明显提升，但 Java 技术栈带来的复杂度对非 Java 团队并不友好。管理控制台 UI 可用但略显笨重——需要自定义登录页与邮件模板的团队会面临较陡的学习曲线。
 
-**Autional** is good. Autional provides a React component library (`@authms/shared`), TanStack Query hooks, and a generated TypeScript API client. Integrating a login box takes just two components: `<AuthProvider>` + `<LoginForm>`. However, its documentation still lags behind Auth0's richness — Chinese docs are comprehensive but English docs are under construction.
+**Autional** 良好。Autional 提供 React SDK（`@autional/react`）、门户组件库（`@autional/ui`）与按服务划分的自动生成 TypeScript API 客户端。接入登录只需一个 Provider：用 `<AutionalProvider>` 包裹应用，配合 `useAutional()` hooks。不过其文档丰富度仍不及 Auth0——中文文档完备，英文文档还在建设中。
 
-### 2. Performance and Resource Consumption
+### 2. 性能与资源占用
 
-**Autional** and **Auth0** each have their strengths.
+**Autional** 与 **Auth0** 各有优势。
 
-As a SaaS service, Auth0 doesn't consume client-side resources, but network latency is limited by the physical distance between users and Auth0 servers. For mainland Chinese users accessing Auth0's US nodes, latency typically ranges from 200-400ms, significantly impacting login page first-load performance.
+作为 SaaS 服务，Auth0 不消耗客户端资源，但网络延迟受用户与 Auth0 服务器物理距离的限制。中国大陆用户访问 Auth0 美国节点时，延迟通常在 200-400ms，对登录页首屏性能影响明显。
 
-Keycloak's Java tech stack is its performance bottleneck. A basic deployment typically requires 512MB-1GB of JVM heap memory, with cold starts taking 30-60 seconds. The Quarkus distribution (Keycloak 17+) has improved this, but it's still heavy for teams pursuing extreme resource efficiency.
+Keycloak 的 Java 技术栈是它的性能瓶颈。一个基础部署通常需要 512MB-1GB 的 JVM 堆内存，冷启动需要 30-60 秒。Quarkus 发行版（Keycloak 17+）有所改善，但对追求极致资源效率的团队而言依然厚重。
 
-Autional's Go microservice architecture offers clear advantages in resource efficiency. A single identity-service instance uses about 50MB of memory at idle, with cold starts of 1-2 seconds. P99 login latency under full PostgreSQL + Redis cache hit is < 80ms. However, the total memory across all 15 services combined is about 1GB — not necessarily lower than a single Keycloak instance, but each service can be scaled independently.
+Autional 的 Go 微服务架构在资源效率上有明显优势。单个 identity-service 实例空闲时占用约 50MB 内存，冷启动 1-2 秒。在 PostgreSQL + Redis 缓存命中的情况下，登录 P99 延迟 < 80ms。不过 27 个服务的总内存合计约 1.4GB——未必低于单个 Keycloak 实例，但每个服务都可以独立扩容。
 
-### 3. Compliance and Regulation
+### 3. 合规与监管
 
-**This is Autional's core differentiator.**
+**这是 Autional 的核心差异点。**
 
-**Auth0** offers SOC 2 and ISO 27001 certifications, suitable for EU/US market compliance needs. But it does not understand the Chinese regulatory landscape — no dengbao pre-assessment, no PIPL compliance checklist, and data stored in the US/EU (posing cross-border data transfer risks for Chinese customers).
+**Auth0** 提供 SOC 2 与 ISO 27001 认证，适用于欧美市场的合规需求。但它不熟悉中国的监管环境——没有等保预评估，没有 PIPL 合规清单，数据存储在美国/欧盟（对中国客户存在数据跨境传输风险）。
 
-**Keycloak**, as a pure open-source project, provides no compliance certifications. Compliance is entirely the user's responsibility — you need to configure audit log retention, data encryption, access controls, and prove your deployment is compliant to auditors. For compliance-conscious enterprises, this means additional engineering investment and legal consulting fees.
+**Keycloak** 作为纯开源项目，不提供任何合规认证。合规完全由用户自行负责——你需要自行配置审计日志留存、数据加密、访问控制，并向审计方证明你的部署合规。对有合规诉求的企业来说，这意味着额外的工程投入与法律咨询费用。
 
-**Autional** treats compliance as a first-class citizen. The `compliance-service` has built-in:
-- GDPR Data Subject Access Request (DSAR) automated processing
-- PIPL Personal Information Protection Impact Assessment (PIA) templates and workflows
-- Dengbao 2.0 Level 3 pre-assessment checklist
-- SOC 2 audit evidence auto-collection (structured output ready for auditor submission)
-- Hash-chain tamper-proof audit logging (each audit record contains the hash of the previous record; any tampering breaks the chain)
+**Autional** 把合规当作一等公民。`compliance-service` 内置：
 
-### 4. RBAC Permission Model
+- GDPR 数据主体访问请求（DSAR）自动化处理
+- PIPL 个人信息保护影响评估（PIA）模板与工作流
+- 等保 2.0 三级预评估清单
+- SOC 2 审计证据自动采集（结构化输出，可直接提交给审计方）
+- 哈希链防篡改审计日志（每条审计记录都包含上一条记录的哈希，任何篡改都会断链）
 
-**Auth0** introduced the Organizations + Roles + Permissions model post-2022, meeting basic requirements. However, NIST-standard hierarchical roles (role inheritance) and Static Separation of Duty (SoD) require extensions and are not included in standard pricing.
+### 4. RBAC 权限模型
 
-**Keycloak** has a mature Realm and Client-based permission model with powerful fine-grained access control via Authorization Services. However, its RBAC model is primarily based on the Resource-Based Access Control paradigm, which deviates somewhat from the NIST RBAC standard.
+**Auth0** 在 2022 年后引入了 Organizations + Roles + Permissions 模型，可满足基本需求。但 NIST 标准的分层角色（角色继承）与静态职责分离（SoD）需要额外扩展，并不包含在标准定价中。
 
-**Autional**'s RBAC is fully NIST-standard compliant (Core RBAC + Hierarchical RBAC + Static Separation of Duty). It supports role inheritance (`Role.ParentID`), mutually exclusive roles (`ConflictPair`), approval workflows (`ApprovalRequest`), direct user permissions (`UserPermission`), and predefined read-only security roles like `security_admin`. For enterprises requiring SOC 2 or ISO 27001 certification, a NIST-standard RBAC implementation means fewer audit items.
+**Keycloak** 有成熟的 Realm 与 Client 权限模型，并通过 Authorization Services 提供强大的细粒度访问控制。但其 RBAC 模型主要基于资源型访问控制范式，与 NIST RBAC 标准存在一定偏差。
 
-### 5. China Market Readiness
+**Autional** 的 RBAC 完全符合 NIST 标准（Core RBAC + Hierarchical RBAC + Static Separation of Duty）。它支持角色继承（`Role.ParentID`）、互斥角色（`ConflictPair`）、审批工作流（`ApprovalRequest`）、用户直接权限（`UserPermission`），以及 `security_admin` 这类预置只读安全角色。对需要通过 SOC 2 或 ISO 27001 认证的企业来说，NIST 标准的 RBAC 实现意味着更少的审计整改项。
 
-**This is a common weakness of both Auth0 and Keycloak.**
+### 5. 中国市场适配
 
-- Auth0 has no server nodes in mainland China — high latency; no ICP备案 support; no option for data residency within China.
-- Keycloak can be self-hosted on Chinese servers to solve latency, but compliance certification is entirely self-certified.
+**这是 Auth0 与 Keycloak 共同的短板。**
 
-**Autional** was designed for the Chinese market from day one:
-- Supports Chinese national cryptographic algorithms SM2/SM3/SM4 (via `util/crypto` package)
-- Data residency on mainland China servers (SaaS edition uses compliant cloud providers)
-- Full PIPL (Personal Information Protection Law) compliance module
-- Dengbao 2.0 Level 3 pre-assessment reports and supporting materials
-- Chinese documentation, Chinese admin console, Chinese email/SMS templates
+- Auth0 在中国大陆没有服务节点——延迟高；不支持 ICP 备案；无法选择数据存放在中国境内。
+- Keycloak 可以自托管在中国服务器上以解决延迟问题，但合规认证完全靠自证。
 
-### 6. Pricing and Total Cost of Ownership
+**Autional** 从第一天就面向中国市场设计：
 
-| Item | Auth0 | Keycloak | Autional |
+- 支持中国国密算法 SM2/SM3/SM4（通过 `util/crypto` 包）
+- 数据可驻留在中国大陆服务器（自托管部署可选用合规云服务商）
+- 完整的 PIPL（个人信息保护法）合规模块
+- 等保 2.0 三级预评估报告与配套材料
+- 中文文档、中文管理控制台、中文邮件/短信模板
+
+### 6. 价格与总拥有成本
+
+| 项目 | Auth0 | Keycloak | Autional |
 |------|-------|----------|--------|
-| 1,000 MAU (B2C) | ~$35/month | Free (self-hosting costs separate) | Free (Community Edition) |
-| 10,000 MAU | ~$500/month | Free (self-hosting costs separate) | ¥1,000/month (Pro) |
-| 100,000 MAU | ~$2,000-3,000/month | Free (self-hosting costs separate) | ¥3,000/month (Enterprise) |
-| Enterprise SSO (SAML/OIDC) | Enterprise plan required | Free | Included in Pro |
-| Custom MFA Policies | Enterprise plan required | Free | Included in Pro |
-| Audit Log Retention | Basic: 2 days | Self-managed | Basic: 30 days |
-| Self-hosting Ops (1 DevOps @ 50%) | $0 | Requires ongoing ops investment | ~¥100K/year (Community) |
+| 1,000 MAU（B2C） | 约 $35/月 | 免费（自托管成本另计） | 免费（自托管开源） |
+| 10,000 MAU | 约 $500/月 | 免费（自托管成本另计） | 自托管免费（无 MAU 计费） |
+| 100,000 MAU | 约 $2,000-3,000/月 | 免费（自托管成本另计） | 自托管免费（无 MAU 计费） |
+| 企业 SSO（SAML/OIDC） | 需企业版套餐 | 免费 | 已含 |
+| 自定义 MFA 策略 | 需企业版套餐 | 免费 | 已含 |
+| 审计日志留存 | 基础版：2 天 | 自行管理 | 基础版：30 天 |
+| 自托管运维（1 名 DevOps 投入 50%） | $0 | 需持续运维投入 | 约 ¥100K/年 |
 
-**Auth0's real cost isn't the monthly fee — it's the marginal cost at scale.** At 10K MAU, Auth0's pricing is acceptable, but at 1M MAU, the annual cost can reach millions of RMB. Conversely, the marginal cost of Keycloak and Autional Community Edition approaches zero — but you bear the operational costs.
+**Auth0 真正的成本不在月费，而在规模化的边际成本。** 在 1 万 MAU 时，Auth0 的定价可以接受；但到 100 万 MAU 时，年费可达数百万元人民币。反过来说，Keycloak 与 Autional 社区版的边际成本趋近于零——但你要自己承担运维成本。
 
-### 7. Ecosystem and Community
+### 7. 生态与社区
 
-**Auth0** has the largest ecosystem: 200+ social login integrations, 50+ SDKs, an active community forum, and a third-party integration marketplace.
+**Auth0** 生态最大：200+ 社交登录集成、50+ SDK、活跃的社区论坛，以及第三方集成市场。
 
-**Keycloak** has the largest open-source community: 10,000+ GitHub stars, active mailing lists, and a rich collection of third-party plugins (e.g., keycloak-metrics-spi).
+**Keycloak** 开源社区最大：GitHub 星标 10,000+、活跃的邮件列表，以及丰富的第三方插件（如 keycloak-metrics-spi）。
 
-**Autional**'s community is a growing open-source community (open-sourced in 2024), developing rapidly. Documentation, API Wiki, and 15 CI check scripts are all open-source. Average issue response time is < 24 hours.
+**Autional** 的社区是一个成长中的开源社区（2024 年开源），发展迅速。文档、API Wiki 与 15 个 CI 检查脚本全部开源。Issue 平均响应时间 < 24 小时。
 
-## Selection Decision Guide
+## 选型决策指南
 
-### Choose Auth0 if:
+### 选择 Auth0，如果：
 
-- You're an early-stage startup targeting EU/US markets that needs login functionality live as fast as possible
-- You have no dedicated team to maintain identity infrastructure
-- You're willing to pay a premium for developer experience
-- You have no China regulatory requirements
+- 你是面向欧美市场的早期创业公司，需要尽快让登录功能上线
+- 你没有专门的团队维护身份基础设施
+- 你愿意为开发者体验支付溢价
+- 你没有中国监管方面的要求
 
-### Choose Keycloak if:
+### 选择 Keycloak，如果：
 
-- You have strong Java technical expertise and an operations team
-- You need full control over data and deployment, rejecting SaaS lock-in
-- You have a limited budget but sufficient engineering resources
-- You don't need built-in compliance certification (or are willing to self-certify)
+- 你有很强的 Java 技术积累与运维团队
+- 你需要对数据与部署拥有完全控制权，拒绝 SaaS 锁定
+- 你预算有限但有足够的工程资源
+- 你不需要内置的合规认证（或愿意自行认证）
 
-### Choose Autional if:
+### 选择 Autional，如果：
 
-- You're targeting the China market and need PIPL / dengbao compliance
-- You need built-in support for GDPR, SOC 2, and other international compliance certifications
-- You value Go language performance and microservice architecture scalability
-- You need a complete RBAC + Audit + MFA + Wallet integrated solution
-- You're budget-conscious but have the technical ability to maintain a self-hosted version (Community Edition)
+- 你面向中国市场，需要 PIPL / 等保合规
+- 你需要内置支持 GDPR、SOC 2 等国际合规认证
+- 你看重 Go 语言的性能与微服务架构的扩展性
+- 你需要 RBAC + 审计 + MFA + 钱包的一体化完整方案
+- 你注重预算，同时具备维护自托管版本（社区版）的技术能力
 
 ---
 
-There is no "best" identity platform — only the "best fit" one. Auth0 suits startups chasing speed, Keycloak suits technical teams pursuing controllability, and Autional suits enterprises that need compliance assurance — especially in the China market and cross-border scenarios. When selecting, don't just look at the feature comparison table. Start with your team's three biggest pain points: **deployment complexity, compliance requirements, and long-term cost** — these three dimensions are usually enough to guide your decision.
+没有「最好」的身份平台，只有「最合适」的。Auth0 适合追求速度的创业公司，Keycloak 适合追求可控性的技术团队，Autional 适合需要合规保障的企业——尤其是在中国市场与跨境场景下。选型时不要只看功能对比表，先从团队最大的三个痛点出发：**部署复杂度、合规要求与长期成本**——这三个维度通常就足以指引你的决策。
 
-*View [Autional product pricing](/pricing) or [book a demo](/contact) for more information.*
+*查看 [Autional 产品定价](/pricing) 或 [预约演示](/contact) 了解更多信息。*

@@ -1,33 +1,33 @@
 ---
-title: "Enterprise SSO Best Practices in 2026"
+title: "2026 年企业级 SSO 最佳实践"
 date: "2026-06-17"
 category: "Tech"
 tags: ["SSO", "SAML", "OAuth" ,"OIDC"]
-readTime: "12 min"
-excerpt: "A comprehensive guide to SSO architecture patterns, protocol selection, and security best practices for enterprise deployments in 2026."
+readTime: "12 分钟"
+excerpt: "面向 2026 年企业部署场景的 SSO 综合指南，涵盖架构模式、协议选型与安全最佳实践。"
 status: "verified"
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-## Why SSO Matters
+## 为什么 SSO 很重要
 
-Single Sign-On (SSO) is the foundation of modern enterprise identity management. In this article, we cover:
+单点登录（SSO）是现代企业身份管理的基础。本文将覆盖：
 
-### Protocol Selection
-- **SAML 2.0** — best for enterprise SaaS, broad ecosystem support
-- **OIDC** — modern, lightweight, mobile-friendly
-- **OAuth 2.0** — API authorization, not authentication
-- **CAS** — academic environments, legacy adoption
+### 协议选型
+- **SAML 2.0**——最适合企业级 SaaS，生态支持最广
+- **OIDC**——现代、轻量、对移动端友好
+- **OAuth 2.0**——用于 API 授权，而非认证
+- **CAS**——学术环境，历史遗留采用较多
 
-### Architecture Patterns
+### 架构模式
 
-**Centralized Gateway**: A unified authentication proxy that handles all SSO traffic. Best for organizations with diverse application stacks.
+**集中式网关**：统一的认证代理，处理所有 SSO 流量。最适合应用技术栈多样化的组织。
 
-**Federated Identity**: Each application independently validates tokens against a central IdP. Best for microservice architectures.
+**联邦身份**：各应用独立向中心 IdP 校验令牌。最适合微服务架构。
 
-### Security Checklist
-- Always use PKCE for public clients
-- Enforce short-lived access tokens (15-30 min)
-- Implement token rotation and revocation
-- Use HSM for signing key storage
+### 安全检查清单
+- 公共客户端一律使用 PKCE
+- 强制短时效访问令牌（15-30 分钟）
+- 实现令牌轮换与吊销
+- 使用 HSM 存放签名密钥

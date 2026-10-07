@@ -1,65 +1,31 @@
+/* 令牌与组件层由 npm 已发布包交付：@autional/tailwind-preset（Tailwind preset，其 tokens.css 为转发）
+   与 @autional/tokens（tokens.css / profiles/*.css / primitives.css / fonts）。
+
+   2026-09 P4：本站点原先各存一份 packages/tailwind-preset/ 内置副本（由 ui 仓库的 pnpm sync:consumers
+   生成），那是「拷贝而非依赖」；副本已删除，改为直接依赖已发布的 npm 包。字体随之由 @autional/tokens
+   下发——其 tokens.css 内的 @font-face 以相对路径引用同一个包里的 fonts/。
+
+   本站点此前完全不消费设计系统：没有 packages/ 目录、不 import 任何令牌，
+   而是在 tailwind.config.cjs 里内联了 primary/sky/amber 三套**自有**色阶、fontFamily、
+   boxShadow 与 backgroundImage，并用 @apply 重写了 .brand-* 共 7 个组件类。
+   这是 ui 仓库 KI-010 记录的形态。原先的重写已删除，由 primitives.css 提供。
+
+   注意本站点换了调色板：原内联的 primary-500 是 #2c8ec0，权威是 #235f84。
+   DESIGN.md 已就此事做过决策——「canonical scale beats per-site improvisation」，
+   网站那套被判定为「an isolated point, not a ramp」，因此收敛到权威色阶。
+
+   本站点不加载 profile：它对应 marketing，而 marketing 的覆盖数为 0（等价于 core 基线），
+   生成器不会为它产出文件。实测踩过：先前按 marketing 映射并 import，构建期以 ENOENT 失败。 */
+
+/* 令牌与 profile 由 <head> 里的 CDN <link> 提供（单一来源）。
+   primitives **不能**同样从 CDN 加载：它内部是 Tailwind 的 @layer base / @layer components 片段，
+   而 Tailwind 处理它们时会按层**重新定位**（base 段落到 preflight 之后）。当成普通外部样式表加载时，
+   整个文件都排在站点 bundle 之前，base 段落于是落到 preflight **之前**——
+   preflight 的 body { line-height: inherit } 反过来盖掉 primitives 的 body { line-height: var(--line-height-body-md) }，
+   实测整页偏移：developer-home 3.025% / docs 3.035% / wiki 4.478%。
+   所以它继续走 bundler @import，让 Tailwind 按它本来的语义安放。详见 scripts/build-cdn.mjs 的摊平说明。 */
+@import '@autional/tokens/primitives.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    @apply bg-slate-950 text-neutral-900 antialiased;
-    background-image:
-      radial-gradient(circle at top left, rgba(135, 206, 235, 0.16), transparent 32%),
-      radial-gradient(circle at top right, rgba(255, 191, 0, 0.10), transparent 22%),
-      linear-gradient(180deg, #f8fbfe 0%, #ffffff 26%, #f7fafd 100%);
-  }
-
-  .dark body {
-    background-image:
-      radial-gradient(circle at top left, rgba(135, 206, 235, 0.12), transparent 28%),
-      radial-gradient(circle at top right, rgba(255, 191, 0, 0.08), transparent 20%),
-      linear-gradient(180deg, #041d31 0%, #031425 45%, #020b14 100%);
-  }
-
-  ::selection {
-    background: rgba(135, 206, 235, 0.35);
-    color: #003153;
-  }
-}
-
-@layer components {
-  .brand-shell {
-    @apply rounded-[28px] border border-white/70 bg-white/90 shadow-brand backdrop-blur-xl dark:border-white/10 dark:bg-white/5;
-  }
-
-  .brand-card {
-    @apply rounded-3xl border border-primary-100/90 bg-white/95 shadow-card backdrop-blur-sm dark:border-white/10 dark:bg-white/5;
-  }
-
-  .brand-button-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-primary-700 px-6 py-3 text-sm font-semibold text-white shadow-soft transition duration-200 hover:-translate-y-0.5 hover:bg-primary-600;
-  }
-
-  .brand-button-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-primary-200 bg-white/90 px-6 py-3 text-sm font-semibold text-primary-700 transition duration-200 hover:-translate-y-0.5 hover:border-primary-300 hover:bg-sky-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10;
-  }
-
-  .brand-kicker {
-    @apply inline-flex items-center gap-2 rounded-full border border-primary-100 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-primary-700 shadow-soft dark:border-white/10 dark:bg-white/5 dark:text-sky-200;
-  }
-
-  .brand-grid {
-    background-image:
-      linear-gradient(rgba(0, 49, 83, 0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 49, 83, 0.08) 1px, transparent 1px);
-    background-position: center;
-    background-size: 28px 28px;
-  }
-
-  .dark .brand-grid {
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  }
-}

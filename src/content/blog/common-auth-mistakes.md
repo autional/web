@@ -1,32 +1,32 @@
 ---
-title: "The 7 Most Common Authentication Mistakes (And How to Fix Them)"
+title: "最常见的 7 个认证错误（以及如何修复）"
 date: "2026-05-26"
 category: "Security"
-tags: ["Anti-Patterns", "Security Mistakes", "Best Practices"]
-readTime: "7 minutes"
-excerpt: "These authentication mistakes — you may be making them every day. From hardcoded API keys to non-expiring JWTs, from unsalted passwords to logging sensitive information — this article covers 7 of the most common identity anti-patterns, each with a real-world data breach case and actionable fixes. How Autional eliminates these mistakes at the architectural level? Read on."
+tags: ["反模式", "安全错误", "最佳实践"]
+readTime: "7 分钟"
+excerpt: "这些认证错误，你可能每天都在犯。从硬编码 API Key 到永不过期的 JWT，从明文密码到把敏感信息写进日志——本文梳理 7 个最常见的身份反模式，每一条都配有真实的数据泄露案例与可执行的修复方案，并说明 Autional 如何在架构层面消除这些错误。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-There's a saying in the security community: attackers don't need to discover new vulnerabilities — they just need to find the known issues you haven't fixed.
+安全圈有句话：攻击者不需要发现新漏洞——他们只需要找到你还没修的已知问题。
 
-This is especially true in authentication. The following 7 mistakes were already emphasized in the OWASP Top 10 from a decade ago, yet in 2026, they still appear in every security audit report as "high-risk findings."
+在认证领域尤其如此。以下 7 个错误，十年前的 OWASP Top 10 就已经强调过，但在 2026 年，它们依然出现在每一份安全审计报告的「高危发现」里。
 
-## Mistake 1: Hardcoded API Keys and Secrets in Code
+## 错误 1：在代码中硬编码 API Key 与密钥
 
-### Why It's Dangerous
+### 为什么危险
 
-In 2025, GitHub's automated scanning detected over 2 million public repositories containing commits with suspected secrets. Once your API key, database password, or JWT signing key appears in code, it lives forever in git history — even if you delete the file and commit again.
+2025 年，GitHub 的自动扫描检测到超过 200 万个公开仓库中含有疑似密钥的提交。一旦你的 API Key、数据库密码或 JWT 签名密钥出现在代码中，它就永远留在 git 历史里——即便你删掉文件再提交一次。
 
-Worse still, attackers have built automated GitHub scanning tools that can extract keys within seconds of a new commit being pushed and attempt to use them immediately.
+更糟的是，攻击者已经做出了自动化的 GitHub 扫描工具，能在新提交推送后的几秒内提取出密钥并立即尝试使用。
 
-### Real-World Case
+### 真实案例
 
-In 2024, a $1.5 billion AI startup suffered an incident when an engineer committed a configuration file containing AWS root account keys to a public GitHub repository. Within 4 hours, the attacker had spun up hundreds of GPU instances for cryptomining, generating a $650,000 bill.
+2024 年，一家估值 15 亿美元的 AI 创业公司发生事故：一名工程师把含有 AWS 根账号密钥的配置文件提交到了公开的 GitHub 仓库。4 小时内，攻击者拉起数百台 GPU 实例用于挖矿，产生了 65 万美元的账单。
 
-### How to Fix
+### 如何修复
 
 ```
 Wrong:
@@ -37,30 +37,30 @@ const API_KEY = process.env.AUTHMS_API_KEY  // Environment variable
 if (!API_KEY) throw new Error("AUTHMS_API_KEY not set")
 ```
 
-Going further:
-- Migrate all secrets to a Key Management Service (KMS) or Vault
-- Integrate secret scanning (e.g., GitGuardian, truffleHog) in CI/CD to block commits containing keys
-- Use `.gitignore` to exclude all configuration files containing secrets
-- Immediately rotate any potentially leaked keys
+进一步的做法：
+- 把所有密钥迁移到密钥管理服务（KMS）或 Vault
+- 在 CI/CD 中集成密钥扫描（如 GitGuardian、truffleHog），拦截含密钥的提交
+- 用 `.gitignore` 排除所有包含密钥的配置文件
+- 对任何可能已泄露的密钥立即轮换
 
-**How Autional prevents this**: After creation, an API Key's full value is shown only once. The database stores only a SHA-256 hash. Even if someone accesses the database, they cannot retrieve the API Key plaintext. Internal service secrets (JWT signing keys, encryption DEKs) are injected via environment variables or managed by KMS — hardcoding in config files is prohibited. The CI check scripts scan all Go source and configuration files for hardcoded secret patterns.
+**Autional 如何防范**：API Key 创建后，完整值只展示一次，数据库中只存 SHA-256 哈希。即便有人拿到了数据库，也无法还原 API Key 明文。服务内部密钥（JWT 签名密钥、加密 DEK）通过环境变量注入或由 KMS 托管——禁止写死在配置文件中。CI 检查脚本会扫描所有 Go 源码与配置文件中的硬编码密钥模式。
 
-## Mistake 2: Login Endpoint Without Rate Limiting
+## 错误 2：登录端点没有限流
 
-### Why It's Dangerous
+### 为什么危险
 
-A login endpoint without rate limiting is an open invitation to credential stuffing. Attackers don't need sophisticated techniques — just a dictionary of common passwords and a script that can send HTTP requests.
+没有限流的登录端点，等于向撞库攻击敞开大门。攻击者不需要什么高深技术——一本常见密码字典，加上一个能发 HTTP 请求的脚本就够了。
 
-### Real-World Case
+### 真实案例
 
-In the 2023 23andMe data breach, attackers didn't exploit any system vulnerabilities. They used **credential stuffing** — obtaining username/password combinations from other data breaches and trying them one by one. Without effective rate limiting and anomaly detection, attackers compromised approximately 14,000 accounts over several weeks and scraped genealogical data from millions of users through these accounts.
+2023 年 23andMe 数据泄露事件中，攻击者没有利用任何系统漏洞，而是使用了**撞库**——从其他数据泄露事件中拿到用户名/密码组合，逐个尝试。由于缺乏有效的限流与异常检测，攻击者在数周内攻破了约 14,000 个账号，并通过这些账号抓取了数百万用户的族谱数据。
 
-### How to Fix
+### 如何修复
 
-Implement at least three layers of rate limiting:
-1. IP-level: no more than 30 requests per minute from the same IP
-2. User-level: no more than 10 login attempts per minute for the same user
-3. Global-level: overall request rate cap on the login endpoint
+至少实现三层限流：
+1. IP 级：同一 IP 每分钟不超过 30 次请求
+2. 用户级：同一用户每分钟不超过 10 次登录尝试
+3. 全局级：登录端点的整体请求速率上限
 
 ```
 // Right — server-side rate limiting
@@ -74,21 +74,21 @@ app.post('/login', rateLimiter({
 }), loginHandler)
 ```
 
-**How Autional prevents this**: The gateway-service has built-in three-layer distributed rate limiting (IP-level, user-level, global-level), supporting token bucket and sliding window algorithms with Redis-based cross-instance counting. A progressive penalty strategy is applied when rate limits are triggered.
+**Autional 如何防范**：gateway-service 内置三层分布式限流（IP 级、用户级、全局级），支持令牌桶与滑动窗口算法，并基于 Redis 做跨实例计数。触发限流时会施加渐进式惩罚策略。
 
-## Mistake 3: Storing Passwords with MD5 or SHA-1
+## 错误 3：用 MD5 或 SHA-1 存储密码
 
-### Why It's Dangerous
+### 为什么危险
 
-MD5 and SHA-1 are **general-purpose hash functions** designed to be as fast as possible. Password hashing needs the exact opposite — **as slow as possible**. GPUs can compute billions of MD5/SHA-1 hashes per second, making brute-force attacks extremely efficient.
+MD5 与 SHA-1 是**通用哈希函数**，设计目标是尽可能快。而密码哈希需要的恰恰相反——**尽可能慢**。GPU 每秒可以计算数十亿次 MD5/SHA-1 哈希，使暴力破解变得极其高效。
 
-### Real-World Case
+### 真实案例
 
-In 2012, LinkedIn suffered a breach of 6.5 million password hashes. LinkedIn used **unsalted SHA-1**. After the leak, security researchers cracked 90% of the passwords within 72 hours. Worse still, these cracked passwords were used for credential stuffing attacks on other sites — because a large number of users reuse the same password across different websites.
+2012 年，LinkedIn 泄露了 650 万个密码哈希。LinkedIn 使用的是**未加盐的 SHA-1**。泄露发生后，安全研究人员在 72 小时内破解了其中 90% 的密码。更糟的是，这些被破解的密码被用于对其他站点发起撞库攻击——因为大量用户在不同网站复用同一个密码。
 
-### How to Fix
+### 如何修复
 
-Always use dedicated password hashing functions: bcrypt, scrypt, or argon2id.
+始终使用专用的密码哈希函数：bcrypt、scrypt 或 argon2id。
 
 ```
 Wrong:
@@ -101,28 +101,28 @@ hash = bcrypt(password, cost=12)  // Simplest choice
 hash = argon2id(password, time=3, memory=65536, parallelism=4)  // Best choice
 ```
 
-If migrating from an old scheme:
-1. Record the current hashing algorithm in the database
-2. On the user's next login: verify with old algorithm → if passes, rehash with new algorithm → update database
-3. Flag migrated users; those still on old hashes are asked to reset their password after N months
+如果需要从旧方案迁移：
+1. 在数据库中记录当前使用的哈希算法
+2. 用户下次登录时：用旧算法校验 → 通过后用新算法重新哈希 → 更新数据库
+3. 标记已迁移用户；仍在旧哈希上的用户，在 N 个月后要求重置密码
 
-**How Autional prevents this**: The identity-service uses bcrypt by default (cost factor=12) with automatic random salts built into the hash. The Argon2id interface is reserved with support for transparent migration. CI prohibits any MD5/SHA-1 usage in password-related code.
+**Autional 如何防范**：identity-service 默认使用 bcrypt（cost 因子=12），随机盐已内建于哈希中。同时预留 Argon2id 接口，支持透明迁移。CI 禁止在密码相关代码中使用任何 MD5/SHA-1。
 
-## Mistake 4: JWT Without Expiration
+## 错误 4：JWT 没有过期时间
 
-### Why It's Dangerous
+### 为什么危险
 
-A JWT without an `exp` claim is theoretically valid forever. If your system issues such JWTs, an attacker who obtains any one of them can access your system permanently as that user.
+没有 `exp` 声明的 JWT 理论上永久有效。如果你的系统签发这样的 JWT，攻击者只要拿到任意一个，就能以该用户身份永久访问你的系统。
 
-A more subtle variant: the JWT has an expiration time, but it's too long — e.g., `exp` set to current time + 365 days. This is nearly as dangerous as having no expiration, because a stolen token can be abused for an entire year.
+更隐蔽的变体是：JWT 有过期时间，但太长了——例如 `exp` 设为当前时间 + 365 天。这几乎和不设过期一样危险，因为被窃取的令牌可以在整整一年内被滥用。
 
-### How to Fix
+### 如何修复
 
-Use the short-lived Access Token + long-lived Refresh Token pattern:
+采用「短期访问令牌 + 长期刷新令牌」模式：
 
 ```
-Access Token (JWT): valid for 15 minutes, used for API call authentication
-Refresh Token (opaque string): valid for 7 days, used only to obtain new Access Tokens
+访问令牌（JWT）：有效期 15 分钟，用于 API 调用认证
+刷新令牌（不透明字符串）：有效期 7 天，仅用于获取新的访问令牌
 ```
 
 ```go
@@ -135,47 +135,47 @@ token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 })
 ```
 
-**How Autional prevents this**: The identity-service enforces `exp` (default 15 minutes), `iat`, and `jti` when signing JWTs. Refresh tokens are bound to the session-service, supporting instant revocation. The maximum Access Token validity period is configurable, with system administrators able to set an upper limit.
+**Autional 如何防范**：identity-service 在签发 JWT 时强制包含 `exp`（默认 15 分钟）、`iat` 与 `jti`。刷新令牌绑定到 session-service，支持即时吊销。访问令牌的最长有效期可配置，系统管理员可以设置上限。
 
-## Mistake 5: Admin Accounts Without Mandatory MFA
+## 错误 5：管理员账号没有强制 MFA
 
-### Why It's Dangerous
+### 为什么危险
 
-Your system may enforce MFA for all regular users, but if you relax the requirement for admin accounts, you leave the most vulnerable entry point open for the most destructive attackers.
+你的系统可能对所有普通用户都强制 MFA，但如果对管理员账号放松了要求，就等于给最具破坏力的攻击者留了最脆弱的入口。
 
-The admin panel is usually the attacker's ultimate target — because it provides access to all user data, system configurations, and audit logs. A compromised admin account without MFA is like handing the attacker a master key.
+管理后台通常是攻击者的终极目标——因为它能访问所有用户数据、系统配置与审计日志。一个没有 MFA 的管理员账号被攻破，就像把万能钥匙交到攻击者手里。
 
-### Real-World Case
+### 真实案例
 
-In the 2020 Twitter internal tool hack, attackers used social engineering to obtain Twitter employee credentials — because those employee accounts did not have mandatory MFA. Using internal management tools, the attackers took over 130 high-profile accounts (including Barack Obama, Elon Musk, Bill Gates) and posted Bitcoin scam messages.
+2020 年 Twitter 内部工具入侵事件中，攻击者通过社会工程获取了 Twitter 员工的凭据——因为这些员工账号没有强制 MFA。利用内部管理工具，攻击者接管了 130 个高知名度账号（包括 Barack Obama、Elon Musk、Bill Gates），并发布了比特币诈骗信息。
 
-If those employee accounts had been required to use hardware security keys (FIDO2), this attack would have been stopped at the first step — because attackers cannot obtain physical keys through remote social engineering.
+如果那些员工账号被要求使用硬件安全密钥（FIDO2），这次攻击会在第一步就被拦下——因为攻击者无法通过远程社会工程拿到物理密钥。
 
-### How to Fix
+### 如何修复
 
 ```
-Minimum MFA requirements for admin accounts:
-├── Must be FIDO2/WebAuthn (not SMS OTP or TOTP alone)
-├── Must use a hardware security key (not just platform authenticator)
-├── Must verify at every login (no "remember this device")
-└── MFA device loss requires an approval workflow to recover (not self-service)
+管理员账号的 MFA 最低要求：
+├── 必须使用 FIDO2/WebAuthn（不能只用短信 OTP 或 TOTP）
+├── 必须使用硬件安全密钥（不能只用平台内置认证器）
+├── 每次登录都必须验证（不允许「记住此设备」）
+└── MFA 设备丢失须走审批流程恢复（不允许自助恢复）
 ```
 
-**How Autional prevents this**: The RBAC system's predefined `super_admin` role mandates FIDO2/WebAuthn (and this is how Autional itself operates). Sensitive operations in the admin console (creating API Keys, modifying permissions, viewing audit logs) trigger secondary MFA verification. Admin MFA status is continuously monitored — accounts without MFA enabled are flagged and alerted.
+**Autional 如何防范**：RBAC 系统预置的 `super_admin` 角色强制要求 FIDO2/WebAuthn（Autional 自身也是这样运行的）。管理控制台中的敏感操作（创建 API Key、修改权限、查看审计日志）会触发 MFA 二次验证。管理员 MFA 状态会被持续监控——未启用 MFA 的账号会被标记并告警。
 
-## Mistake 6: Logging Sensitive Information Like Passwords and Tokens
+## 错误 6：把密码、令牌等敏感信息写进日志
 
-### Why It's Dangerous
+### 为什么危险
 
-Logging systems are typically accessible to all developers and operations staff. If a login request is fully recorded in logs — including the plaintext password — then everyone who can see the logs effectively knows the user's password.
+日志系统通常对所有开发者与运维人员开放。如果一次登录请求被完整记录进日志——包括明文密码——那么凡是能看到日志的人实际上都知道了用户的密码。
 
-Moreover, logs are usually sent to centralized logging systems (ELK, Loki, CloudWatch), whose access controls are often less strict than databases. Logs may also be backed up to cloud storage, further expanding the exposure surface.
+此外，日志通常会被送到集中式日志系统（ELK、Loki、CloudWatch），其访问控制往往比数据库更宽松。日志还可能被备份到对象存储，进一步扩大暴露面。
 
-### Real-World Case
+### 真实案例
 
-In 2019, Facebook admitted that "millions" of Instagram users' passwords were stored in plaintext within its internal logging systems. These logs were accessible to over 2,000 Facebook employees. While no evidence of internal abuse was found, the incident itself was a serious violation of GDPR and fundamental security principles.
+2019 年，Facebook 承认「数百万」Instagram 用户的密码以明文形式存储在其内部日志系统中。这些日志可被 2,000 多名 Facebook 员工访问。虽然未发现内部滥用证据，但事件本身已严重违反 GDPR 与基本安全原则。
 
-### How to Fix
+### 如何修复
 
 ```
 Wrong:
@@ -197,27 +197,27 @@ type LoginRequest struct {
 }
 ```
 
-**How Autional prevents this**: The logging middleware automatically redacts all known sensitive fields (`password`, `password_hash`, `access_token`, `refresh_token`, `api_key`, `credit_card`, `id_number`). GORM fields marked as sensitive (`json:"-"`) are automatically replaced with `[REDACTED]` in log output. CI checks prohibit `slog.String("password", ...)` patterns.
+**Autional 如何防范**：日志中间件会自动脱敏所有已知敏感字段（`password`、`password_hash`、`access_token`、`refresh_token`、`api_key`、`credit_card`、`id_number`）。GORM 中标记为敏感的字段（`json:"-"`）在日志输出中自动替换为 `[REDACTED]`。CI 检查禁止 `slog.String("password", ...)` 这类写法。
 
-## Mistake 7: No Session Revocation Mechanism
+## 错误 7：没有会话吊销机制
 
-### Why It's Dangerous
+### 为什么危险
 
-When a user changes their password, an anomalous login is detected, or an administrator finds suspicious activity, they must be able to **immediately** terminate the relevant sessions. Without this capability, an attacker can continue accessing the system with the old session even after a password change — because their Session or JWT has not yet expired.
+当用户修改密码、检测到异常登录，或管理员发现可疑活动时，必须能够**立即**终止相关会话。没有这个能力，攻击者在密码修改之后仍能用旧会话继续访问系统——因为他们的会话或 JWT 还没过期。
 
-### Real-World Case
+### 真实案例
 
-In 2022, a major customer of a SaaS collaboration platform reported that after they terminated an employee and deactivated their account, the former employee could still access company data through an already-logged-in mobile app session for up to 48 hours — because the system had no mechanism to revoke mobile sessions.
+2022 年，某 SaaS 协作平台的大客户反馈：他们辞退一名员工并停用其账号后，该前员工在长达 48 小时内仍能通过已登录的移动端应用会话访问公司数据——因为系统没有吊销移动端会话的机制。
 
-### How to Fix
+### 如何修复
 
 ```
-Complete session revocation capability:
-1. User changes password → Automatically revoke all sessions for that user
-2. User selects "log out of all devices" → Revoke all sessions except current
-3. Admin disables a user → Immediately terminate all sessions
-4. Anomalous login detected → Revoke the anomalous session, notify the user
-5. Admin views and manually terminates suspicious sessions
+完整的会话吊销能力：
+1. 用户修改密码 → 自动吊销该用户的所有会话
+2. 用户选择「退出所有设备」→ 吊销除当前会话外的全部会话
+3. 管理员停用某用户 → 立即终止其所有会话
+4. 检测到异常登录 → 吊销异常会话并通知用户
+5. 管理员查看并手动终止可疑会话
 ```
 
 ```go
@@ -232,22 +232,22 @@ func RevokeSession(ctx context.Context, sessionID string) error {
 }
 ```
 
-**How Autional prevents this**: The session-service maintains a complete record of all active sessions. It provides `DELETE /sessions?user_id=X` and `DELETE /sessions/{session_id}` APIs for instant revocation. Events such as password changes, account deactivation, and anomaly detection automatically trigger corresponding session revocations. Even with JWTs (which are inherently non-revocable), the gateway-service re-checks session validity with the session-service when processing sensitive operations.
+**Autional 如何防范**：session-service 维护所有活跃会话的完整记录，并提供 `DELETE /sessions?user_id=X` 与 `DELETE /sessions/{session_id}` 接口用于即时吊销。密码修改、账号停用、异常检测等事件会自动触发对应的会话吊销。即便使用了 JWT（本身不可吊销），gateway-service 在处理敏感操作时也会向 session-service 重新校验会话有效性。
 
-## Anti-Pattern Quick Reference
+## 反模式速查表
 
-| # | Anti-Pattern | Risk Level | Fix Priority | Autional Defense |
+| # | 反模式 | 风险等级 | 修复优先级 | Autional 防护 |
 |---|-------------|------------|--------------|----------------|
-| 1 | Hardcoded secrets | Critical | Immediate | KMS management + CI scanning |
-| 2 | No rate limiting on login | High | Within the week | Three-layer distributed rate limiting |
-| 3 | MD5/SHA1 passwords | Critical | Within the week | bcrypt + transparent migration |
-| 4 | JWT without expiration | Critical | Immediate | Mandatory exp + short TTL |
-| 5 | Admin without MFA | Critical | Immediate | RBAC-enforced FIDO2 |
-| 6 | Logging passwords | High | Within the week | Auto-redaction middleware |
-| 7 | No session revocation | High | Within the month | session-service |
+| 1 | 硬编码密钥 | 致命 | 立即 | KMS 托管 + CI 扫描 |
+| 2 | 登录无限流 | 高 | 一周内 | 三层分布式限流 |
+| 3 | MD5/SHA1 存密码 | 致命 | 一周内 | bcrypt + 透明迁移 |
+| 4 | JWT 无过期时间 | 致命 | 立即 | 强制 exp + 短 TTL |
+| 5 | 管理员无 MFA | 致命 | 立即 | RBAC 强制 FIDO2 |
+| 6 | 日志记录密码 | 高 | 一周内 | 自动脱敏中间件 |
+| 7 | 无会话吊销 | 高 | 一个月内 | session-service |
 
-## Conclusion
+## 结语
 
-These 7 mistakes share a common characteristic: **they exist not because the technology is too complex, but because security awareness is insufficient.** Every mistake has a proven, ready-made solution. The problem isn't "how to fix it" — it's "realizing it needs fixing."
+这 7 个错误有一个共同特征：**它们的存在不是因为技术太复杂，而是因为安全意识不足。** 每一个错误都有成熟、现成的解决方案。问题不在于「怎么修」，而在于「意识到需要修」。
 
-Autional bakes every one of these defenses into its architecture — not as optional "security features," but as non-bypassable architectural constraints. Applications built with Autional avoid these mistakes by default. If you're building your own identity system, go through this checklist item by item. You might be surprised at how many look "familiar."
+Autional 把这些防护全部内建在架构中——不是可选的「安全功能」，而是不可绕过的架构约束。用 Autional 构建的应用默认就避开了这些错误。如果你正在自研身份系统，请逐条对照这份清单检查。你可能会惊讶地发现，其中有几条看起来非常「眼熟」。

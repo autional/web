@@ -1,24 +1,24 @@
 ---
-title: "From Docker Compose to Kubernetes: Autional Containerization Best Practices"
+title: "从 Docker Compose 到 Kubernetes：Autional 容器化最佳实践"
 date: "2026-06-10"
 category: "Architecture"
-tags: ["Docker", "Kubernetes", "Deployment"]
-readTime: "10 min"
-excerpt: "Autional's deployment journey started with docker-compose for local development and eventually reached production-grade Kubernetes clusters. This article documents key decisions along the way: how to design Dockerfiles for build-once-run-anywhere, managing stateful services in K8s, ConfigMap and Secrets best practices, and real-world results of horizontal autoscaling."
+tags: ["Docker", "Kubernetes", "部署"]
+readTime: "10 分钟"
+excerpt: "Autional 的部署之路从本地开发的 docker-compose 起步，最终走到生产级 Kubernetes 集群。本文记录了沿途的关键决策：如何设计「一次构建、处处运行」的 Dockerfile、如何在 K8s 中管理有状态服务、ConfigMap 与 Secret 的最佳实践，以及水平自动扩缩容的真实效果。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-Autional established a principle from day one: **deployment method should never be a barrier to user adoption.** A startup might run docker-compose on a single 4-core 8GB cloud server; a mid-sized enterprise might use a Kubernetes cluster with 3 replicas; a large enterprise might need multi-AZ multi-cluster deployment. The same codebase, the same Docker images, must work across three dramatically different scenarios.
+Autional 从第一天起就确立了一条原则：**部署方式绝不应该成为用户采用它的障碍。** 初创团队可能只在单台 4 核 8GB 云服务器上跑 docker-compose；中型企业可能用 3 副本的 Kubernetes 集群；大型企业可能需要多可用区、多集群部署。同一套代码、同一份 Docker 镜像，必须能覆盖这三种截然不同的场景。
 
-This article documents our complete journey from Docker Compose to Kubernetes — not for showmanship, but because at every stage we stepped into real pitfalls, some of which could have been entirely avoided with earlier planning.
+本文记录了我们从 Docker Compose 走到 Kubernetes 的完整历程——不是为了炫技，而是因为每个阶段我们都踩进过真实的坑，其中一些如果早做规划完全可以避免。
 
-## Phase 1: Local Development (pnpm + Go)
+## 阶段一：本地开发（pnpm + Go）
 
-Before writing any Dockerfile, the developer experience comes first. Developers should not have to wait for Docker builds just to see their code changes.
+在写任何 Dockerfile 之前，开发体验优先。开发者不该为了看到代码改动生效而去等 Docker 构建。
 
-Autional's development environment is entirely local:
+Autional 的开发环境完全跑在本地：
 
 ```powershell
 # Backend development
@@ -30,24 +30,24 @@ cd web
 pnpm dev:auth
 ```
 
-Infrastructure dependencies (PostgreSQL, Redis, RabbitMQ) run locally via `docker-compose.infra.yml`:
+基础设施依赖（PostgreSQL、Redis、RabbitMQ）通过 `docker-compose.infra.yml` 在本地运行：
 
 ```powershell
 docker compose -f docker-compose.infra.yml up -d
 ```
 
-This file contains only infrastructure containers — none of the 15 microservices run through Docker; they run as native Go binaries directly on Windows. The benefits:
-- Near-zero latency hot-reload (Go compilation typically < 5s)
-- Direct delve debugger support for breakpoint debugging
-- Environment variables and config files read directly from the local filesystem
+这个文件里只有基础设施容器——27 个微服务没有一个通过 Docker 运行，它们都是直接在 Windows 上跑的原生 Go 二进制。好处是：
+- 近乎零延迟的热重载（Go 编译通常 < 5s）
+- 可直接用 delve 调试器打断点调试
+- 环境变量与配置文件直接从本地文件系统读取
 
-## Phase 2: Docker Compose Unified Deployment
+## 阶段二：Docker Compose 统一部署
 
-When deployment to a test environment or small production environment is needed, Docker Compose is the simplest choice.
+当需要部署到测试环境或小型生产环境时，Docker Compose 是最简单的选择。
 
-### Unified Dockerfile: One Template for 15 Services
+### 统一 Dockerfile：27 个服务共用一套模板
 
-Autional has 15 microservices but only **one Dockerfile** (at `docker/Dockerfile.service`). All differentiation is done via build args:
+Autional 有 27 个微服务，但只有**一个 Dockerfile**（位于 `docker/Dockerfile.service`）。所有差异都通过构建参数实现：
 
 ```dockerfile
 ARG SERVICE_NAME          # e.g., identity-service
@@ -55,7 +55,7 @@ ARG SERVICE_PORT          # e.g., 11001
 ARG RUNTIME_EXTRA_COPYS   # optional extra files
 ```
 
-Example build command:
+构建命令示例：
 
 ```powershell
 docker build \
@@ -65,9 +65,9 @@ docker build \
   -t authms/identity-service:latest .
 ```
 
-The core value of this design: **adding a new service does not require a new Dockerfile.** As long as the service follows the standard directory structure (`micro-services/{name}/cmd/server/main.go`), the build system automatically adapts. All 15 services share the same build layer cache (Go dependency cache, build cache), so building a second service with `--build-arg` after the first takes only seconds.
+这个设计的核心价值是：**新增一个服务不需要新增 Dockerfile。** 只要服务遵循标准目录结构（`micro-services/{name}/cmd/server/main.go`），构建系统就会自动适配。27 个服务共用同一份构建层缓存（Go 依赖缓存、构建缓存），因此在构建完第一个服务后，用 `--build-arg` 构建第二个服务只需几秒。
 
-### Multi-Stage Build Details
+### 多阶段构建细节
 
 ```
 Stage 1 (base-builder): Install Go dependencies + copy all local module code
@@ -75,14 +75,14 @@ Stage 2 (builder):       Compile target service into a statically linked binary
 Stage 3 (runtime):       Minimal Alpine image + binary + config files
 ```
 
-Key optimizations:
-- `COPY go.mod go.sum` before `COPY .` leverages Docker layer caching — if dependencies haven't changed, download is skipped
-- `CGO_ENABLED=0` produces a purely static binary, shrinking the runtime image from 800MB to 20MB
-- Build cache is preserved via the CI system's Docker layer cache or BuildKit cache mounts
+关键优化：
+- 在 `COPY .` 之前先 `COPY go.mod go.sum`，利用 Docker 层缓存——依赖没变就跳过下载
+- `CGO_ENABLED=0` 生成纯静态二进制，把运行时镜像从 800MB 压到 20MB
+- 通过 CI 系统的 Docker 层缓存或 BuildKit cache mount 保留构建缓存
 
-### docker-compose.yml Structure
+### docker-compose.yml 结构
 
-Autional's `docker-compose.yml` uses YAML anchors to eliminate configuration duplication:
+Autional 的 `docker-compose.yml` 使用 YAML 锚点消除配置重复：
 
 ```yaml
 x-postgres-env: &postgres-env
@@ -106,43 +106,43 @@ services:
       - "11001:11001"
 ```
 
-This keeps each of the 15 service definitions very concise — only 10-15 lines each, with the bulk of configuration reused through anchors.
+这样 27 个服务的定义都保持非常精简——每个只有 10-15 行，主体配置通过锚点复用。
 
-### Docker Compose Limitations
+### Docker Compose 的局限
 
-Docker Compose is suitable for:
-- Development/test environments
-- Single-machine deployments (< 5 servers)
-- Customer PoC environments
+Docker Compose 适合：
+- 开发/测试环境
+- 单机部署（服务器少于 5 台）
+- 客户 PoC 环境
 
-But it is unsuitable for:
-- Automatic scaling
-- Rolling updates without downtime
-- Cross-host service discovery
-- Managing stateful service data persistence
+但不适合：
+- 自动扩缩容
+- 无中断滚动更新
+- 跨主机服务发现
+- 有状态服务的数据持久化管理
 
-This is why we need Kubernetes.
+这就是我们需要 Kubernetes 的原因。
 
-## Phase 3: Kubernetes Production Deployment
+## 阶段三：Kubernetes 生产部署
 
-### Handling Stateful Services
+### 处理有状态服务
 
-The trickiest K8s deployment issue for an identity system is not the microservices themselves (they are stateless) but the databases.
+对身份系统来说，K8s 部署最棘手的不是微服务本身（它们是无状态的），而是数据库。
 
-**Should PostgreSQL live in Kubernetes?**
+**PostgreSQL 应该跑在 Kubernetes 里吗？**
 
-We spent significant time debating this, ultimately settling on a two-tier strategy:
+我们花了大量时间讨论这个问题，最终确定了两档策略：
 
-- **Small deployments (< 100K users)**: PostgreSQL can run in K8s with StatefulSet + PersistentVolume, paired with CloudNativePG or Zalando Operator for high availability.
-- **Medium/large deployments (> 100K users)**: Use managed cloud PostgreSQL (RDS, Cloud SQL). The identity database is the single most critical component — managed services provide automated backups, PITR, read replicas, and cross-AZ HA more reliably and cost-effectively than self-managing.
+- **小型部署（< 10 万用户）**：PostgreSQL 可以跑在 K8s 里，用 StatefulSet + PersistentVolume，搭配 CloudNativePG 或 Zalando Operator 实现高可用。
+- **中大型部署（> 10 万用户）**：使用云托管 PostgreSQL（RDS、Cloud SQL）。身份数据库是最关键的单点组件——托管服务在自动备份、PITR、只读副本、跨可用区高可用方面，比自建更可靠也更划算。
 
-The same applies to Redis — use K8s Redis + Sentinel for small deployments, managed cloud Redis (ElastiCache, Memorystore) for large ones.
+Redis 同理——小型部署用 K8s Redis + Sentinel，大型部署用云托管 Redis（ElastiCache、Memorystore）。
 
-### ConfigMap & Secrets
+### ConfigMap 与 Secret
 
-Autional configuration falls into two categories:
+Autional 的配置分两类：
 
-**ConfigMap (non-sensitive configuration)**:
+**ConfigMap（非敏感配置）**：
 ```yaml
 apiVersion: v1
 kind: ConfigMap
@@ -158,7 +158,7 @@ data:
       port: 5432
 ```
 
-**Secrets (sensitive configuration)**:
+**Secret（敏感配置）**：
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -171,24 +171,24 @@ stringData:
   REDIS_PASSWORD: "${REDIS_PASSWORD}"
 ```
 
-**Key principles**:
-1. ConfigMap and Secrets must remain separate — even if your organization thinks "all configuration can go in ConfigMap," putting JWT_SECRET in ConfigMap is like taping your bank vault combination to the front door.
-2. Secrets are injected via environment variables (`envFrom`), not volume mounts. Volume-mounted secrets require a Pod restart when updated; env var injection is more controllable.
-3. Never commit plaintext Secrets to Git. Use Sealed Secrets, External Secrets Operator, or SOPS to manage encrypted Secrets in a GitOps workflow.
+**核心原则**：
+1. ConfigMap 与 Secret 必须分开——即便你的组织认为「所有配置都可以放进 ConfigMap」，把 JWT_SECRET 放进 ConfigMap 就像把银行金库密码贴在正门上。
+2. Secret 通过环境变量注入（`envFrom`），而不是挂载卷。挂载卷形式的 Secret 更新后需要重启 Pod；环境变量注入更可控。
+3. 绝不把明文 Secret 提交到 Git。在 GitOps 流程中用 Sealed Secrets、External Secrets Operator 或 SOPS 管理加密后的 Secret。
 
-### Horizontal Pod Autoscaler (HPA)
+### 水平 Pod 自动扩缩容（HPA）
 
-Different Autional services have vastly different scaling requirements:
+Autional 各服务的扩缩容需求差异很大：
 
-| Service | Scaling Strategy | Target Metric | Min/Max Replicas |
+| 服务 | 扩缩容策略 | 目标指标 | 最小/最大副本数 |
 |---------|-----------------|---------------|-------------------|
-| identity-service | CPU 70% | Login requests are CPU-intensive (bcrypt) | 2 / 10 |
-| session-service | QPS | Max 5000 QPS per replica | 2 / 20 |
-| audit-service | MQ Queue Depth | KEDA + RabbitMQ scaler | 1 / 5 |
-| profile-service | CPU 70% | Low load | 1 / 3 |
-| oauth-service | CPU 60% | OAuth flow involves multiple redirects | 2 / 8 |
+| identity-service | CPU 70% | 登录请求是 CPU 密集型（bcrypt） | 2 / 10 |
+| session-service | QPS | 单副本最高 5000 QPS | 2 / 20 |
+| audit-service | MQ 队列深度 | KEDA + RabbitMQ scaler | 1 / 5 |
+| profile-service | CPU 70% | 负载较低 | 1 / 3 |
+| oauth-service | CPU 60% | OAuth 流程涉及多次重定向 | 2 / 8 |
 
-Example HPA configuration:
+HPA 配置示例：
 
 ```yaml
 apiVersion: autoscaling/v2
@@ -211,11 +211,11 @@ spec:
         averageUtilization: 70
 ```
 
-**Why identity-service uses CPU while session-service uses QPS?** Every identity-service request involves bcrypt hash comparison (CPU-intensive), making CPU usage linearly correlated with traffic. Session-service requests are primarily Redis queries and DB writes (I/O-intensive) — CPU usage doesn't accurately reflect load, so custom Prometheus metrics (`http_requests_per_second`) are used instead.
+**为什么 identity-service 用 CPU 而 session-service 用 QPS？** identity-service 的每个请求都涉及 bcrypt 哈希比对（CPU 密集型），因此 CPU 使用率与流量呈线性相关。session-service 的请求主要是 Redis 查询与数据库写入（I/O 密集型）——CPU 使用率无法准确反映负载，所以要改用自定义 Prometheus 指标（`http_requests_per_second`）。
 
-### Audit Service Special Handling
+### audit-service 的特殊处理
 
-`audit-service` has a dual-role design: `api` (receives audit writes) + `processor` (consumes MQ messages). In K8s, these roles run as different Deployments from the same image:
+`audit-service` 采用双角色设计：`api`（接收审计写入）+ `processor`（消费 MQ 消息）。在 K8s 中，这两个角色用同一镜像跑成不同的 Deployment：
 
 ```yaml
 # api role
@@ -233,9 +233,9 @@ spec:
     value: "processor"
 ```
 
-They share the same image and configuration, but processor instances are auto-scaled by KEDA based on MQ queue depth.
+它们共用同一镜像与配置，但 processor 实例由 KEDA 根据 MQ 队列深度自动扩缩容。
 
-### Graceful Shutdown & Rolling Updates
+### 优雅停机与滚动更新
 
 ```yaml
 spec:
@@ -246,47 +246,47 @@ spec:
       maxSurge: 1
 ```
 
-Combined with `micro-middleware/app`'s graceful shutdown mechanism (SIGTERM → readiness marks unhealthy → wait 30s → close connections → exit):
-1. K8s sends SIGTERM to the old Pod
-2. The Pod immediately marks `/ready` as unhealthy
-3. K8s removes the Pod from the Service Endpoint (new requests no longer route to it)
-4. The Pod waits for existing requests to complete (30s timeout)
-5. The Pod closes DB/Redis/MQ connections and exits
-6. Meanwhile, the new Pod has already started receiving traffic (`maxSurge: 1`)
+配合 `micro-middleware/app` 的优雅停机机制（SIGTERM → readiness 标记为不健康 → 等待 30s → 关闭连接 → 退出）：
+1. K8s 向旧 Pod 发送 SIGTERM
+2. Pod 立即把 `/ready` 标记为不健康
+3. K8s 将该 Pod 从 Service Endpoint 中摘除（新请求不再路由过来）
+4. Pod 等待现有请求处理完成（30s 超时）
+5. Pod 关闭 DB/Redis/MQ 连接并退出
+6. 与此同时，新 Pod 已经开始接收流量（`maxSurge: 1`）
 
-This process ensures **zero traffic loss during rolling updates**.
+这个过程确保**滚动更新期间零流量丢失**。
 
-## Migration Path: Docker Compose to K8s
+## 迁移路径：从 Docker Compose 到 K8s
 
-If you are already running Autional with Docker Compose, migrating to Kubernetes can be done in three steps:
+如果你已经用 Docker Compose 跑着 Autional，迁移到 Kubernetes 分三步即可完成：
 
-**Step 1: Generate initial manifests with Kompose**
+**第一步：用 Kompose 生成初始 manifest**
 
 ```bash
 kompose convert -f docker-compose.yml -o k8s/
 ```
 
-This generates basic Deployment, Service, and ConfigMap YAML files. But Kompose output is just a starting point — it doesn't understand your stateful component requirements, scaling strategies, or secret management.
+这会生成基本的 Deployment、Service、ConfigMap YAML 文件。但 Kompose 的产出只是起点——它不理解你的有状态组件需求、扩缩容策略与密钥管理。
 
-**Step 2: Manual review and optimization**
+**第二步：人工审查与优化**
 
-- Replace `depends_on` in `docker-compose.yml` with K8s `initContainers` or health-check dependencies
-- Migrate sensitive `environment` values to Secrets
-- Add resource requests/limits for each service
-- Configure HPA for services that need scaling
+- 把 `docker-compose.yml` 中的 `depends_on` 换成 K8s 的 `initContainers` 或健康检查依赖
+- 把敏感的 `environment` 值迁移到 Secret
+- 为每个服务补充 resource requests/limits
+- 为需要扩缩容的服务配置 HPA
 
-**Step 3: Gradual traffic switch**
+**第三步：逐步切流**
 
-Don't cut all traffic over to K8s at once. Deploy the full application in K8s first, route 5% of traffic via Ingress to K8s, observe for 24 hours with no anomalies, then gradually increase the percentage.
+不要一次性把所有流量切到 K8s。先把完整应用部署到 K8s，通过 Ingress 把 5% 的流量路由到 K8s，观察 24 小时无异常后，再逐步提高比例。
 
-## Real-World Lessons
+## 实战教训
 
-1. **Resource limits are not "suggestions," they are "protections."** We once encountered a service that kept restarting due to OOM from a memory leak, but without CPU limits, each restart's compilation/initialization phase consumed all CPU on the node, slowing down co-located services. **Always set limits.**
-2. **Never use `latest` as a Docker image tag.** Use Git commit SHAs or semantic version numbers. With `imagePullPolicy: Always`, `latest` can cause Pods to pull different image versions on restart without you ever noticing.
-3. **Set `initialDelaySeconds` generously for health checks.** Autional's identity-service needs to connect to the database, run AutoMigrate, and preload caches on startup. If initialDelay is too short, K8s will start killing the Pod before it's ready (due to readiness probe failures), causing an infinite restart loop.
+1. **资源限制不是「建议」，而是「保护」。** 我们曾遇到一个服务因内存泄漏不断 OOM 重启，但由于没设 CPU 限制，每次重启的编译/初始化阶段都会占满节点 CPU，拖慢了同节点上的其它服务。**一定要设置 limits。**
+2. **绝不要用 `latest` 作为 Docker 镜像标签。** 使用 Git commit SHA 或语义化版本号。在 `imagePullPolicy: Always` 下，`latest` 可能让 Pod 在重启时拉到不同版本的镜像，而你浑然不觉。
+3. **健康检查的 `initialDelaySeconds` 要给足。** Autional 的 identity-service 启动时需要连接数据库、执行 AutoMigrate、预加载缓存。如果 initialDelay 太短，K8s 会在它还没就绪时就因 readiness 探针失败而杀掉 Pod，导致无限重启循环。
 
-Containerization is not the goal — it's a means. Whether running single-machine with Docker Compose or a cluster with K8s, there is only one standard: **When the service goes down at 3 AM, can it recover automatically? If not, it's not properly deployed yet.**
+容器化不是目的，而是手段。无论用 Docker Compose 单机跑，还是用 K8s 集群跑，标准只有一个：**凌晨 3 点服务挂了，它能自动恢复吗？如果不能，那就还没算部署好。**
 
 ---
 
-*Autional offers three deployment methods: Docker Compose, Kubernetes Helm Chart, and one-click cloud marketplace deployment. Get started by visiting the [Quick Start guide](/developer/docs/getting-started).*
+*Autional 支持从单机 Docker Compose 到生产级 Kubernetes 集群的多种部署形态。请访问[快速开始指南](https://developer.autional.cn/quickstart)开始使用。*

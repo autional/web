@@ -1,32 +1,32 @@
 ---
-title: "Multi-Tenant Identity: Architecture Patterns for SaaS"
+title: "多租户身份：面向 SaaS 的架构模式"
 date: "2026-06-05"
 category: "Architecture"
-tags: ["Multi-Tenant", "SaaS", "Isolation", "B2B"]
-readTime: "9 min"
-excerpt: "Architecture patterns for multi-tenant identity management in B2B SaaS platforms — isolation, performance, and compliance."
+tags: ["多租户", "SaaS", "隔离", "B2B"]
+readTime: "9 分钟"
+excerpt: "B2B SaaS 平台中多租户身份管理的架构模式——隔离、性能与合规的取舍。"
 status: "verified"
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-## Tenant Isolation Models
+## 租户隔离模型
 
-### Physical Isolation
-A separate database instance per tenant. Maximum security, highest cost.
+### 物理隔离
+每个租户一个独立的数据库实例。安全性最高，成本也最高。
 
-### Logical Isolation  
-Shared database with tenant_id on every row. Balance of security and efficiency — the most common pattern in Autional.
+### 逻辑隔离
+共享数据库，每一行都带 tenant_id。安全与效率之间的平衡——Autional 中最常见的模式。
 
-### Hybrid
-Critical tenants get physical isolation; free-tier tenants share logically.
+### 混合模式
+关键租户采用物理隔离；免费档租户逻辑共享。
 
-## Key Design Decisions
+## 关键设计决策
 
-1. **Tenant ID in every query** — enforced by repository layer, verified by CI
-2. **Cross-tenant safeguards** — administrators CANNOT accidentally access another tenant's data
-3. **Per-tenant configuration** — custom password policies, branding, domains
+1. **每个查询都带租户 ID** —— 由仓储层强制、CI 校验
+2. **跨租户防护** —— 管理员不可能误访问其他租户的数据
+3. **按租户配置** —— 自定义密码策略、品牌、域名
 
-## Compliance Implications
+## 合规影响
 
-Multi-tenant architectures require careful GDPR and SOC 2 planning. Each tenant's data boundary must be clearly defined and auditable. Hash-chain audit logs provide cryptographic proof of data isolation.
+多租户架构需要审慎的 GDPR 与 SOC 2 规划。每个租户的数据边界必须清晰界定且可审计。哈希链审计日志为数据隔离提供密码学证明。

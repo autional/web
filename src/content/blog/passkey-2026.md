@@ -1,47 +1,47 @@
 ---
-title: "Passkey in Practice: How to Completely Ditch Passwords in 2026"
+title: "通行密钥（Passkey）实战：2026 年如何彻底告别密码"
 date: "2026-05-06"
 category: "Tech"
-tags: ["Security", "Passkey", "WebAuthn"]
-readTime: "8 min"
-excerpt: "An in-depth look at the FIDO2/WebAuthn protocol, with a step-by-step guide to enabling Passkey passwordless authentication in Autional for enhanced security and user experience."
+tags: ["安全", "通行密钥", "WebAuthn"]
+readTime: "8 分钟"
+excerpt: "深入解析 FIDO2/WebAuthn 协议，并手把手演示如何在 Autional 中启用通行密钥（Passkey）免密登录，兼顾安全性与用户体验。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-The era of passwords is coming to an end. With the widespread adoption of FIDO2 and WebAuthn standards, Passkey has emerged as the most exciting innovation in identity authentication.
+密码的时代正在走向终结。随着 FIDO2 与 WebAuthn 标准的广泛普及，通行密钥（Passkey）已成为身份认证领域最令人兴奋的创新。
 
-## What is a Passkey?
+## 什么是通行密钥（Passkey）？
 
-A Passkey is a passwordless authentication method based on public-key cryptography. Unlike traditional username + password, a Passkey stores the private key securely on the user's device (such as the Secure Enclave on a phone or the TPM on a computer), while the server only stores the corresponding public key.
+通行密钥是一种基于公钥密码学的免密认证方式。与传统的「用户名 + 密码」不同，通行密钥把私钥安全地保存在用户设备上（例如手机的 Secure Enclave 安全隔区或电脑的 TPM 芯片），服务器只保存对应的公钥。
 
-During each login, the server sends a random challenge to the device, which signs it with the private key and returns it. The server verifies the signature using the stored public key. Throughout this process, the private key never leaves the device — even if an attacker breaches the server, they cannot obtain the user's credential.
+每次登录时，服务器会向设备发送一个随机挑战值，设备用私钥对其签名后返回，服务器再用已保存的公钥验证签名。整个过程中私钥始终不会离开设备——即使攻击者攻破了服务器，也无法拿到用户的凭据。
 
-## Why Adopt Passkey Now?
+## 为什么现在就该采用通行密钥？
 
-- **Security**: Completely eliminates phishing attacks because the authentication process is strongly bound to the domain name. Fake websites cannot pass WebAuthn's origin validation.
-- **User Experience**: Log in with fingerprint or facial recognition — no need to remember complex passwords. Google data shows Passkey login success rates are 4x higher and 2x faster than passwords.
-- **Cross-Platform Sync**: Apple, Google, and Microsoft all support Passkey cross-device synchronization, covering over 99% of end users.
-- **Industry Trend**: According to the FIDO Alliance, over 8 billion accounts now support Passkey, including Google, Apple, Microsoft, Amazon, and more.
+- **安全性**：彻底消除钓鱼攻击，因为认证过程与域名强绑定。仿冒网站无法通过 WebAuthn 的来源（origin）校验。
+- **用户体验**：用指纹或人脸即可登录，无需记忆复杂密码。Google 的数据显示，通行密钥的登录成功率是密码的 4 倍，速度快 2 倍。
+- **跨平台同步**：Apple、Google、Microsoft 均支持通行密钥跨设备同步，覆盖超过 99% 的终端用户。
+- **行业趋势**：据 FIDO 联盟统计，目前已有超过 80 亿个账号支持通行密钥，包括 Google、Apple、Microsoft、Amazon 等。
 
-## Enabling Passkey in Autional
+## 在 Autional 中启用通行密钥
 
-Autional comes with complete WebAuthn server-side support — no additional integration libraries needed:
+Autional 内置完整的 WebAuthn 服务端支持，无需引入额外的集成库：
 
-1. **Admin side**: Enable the Passkey option in MFA policies, and configure acceptable authenticator types (platform authenticators / cross-platform authenticators).
-2. **User side**: After logging in, users navigate to "Security Settings" and click "Add Passkey." The system automatically invokes the browser's WebAuthn API, guiding the user through fingerprint, facial, or hardware key registration.
-3. **Login flow**: The login page automatically detects whether the device supports Passkey, prioritizing passkeyless login. If a registered Passkey is detected, conditional mediation is initiated for automatic authentication.
+1. **管理端**：在 MFA 策略中开启通行密钥选项，并配置可接受的认证器类型（平台认证器 / 跨平台认证器）。
+2. **用户端**：登录后进入「安全设置」，点击「添加通行密钥」。系统会自动调用浏览器的 WebAuthn API，引导用户完成指纹、人脸或硬件密钥的注册。
+3. **登录流程**：登录页会自动检测设备是否支持通行密钥，优先走免密登录。若检测到已注册的通行密钥，则启动条件式中介（conditional mediation）自动完成认证。
 
-The entire integration process is transparent to developers — Autional's identity-service and mfa-service already handle the complete protocol flow for both registration (attestation) and authentication (assertion).
+整个接入过程对开发者是透明的——Autional 的 identity-service 与 mfa-service 已完整实现注册（attestation）与认证（assertion）两个协议流程。
 
-## Best Practices
+## 最佳实践
 
-1. Keep Passkey alongside backup authentication methods to prevent lockout due to device loss. It's recommended to also enable TOTP or Backup Codes as recovery options.
-2. For high-security scenarios, recommend hardware security keys (such as YubiKey) as a physical isolation complement.
-3. In the login flow, prioritize detecting whether the device supports Passkey, guiding users to experience passwordless login. Data shows Passkey adoption increases login conversion rates by 15-25%.
-4. Educate users: Passkey is more secure than a password. Explain the public-key cryptography behind "why you don't need to remember it."
+1. 在保留通行密钥的同时配置备用认证方式，避免设备丢失导致账号被锁。建议同时启用 TOTP 或备用码作为恢复手段。
+2. 高安全场景建议使用硬件安全密钥（如 YubiKey）作为物理隔离的补充。
+3. 在登录流程中优先检测设备是否支持通行密钥，引导用户体验免密登录。数据显示，采用通行密钥可将登录转化率提升 15-25%。
+4. 教育用户：通行密钥比密码更安全。向用户讲清「为什么不需要记住它」背后的公钥密码学原理。
 
-## Future Outlook
+## 未来展望
 
-Passkey is reshaping the identity authentication landscape of the internet. The FIDO Alliance's 2025 roadmap includes cross-ecosystem export, enhanced conditional UI, and enterprise-grade management APIs. Autional will continue to track standard evolution, ensuring your system remains at the forefront of authentication security.
+通行密钥正在重塑互联网的身份认证格局。FIDO 联盟的 2025 路线图涵盖跨生态导出、增强的条件式 UI 以及企业级管理 API。Autional 将持续跟进标准演进，确保你的系统始终站在认证安全的最前沿。

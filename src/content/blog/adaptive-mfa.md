@@ -1,128 +1,128 @@
 ---
-title: "Adaptive MFA: Risk-Based Intelligent Authentication"
+title: "自适应 MFA：基于风险的智能认证"
 date: "2026-03-12"
 category: "Tech"
-tags: ["MFA", "Security", "AI"]
-readTime: "9 min"
-excerpt: "Traditional MFA strategies take a one-size-fits-all approach — either annoying users or leaving security gaps. Autional's Adaptive MFA engine evaluates 7 risk dimensions including device fingerprint, IP reputation, and behavioral patterns to dynamically determine authentication strength: silently pass low-risk logins, enforce hardware keys for high-risk ones. This article dives into the risk engine design and real-world applications."
+tags: ["MFA", "安全", "AI"]
+readTime: "9 分钟"
+excerpt: "传统的 MFA 策略采取一刀切的做法——要么让用户烦不胜烦，要么留下安全缺口。Autional 的自适应 MFA 引擎评估设备指纹、IP 信誉、行为模式等 7 个风险维度，动态决定认证强度：低风险登录静默放行，高风险登录强制使用硬件密钥。本文深入剖析风险引擎的设计与实际应用。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-Multi-factor authentication (MFA) is the first line of defense against account takeover, but the biggest problem with traditional MFA strategies is: **they treat everyone the same**.
+多因素认证（MFA）是抵御账号接管的第一道防线，但传统 MFA 策略最大的问题是：**它对所有人一视同仁**。
 
-An employee logging in from the same laptop, same IP, same city every day faces the exact same TOTP challenge as a user suddenly logging in from a strange device and a remote IP. The former finds it annoying; the latter may not have enough protection.
+一名员工每天从同一台笔记本、同一个 IP、同一座城市登录，遭遇的 TOTP 挑战，与一个突然从陌生设备和异地 IP 登录的用户完全相同。前者觉得烦琐，后者可能保护不足。
 
-Autional's Adaptive MFA was built to solve this very contradiction.
+Autional 的自适应 MFA 正是为解决这一矛盾而生。
 
-## What Is Adaptive MFA?
+## 什么是自适应 MFA？
 
-Adaptive MFA, also known as Risk-Based Authentication (RBA), has a simple core idea:
+自适应 MFA 又称基于风险的认证（Risk-Based Authentication，RBA），核心思想很简单：
 
-> **Authentication strength should be proportional to the risk level of the current login.**
+> **认证强度应当与当前登录的风险水平成正比。**
 
-The system computes a real-time risk score at each login attempt, then automatically selects the authentication strategy based on that score:
+系统在每次登录尝试时实时计算风险评分，再根据评分自动选择认证策略：
 
-| Risk Level | Score Range | Auth Strategy | User Experience |
+| 风险等级 | 评分区间 | 认证策略 | 用户体验 |
 |-----------|------------|--------------|----------------|
-| Low | 0 - 30 | Password only, skip MFA | Frictionless, one-click login |
-| Medium | 31 - 60 | Password + TOTP or SMS code | Enter 6-digit code |
-| High | 61 - 85 | Password + Hardware Security Key (FIDO2) + SMS | Insert hardware key + enter code |
-| Critical | 86 - 100 | Deny login, trigger alert | Account temporarily locked |
+| 低 | 0 - 30 | 仅密码，跳过 MFA | 无摩擦，一键登录 |
+| 中 | 31 - 60 | 密码 + TOTP 或短信验证码 | 输入 6 位验证码 |
+| 高 | 61 - 85 | 密码 + 硬件安全密钥（FIDO2）+ 短信 | 插入硬件密钥 + 输入验证码 |
+| 极高 | 86 - 100 | 拒绝登录，触发告警 | 账号临时锁定 |
 
-This is not a static rule — it's dynamically computed. The same user logging in from the corporate network on a weekday morning might be low risk, but logging in from another country at weekend midnight becomes high risk.
+这不是静态规则，而是动态计算的结果。同一个用户在工作日上午从公司网络登录可能是低风险，但在周末午夜从另一个国家登录就变成高风险。
 
-## Autional's Risk Assessment Engine: 7 Dimensions
+## Autional 的风险评估引擎：7 个维度
 
-Autional's Adaptive MFA engine doesn't rely on a single signal but synthesizes information across 7 dimensions to build a risk profile:
+Autional 的自适应 MFA 引擎不依赖单一信号，而是综合 7 个维度的信息构建风险画像：
 
-### 1. Device Fingerprint (Weight: 25%)
-
-```
-Device Fingerprint: • Browser fingerprint  • OS version  • Screen resolution  • Installed fonts
-                     • WebGL renderer  • Canvas fingerprint  • Hardware concurrency
-```
-
-First-time device → score +20. Device previously logged in successfully → score -10 (risk reduction). Autional embeds a lightweight JavaScript SDK on the login page that generates a device fingerprint and sends it with the request. Fingerprint hashes are stored in the `known_devices` table, protecting user privacy — we store hashes only, never raw fingerprint data.
-
-### 2. IP Reputation (Weight: 20%)
+### 1. 设备指纹（权重：25%）
 
 ```
-IP Reputation Query: → Known proxy/VPN? → Datacenter IP? → Tor exit node?
-                      → Failed login count from this IP in last 24h → GeoIP database match
+设备指纹：• 浏览器指纹  • 操作系统版本  • 屏幕分辨率  • 已安装字体
+         • WebGL 渲染器  • Canvas 指纹  • 硬件并发数
 ```
 
-Autional integrates an IP reputation database to query the risk labels of login IPs in real time. Proxy, VPN, and Tor exit nodes automatically receive risk score increases. It also maintains internal statistics: when failed login attempts from the same IP within 24 hours exceed a threshold, that IP's risk score continues to rise.
+首次出现的设备 → 评分 +20。此前成功登录过的设备 → 评分 -10（风险下调）。Autional 在登录页内嵌轻量级 JavaScript SDK，生成设备指纹并随请求发送。指纹哈希存储在 `known_devices` 表中，以保护用户隐私——我们只存哈希，绝不存原始指纹数据。
 
-### 3. Geolocation (Weight: 15%)
-
-```
-Geolocation Analysis: • Current login city vs. historical cities
-                      • Physical distance / time delta between two logins → is it possible?
-                      • Is the country on the admin-configured high-risk region list?
-```
-
-If a user's last login was in Tokyo and they log in from New York 15 minutes later — physically impossible — the system automatically flags it as critical risk. Autional's GeoIP resolution reaches city-level accuracy, and admins can configure high-risk countries and whitelisted countries in MFA policies.
-
-### 4. Behavioral Pattern (Weight: 15%)
+### 2. IP 信誉（权重：20%）
 
 ```
-Behavioral Analysis: • Keyboard input rhythm (typing speed, key intervals)
-                      • Mouse movement trajectory (acceleration, direction change frequency)
-                      • Form filling order (Tab key usage, inter-field dwell time)
+IP 信誉查询：→ 已知代理/VPN？→ 数据中心 IP？→ Tor 出口节点？
+             → 该 IP 最近 24 小时登录失败次数 → GeoIP 数据库比对
 ```
 
-This is one of the most subtle yet effective signals. Even if an attacker steals the correct password and TOTP seed, mimicking the user's typing rhythm and mouse movement patterns is extremely difficult. Autional's lightweight behavioral SDK collects these patterns in the background and establishes a baseline using simple statistical models (rather than complex machine learning). Deviations exceeding 2 standard deviations from the baseline → risk score increase.
+Autional 接入 IP 信誉数据库，实时查询登录 IP 的风险标签。代理、VPN、Tor 出口节点会自动增加风险评分。系统还维护内部统计：当同一 IP 在 24 小时内的登录失败次数超过阈值时，该 IP 的风险评分会持续上升。
 
-### 5. Time Factor (Weight: 10%)
-
-```
-Time Analysis: • Is the login time within the user's usual active hours?
-                • Is it a weekend or holiday?
-                • Time since last login (returning from vacation vs. abnormal activity spike)
-```
-
-Most users have regular activity patterns — Monday through Friday, 8:00 - 22:00. A login at 3 AM may not be an attack, but it should raise a higher alert. Autional maintains a per-user UTC-based active hour model that automatically adapts to users in different time zones.
-
-### 6. Login Failure History (Weight: 10%)
-
-In the past 30 minutes for this account: failures ≥ 3 → +15 points; failures ≥ 5 → +25 points; failures ≥ 10 → directly flagged as critical risk.
-
-This dimension uses linear weighting because brute-force attacks have a very clear signature — rapid retries after consecutive failures.
-
-### 7. Sensitive Operation Context (Weight: 5%)
-
-Not all operations carry the same risk. Viewing a profile → low risk; changing a linked phone number → medium risk; deleting an account → high risk; transferring large funds → critical risk.
-
-Autional allows admins to configure different risk thresholds for different API endpoints. The same user in the same session may require different levels of authentication to access different features.
-
-## Risk Scoring Algorithm
+### 3. 地理位置（权重：15%）
 
 ```
-Total Risk Score = Σ (Dimension Score × Weight)
-                  + Adversarial Bonus (accumulated for multiple near-threshold assessments)
-
-Final Score Range: 0 - 100
+地理位置分析：• 本次登录城市与历史城市对比
+              • 两次登录之间的物理距离 / 时间差 → 是否可能？
+              • 所在国家是否在管理员配置的高风险地区名单中？
 ```
 
-Key design decision: **the score leans conservative**. When data for a dimension is unavailable (e.g., user disabled behavior tracking), the default score for that dimension is the median, not zero. Better to ask for one more verification step than to let someone through due to insufficient information.
+如果用户上次登录在东京，15 分钟后却从纽约登录——物理上不可能——系统会自动将其标记为极高风险。Autional 的 GeoIP 解析可达城市级精度，管理员可以在 MFA 策略中配置高风险国家和白名单国家。
 
-### Adversarial Bonus Mechanism
+### 4. 行为模式（权重：15%）
 
-If an attacker tries once → triggers medium risk → enters TOTP. Second attempt → same device → if the device fingerprint looks normal → risk might decrease.
+```
+行为分析：• 键盘输入节奏（打字速度、按键间隔）
+          • 鼠标移动轨迹（加速度、方向变化频率）
+          • 表单填写顺序（Tab 键使用、字段间停留时长）
+```
 
-To prevent this kind of "slow probing" attack, Autional introduces an adversarial bonus: when multiple logins requiring MFA verification occur within a short time window (15 minutes), even if each individual risk score is below the threshold, the system accumulates a bonus score that gradually pushes the total higher.
+这是最微妙却最有效的信号之一。即便攻击者窃取了正确的密码和 TOTP 种子，要模仿用户的输入节奏和鼠标移动模式也极其困难。Autional 的轻量级行为 SDK 在后台采集这些模式，并用简单的统计模型（而非复杂的机器学习）建立基线。偏离基线超过 2 个标准差 → 风险评分上升。
 
-## MFA Policy Configuration: Full Control for Admins
+### 5. 时间因素（权重：10%）
 
-Autional's Adaptive MFA is not a black box. Admins can see the following in the `mfa-service` management console:
+```
+时间分析：• 登录时间是否落在用户惯常的活跃时段内？
+          • 是否处于周末或节假日？
+          • 距上次登录的时长（休假归来 vs. 异常活动激增）
+```
 
-1. **Policy Templates**: Three presets — "Loose" (UX-first), "Standard" (balanced), "Strict" (security-first)
-2. **Custom Risk Thresholds**: Score ranges for each risk level (low/medium/high/critical) are fully configurable
-3. **Dimension Weight Adjustment**: If an enterprise deploys hardware keys organization-wide, reduce device fingerprint weight; if employees travel frequently, reduce geolocation weight
-4. **Whitelists & Blacklists**: IP whitelist (office network), user group whitelist (admins), country blacklist
-5. **Audit Logs**: Detailed records for each risk assessment — each dimension's score, which dimensions triggered increases, and the final decision
+大多数用户的活动规律是固定的——周一到周五，8:00 - 22:00。凌晨 3 点的登录未必是攻击，但理应引起更高警觉。Autional 为每个用户维护基于 UTC 的活跃时段模型，可自动适配不同时区的用户。
+
+### 6. 登录失败历史（权重：10%）
+
+该账号在过去 30 分钟内：失败 ≥ 3 次 → +15 分；失败 ≥ 5 次 → +25 分；失败 ≥ 10 次 → 直接标记为极高风险。
+
+这一维度采用线性加权，因为暴力破解攻击的特征非常明确——连续失败后的快速重试。
+
+### 7. 敏感操作上下文（权重：5%）
+
+并非所有操作的风险都相同。查看个人资料 → 低风险；更换绑定手机号 → 中风险；注销账号 → 高风险；大额资金转账 → 极高风险。
+
+Autional 允许管理员为不同的 API 端点配置不同的风险阈值。同一用户在同一会话中访问不同功能，可能需要不同级别的认证。
+
+## 风险评分算法
+
+```
+风险总分 = Σ（各维度得分 × 权重）
+          + 对抗性加成（多次接近阈值的评估会累加）
+
+最终得分区间：0 - 100
+```
+
+关键设计决策：**评分偏向保守**。当某个维度的数据不可用时（例如用户关闭了行为追踪），该维度的默认得分取中位数而不是零。宁可多要一步验证，也不能因为信息不足就放行。
+
+### 对抗性加成机制
+
+如果攻击者尝试一次 → 触发中风险 → 输入 TOTP。第二次尝试 → 同一设备 → 如果设备指纹看起来正常 → 风险可能反而下降。
+
+为防范这种「缓慢试探」式攻击，Autional 引入了对抗性加成：当短时间内（15 分钟）出现多次需要 MFA 验证的登录时，即便单次风险评分低于阈值，系统也会累积加成分数，逐步推高总分。
+
+## MFA 策略配置：管理员的完全控制
+
+Autional 的自适应 MFA 不是黑盒。管理员可以在 `mfa-service` 管理控制台中看到以下内容：
+
+1. **策略模板**：三种预设——「宽松」（体验优先）、「标准」（平衡）、「严格」（安全优先）
+2. **自定义风险阈值**：各风险等级（低/中/高/极高）的评分区间完全可配置
+3. **维度权重调整**：如果企业全组织部署了硬件密钥，可降低设备指纹权重；如果员工经常出差，可降低地理位置权重
+4. **白名单与黑名单**：IP 白名单（办公网络）、用户组白名单（管理员）、国家黑名单
+5. **审计日志**：每次风险评估的详细记录——各维度得分、哪些维度触发了加分、最终决策
 
 ```yaml
 # MFA Policy Configuration Example
@@ -151,50 +151,50 @@ mfa_policy:
   ip_whitelist: ["10.0.0.0/8", "172.16.0.0/12"]
 ```
 
-## Real-World Results: Three Case Studies
+## 实际成效：三个案例
 
-### Case 1: E-Commerce Platform
+### 案例 1：电商平台
 
-- Volume: 500,000 daily logins
-- Before Adaptive MFA: All logins required TOTP, customer service reported poor login experience
-- After Adaptive MFA: Most logins assessed as low risk (MFA skipped), significantly improving user experience
-- Security incidents: No significant change in account takeover rate
+- 规模：日均 50 万次登录
+- 采用自适应 MFA 前：所有登录都要求 TOTP，客服反馈登录体验很差
+- 采用自适应 MFA 后：大部分登录被评估为低风险（跳过 MFA），用户体验显著提升
+- 安全事件：账号接管率没有明显变化
 
-### Case 2: Financial SaaS
+### 案例 2：金融 SaaS
 
-- Volume: Low-frequency but high-value logins
-- MFA Policy: Used "Strict" template, high-risk operations (transfers, binding changes) additionally triggered hardware keys
-- Result: Effectively identified account takeover attacks — even with correct passwords and TOTP, attackers were blocked by hardware key requirements triggered by abnormal device fingerprints and behavior patterns
+- 规模：低频但高价值的登录
+- MFA 策略：采用「严格」模板，高风险操作（转账、换绑）额外触发硬件密钥
+- 结果：有效识别了账号接管攻击——即便攻击者拿到了正确密码和 TOTP，也会被异常设备指纹与行为模式触发的高风险要求硬件密钥所阻断
 
-### Case 3: Global Remote Team
+### 案例 3：全球化远程团队
 
-- Challenge: Employees distributed worldwide with different time zones, fixed MFA policies had extremely high false-positive rates
-- Solution: Enabled behavioral pattern and time factor dimensions; Autional automatically learned each employee's active hours
-- Result: Precisely identified a social engineering attack — an attacker used the COO's publicly available travel itinerary to attempt login during "business trip overnight." The geolocation dimension detected an unusual city, triggering a high-risk assessment, and the attack failed
+- 挑战：员工遍布全球、时区各异，固定的 MFA 策略误报率极高
+- 方案：启用行为模式与时间因素维度；Autional 自动学习每位员工的活跃时段
+- 结果：精准识破一次社会工程攻击——攻击者利用 COO 公开的行程安排在「出差过夜」期间尝试登录。地理位置维度检测到异常城市，触发高风险评估，攻击失败
 
-## User Experience: How to Avoid User Friction
+## 用户体验：如何避免用户摩擦
 
-The ultimate enemy of security measures is not the attacker — it's the user. If MFA is too cumbersome, users will find ways around it — using simple passwords, disabling MFA (if optional), or even switching to competitors.
+安全措施最大的敌人不是攻击者，而是用户。如果 MFA 太烦琐，用户就会想办法绕开——使用简单密码、关闭 MFA（如果可选），甚至转投竞品。
 
-Autional made three key design decisions for user experience:
+Autional 在用户体验上做了三个关键设计决策：
 
-**1. Progressive Introduction**
-Don't force all users to enable MFA suddenly. First, run in "Loose" mode for a week, recording risk assessments without blocking. In the second week, start triggering TOTP for high-risk logins while leaving medium and low risk unchanged. Users gradually adapt without the resistance of "suddenly being blocked."
+**1. 渐进式引入**
+不要突然强制所有用户启用 MFA。先以「宽松」模式运行一周，只记录风险评估而不拦截。第二周开始对高风险登录触发 TOTP，中低风险保持不变。用户可以逐步适应，不会产生「突然被拦」的抵触。
 
-**2. Transparent Risk Prompts**
-When medium-risk MFA is triggered, show a friendly message: "We noticed you're logging in from a new device. To protect your account, please complete additional verification." — explaining why MFA is needed makes users more willing to comply.
+**2. 透明的风险提示**
+当中风险 MFA 被触发时，展示友好提示：「我们注意到您正在新设备上登录。为保护您的账号，请完成额外验证。」——解释清楚为什么需要 MFA，用户会更愿意配合。
 
-**3. Remember Trusted Devices**
-Users can check "Trust this device for 30 days." During the trust period, the device fingerprint dimension is skipped for the same device, but other dimensions (IP, location, behavior) remain active. This balances security and convenience.
+**3. 记住可信设备**
+用户可勾选「30 天内信任此设备」。在信任期内，同一设备会跳过设备指纹维度，但其他维度（IP、位置、行为）仍然生效。这样兼顾了安全与便利。
 
-## Future Direction: AI-Driven Continuous Adaptive Authentication
+## 未来方向：AI 驱动的持续自适应认证
 
-Autional's Adaptive MFA currently assesses risk **only at login time**. In the next phase, we are exploring **Continuous Adaptive Authentication**:
+Autional 的自适应 MFA 目前**仅在登录时**评估风险。下一阶段，我们正在探索**持续自适应认证**：
 
-- **In-Session Behavior Monitoring**: After login, continuously analyze user operation patterns. If abnormal behavior suddenly appears (e.g., bulk data download, accessing never-before-used features), dynamically increase the risk score and require re-authentication.
-- **Multi-Modal Biometrics**: Combine keyboard/mouse behavior, touch gestures, and even signals from browser extensions to build a more accurate user profile.
-- **Federated Learning**: Train more accurate risk models across tenants without sharing raw data. Each enterprise's data stays within its domain, but models can learn from global patterns.
+- **会话内行为监控**：登录后持续分析用户的操作模式。如果突然出现异常行为（如批量下载数据、访问从未用过的功能），动态提高风险评分并要求重新认证。
+- **多模态生物特征**：结合键盘/鼠标行为、触摸手势，甚至浏览器扩展的信号，构建更精确的用户画像。
+- **联邦学习**：在不共享原始数据的前提下，跨租户训练更准确的风险模型。每家企业的数据都留在自己的域内，但模型可以学习全局模式。
 
-The future of authentication is not "harder passwords" or "more CAPTCHAs" — it's making authentication invisible to legitimate users while making it impossible for attackers to get through. That is the core philosophy of Adaptive MFA.
+认证的未来不是「更复杂的密码」或「更多的验证码」——而是让合法用户感觉不到认证的存在，同时让攻击者寸步难行。这正是自适应 MFA 的核心理念。
 
-Autional's Adaptive MFA engine is open source. Visit our GitHub repository for implementation details and integration documentation.
+Autional 的自适应 MFA 引擎是开源的。实现细节与集成文档请访问我们的 GitHub 仓库。

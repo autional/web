@@ -1,150 +1,151 @@
 ---
-title: "The End of Passwords: Evolution from SMS OTP to Passkey"
+title: "密码的终结：从短信 OTP 到通行密钥的演进史"
 date: "2026-06-06"
 category: "Tech"
-tags: ["Passwordless", "Passkey", "Evolution"]
-readTime: "8 min"
-excerpt: "From 1960s time-sharing system passwords to Passkeys set to become the default in 2026, identity authentication has undergone half a century of evolution. This article reviews every key milestone, explaining why each step solved the previous problem and where the next step is headed."
+tags: ["免密", "通行密钥", "演进史"]
+readTime: "8 分钟"
+excerpt: "从 1960 年代分时系统的密码，到 2026 年即将成为默认选项的通行密钥，身份认证走过了半个世纪的演进。本文复盘每一个关键里程碑，说明每一步解决了什么问题，以及下一步将走向哪里。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-## Where It All Began: Why Do We Have Passwords?
+## 起点：为什么会有密码？
 
-In 1961, MIT's Compatible Time-Sharing System (CTSS) introduced the concept of the password—the first password system in human history. The purpose was simple: allow multiple researchers sharing a single mainframe to protect their own files from others.
+1961 年，MIT 的兼容分时系统（CTSS）引入了密码的概念，这是人类历史上的第一套密码系统。目的很简单：让共享同一台大型机的多位研究人员能保护各自的文件不被他人查看。
 
-Fernando Corbato—the inventor of the CTSS password system—said in a 2014 interview: "Passwords have become a kind of nightmare."
+Fernando Corbato——CTSS 密码系统的发明者——在 2014 年的一次采访中说：「密码已经变成了一种噩梦。」
 
-He passed away in 2019 at age 93. Three years before his death, the FIDO Alliance released the WebAuthn standard, officially beginning the end of his "nightmare."
+他于 2019 年去世，享年 93 岁。在他去世的三年前，FIDO 联盟发布了 WebAuthn 标准，正式开启了他这场「噩梦」的终结。
 
-## Phase 1: The Plain Password Era (1961-2000s)
+## 阶段一：明文密码时代（1961-2000 年代）
 
-### How It Works
+### 工作原理
 
-A user memorizes a secret string. The server stores a hash of that string (ideally). Login compares the hash.
+用户记住一串秘密字符串。服务器（理想情况下）保存该字符串的哈希值。登录时比对哈希。
 
-### The Problem
+### 问题所在
 
-From day one, passwords had two structural flaws:
+从诞生第一天起，密码就带着两个结构性缺陷：
 
-**Limits of human memory**: A security-worthy password (random 16 characters with upper/lowercase, numbers, and symbols) is nearly impossible for humans to remember. So humans created their own "security strategies"—using birthdays, pet names, or the same password for every site.
+**人类记忆的极限**：一个达到安全强度的密码（随机的 16 位大小写字母、数字与符号），人类几乎不可能记住。于是人们发明了自己的「安全策略」——用生日、宠物名字，或者所有网站都用同一个密码。
 
-**Fragility of shared secrets**: A password is a shared secret between client and server. If either side leaks, the entire authentication system collapses.
+**共享秘密的脆弱性**：密码是客户端与服务器之间的共享秘密。只要任何一方泄露，整个认证体系就会崩塌。
 
-In 2009, the RockYou data breach exposed 32 million plaintext passwords. The top three most common passwords: `123456`, `12345`, `123456789`. Fifteen years later in 2024, NordPass's global statistics still showed `123456` as the most common password.
+2009 年，RockYou 数据泄露事件暴露了 3200 万个明文密码。其中最常见的前三名是：`123456`、`12345`、`123456789`。十五年后的 2024 年，NordPass 的全球统计依然显示 `123456` 是最常见的密码。
 
-Humans don't change. We need to change authentication.
+人类不会改变，需要改变的是认证方式。
 
-## Phase 2: SMS OTP (2000s-2010s)
+## 阶段二：短信 OTP（2000 年代-2010 年代）
 
-### What It Solved
+### 解决了什么
 
-Added "something you have" (phone) to "something you know" (password)—the beginnings of two-factor authentication.
+在「你知道的东西」（密码）之外加入了「你拥有的东西」（手机）——双因素认证的雏形。
 
-### What It Introduced
+### 引入了什么
 
-SMS OTP was officially labeled as "restricted" in NIST SP 800-63B in 2016. Reasons:
+2016 年，NIST SP 800-63B 正式将短信 OTP 标注为「受限」，原因包括：
 
-- **SIM Swap attacks**: Attackers socially engineer carriers to port the target's number to their own SIM—all SMS codes go directly to the attacker
-- **SS7 protocol vulnerabilities**: Signaling System 7 has known flaws that allow SMS interception at the network layer
-- **Latency and delivery**: International SMS can be delayed 30+ seconds or not delivered at all
+- **SIM 卡交换攻击**：攻击者通过社工手段让运营商把目标号码转移到自己的 SIM 卡上——所有短信验证码直接落到攻击者手中
+- **SS7 协议漏洞**：七号信令系统（Signaling System 7）存在已知缺陷，可在网络层拦截短信
+- **延迟与送达**：国际短信可能延迟 30 秒以上，甚至无法送达
 
-### Current Status
+### 现状
 
-Despite NIST's 2016 "restricted" designation, SMS OTP remains widely used in 2026. "Low cost" and "user familiarity" keep it from fully exiting the stage, but the industry consensus is: **In new systems, SMS OTP should not be used as the sole second factor.**
+尽管 2016 年被 NIST 标注为「受限」，短信 OTP 在 2026 年依然被广泛使用。「成本低」与「用户熟悉」让它难以彻底退场，但业界共识是：**新系统不应把短信 OTP 作为唯一的第二因素。**
 
-Autional's mfa-service still offers SMS OTP as an option (for backward compatibility with existing users), but recommends admins prioritize TOTP and Passkey.
+Autional 的 mfa-service 仍提供短信 OTP 选项（用于兼容存量用户），但建议管理员优先选择 TOTP 与通行密钥。
 
-## Phase 3: TOTP (2008-Present)
+## 阶段三：TOTP（2008 年至今）
 
-### Breakthrough
+### 突破
 
-TOTP (Time-based One-Time Password, RFC 6238) doesn't rely on telecom networks—the verification code is computed on the user's device from a seed secret combined with the current time, no SMS needed.
+TOTP（基于时间的一次性密码，RFC 6238）不依赖电信网络——验证码由用户设备上的种子密钥结合当前时间计算得出，不需要短信。
 
-### What It Solved
+### 解决了什么
 
-- No longer relies on telecom networks (eliminates SIM Swap and SS7 risks)
-- Works offline (Google Authenticator, Authy, etc. generate codes without connectivity)
-- Single setup, long-term validity
+- 不再依赖电信网络（消除 SIM 卡交换与 SS7 风险）
+- 可离线使用（Google Authenticator、Authy 等在无网络时也能生成验证码）
+- 一次配置，长期有效
 
-### Remaining Issues
+### 遗留问题
 
-- **The seed key is still a shared secret**: If the server's seed key database is breached, attackers can generate any user's TOTP
-- **Phishing still works**: Attackers' phishing sites can relay TOTP codes to the real site in real time (Adversary-in-the-Middle)
-- **Mediocre UX**: Open authenticator app, find the entry, read 6 digits, type them in (within 30 seconds)
+- **种子密钥仍是共享秘密**：如果服务器的种子密钥库被攻破，攻击者可以生成任意用户的 TOTP
+- **钓鱼依然有效**：攻击者的钓鱼站点可以实时把 TOTP 验证码转发给真实站点（中间人攻击 Adversary-in-the-Middle）
+- **体验平平**：打开认证器 App、找到对应条目、读出 6 位数字再输入（还得在 30 秒内完成）
 
-## Phase 4: Push Notification Authentication (2013-Present)
+## 阶段四：推送认证（2013 年至今）
 
-### Breakthrough
+### 突破
 
-No verification code entry—when logging in, the server sends a push notification to the user's trusted device (via APNs/FCM), and the user taps "Approve" or "Deny."
+不再需要输入验证码——登录时服务器向用户的可信设备发送推送通知（经 APNs/FCM），用户点击「批准」或「拒绝」。
 
-### What It Solved
+### 解决了什么
 
-- Greatly improved UX (no more manual code entry)
-- Push can carry context (login location, device type, time) to help users determine if it's their own action
+- 大幅改善体验（不必再手动输入验证码）
+- 推送可以携带上下文（登录地点、设备类型、时间），帮助用户判断是否为本人操作
 
-### What It Introduced
+### 引入了什么
 
-- **MFA Fatigue attacks**: After obtaining credentials, attackers repeatedly send push notifications until the user, annoyed, clicks "Approve" without thinking
-- This directly led to the 2022 Uber breach—attackers kept sending push notifications to an Uber employee, then impersonated IT support on WhatsApp to convince them to approve
+- **MFA 疲劳攻击**：攻击者拿到凭据后不断发送推送通知，直到用户不胜其烦、不加思索地点下「批准」
+- 2022 年 Uber 数据泄露事件正是由此导致——攻击者持续向一名 Uber 员工发送推送，再在 WhatsApp 上冒充 IT 支持，说服对方批准
 
-### Defenses
+### 防御手段
 
-- **Number Matching**: Instead of simple "Approve/Deny," the push requires the user to enter a 2-digit number displayed on the authenticating device, proving the authenticator has access to the current session
-- **Rate limiting**: Account locks after consecutive rejections
-- Autional's mfa-service already supports number-matching push notifications
+- **号码匹配（Number Matching）**：推送不再是简单的「批准/拒绝」，而是要求用户输入认证设备上显示的 2 位数字，以证明该认证器能访问当前会话
+- **限流**：连续拒绝后锁定账号
+- Autional 的 mfa-service 已支持号码匹配推送
 
-## Phase 5: FIDO U2F (2014-2018)
+## 阶段五：FIDO U2F（2014-2018）
 
-### Breakthrough
+### 突破
 
-This was revolutionary: FIDO U2F (Universal 2nd Factor) no longer relies on shared secrets. It uses public-key cryptography:
+这是一次革命：FIDO U2F（Universal 2nd Factor）不再依赖共享秘密，而是使用公钥密码学：
 
-1. On registration, a hardware security key (e.g., YubiKey) generates a key pair. The public key is sent to the server; the private key never leaves the device
-2. On login, the server sends a random challenge, the security key signs it with the private key. The server verifies with the public key
+1. 注册时，硬件安全密钥（如 YubiKey）生成一对密钥。公钥发送给服务器，私钥永不离开设备
+2. 登录时，服务器发送随机挑战值，安全密钥用私钥签名，服务器用公钥验证
 
-### Fundamental Improvements
+### 根本性改进
 
-- **No shared secret on the server** (only a public key—useless if leaked)
-- **Phishing-resistant** (signatures are bound to the domain—origin checking is built into the protocol, not bypassable at the application layer)
-- **Hardware-isolated private key** (the private key can never be read by software)
+- **服务器上没有共享秘密**（只有公钥——即使泄露也无用）
+- **抗钓鱼**（签名与域名绑定——来源校验内建于协议，无法在应用层绕过）
+- **硬件隔离的私钥**（私钥永远无法被软件读取）
 
-### Limitations
+### 局限
 
-- Requires additional hardware (USB/NFC security key)
-- Not suitable for large-scale consumer scenarios (cost, distribution, loss)
-- Primarily used as a second factor, cannot replace passwords
+- 需要额外硬件（USB/NFC 安全密钥）
+- 不适合大规模消费级场景（成本、发放、丢失）
+- 主要作为第二因素使用，无法取代密码
 
-In 2017, Google ran an internal experiment requiring 85,000 employees to use FIDO U2F security keys. Result: zero successful phishing attacks (previously multiple per year).
+2017 年，Google 在内部做了一次实验，要求 85000 名员工使用 FIDO U2F 安全密钥。结果是：钓鱼攻击成功次数为零（此前每年都有数起）。
 
-## Phase 6: FIDO2 / WebAuthn + Passkey (2018-2026)
+## 阶段六：FIDO2 / WebAuthn + Passkey（2018-2026）
 
-### Breakthrough
+### 突破
 
-FIDO2 is the evolution of U2F, comprising two core standards:
-- **WebAuthn** (W3C standard): JavaScript API between browser and authenticator
-- **CTAP2** (Client to Authenticator Protocol): Protocol between platform and external authenticator
+FIDO2 是 U2F 的演进，包含两个核心标准：
+- **WebAuthn**（W3C 标准）：浏览器与认证器之间的 JavaScript API
+- **CTAP2**（Client to Authenticator Protocol）：平台与外部认证器之间的协议
 
-Key innovations:
-1. **Platform Authenticator**: No external hardware needed—the device's TPM/Secure Enclave itself is the authenticator. Your MacBook's Touch ID, iPhone's Face ID, Windows Hello are all FIDO2 platform authenticators
-2. **Cross-device sync**: Via platform cloud sync (iCloud Keychain, Google Password Manager, Windows Hello), private keys can be securely synced across a user's multiple devices
-3. **Passkey**: The brand name for FIDO2 credentials—essentially cross-device-syncable FIDO2 credentials
+关键创新：
 
-### 2025-2026: The Tipping Point
+1. **平台认证器**：无需外部硬件——设备自带的 TPM/安全隔区本身就是认证器。你的 MacBook 的 Touch ID、iPhone 的 Face ID、Windows Hello 都是 FIDO2 平台认证器
+2. **跨设备同步**：借助平台云同步（iCloud 钥匙串、Google 密码管理工具、Windows Hello），私钥可以在用户的多个设备间安全同步
+3. **通行密钥（Passkey）**：FIDO2 凭据的品牌名称——本质上是可跨设备同步的 FIDO2 凭据
 
-Data points proving Passkey has reached critical mass:
+### 2025-2026：临界点
 
-- **Apple**: In iOS 19, Passkey is the preferred registration method for new app accounts. Over 95% of iCloud users automatically have Passkey support
-- **Google**: Q4 2025, Passkey authentication on Google accounts exceeded 1 billion times/month. Q1 2026, Google announced Passkey as the default login method for Workspace (password as fallback)
-- **Microsoft**: December 2025, Microsoft announced it has completely eliminated passwords internally—all 220,000 Microsoft employees authenticate via Passkey and Windows Hello for Business
-- **Amazon**: During 2025 Black Friday, over 40% of logins used Passkey
-- **Cross-border e-commerce Shopee/Lazada**: After introducing Passkey, login conversion rates increased 18% in Southeast Asia
+数据显示，通行密钥已经达到临界规模：
 
-### Autional Passkey Implementation
+- **Apple**：在 iOS 19 中，通行密钥是新应用账号的首选注册方式。超过 95% 的 iCloud 用户自动具备通行密钥支持
+- **Google**：2025 年第四季度，Google 账号上的通行密钥认证次数超过每月 10 亿次。2026 年第一季度，Google 宣布通行密钥成为 Workspace 的默认登录方式（密码作为后备）
+- **Microsoft**：2025 年 12 月，Microsoft 宣布内部已彻底淘汰密码——全部 22 万名 Microsoft 员工都通过通行密钥与 Windows Hello for Business 完成认证
+- **Amazon**：2025 年黑色星期五期间，超过 40% 的登录使用了通行密钥
+- **跨境电商 Shopee/Lazada**：引入通行密钥后，东南亚地区的登录转化率提升了 18%
 
-Autional has had built-in full WebAuthn RP support since 2025:
+### Autional 的通行密钥实现
+
+Autional 自 2025 年起内置完整的 WebAuthn RP 支持：
 
 ```
 Browser                             Autional
@@ -165,34 +166,34 @@ Browser                             Autional
   │←─────────────────────────────   │
 ```
 
-The assertion flow during login is similar—server sends a challenge, platform authenticator signs with private key, server verifies with public key.
+登录时的断言流程与之类似——服务器发送挑战值，平台认证器用私钥签名，服务器用公钥验证。
 
-## Phase 7: What's Next?
+## 阶段七：下一步是什么？
 
-### Continuous Authentication
+### 持续认证
 
-From "verify once at login" to "continuous verification." Based on behavioral biometrics (typing rhythm, mouse movement patterns) and contextual signals (location, time, device state), trust is continuously assessed throughout the session.
+从「登录时验证一次」走向「持续验证」。基于行为生物特征（打字节奏、鼠标移动模式）与上下文信号（位置、时间、设备状态），在整个会话过程中持续评估信任度。
 
-### Recovery Without Passwords
+### 没有密码的账号恢复
 
-Currently—if you lose your Passkey private key (device lost without cloud sync), you need to fall back to a password or recovery code. Next step—passwordless account recovery based on social recovery or escrow-based recovery.
+目前——如果你丢失了通行密钥私钥（设备丢失且未云同步），需要回退到密码或恢复码。下一步——基于社交恢复或托管式恢复的无密码账号找回。
 
-### Post-Quantum Cryptography Transition
+### 后量子密码学迁移
 
-In 2026, NIST post-quantum cryptography standards (CRYSTALS-Kyber, CRYSTALS-Dilithium, etc.) are being incorporated into the FIDO standard system. Passkey key pairs will gradually transition from ECDSA to quantum-safe Dilithium. This may take 5-10 years, but preparation starts today.
+2026 年，NIST 的后量子密码标准（CRYSTALS-Kyber、CRYSTALS-Dilithium 等）正在被纳入 FIDO 标准体系。通行密钥的密钥对将逐步从 ECDSA 过渡到抗量子的 Dilithium。这可能要花 5-10 年，但准备工作从今天就该开始。
 
-## Summary
+## 总结
 
-| Phase | Time | Core Mechanism | Phishing-Resistant? | No Shared Secret? | UX Complexity | Current Status |
+| 阶段 | 时间 | 核心机制 | 是否抗钓鱼 | 是否无共享秘密 | 体验复杂度 | 当前状态 |
 |-------|------|----------------|:---:|:---:|:---:|:---:|
-| Passwords | 1961+ | Shared secret | ❌ | ❌ | Low | Still widely used |
-| SMS OTP | 2000s+ | Telecom network | ❌ | ❌ | Medium | Should avoid |
-| TOTP | 2008+ | Time sync | ❌ | ❌ | Medium | Recommended fallback |
-| Push Notification | 2013+ | Device verification | ❌ | ❌ | Low | Recommended |
-| FIDO U2F | 2014+ | Public key | ✅ | ✅ | Medium | Enterprise use |
-| Passkey | 2022+ | Public key + cross-device | ✅ | ✅ | Very Low | **Recommended first choice** |
-| Continuous Auth | 2026+ | Behavioral analysis | — | — | Imperceptible | Exploring |
+| 密码 | 1961+ | 共享秘密 | ❌ | ❌ | 低 | 仍广泛使用 |
+| 短信 OTP | 2000 年代+ | 电信网络 | ❌ | ❌ | 中 | 应避免 |
+| TOTP | 2008+ | 时间同步 | ❌ | ❌ | 中 | 推荐的备用方案 |
+| 推送通知 | 2013+ | 设备验证 | ❌ | ❌ | 低 | 推荐 |
+| FIDO U2F | 2014+ | 公钥 | ✅ | ✅ | 中 | 企业场景 |
+| 通行密钥 | 2022+ | 公钥 + 跨设备 | ✅ | ✅ | 极低 | **推荐首选** |
+| 持续认证 | 2026+ | 行为分析 | — | — | 无感 | 探索中 |
 
-From 1961 to 2026, identity authentication has traveled from "secrets memorized by humans" to "secrets generated by hardware that even humans cannot read." Passkey isn't the finish line, but it's the first time we have an authentication method that is both secure (phishing-resistant, no shared secrets) and easy to use (scan/fingerprint/Face ID, no passwords).
+从 1961 年到 2026 年，身份认证从「由人类记住的秘密」走到了「由硬件生成、连人类自己都无法读取的秘密」。通行密钥不是终点，但它是我们第一次拥有既安全（抗钓鱼、无共享秘密）又易用（扫脸/指纹/Face ID，无需密码）的认证方式。
 
-Autional fully supports every stage in this table—not because you need to deploy SMS OTP in 2026, but because you can choose the right combination of authentication methods for different user groups, different security levels, and different compliance requirements. The evolution from passwords to Passkey isn't a migration—it's a journey. Autional has prepared every stop along the way.
+Autional 完整支持上表中的每一个阶段——不是因为你在 2026 年还需要部署短信 OTP，而是因为你可以针对不同的用户群体、不同的安全等级与不同的合规要求，选择合适的认证方式组合。从密码到通行密钥的演进不是一次迁移，而是一段旅程。沿途的每一站，Autional 都已备好。

@@ -1,165 +1,169 @@
 ---
-title: "5 Signs Your Login System Needs an Upgrade"
+title: "登录系统需要升级的 5 个信号"
 date: "2026-05-29"
 category: "Product"
-tags: ["Decision Guide", "Upgrade", "Assessment"]
-readTime: "6 min"
-excerpt: "Is your login system built in-house or using an open-source library? Have customers asked about SSO or MFA and you couldn't answer? Has your login endpoint ever been brute-forced? Can your audit logs tell you who did what? — If these questions make you uneasy, it's time to consider an upgrade. This article outlines 5 clear signals to help you make the right decision at the right time."
+tags: ["决策指南", "升级", "评估"]
+readTime: "6 分钟"
+excerpt: "你的登录系统是自研的，还是基于开源库搭的？客户问起 SSO 或 MFA 时，你答不上来？登录端点被暴力破解过？审计日志能说清谁做了什么吗？——如果这些问题让你心里发虚，就该考虑升级了。本文梳理 5 个明确的信号，帮你判断何时该做决定。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
 ---
 
-Every product has its "technical debt moment" — when you realize that login module you quickly threw together can no longer keep up with the business.
+每个产品都有自己的「技术债时刻」——你意识到当初草草拼起来的登录模块，已经跟不上业务了。
 
-That moment rarely arrives suddenly. It's signaled by a series of subtle hints. If you recognize more than 2 of the following 5 signals, your login system needs a serious upgrade evaluation.
+这个时刻很少是突然降临的，而是由一连串细微的征兆预示出来的。如果下面 5 个信号里你中了 2 个以上，你的登录系统就该认真评估升级了。
 
-## Signal 1: Customers Are Asking About SSO and MFA, and You Can't Answer
+## 信号一：客户在问 SSO 和 MFA，你答不上来
 
-### Typical Scenario
+### 典型场景
 
-You're negotiating a deal worth $2 million annual contract value with an enterprise customer. Everything is going smoothly — the product demo was great, the pricing is acceptable. Then the customer's security lead asks:
+你正在和一家企业客户谈一笔年合同价值 200 万美元的单子。一切都很顺利——产品演示很棒，价格也能接受。然后客户的安全负责人问：
 
-> "Do you support SAML? We need SSO integration with our Okta. Also, do you enforce MFA for admin accounts? What MFA methods do you use? We need FIDO2 hardware keys."
+> 「你们支持 SAML 吗？我们需要和公司的 Okta 做 SSO 集成。另外，管理员账号强制 MFA 吗？你们用哪些 MFA 方式？我们需要 FIDO2 硬件密钥。」
 
-Your answer: "Well… we currently support username and password login. SSO and MFA are on our roadmap, probably ready by next quarter."
+你的回答：「呃……我们目前支持用户名密码登录。SSO 和 MFA 在路线图上，大概下个季度能好。」
 
-The customer's expression changes. A week later, you get their reply: "We've chosen another vendor. Their identity solution is ready out of the box."
+客户的表情变了。一周后，你收到回复：「我们选择了另一家供应商。他们的身份方案开箱即用。」
 
-### Root of the Problem
+### 问题根源
 
-In enterprise purchasing decisions, the security lead has veto power. They don't care how feature-rich your product is — they care whether your product creates a gap in their security posture.
+在企业采购决策中，安全负责人拥有一票否决权。他们不关心你的产品功能多丰富——他们关心你的产品会不会在他们的安全体系上开一个口子。
 
-SSO isn't "an additional login method" — for companies using Okta/Azure AD, SSO is the only acceptable login method. It means: employees don't need to remember another password, IT can centrally manage access, and departing employees' access can be revoked immediately.
+SSO 不是「多一种登录方式」——对使用 Okta/Azure AD 的公司来说，SSO 是唯一可接受的登录方式。它意味着：员工不用再记一个密码，IT 可以集中管理访问权限，离职员工的权限可以立即回收。
 
-MFA isn't "an optional add-on" — for companies handling sensitive data, MFA is a baseline compliance requirement. China's MLPS Level 3 requires MFA, SOC 2 requires MFA, ISO 27001 recommends MFA.
+MFA 不是「可选的附加项」——对处理敏感数据的公司来说，MFA 是合规的底线要求。中国的等保三级要求 MFA，SOC 2 要求 MFA，ISO 27001 建议 MFA。
 
-### How Autional Solves This
+### Autional 怎么解决
 
-Autional provides complete SSO protocol support (OIDC, SAML) and can act as an IdP to integrate with enterprise directory services. MFA coverage includes TOTP, WebAuthn/FIDO2, and SMS OTP, with role-based enforcement. Enterprise security teams can self-configure MFA policies and SSO integrations in the admin console — you just flip a switch during your demo.
+Autional 提供完整的 SSO 协议支持（OIDC、SAML），可作为 IdP 对接企业目录服务。MFA 覆盖 TOTP、WebAuthn/FIDO2、短信 OTP，并支持按角色强制。企业安全团队可以在管理控制台自助配置 MFA 策略与 SSO 集成——你在演示时只需点一下开关。
 
-## Signal 2: Your Login Endpoint Was Brute-Forced, and You Found Out From Your Users
+## 信号二：登录端点被暴力破解，你却是从用户那里知道的
 
-### Typical Scenario
+### 典型场景
 
-One morning, your support team receives complaints from 3 users: "Someone logged into my account and I can see activity that isn't mine." You rush to check the logs and find that between 2 AM and 4 AM, a foreign IP pool launched about 500,000 requests against your `/login` endpoint. You weren't notified — because your login endpoint has no anomaly detection.
+一天早上，客服收到 3 位用户的投诉：「有人登了我的账号，我看到了一些不是我做的操作。」你赶紧查日志，发现凌晨 2 点到 4 点之间，一个境外 IP 池对你的 `/login` 端点发起了约 50 万次请求。你没有收到任何通知——因为你的登录端点根本没有异常检测。
 
-You hastily add an IP blacklist and rate limit of 100 requests per hour, but this is **damage control after the fact**. User trust has been broken, and you don't even know how many other accounts were affected.
+你匆忙加上 IP 黑名单和每小时 100 次的限流，但这只是**事后补救**。用户的信任已经破裂，而你甚至不知道还有多少账号受到了影响。
 
-### Root of the Problem
+### 问题根源
 
-A login endpoint without rate limiting is like a house without an alarm — attackers can take their time trying, and you only find out when a neighbor (your user) tells you "your house looks like it's been broken into."
+没有限流的登录端点就像一栋没有报警器的房子——攻击者可以慢慢试，而你只能等邻居（你的用户）告诉你「你家好像进贼了」。
 
-Moreover, post-incident IP blacklisting isn't a long-term solution. Attackers can easily switch IPs, and the next attack will come from an entirely different IP pool. What you need is a complete login security system, not just "add an if statement."
+而且事后拉黑 IP 不是长久之计。攻击者可以轻松换 IP，下一次攻击会来自完全不同的 IP 池。你需要的是完整的登录安全体系，而不是「加个 if 判断」。
 
-### How Autional Solves This
+### Autional 怎么解决
 
-Gateway-level distributed rate limiting covers three dimensions: IP-level, user-level, and global. When attack thresholds are exceeded: rate limiting kicks in returning 429 (blocking the attack), while simultaneously pushing security alerts to you. The adaptive MFA engine automatically escalates authentication strength for affected accounts. You don't need to learn about attacks from your users — the system tells you first.
+网关级分布式限流覆盖三个维度：IP 级、用户级与全局。超过攻击阈值时：限流生效并返回 429（阻断攻击），同时向你推送安全告警。自适应 MFA 引擎自动为受影响账号提升认证强度。你不需要从用户那里得知被攻击——系统会第一时间告诉你。
 
-## Signal 3: You Can't Answer "Who Did What and When"
+## 信号三：「谁在什么时候做了什么」，你答不上来
 
-### Typical Scenario
+### 典型场景
 
-A major customer's CSO sends you an email:
+一个大客户的 CSO 给你发来邮件：
 
-> "Our security team is conducting an internal audit. Please provide the operation logs for all admin accounts over the past 3 months — who logged in, who modified user permissions, who exported data."
+> 「我们的安全团队正在做内部审计。请提供过去 3 个月所有管理员账号的操作日志——谁登录过、谁改过用户权限、谁导出过数据。」
 
-You open the database and find that login logs only record "success" or "failure," with no IP addresses, no operator, no target. Permission changes have no logs. Data exports leave no records. Your reply: "Our audit logs aren't complete yet — this is a roadmap item —"
+你打开数据库，发现登录日志只有「成功」或「失败」，没有 IP、没有操作人、没有操作对象。权限变更没有日志。数据导出没有记录。你的回复是：「我们的审计日志还不完善——这是路线图上的事项——」
 
-The response is direct: "This isn't a roadmap issue. This is a baseline compliance requirement. We're pausing the partnership evaluation until you provide complete auditing capabilities."
+对方的回复很直接：「这不是路线图问题，这是合规的底线要求。在你们提供完整审计能力之前，我们暂停合作评估。」
 
-### Root of the Problem
+### 问题根源
 
-Audit logs aren't "icing on the cake" — they're an entry requirement for enterprise customers. Without complete audit logs:
-- MLPS assessments fail immediately
-- SOC 2 audits cannot pass
-- GDPR's 72-hour data breach notification window is impossible to scope
-- When internal security incidents occur, you can't trace responsibility
+审计日志不是「锦上添花」，而是企业客户的准入门槛。没有完整的审计日志：
 
-### How Autional Solves This
+- 等保测评直接不通过
+- SOC 2 审计无法通过
+- GDPR 的 72 小时数据泄露通知窗口无从界定影响范围
+- 内部出现安全事件时，无法追溯责任
 
-The audit-service records full-field audit logs for all authentication events and admin operations (who, what operation, when, what IP, what result). Logs use a hash chain to ensure immutability. Supports multi-dimensional search by time range, user, and operation type. Audit reports can be exported with one click for customer security teams.
+### Autional 怎么解决
 
-## Signal 4: Compliance Audit Is Coming, and You Have No Confidence
+audit-service 对所有认证事件与管理操作记录全字段审计日志（谁、做了什么操作、何时、来自哪个 IP、结果如何）。日志使用哈希链保证不可篡改。支持按时间范围、用户、操作类型的多维检索。审计报告可一键导出，交给客户的安全团队。
 
-### Typical Scenario
+## 信号四：合规审计临近，你心里没底
 
-Your product has signed a government customer contract that explicitly states: "The supplier's system must pass MLPS Level 3 assessment within 30 days."
+### 典型场景
 
-You download the 30-page MLPS Level 3 requirements document. When you get to the "Identity Authentication" and "Access Control" sections, you find:
-- No password complexity requirements — users can use 6-digit numeric passwords
-- No MFA — any account only needs a password
-- No session timeout — users can stay logged in all day
-- No IP access control — any IP can access the admin backend
-- No clear privilege separation between admins and regular users
+你的产品签下了一个政府客户，合同明确写着：「供应商系统需在 30 天内通过等保三级测评。」
 
-You know that with the current state, passing the assessment is impossible. The 30-day deadline hangs over your head like a countdown.
+你下载了 30 页的等保三级要求文档。翻到「身份鉴别」与「访问控制」两节，你发现：
 
-### Root of the Problem
+- 没有密码复杂度要求——用户可以设 6 位纯数字密码
+- 没有 MFA——任何账号只要一个密码
+- 没有会话超时——用户可以整天保持登录
+- 没有 IP 访问控制——任何 IP 都能访问管理后台
+- 管理员与普通用户之间没有明确的权限边界
 
-Compliance isn't something you can "patch right before the audit." Assessors are professionally trained — they can tell within 5 minutes whether your identity system was "designed with security in mind" or "locked on just for the audit." The latter always has more vulnerabilities.
+你知道以现状不可能通过测评。30 天的期限像倒计时一样悬在头顶。
 
-### How Autional Solves This
+### 问题根源
 
-Autional was designed from the ground up with MLPS Level 3 and SOC 2 as its security baseline. Password policies, MFA policies, session management, access control, audit logs, data encryption — these aren't "features added later," they're fundamental architectural components. By using Autional as your identity layer, your application directly inherits MLPS Level 3 technical capabilities in identity authentication and access control. When assessors come, you show them Autional's built-in MLPS Level 3 and SOC 2 compliance mapping documentation plus production configuration screenshots — not hastily written policy documents.
+合规不是「审计前突击补一下」就能过关的。测评师受过专业训练——他们 5 分钟内就能看出来，你的身份系统是「按安全要求设计的」，还是「为了应付测评临时加锁的」。后者往往漏洞更多。
 
-## Signal 5: You're Writing Yet Another Login System for Your Third Application
+### Autional 怎么解决
 
-### Typical Scenario
+Autional 从设计之初就以等保三级与 SOC 2 作为安全基线。密码策略、MFA 策略、会话管理、访问控制、审计日志、数据加密——这些不是「后来加的功能」，而是架构的基本组成。把 Autional 作为身份层，你的应用直接继承等保三级在身份鉴别与访问控制方面的技术能力。测评师来了，你拿出来的是 Autional 内置的等保三级与 SOC 2 合规映射文档，加上生产环境的配置截图——而不是临时赶工的制度文件。
 
-Your team is developing a third product. Every time a new product launches, you have to:
-1. Create new user tables, password tables, session tables
-2. Rewrite registration/login/password reset/email verification logic
-3. Rewrite JWT issuance and verification
-4. Reconfigure rate limiting, password policies, MFA integration
-5. Let operations manage yet another identity database
+## 信号五：你在为第三个应用再写一套登录系统
 
-Your team now has three independent login systems, three different token formats, and three different MFA integration methods. Every time a security incident occurs, you need to patch vulnerabilities across all three systems. Your engineers spend more time reinventing wheels than on business innovation.
+### 典型场景
 
-### Root of the Problem
+你的团队正在开发第三个产品。每次新产品上线，你都要：
 
-This isn't a technical problem — it's an architectural problem. When every application maintains its own identity system:
-- Security vulnerability fixes must be applied across N systems
-- Password policy consistency is impossible (one system might still be using MD5)
-- Users must register and log in across N systems
-- There's no unified view to manage identity and access across all applications
+1. 新建用户表、密码表、会话表
+2. 重写注册/登录/找回密码/邮箱验证逻辑
+3. 重写 JWT 签发与校验
+4. 重新配置限流、密码策略、MFA 接入
+5. 让运维再维护一套身份数据库
 
-When you start writing a login module for your third application, you should realize: what you need is a unified identity layer, not another self-built login.
+你的团队现在有三套独立的登录系统、三种不同的令牌格式、三种不同的 MFA 接入方式。每次出现安全问题，你要在三个系统里分别打补丁。工程师造轮子的时间比做业务创新还多。
 
-### How Autional Solves This
+### 问题根源
 
-Autional is an independently deployed identity service, not a library embedded in some application. All applications connect via the standard OIDC protocol, sharing the same set of user identities, password policies, MFA policies, session management, and audit logs. New application onboarding only requires registering an OIDC client and configuring a callback URL. Your engineers can finally spend their time on business logic instead of identity authentication.
+这不是技术问题，而是架构问题。当每个应用都维护自己的一套身份系统时：
 
-## Upgrade Decision Matrix
+- 安全漏洞修复要在 N 个系统里各做一遍
+- 密码策略无法统一（可能有一个系统还在用 MD5）
+- 用户要在 N 个系统里分别注册、分别登录
+- 没有一个统一视图来管理所有应用的身份与权限
 
-| Signal | Urgency | Business Impact | Recommended Action |
+当你开始为第三个应用写登录模块时，就该意识到：你需要的是一个统一身份层，而不是再自研一套登录。
+
+### Autional 怎么解决
+
+Autional 是独立部署的身份服务，不是嵌入某个应用的库。所有应用通过标准 OIDC 协议接入，共享同一套用户身份、密码策略、MFA 策略、会话管理与审计日志。新应用接入只需注册一个 OIDC 客户端并配置回调 URL。你的工程师终于可以把时间花在业务逻辑上，而不是身份认证上。
+
+## 升级决策矩阵
+
+| 信号 | 紧迫度 | 业务影响 | 建议动作 |
 |--------|---------|-----------------|-------------------|
-| 1: Customers asking about SSO/MFA | High | Losing enterprise customers | Start POC immediately, prioritize SSO and MFA |
-| 2: Brute-force not detected | Highest | Lost user trust, potential data breach | Deploy rate limiting and anomaly detection immediately |
-| 3: Can't answer audit questions | High | Compliance risk, partnership paused | Integrate complete audit logging system |
-| 4: Compliance audit approaching | Highest | Contract breach, assessment failure | Urgently align with MLPS requirements, prioritize identity security domain |
-| 5: Writing login for third app | Medium | Low R&D efficiency, security debt accumulation | Evaluate unified identity layer solution |
+| 1：客户在问 SSO/MFA | 高 | 流失企业客户 | 立即启动 POC，优先做 SSO 与 MFA |
+| 2：暴力破解未被发现 | 最高 | 用户信任受损，可能发生数据泄露 | 立即部署限流与异常检测 |
+| 3：审计问题答不上来 | 高 | 合规风险，合作暂停 | 接入完整审计日志系统 |
+| 4：合规审计临近 | 最高 | 违约，测评不通过 | 紧急对标等保要求，优先身份安全域 |
+| 5：为第三个应用写登录 | 中 | 研发效率低，安全债累积 | 评估统一身份层方案 |
 
-## Three Upgrade Paths
+## 三条升级路径
 
-### Path A: Harden Your Existing Solution
+### 路径 A：加固现有方案
 
-Suitable when only signals 2 or 3 apply. Add rate limiting, strengthen password policies, and fill in audit logs on top of your existing login module. Lower cost, but won't solve signals 1, 4, or 5.
+适用于只命中信号 2 或信号 3 的情况。在现有登录模块上补充限流、强化密码策略、补齐审计日志。成本较低，但解决不了信号 1、4、5。
 
-### Path B: Integrate an Open-Source Identity Framework
+### 路径 B：集成开源身份框架
 
-Use open-source identity solutions like Keycloak, ORY, or SuperTokens. Suitable for teams with strong operations capabilities. Requires self-hosted infrastructure, self-configured high availability, and self-managed security vulnerability fixes. Maximum flexibility, highest operational cost.
+使用 Keycloak、ORY、SuperTokens 等开源身份方案。适合运维能力强的团队。需要自托管基础设施、自行配置高可用、自行跟进安全漏洞修复。灵活性最高，运维成本也最高。
 
-### Path C: Use Autional
+### 路径 C：使用 Autional
 
-For teams that need enterprise-grade identity capabilities quickly without wanting to maintain identity infrastructure. Autional provides server-side identity microservice suites connected via standard protocols. Password policies, MFA, SSO, RBAC, audit logs, data encryption, compliance mapping — these capabilities are built-in, not third-party libraries that need integration.
+适合需要快速获得企业级身份能力、又不想维护身份基础设施的团队。Autional 提供服务端身份微服务套件，通过标准协议接入。密码策略、MFA、SSO、RBAC、审计日志、数据加密、合规映射——这些能力都是内置的，不是需要集成的第三方库。
 
-None of the three paths is absolutely good or bad — it depends on your team size, security needs, and R&D strategy. But one thing is certain: **when signals appear, waiting is not an option.** Identity system security debt doesn't decrease over time — it increases with user growth and advancing attack methods.
+三条路径没有绝对的好坏——取决于你的团队规模、安全需求与研发策略。但有一点是确定的：**信号出现时，等待不是选项。** 身份系统的安全债不会随时间减少——它会随用户增长与攻击手法进步而增加。
 
-## Summary
+## 总结
 
-These 5 signals share a common theme: **your identity system is holding your business back, not supporting it.**
+这 5 个信号指向同一个主题：**你的身份系统正在拖累业务，而不是支撑业务。**
 
-Login isn't "a simple feature" — it's the first door users walk through to enter your product. This door must be strong enough to resist attacks, flexible enough to meet diverse customer needs, transparent enough to pass compliance audits, and standardized enough to avoid redundant construction.
+登录不是「一个简单的功能」——它是用户走进你产品的第一道门。这道门要足够坚固以抵御攻击，足够灵活以适配多样的客户需求，足够透明以通过合规审计，足够标准以避免重复建设。
 
-If you see yourself in any of these signals, now is the time for a login system upgrade evaluation.
+如果这些信号里有你的影子，现在就是评估登录系统升级的时候了。

@@ -1,14 +1,14 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
 const faqItems = [
-  ['Is Autional open source?','Yes. The Autional SDK and all documentation portals are open source on GitHub at github.com/autional. You can self-host the entire 24-service stack without any license fee or MAU limit.'],
-  ['What is Autional?','Autional is the identity layer for AI-generated applications. It provides authentication, authorization, multi-tenancy, enterprise SSO, and compliance — all backed by 24 microservices and 1,400+ APIs.'],
-  ['How is Autional different from Auth0?','Auth0 is a closed-source SaaS. Autional is self-hostable, and designed specifically for AI-generated applications. Our pricing is transparent and there\'s no per-user or per-connection pricing.'],
-  ['Can I self-host Autional?','Yes. Self-hosting is free. Deploy with Docker/Podman compose or Kubernetes. The entire platform runs on PostgreSQL + MongoDB + Redis + RabbitMQ.'],
-  ['What does "AI-generated applications" mean?','Apps built with tools like Bolt.new, Lovable.dev, Cursor, Claude Code, or Replit. These tools generate application code rapidly. Autional provides the identity layer so your generated app doesn\'t need to reinvent authentication.'],
-  ['Do you offer cloud hosting?','Not yet. Cloud hosting is on our roadmap. Currently you can self-host or run locally. Contact us if you need managed infrastructure.'],
-  ['What compliance frameworks do you support?','Autional includes data models and tooling for ISO 27001, PCI DSS, HIPAA, SOX, GDPR, PSD2, PIPL, and Dengbao 2.0. Compliance certification is the responsibility of the deploying organization.'],
-  ['How many API endpoints does Autional have?','1,400+ RESTful API endpoints across 24 microservices. Every endpoint is documented with Swagger/OpenAPI.'],
+  ['Autional 是开源的吗？','是的。门户、设计系统与 SDK 以 AGPL-3.0 在 GitHub 组织页（github.com/autional-cn）开源发布。当前自托管开源可用；云托管在路线图中（即将推出）。'],
+  ['Autional 是什么？','Autional 是面向 AI 生成应用的身份层。它提供认证、授权、多租户、企业级 SSO 与合规能力 —— 全部由 27 个微服务和 1,400+ API 支撑。'],
+  ['Autional 与 Auth0 有什么不同？','Auth0 是闭源 SaaS，而 Autional 支持自托管，并且专为 AI 生成的应用设计。我们的定价透明，不按用户数或连接数收费。'],
+  ['我可以自托管 Autional 吗？','可以，自托管免费：当前自托管开源可用，云托管在路线图中（即将推出）。部署支持 Docker/Podman compose 或 Kubernetes，平台运行在 PostgreSQL + MongoDB + Redis + RabbitMQ 之上。'],
+  ['「AI 生成的应用」指什么？','指使用 Bolt.new、Lovable.dev、Cursor、Claude Code 或 Replit 等工具构建的应用。这些工具能快速生成应用代码。Autional 提供身份层，让你的生成式应用不必重新发明认证。'],
+  ['你们提供云托管吗？','云托管在路线图中（即将推出）。当前自托管开源可用；如果你需要托管基础设施，请联系我们。'],
+  ['你们支持哪些合规框架？','Autional 包含面向 ISO 27001、PCI DSS、HIPAA、SOX、GDPR、PSD2、PIPL 与等保 2.0 的数据模型与工具。合规认证由部署方自行负责。'],
+  ['Autional 有多少个 API 端点？','27 个微服务中共有 1,400+ 个 RESTful API 端点。每个端点都有 Swagger/OpenAPI 文档。'],
 ];
 const faqJsonLd = {
   '@context': 'https://schema.org',
@@ -21,13 +21,13 @@ const faqJsonLd = {
 };
 ---
 <Layout
-  title="FAQ — Autional"
-  description="Frequently asked questions about the Autional identity platform."
-  keywords="Autional, FAQ, identity, IAM, SSO, authentication, open source"
+  title="常见问题 — Autional"
+  description="关于 Autional 身份平台的常见问题解答。"
+  keywords="Autional, 常见问题, 身份, IAM, SSO, 认证, 开源"
   jsonLd={[faqJsonLd]}
 >
   <section class="mx-auto max-w-3xl px-4 py-20">
-    <h1 class="text-4xl font-bold sm:text-5xl text-center">FAQ</h1>
+    <h1 class="text-4xl font-bold sm:text-5xl text-center">常见问题</h1>
     <div class="mt-12 space-y-4">
       {faqItems.map(([q,a]) => (
         <details class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 group">
