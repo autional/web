@@ -1,26 +1,27 @@
 # Autional — Identity for AI-Generated Applications
+# Language: {{LANG_LABEL}}
 
 ## Core Docs
-- https://www.autional.cn/features
-- https://www.autional.cn/pricing
-- https://www.autional.cn/docs
-- https://www.autional.cn/sdk
-- https://www.autional.cn/compare
-- https://www.autional.cn/about
-- https://www.autional.cn/faq
-- https://www.autional.cn/trust
+- {{SITE_URL}}/features
+- {{SITE_URL}}/pricing
+- {{SITE_URL}}/docs
+- {{SITE_URL}}/sdk
+- {{SITE_URL}}/compare
+- {{SITE_URL}}/about
+- {{SITE_URL}}/faq
+- {{SITE_URL}}/trust
 
-## AI Onboarding (一句话为应用接入登录)
-- 教程: https://www.autional.cn/ai
-- Skill (中文): https://www.autional.cn/ai/skill.md
-- Skill (EN): https://www.autional.cn/ai/skill.en.md
-- 自有 CDN 镜像 (中文): https://cdn.autional.cn/ai/latest/SKILL.md
-- 自有 CDN 镜像 (EN): https://cdn.autional.cn/ai/latest/SKILL.en.md
-- 合规档: https://www.autional.cn/ai/references/compliance-matrix.md
-- 配置模板: https://www.autional.cn/ai/references/config-template.md
+## AI Onboarding ({{AI_SECTION}})
+- {{AI_TUTORIAL_LABEL}}: {{SITE_URL}}/ai
+- Skill ({{SKILL_PRIMARY_LABEL}}): {{SITE_URL}}/ai/{{SKILL_PRIMARY_FILE}}
+- Skill ({{SKILL_SECONDARY_LABEL}}): {{SITE_URL}}/ai/{{SKILL_SECONDARY_FILE}}
+- {{CDN_MIRROR_LABEL}} ({{SKILL_PRIMARY_LABEL}}): {{CDN_HOST}}/ai/latest/{{SKILL_PRIMARY_CDN_FILE}}
+- {{CDN_MIRROR_LABEL}} ({{SKILL_SECONDARY_LABEL}}): {{CDN_HOST}}/ai/latest/{{SKILL_SECONDARY_CDN_FILE}}
+- {{COMPLIANCE_LABEL}}: {{SITE_URL}}/ai/references/compliance-matrix.md
+- {{CONFIG_TEMPLATE_LABEL}}: {{SITE_URL}}/ai/references/config-template.md
 
-## Blog (49 articles)
-- https://www.autional.cn/blog
+## Blog ({{BLOG_COUNT}} articles)
+- {{SITE_URL}}/blog
 
 ## SDK Packages (31)
 - @autional/core — npm install @autional/core

@@ -25,7 +25,7 @@
   <rect x="100" y="380" width="120" height="4" rx="2" fill="url(#accent)"/>
   <!-- Tagline -->
   <text x="100" y="440" font-family="system-ui,sans-serif" font-size="20" fill="#64748B">Authentication · SSO · MFA · Multi-Tenancy · Audit · Developer APIs</text>
-  <!-- Bottom bar -->
+  <!-- Bottom bar（区域化：{{HOST}} 由 gen-static 按 SITE_URL 渲染；W2） -->
   <rect x="0" y="580" width="1200" height="50" fill="#0F172A" opacity="0.8"/>
-  <text x="600" y="612" text-anchor="middle" font-family="system-ui,sans-serif" font-size="16" fill="#475569">www.autional.com</text>
+  <text x="600" y="612" text-anchor="middle" font-family="system-ui,sans-serif" font-size="16" fill="#475569">{{HOST}}</text>
 </svg>

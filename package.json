@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "gen-static": "node scripts/gen-static.mjs",
+    "check-i18n": "node scripts/check-i18n.mjs",
+    "prebuild": "pnpm run gen-static && pnpm run check-i18n",
+    "predev": "pnpm run gen-static && pnpm run check-i18n",
     "dev": "astro dev --port 13118",
     "build": "astro build",
     "preview": "astro preview --port 13118",

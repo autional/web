@@ -26,3 +26,15 @@ pnpm-workspace.yaml
 # Separate portal projects (deployed independently)
 /docs-site/
 /dev-site/
+
+# Build-time generated (scripts/gen-static.mjs via prebuild/predev; do not commit)
+public/robots.txt
+public/llms.txt
+public/og-default.svg
+public/og-default.png
+public/ai/skill.md
+public/ai/skill.md.sha256
+
+# Local dual-region build outputs (sequence C: dist-cn / dist-com)
+/dist-cn/
+/dist-com/

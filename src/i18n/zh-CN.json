@@ -1,22 +1,97 @@
 {
-  "nav.features": "功能",
-  "nav.pricing": "定价",
-  "nav.docs": "文档",
-  "nav.blog": "博客",
-  "nav.contact": "联系我们",
-  "nav.ai": "AI 接入",
-  "nav.sdk": "SDK",
-  "search.placeholder": "搜索页面、博客文章…",
-  "search.noResults": "未找到与「{{query}}」相关的结果",
-  "search.hotSearches": "热门搜索",
-  "search.resultCount": "{{count}} 条结果",
-  "search.closeHint": "按 ESC 关闭",
-  "search.hotTags": [
-    "SSO",
-    "MFA",
-    "通行密钥",
-    "多租户",
-    "API 文档",
-    "部署"
-  ]
+  "nav": {
+    "features": "功能特性",
+    "sdk": "SDK",
+    "ai": "AI 接入",
+    "pricing": "定价",
+    "docs": "文档",
+    "blog": "博客",
+    "contact": "联系我们",
+    "about": "关于我们",
+    "login": "登录",
+    "getStarted": "免费开始",
+    "search": "搜索",
+    "searchTooltip": "搜索（Ctrl+K）"
+  },
+  "a11y": {
+    "skipToContent": "跳到主内容",
+    "search": "搜索",
+    "menu": "菜单",
+    "backToTop": "回到顶部"
+  },
+  "theme": {
+    "light": "浅色",
+    "dark": "深色"
+  },
+  "lang": {
+    "label": "语言",
+    "switchToEn": "切换到英文",
+    "switchToZh": "切换到中文"
+  },
+  "layout": {
+    "defaultDescription": "面向 AI 生成应用的身份层 — 认证、SSO、MFA、通行密钥、多租户、审计与开发者 API。",
+    "orgDescription": "面向 AI 生成应用的身份层 — 认证、SSO、MFA、多租户、审计与开发者 API。",
+    "logoAlt": "Autional 徽标",
+    "rssTitle": "Autional 博客"
+  },
+  "footer": {
+    "description": "面向 AI 生成应用的身份层。认证、SSO、通行密钥（Passkey）、租户隔离、审计与开发者 API，统一在一个连贯的系统中。",
+    "platform": "平台",
+    "developers": "开发者",
+    "company": "公司",
+    "features": "功能特性",
+    "pricing": "定价",
+    "compare": "对比",
+    "roadmap": "路线图",
+    "showcase": "演示与展示",
+    "docs": "文档",
+    "sdk": "SDK",
+    "ai": "AI 接入",
+    "docsPortal": "文档门户",
+    "devPortal": "开发者门户",
+    "apiReference": "API 参考",
+    "apiWiki": "API Wiki",
+    "about": "关于我们",
+    "blog": "博客",
+    "faq": "常见问题",
+    "changelog": "更新日志",
+    "contact": "联系我们",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "trust": "信任中心",
+    "copyright": "© {{year}} Autional. 保留所有权利。"
+  },
+  "common": {
+    "learnMore": "了解更多",
+    "viewPricing": "查看定价",
+    "contactSales": "联系销售",
+    "requestDemo": "申请演示"
+  },
+  "cookie": {
+    "title": "我们使用 Cookie",
+    "description": "我们使用 Cookie 来改善你的浏览体验、提供个性化内容并分析网站流量。点击「全部接受」即表示你同意我们使用 Cookie。",
+    "preferences": "偏好设置",
+    "necessaryOnly": "仅必要",
+    "acceptAll": "全部接受",
+    "settingsTitle": "Cookie 偏好设置",
+    "necessary": "必要 Cookie",
+    "necessaryDesc": "网站正常运行所必需，无法关闭",
+    "alwaysOn": "始终开启",
+    "analytics": "分析 Cookie",
+    "analyticsDesc": "帮助我们了解访客如何与网站交互",
+    "cancel": "取消",
+    "save": "保存偏好"
+  },
+  "search": {
+    "placeholder": "搜索页面、博客文章…",
+    "noResults": "未找到与「{{query}}」相关的结果",
+    "hotSearches": "热门搜索",
+    "resultCount": "{{count}} 条结果",
+    "closeHint": "按 ESC 关闭",
+    "category": {
+      "page": "页面",
+      "blog": "博客"
+    },
+    "hotTags": ["SSO", "MFA", "通行密钥", "多租户", "API 文档", "部署"]
+  }
 }
