@@ -1,22 +1,31 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
+import { t } from '../i18n';
+
+interface PrivacyItem { label: string; value: string }
+
+const s1Items = t('privacy.s1.items', { returnObjects: true }) as PrivacyItem[];
+const s2Items = t('privacy.s2.items', { returnObjects: true }) as string[];
+const contactEmail = t('privacy.contactEmail');
+// 政策修订日期（语言中立事实；标签按语言渲染）
+const updated = '2026-10-05';
 ---
-<Layout title="隐私政策 — Autional" description="Autional 隐私政策。" keywords="Autional, 隐私, GDPR, 数据保护, DSAR, 合规">
+<Layout title={t('privacy.meta.title')} description={t('privacy.meta.description')} keywords={t('privacy.meta.keywords')}>
   <section class="mx-auto max-w-3xl px-4 py-20">
-    <h1 class="text-4xl font-bold sm:text-5xl">隐私政策</h1>
-    <p class="mt-2 text-sm text-neutral-400">最近更新：2026-10-05</p>
+    <h1 class="text-4xl font-bold sm:text-5xl">{t('privacy.title')}</h1>
+    <p class="mt-2 text-sm text-neutral-400">{t('privacy.updatedLabel', { date: updated })}</p>
     <div class="mt-8 prose prose-lg dark:prose-invert max-w-none">
-      <p>本隐私政策说明 Autional 在你使用我们的平台与网站时，如何收集、使用和处理你的个人数据。</p>
-      <h2>1. 我们收集的信息</h2>
-      <ul><li><strong>账户数据：</strong>邮箱地址、用户名、密码哈希（argon2id）</li><li><strong>认证数据：</strong>IP 地址、User Agent、设备指纹、登录时间戳</li><li><strong>个人资料数据：</strong>头像、显示名称、偏好设置（由用户自行配置）</li><li><strong>通信数据：</strong>用于发送事务性邮件的邮箱地址</li></ul>
-      <h2>2. 我们如何使用数据</h2>
-      <ul><li>提供并维护认证服务</li><li>安全监控与欺诈防范</li><li>遵守法律义务（GDPR 等）</li><li>服务改进与问题排查</li></ul>
-      <h2>3. 数据保留</h2>
-      <p>认证数据在账户存续期间及其后 90 天内保留。审计日志按租户的保留策略保留（可配置，默认 90 天）。用户可随时请求删除数据。</p>
-      <h2>4. 你的权利</h2>
-      <p>根据 GDPR 及相关法规，你享有访问、更正、删除和迁移自己数据的权利。请通过 privacy@autional.net 提交请求。</p>
-      <h2>5. 联系方式</h2>
-      <p>关于本政策的问题：<a href="mailto:privacy@autional.net">privacy@autional.net</a></p>
+      <p>{t('privacy.intro')}</p>
+      <h2>{t('privacy.s1.title')}</h2>
+      <ul>{s1Items.map(i => <li><strong>{i.label}</strong> {i.value}</li>)}</ul>
+      <h2>{t('privacy.s2.title')}</h2>
+      <ul>{s2Items.map(i => <li>{i}</li>)}</ul>
+      <h2>{t('privacy.s3.title')}</h2>
+      <p>{t('privacy.s3.body')}</p>
+      <h2>{t('privacy.s4.title')}</h2>
+      <p>{t('privacy.s4.body', { email: contactEmail })}</p>
+      <h2>{t('privacy.s5.title')}</h2>
+      <p>{t('privacy.s5.label')} <a href={`mailto:${contactEmail}`}>{contactEmail}</a></p>
     </div>
   </section>
 </Layout>

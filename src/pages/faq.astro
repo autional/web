@@ -1,19 +1,14 @@
 ---
 import Layout from '../layouts/LandingLayout.astro';
-const faqItems = [
-  ['Autional 是开源的吗？','是的。门户、设计系统与 SDK 以 AGPL-3.0 在 GitHub 组织页（github.com/autional-cn）开源发布。当前自托管开源可用；云托管在路线图中（即将推出）。'],
-  ['Autional 是什么？','Autional 是面向 AI 生成应用的身份层。它提供认证、授权、多租户、企业级 SSO 与合规能力 —— 全部由 27 个微服务和 1,400+ API 支撑。'],
-  ['Autional 与 Auth0 有什么不同？','Auth0 是闭源 SaaS，而 Autional 支持自托管，并且专为 AI 生成的应用设计。我们的定价透明，不按用户数或连接数收费。'],
-  ['我可以自托管 Autional 吗？','可以，自托管免费：当前自托管开源可用，云托管在路线图中（即将推出）。部署支持 Docker/Podman compose 或 Kubernetes，平台运行在 PostgreSQL + MongoDB + Redis + RabbitMQ 之上。'],
-  ['「AI 生成的应用」指什么？','指使用 Bolt.new、Lovable.dev、Cursor、Claude Code 或 Replit 等工具构建的应用。这些工具能快速生成应用代码。Autional 提供身份层，让你的生成式应用不必重新发明认证。'],
-  ['你们提供云托管吗？','云托管在路线图中（即将推出）。当前自托管开源可用；如果你需要托管基础设施，请联系我们。'],
-  ['你们支持哪些合规框架？','Autional 包含面向 ISO 27001、PCI DSS、HIPAA、SOX、GDPR、PSD2、PIPL 与等保 2.0 的数据模型与工具。合规认证由部署方自行负责。'],
-  ['Autional 有多少个 API 端点？','27 个微服务中共有 1,400+ 个 RESTful API 端点。每个端点都有 Swagger/OpenAPI 文档。'],
-];
+import { t } from '../i18n';
+
+interface FaqItem { q: string; a: string }
+
+const faqItems = t('faq.items', { returnObjects: true }) as FaqItem[];
 const faqJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
-  mainEntity: faqItems.map(([q, a]) => ({
+  mainEntity: faqItems.map(({ q, a }) => ({
     '@type': 'Question',
     name: q,
     acceptedAnswer: { '@type': 'Answer', text: a },
@@ -21,15 +16,15 @@ const faqJsonLd = {
 };
 ---
 <Layout
-  title="常见问题 — Autional"
-  description="关于 Autional 身份平台的常见问题解答。"
-  keywords="Autional, 常见问题, 身份, IAM, SSO, 认证, 开源"
+  title={t('faq.meta.title')}
+  description={t('faq.meta.description')}
+  keywords={t('faq.meta.keywords')}
   jsonLd={[faqJsonLd]}
 >
   <section class="mx-auto max-w-3xl px-4 py-20">
-    <h1 class="text-4xl font-bold sm:text-5xl text-center">常见问题</h1>
+    <h1 class="text-4xl font-bold sm:text-5xl text-center">{t('faq.title')}</h1>
     <div class="mt-12 space-y-4">
-      {faqItems.map(([q,a]) => (
+      {faqItems.map(({q,a}) => (
         <details class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 group">
           <summary class="font-medium cursor-pointer list-none flex justify-between items-center">{q}<span class="text-neutral-400 group-open:rotate-45 transition-transform text-lg">+</span></summary>
           <p class="mt-3 text-sm text-neutral-500 leading-relaxed">{a}</p>

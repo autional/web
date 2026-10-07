@@ -363,6 +363,68 @@
       { "title": "SDK 与 npm 软件包", "desc": "@autional/react 等已发布组件，均可直接安装。", "label": "查看 SDK" }
     ]
   },
+  "notFound": {
+    "meta": { "title": "404 — 页面未找到 | Autional", "description": "页面未找到" },
+    "title": "页面未找到",
+    "body": "你访问的页面不存在，或已被移动。",
+    "goHome": "返回首页",
+    "browseBlog": "浏览博客"
+  },
+  "contact": {
+    "meta": { "title": "联系我们 — Autional", "description": "与 Autional 团队取得联系。", "keywords": "Autional, 联系, 销售, 支持, 企业, 身份" },
+    "title": "联系我们",
+    "lead": "技术问题、商务咨询或合作机会 —— 欢迎与我们联系。",
+    "cards": [
+      { "title": "技术支持", "desc": "GitHub Issues", "cta": "提交 Issue →" },
+      { "title": "商务咨询", "desc": "企业授权、合作伙伴", "cta": "support@autional.net" },
+      { "title": "文档", "desc": "API 文档、部署指南", "cta": "查看文档 →" }
+    ]
+  },
+  "privacy": {
+    "meta": { "title": "隐私政策 — Autional", "description": "Autional 隐私政策。", "keywords": "Autional, 隐私, GDPR, 数据保护, DSAR, 合规" },
+    "title": "隐私政策",
+    "updatedLabel": "最近更新：{{date}}",
+    "intro": "本隐私政策说明 Autional 在你使用我们的平台与网站时，如何收集、使用和处理你的个人数据。",
+    "s1": {
+      "title": "1. 我们收集的信息",
+      "items": [
+        { "label": "账户数据：", "value": "邮箱地址、用户名、密码哈希（argon2id）" },
+        { "label": "认证数据：", "value": "IP 地址、User Agent、设备指纹、登录时间戳" },
+        { "label": "个人资料数据：", "value": "头像、显示名称、偏好设置（由用户自行配置）" },
+        { "label": "通信数据：", "value": "用于发送事务性邮件的邮箱地址" }
+      ]
+    },
+    "s2": { "title": "2. 我们如何使用数据", "items": ["提供并维护认证服务", "安全监控与欺诈防范", "遵守法律义务（GDPR 等）", "服务改进与问题排查"] },
+    "s3": { "title": "3. 数据保留", "body": "认证数据在账户存续期间及其后 90 天内保留。审计日志按租户的保留策略保留（可配置，默认 90 天）。用户可随时请求删除数据。" },
+    "s4": { "title": "4. 你的权利", "body": "根据 GDPR 及相关法规，你享有访问、更正、删除和迁移自己数据的权利。请通过 {{email}} 提交请求。" },
+    "s5": { "title": "5. 联系方式", "label": "关于本政策的问题：" },
+    "contactEmail": "privacy@autional.net"
+  },
+  "terms": {
+    "meta": { "title": "服务条款 — Autional", "description": "Autional 服务条款。", "keywords": "Autional, 条款, 服务条款, 法律, 协议" },
+    "title": "服务条款",
+    "updatedLabel": "最近更新：{{date}}",
+    "s1": { "title": "1. 服务说明", "body": "Autional 基于 AGPL-3.0 开源许可证提供身份与访问管理软件。当前自托管开源可用；云托管在路线图中（即将推出）。" },
+    "s2": { "title": "2. 许可证", "body": "Autional 源代码基于 GNU Affero 通用公共许可证 v3（AGPL-3.0）授权。你可以在遵守该许可证的前提下使用、修改和分发本软件。" },
+    "s3": { "title": "3. 用户责任", "items": ["保障你的账户凭据安全", "遵守适用的法律与法规", "不得将本服务用于非法用途"] },
+    "s4": { "title": "4. 责任限制", "body": "本软件按「原样」提供，不附带任何形式的担保。作者与贡献者不对因使用本软件而产生的任何损害承担责任。" },
+    "s5": { "title": "5. 联系方式", "label": "法律事务咨询：" },
+    "contactEmail": "legal@autional.net"
+  },
+  "faq": {
+    "meta": { "title": "常见问题 — Autional", "description": "关于 Autional 身份平台的常见问题解答。", "keywords": "Autional, 常见问题, 身份, IAM, SSO, 认证, 开源" },
+    "title": "常见问题",
+    "items": [
+      { "q": "Autional 是开源的吗？", "a": "是的。门户、设计系统与 SDK 以 AGPL-3.0 在 GitHub 组织页（github.com/autional）开源发布。当前自托管开源可用；云托管在路线图中（即将推出）。" },
+      { "q": "Autional 是什么？", "a": "Autional 是面向 AI 生成应用的身份层。它提供认证、授权、多租户、企业级 SSO 与合规能力 —— 全部由 27 个微服务和 1,400+ API 支撑。" },
+      { "q": "Autional 与 Auth0 有什么不同？", "a": "Auth0 是闭源 SaaS，而 Autional 支持自托管，并且专为 AI 生成的应用设计。我们的定价透明，不按用户数或连接数收费。" },
+      { "q": "我可以自托管 Autional 吗？", "a": "可以，自托管免费：当前自托管开源可用，云托管在路线图中（即将推出）。部署支持 Docker/Podman compose 或 Kubernetes，平台运行在 PostgreSQL + MongoDB + Redis + RabbitMQ 之上。" },
+      { "q": "「AI 生成的应用」指什么？", "a": "指使用 Bolt.new、Lovable.dev、Cursor、Claude Code 或 Replit 等工具构建的应用。这些工具能快速生成应用代码。Autional 提供身份层，让你的生成式应用不必重新发明认证。" },
+      { "q": "你们提供云托管吗？", "a": "云托管在路线图中（即将推出）。当前自托管开源可用；如果你需要托管基础设施，请联系我们。" },
+      { "q": "你们支持哪些合规框架？", "a": "Autional 包含面向 ISO 27001、PCI DSS、HIPAA、SOX、GDPR、PSD2、PIPL 与等保 2.0 的数据模型与工具。合规认证由部署方自行负责。" },
+      { "q": "Autional 有多少个 API 端点？", "a": "27 个微服务中共有 1,400+ 个 RESTful API 端点。每个端点都有 Swagger/OpenAPI 文档。" }
+    ]
+  },
   "footer": {
     "description": "面向 AI 生成应用的身份层。认证、SSO、通行密钥（Passkey）、租户隔离、审计与开发者 API，统一在一个连贯的系统中。",
     "platform": "平台",
