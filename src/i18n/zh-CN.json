@@ -17,7 +17,8 @@
     "skipToContent": "跳到主内容",
     "search": "搜索",
     "menu": "菜单",
-    "backToTop": "回到顶部"
+    "backToTop": "回到顶部",
+    "breadcrumb": "面包屑导航"
   },
   "theme": {
     "light": "浅色",
@@ -92,6 +93,55 @@
       "page": "页面",
       "blog": "博客"
     },
-    "hotTags": ["SSO", "MFA", "通行密钥", "多租户", "API 文档", "部署"]
+    "hotTags": ["SSO", "MFA", "通行密钥", "多租户", "API 文档", "部署"],
+    "pages": {
+      "home": { "title": "首页", "excerpt": "面向 AI 生成应用的身份层" },
+      "features": { "title": "功能", "excerpt": "SSO、MFA、通行密钥（Passkey）、多租户、审计与合规等核心能力" },
+      "pricing": { "title": "定价方案", "excerpt": "自托管开源免费；云服务档位在路线图中（即将推出）" },
+      "compare": { "title": "方案对比", "excerpt": "与 Auth0、Clerk、WorkOS 等身份平台的诚实对比" },
+      "roadmap": { "title": "路线图", "excerpt": "已交付成果与后续规划" },
+      "showcase": { "title": "演示与展示", "excerpt": "真实演示环境与产品能力一览" },
+      "trust": { "title": "安全与合规", "excerpt": "安全架构与合规建设进展" },
+      "docs": { "title": "开发者文档", "excerpt": "快速开始、API 参考与概念指南" },
+      "sdk": { "title": "SDK", "excerpt": "已发布 npm 软件包与规划中的 SDK" },
+      "ai": { "title": "AI 接入", "excerpt": "一句话让 AI 编程助手接入登录与多用户能力" },
+      "blog": { "title": "博客", "excerpt": "身份技术、安全与工程实践文章" },
+      "changelog": { "title": "更新日志", "excerpt": "产品版本更新与改进记录" },
+      "faq": { "title": "常见问题", "excerpt": "产品、开源、安全与开发者常见问题" },
+      "about": { "title": "关于我们", "excerpt": "使命、历程与路线图" },
+      "contact": { "title": "联系我们", "excerpt": "技术支持、商务合作与 GitHub Issues" },
+      "privacy": { "title": "隐私政策", "excerpt": "个人信息的收集、使用与保护" },
+      "terms": { "title": "服务条款", "excerpt": "使用 Autional 服务的法律协议与条款" }
+    }
+  },
+  "blog": {
+    "pageTitle": "博客",
+    "pageDesc": "关于身份、安全、合规与架构的技术文章。",
+    "rssDesc": "关于身份、安全、合规与架构的技术文章，面向 AI 生成的应用。",
+    "title": "博客",
+    "subtitle": "身份、安全、合规与架构 —— 由 Autional 团队撰写。",
+    "categories": {
+      "all": "全部",
+      "tech": "技术",
+      "architecture": "架构",
+      "compliance": "合规",
+      "product": "产品",
+      "security": "安全",
+      "project": "项目"
+    },
+    "featured": "精选",
+    "readMore": "阅读全文",
+    "empty": "该分类下暂无文章。",
+    "backToList": "返回博客",
+    "backToAll": "返回全部博客文章",
+    "metaTitleSuffix": "Autional 博客",
+    "breadcrumbHome": "首页",
+    "relatedReading": "相关阅读",
+    "ctaTitle": "准备好给应用加上身份层了吗？",
+    "ctaDesc": "Autional 提供认证、组织、访问控制、审计与开发者 API —— 面向 AI 生成应用的身份层。",
+    "ctaDocs": "快速开始",
+    "ctaFeatures": "浏览功能特性",
+    "keywordIdentity": "身份",
+    "keywordAuth": "认证"
   }
 }

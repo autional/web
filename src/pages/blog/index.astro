@@ -1,22 +1,26 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/LandingLayout.astro';
+import { t } from '../../i18n';
+import { isRegionPost, postSlug } from '../../lib/blog-lang';
 
 const posts = await getCollection('blog', ({ data }: { data: CollectionEntry<'blog'>['data'] }) => data.status === 'verified');
-const sorted = posts.sort((a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const regionPosts = posts.filter((post: CollectionEntry<'blog'>) => isRegionPost(post.id));
+const sorted = regionPosts.sort((a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 const [featured, ...rest] = sorted;
 
+// 分类 chip 保持枚举原文（跨区同值，见执行报告「chip 原文」登记）；仅「全部」随语言切换
 const categories = ['Tech','Architecture','Compliance','Product','Security','Project'];
 ---
-<Layout title="博客 — Autional" description="关于身份、安全、合规与架构的技术文章。">
+<Layout title={`${t('blog.title')} — Autional`} description={t('blog.pageDesc')}>
   <div class="max-w-7xl mx-auto px-4 py-16">
     <div class="text-center">
-      <h1 class="text-4xl font-bold sm:text-5xl">博客</h1>
-      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-600 dark:text-neutral-300">身份、安全、合规与架构 —— 由 Autional 团队撰写。</p>
+      <h1 class="text-4xl font-bold sm:text-5xl" data-i18n="blog.title">{t('blog.title')}</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-600 dark:text-neutral-300" data-i18n="blog.subtitle">{t('blog.subtitle')}</p>
     </div>
 
     <div class="mt-8 flex flex-wrap justify-center gap-2" id="blog-category-filters">
-      <button type="button" data-category="All" aria-pressed="true" class="rounded-full bg-primary-600 px-4 py-1.5 text-sm font-medium text-white transition-colors">全部</button>
+      <button type="button" data-category="All" aria-pressed="true" class="rounded-full bg-primary-600 px-4 py-1.5 text-sm font-medium text-white transition-colors"><span data-i18n="blog.categories.all">{t('blog.categories.all')}</span></button>
       {categories.map((c: string) => <button type="button" data-category={c} aria-pressed="false" class="rounded-full bg-neutral-100 px-4 py-1.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-200 dark:bg-slate-800 dark:text-neutral-300 dark:hover:bg-slate-700">{c}</button>)}
     </div>
 
@@ -26,15 +30,15 @@ const categories = ['Tech','Architecture','Compliance','Product','Security','Pro
           <div class="flex items-center justify-center bg-primary-50 p-10 dark:bg-primary-900/10">
             <div class="text-center">
               <div class="inline-flex h-16 w-16 items-center justify-center rounded-md bg-primary-100 text-primary-600"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg></div>
-              <p class="mt-4 text-sm text-neutral-400">精选</p>
+              <p class="mt-4 text-sm text-neutral-400" data-i18n="blog.featured">{t('blog.featured')}</p>
             </div>
           </div>
           <div class="flex flex-col justify-center p-8 lg:p-10">
             <span class="inline-block w-fit rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-700">{featured.data.category}</span>
-            <h2 class="mt-4 text-2xl font-bold"><a href={`/blog/${featured.id.replace(/\.md$/,'')}`} class="hover:text-primary-600">{featured.data.title}</a></h2>
+            <h2 class="mt-4 text-2xl font-bold"><a href={`/blog/${postSlug(featured.id)}`} class="hover:text-primary-600">{featured.data.title}</a></h2>
             <p class="mt-3 text-neutral-600">{featured.data.excerpt}</p>
             <div class="mt-4 flex items-center gap-4 text-sm text-neutral-500"><span>{featured.data.date}</span><span>{featured.data.readTime}</span></div>
-            <div class="mt-6"><a href={`/blog/${featured.id.replace(/\.md$/,'')}`} class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700">阅读全文 <span class="text-lg">&rarr;</span></a></div>
+            <div class="mt-6"><a href={`/blog/${postSlug(featured.id)}`} class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700"><span data-i18n="blog.readMore">{t('blog.readMore')}</span> <span class="text-lg">&rarr;</span></a></div>
           </div>
         </div>
       </div>
@@ -44,7 +48,7 @@ const categories = ['Tech','Architecture','Compliance','Product','Security','Pro
       {rest.map((post: CollectionEntry<'blog'>) => (
         <article class="group flex flex-col rounded-xl border border-neutral-200 bg-white p-6 shadow-card transition-all dark:border-neutral-800 dark:bg-slate-900 hover:border-neutral-300" data-post-card data-post-category={post.data.category}>
           <span class="rounded-full bg-primary-50 dark:bg-primary-900/30 px-2.5 py-0.5 text-xs font-medium text-primary-700 w-fit">{post.data.category}</span>
-          <a href={`/blog/${post.id.replace(/\.md$/,'')}`} class="mt-4"><h3 class="text-lg font-semibold group-hover:text-primary-600">{post.data.title}</h3></a>
+          <a href={`/blog/${postSlug(post.id)}`} class="mt-4"><h3 class="text-lg font-semibold group-hover:text-primary-600">{post.data.title}</h3></a>
           <p class="mt-2 flex-1 text-sm text-neutral-600 dark:text-neutral-400">{post.data.excerpt}</p>
           <div class="mt-4 flex flex-wrap gap-2">{post.data.tags.map((tag: string) => <span class="text-xs text-neutral-400">#{tag}</span>)}</div>
           <div class="mt-4 flex items-center gap-4 border-t border-neutral-100 pt-4 text-xs text-neutral-500"><span>{post.data.date}</span><span>{post.data.readTime}</span></div>
@@ -52,8 +56,8 @@ const categories = ['Tech','Architecture','Compliance','Product','Security','Pro
       ))}
     </div>
 
-    <div id="blog-empty-state" class="mt-12 hidden rounded-lg border border-dashed border-primary-200 bg-primary-50/60 px-6 py-10 text-center text-neutral-600 dark:border-primary-800 dark:bg-primary-900/10 dark:text-neutral-300">
-      该分类下暂无文章。
+    <div id="blog-empty-state" class="mt-12 hidden rounded-lg border border-dashed border-primary-200 bg-primary-50/60 px-6 py-10 text-center text-neutral-600 dark:border-primary-800 dark:bg-primary-900/10 dark:text-neutral-300" data-i18n="blog.empty">
+      {t('blog.empty')}
     </div>
   </div>
 

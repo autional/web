@@ -17,7 +17,8 @@
     "skipToContent": "Skip to Content",
     "search": "Search",
     "menu": "Menu",
-    "backToTop": "Back to Top"
+    "backToTop": "Back to Top",
+    "breadcrumb": "Breadcrumb"
   },
   "theme": {
     "light": "Light",
@@ -92,6 +93,55 @@
       "page": "Page",
       "blog": "Blog"
     },
-    "hotTags": ["SSO", "MFA", "Passkey", "Multi-Tenant", "API Docs", "Deployment"]
+    "hotTags": ["SSO", "MFA", "Passkey", "Multi-Tenant", "API Docs", "Deployment"],
+    "pages": {
+      "home": { "title": "Home", "excerpt": "Autional Enterprise Identity & Access Management Platform" },
+      "features": { "title": "Features", "excerpt": "12 core modules including SSO, MFA, Passkey, Multi-Tenancy, Audit & Compliance" },
+      "pricing": { "title": "Pricing Plans", "excerpt": "Free, Pro, and Enterprise plans. Scale as you grow, no hidden fees" },
+      "compare": { "title": "Compare", "excerpt": "An honest comparison with Auth0, Clerk, WorkOS and other identity platforms" },
+      "roadmap": { "title": "Roadmap", "excerpt": "See what we have accomplished and what we are planning" },
+      "showcase": { "title": "Showcase", "excerpt": "Real demo environments and a tour of platform capabilities" },
+      "trust": { "title": "Security & Compliance", "excerpt": "Our security architecture and compliance commitment" },
+      "docs": { "title": "Developer Docs", "excerpt": "API Reference, SDKs & Tools, Concept Guides" },
+      "sdk": { "title": "SDK", "excerpt": "Published npm packages and SDKs in the pipeline" },
+      "ai": { "title": "AI Onboarding", "excerpt": "Add login and multi-user support to your AI coding assistant with one prompt" },
+      "blog": { "title": "Blog", "excerpt": "Security articles, product updates & best practices" },
+      "changelog": { "title": "Changelog", "excerpt": "See the latest version updates, features, improvements & fixes" },
+      "faq": { "title": "FAQ", "excerpt": "Product, security, developer & technical support FAQs" },
+      "about": { "title": "About Us", "excerpt": "Team, vision, mission & milestones" },
+      "contact": { "title": "Contact Us", "excerpt": "Technical support & community engagement" },
+      "privacy": { "title": "Privacy Policy", "excerpt": "Learn how we collect, use and protect your personal information" },
+      "terms": { "title": "Terms of Service", "excerpt": "Legal agreement and terms for using Autional services" }
+    }
+  },
+  "blog": {
+    "pageTitle": "Blog",
+    "pageDesc": "Technical articles on identity, security, compliance, and architecture.",
+    "rssDesc": "Technical articles on identity, security, compliance, and architecture for AI-generated applications.",
+    "title": "Blog",
+    "subtitle": "Identity, security, compliance & architecture — by the Autional team.",
+    "categories": {
+      "all": "All",
+      "tech": "Tech",
+      "architecture": "Architecture",
+      "compliance": "Compliance",
+      "product": "Product",
+      "security": "Security",
+      "project": "Project"
+    },
+    "featured": "Featured",
+    "readMore": "Read more",
+    "empty": "No posts found in this category yet.",
+    "backToList": "Back to Blog",
+    "backToAll": "Return to all blog posts",
+    "metaTitleSuffix": "Autional Blog",
+    "breadcrumbHome": "Home",
+    "relatedReading": "Related Reading",
+    "ctaTitle": "Ready to add an identity layer to your app?",
+    "ctaDesc": "Autional provides authentication, organizations, access control, audit, and developer APIs — an identity layer for AI-generated applications.",
+    "ctaDocs": "Get Started",
+    "ctaFeatures": "Browse Features",
+    "keywordIdentity": "identity",
+    "keywordAuth": "auth"
   }
 }

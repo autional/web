@@ -2,13 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, X, FileText, Tag, ArrowRight } from 'lucide-react';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
-
-interface SearchItem {
-  path: string;
-  title: string;
-  category: string;
-  excerpt: string;
-}
+import type { SearchItem } from '../lib/search-index';
 
 interface Props {
   isOpen: boolean;
@@ -17,14 +11,26 @@ interface Props {
 }
 
 export default function SearchModal({ isOpen, onClose, items }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // 条目键解析（静态页 search.pages.* / 分类 search.category.*）：随当前语言重算，语言切换联动
+  const resolved = useMemo(
+    () =>
+      items.map((item) => ({
+        path: item.path,
+        title: item.titleKey ? t(item.titleKey) : (item.title ?? ''),
+        excerpt: item.excerptKey ? t(item.excerptKey) : (item.excerpt ?? ''),
+        category: t(item.categoryKey),
+      })),
+    [items, t, i18n.language]
+  );
 
   const hotTags = useMemo<string[]>(() => {
     const tags = t('search.hotTags', { returnObjects: true });
     return Array.isArray(tags) ? tags : [];
-  }, [t]);
+  }, [t, i18n.language]);
 
   useEffect(() => {
     if (isOpen) {
@@ -50,13 +56,13 @@ export default function SearchModal({ isOpen, onClose, items }: Props) {
   const results = useMemo(() => {
     if (!query.trim()) return [];
     const q = query.toLowerCase();
-    return items.filter(
+    return resolved.filter(
       (item) =>
         item.title.toLowerCase().includes(q) ||
         item.excerpt.toLowerCase().includes(q) ||
         item.category.toLowerCase().includes(q)
     );
-  }, [query, items]);
+  }, [query, resolved]);
 
   if (!isOpen) return null;
 

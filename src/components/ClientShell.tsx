@@ -3,8 +3,10 @@ import { Menu, X, Search, ChevronUp } from 'lucide-react';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
 import { ThemeToggle } from '../components/ThemeToggle';
+import LangSwitch from '../components/LangSwitch';
 import SearchModal from '../components/SearchModal';
 import type { SearchItem } from '../lib/search-index';
+import { GITHUB_ORG_URL } from '../lib/site-env';
 
 // 移动端首层菜单与桌面导航对齐（含 SDK 与 GitHub 外链）
 const navLinks = [
@@ -17,9 +19,7 @@ const navLinks = [
   { href: '/ai', labelKey: 'nav.ai' },
 ];
 
-const externalLinks = [
-  { href: 'https://github.com/autional-cn', label: 'GitHub' },
-];
+const externalLinks = [{ href: GITHUB_ORG_URL, label: 'GitHub' }];
 
 export default function ClientShell({ searchIndex }: { searchIndex: SearchItem[] }) {
   const { t } = useTranslation();
@@ -66,24 +66,26 @@ export default function ClientShell({ searchIndex }: { searchIndex: SearchItem[]
         </div>
       )}
       <div className="flex items-center gap-2 md:hidden">
-        <button onClick={() => setSearchOpen(true)} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-primary-100 bg-white/90 text-primary-700 shadow-soft transition hover:bg-sky-50 dark:border-white/10 dark:bg-white/5 dark:text-sky-100 dark:hover:bg-white/10" aria-label="搜索">
+        <button onClick={() => setSearchOpen(true)} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-primary-100 bg-white/90 text-primary-700 shadow-soft transition hover:bg-sky-50 dark:border-white/10 dark:bg-white/5 dark:text-sky-100 dark:hover:bg-white/10" aria-label={t('a11y.search')}>
           <Search className="h-5 w-5" />
         </button>
-        <ThemeToggle labelLight="浅色" labelDark="深色" />
-        <button className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-primary-100 bg-white/90 text-primary-700 shadow-soft transition hover:bg-sky-50 dark:border-white/10 dark:bg-white/5 dark:text-sky-100 dark:hover:bg-white/10" onClick={() => setMobileOpen(!mobileOpen)} aria-label="菜单">
+        <LangSwitch />
+        <ThemeToggle />
+        <button className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-primary-100 bg-white/90 text-primary-700 shadow-soft transition hover:bg-sky-50 dark:border-white/10 dark:bg-white/5 dark:text-sky-100 dark:hover:bg-white/10" onClick={() => setMobileOpen(!mobileOpen)} aria-label={t('a11y.menu')}>
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
       <div className="hidden md:flex items-center gap-2">
         <button onClick={() => setSearchOpen(true)} className="inline-flex h-10 items-center gap-1.5 rounded-full border border-primary-100 bg-white/90 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-primary-700 shadow-soft transition hover:-translate-y-0.5 hover:bg-sky-50 dark:border-white/10 dark:bg-white/5 dark:text-sky-100 dark:hover:bg-white/10">
-          <Search className="h-3.5 w-3.5" /><span>搜索</span>
+          <Search className="h-3.5 w-3.5" /><span>{t('nav.search')}</span>
           <kbd className="ml-1 hidden rounded-full bg-primary-50 px-2 py-0.5 text-[10px] font-semibold tracking-normal text-primary-500 dark:bg-white/10 dark:text-sky-100 lg:inline">Ctrl K</kbd>
         </button>
-        <ThemeToggle labelLight="浅色" labelDark="深色" />
+        <LangSwitch />
+        <ThemeToggle />
       </div>
       {showScrollTop && (
         <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-6 right-6 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-white shadow-brand hover:scale-105 dark:bg-primary-700" aria-label="回到顶部">
+          className="fixed bottom-6 right-6 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-white shadow-brand hover:scale-105 dark:bg-primary-700" aria-label={t('a11y.backToTop')}>
           <ChevronUp className="h-5 w-5" />
         </button>
       )}

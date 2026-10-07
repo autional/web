@@ -17,6 +17,9 @@ export type Lang = (typeof langs)[number];
 /** 语言偏好存储键（与主题键 autional-theme 并列）。 */
 export const LANG_STORAGE_KEY = 'autional-lang';
 
+/** 语言切换事件名：LandingLayout 的 chrome DOM 交换脚本监听此事件（B1-5）。 */
+export const LANG_EVENT = 'autional:lang';
+
 /** lang 短码 ↔ BCP-47 locale（i18next 资源键用 locale 全码）。 */
 export const langToLocale = (lang: Lang): string => (lang === 'en' ? 'en-US' : 'zh-CN');
 export const localeToLang = (locale: string): Lang => (locale.startsWith('en') ? 'en' : 'zh');
@@ -28,7 +31,8 @@ export const defaultLang = (region?: string): Lang =>
 const envDefaultLang = defaultLang();
 const envFallbackLang = (import.meta.env.PUBLIC_FALLBACK_LANG as Lang) ?? envDefaultLang;
 
-i18next.use(initReactI18next).init({
+/** 初始化 Promise：浏览器侧 init 默认延后（initImmediate），DOM 交换脚本等首个渲染点需等待它。 */
+export const i18nReady = i18next.use(initReactI18next).init({
   resources: {
     'en-US': { translation: enUS },
     'zh-CN': { translation: zhCN },
@@ -43,15 +47,22 @@ i18next.use(initReactI18next).init({
 export const t = (key: string, options?: Record<string, unknown>): string =>
   i18next.t(key, options) as string;
 
-/** 客户端切换（LangSwitch island 调用）：i18next 变更 + localStorage 持久化 + <html lang> 同步。 */
+/**
+ * 客户端切换（LangSwitch island 调用）：i18next 变更 + localStorage 持久化 + <html lang> 同步 +
+ * LANG_EVENT 广播（chrome DOM 交换脚本与自定义监听方共用）。
+ */
 export const setLang = (lang: Lang): void => {
-  void i18next.changeLanguage(langToLocale(lang));
   try {
     localStorage.setItem(LANG_STORAGE_KEY, lang);
   } catch {
     /* 隐私模式等场景忽略 */
   }
-  if (typeof document !== 'undefined') document.documentElement.lang = langToLocale(lang);
+  void i18next.changeLanguage(langToLocale(lang)).then(() => {
+    if (typeof document !== 'undefined') document.documentElement.lang = langToLocale(lang);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent(LANG_EVENT, { detail: { lang, locale: langToLocale(lang) } }));
+    }
+  });
 };
 
 /** 客户端采纳已存偏好（卫语句；仅在浏览器可用时生效）。 */
