@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Menu, X, Search, ChevronUp } from 'lucide-react';
 import { i18nReady, restoreLang } from '../i18n';
 import { useTranslation } from 'react-i18next';
@@ -28,10 +29,9 @@ const quickstartUrl = `${brotherUrl('developer')}/quickstart`;
 export default function ClientShell({ searchIndex, currentPath }: { searchIndex: SearchItem[]; currentPath: string }) {
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [showScrollTop, setShowScrollTop] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return window.scrollY > 400;
-  });
+  // 恒以 false 起步（2026-10-08）：SSR 渲 false；若按真实 scrollY 做惰性初始化，
+  // 刷新时浏览器恢复滚动位置会让首渲与 SSR 不一致。真实值由挂载后 effect 立即同步一次。
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
   // 已存语言偏好延后到 hydration 之后采纳（2026-10-08 #418 修复）：首渲与 SSR 区域默认语言一致；
@@ -42,6 +42,7 @@ export default function ClientShell({ searchIndex, currentPath }: { searchIndex:
 
   useEffect(() => {
     const onScroll = () => setShowScrollTop(window.scrollY > 400);
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -105,12 +106,18 @@ export default function ClientShell({ searchIndex, currentPath }: { searchIndex:
         <LangSwitch />
         <ThemeToggle />
       </div>
-      {showScrollTop && (
-        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-6 right-6 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-white shadow-brand hover:scale-105 dark:bg-primary-700" aria-label={t('a11y.backToTop')}>
-          <ChevronUp className="h-5 w-5" />
-        </button>
-      )}
+      {/* 返回顶部 portal 到 body（2026-10-08）：本组件渲染在头部胶囊内，胶囊的 backdrop-blur-xl
+          （backdrop-filter）会为 fixed 后代建立包含块 —— fixed 不再相对视口，而是钉在 48px 高的
+          胶囊上（bottom-6 相对胶囊底），按钮就跑到页面顶部。portal 到 body 后包含块回到视口。
+          同类先例：SearchModal 浮层同样 portal 到 body。 */}
+      {showScrollTop &&
+        createPortal(
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-6 right-6 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-white shadow-brand hover:scale-105 dark:bg-primary-700" aria-label={t('a11y.backToTop')}>
+            <ChevronUp className="h-5 w-5" />
+          </button>,
+          document.body,
+        )}
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} items={searchIndex} />
     </>
   );
