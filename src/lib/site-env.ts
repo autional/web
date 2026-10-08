@@ -19,8 +19,8 @@ export const DEFAULT_LANG: Lang = (import.meta.env.PUBLIC_DEFAULT_LANG as Lang) 
 export const FALLBACK_LANG: Lang = (import.meta.env.PUBLIC_FALLBACK_LANG as Lang) ?? DEFAULT_LANG;
 export const CDN_HOST: string = import.meta.env.PUBLIC_CDN_HOST ?? 'https://cdn.autional.cn';
 
-/** CDN 资产族 pin —— 与 @autional/tokens rc.15 / @autional/tailwind-preset rc.9 同波（D8 单家族收敛）。 */
-export const CDN_PIN = 'v0.1.0-rc.5ee19b4f';
+/** CDN 资产族 pin —— 与 @autional/tokens rc.16 / @autional/tailwind-preset rc.10 同波（D8 单家族收敛）。 */
+export const CDN_PIN = 'v0.1.0-rc.f0db1b97';
 
 /** CDN 资产 URL 拼接：cdnAsset('icons/favicon.svg')。 */
 export const cdnAsset = (path: string): string => `${CDN_HOST}/ui/${CDN_PIN}/${path}`;

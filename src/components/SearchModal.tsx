@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Search, X, FileText, Tag, ArrowRight } from 'lucide-react';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
@@ -66,8 +67,11 @@ export default function SearchModal({ isOpen, onClose, items }: Props) {
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/50 pt-[var(--layout-modal-offset)] backdrop-blur-sm" onClick={onClose}>
+  // ⚠ 必须 portal 到 body（第 63 轮补·四实测）：搜索按钮长在顶栏里，而顶栏内层写了 backdrop-blur-xl ——
+  // backdrop-filter 会成为 position:fixed 后代的**包含块**，于是这个 inset-0 遮罩只覆盖顶栏那一小块
+  // （线上实测 976x135，不是整屏）。浮层属于顶层，不属于触发它的子树。
+  const content = (
+    <div className="fixed inset-0 z-[60] flex items-start justify-center bg-scrim/50 pt-[var(--layout-modal-offset)] backdrop-blur-sm" onClick={onClose}>
       <div
         className="mx-4 w-full max-w-2xl overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-card dark:border-neutral-700 dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
@@ -151,4 +155,7 @@ export default function SearchModal({ isOpen, onClose, items }: Props) {
       </div>
     </div>
   );
+
+  if (typeof document === 'undefined') return content;
+  return createPortal(content, document.body);
 }
