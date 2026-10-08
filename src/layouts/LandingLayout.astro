@@ -64,6 +64,12 @@ const searchIndex = buildSearchIndex(blogPosts.filter((post) => isRegionPost(pos
 const year = new Date().getFullYear();
 const navLinkClass = 'rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white';
 const footerLinkClass = 'text-sm text-sky-100/72 transition-colors hover:text-white';
+
+// 导航高亮单源（2026-10-08）：aria-current 由 SSR 按当前路径算，桌面静态导航与移动 island 共用同一判据
+const currentPath = Astro.url.pathname;
+const isCurrentPath = (href: string) => currentPath === href || currentPath.startsWith(`${href}/`);
+// 头部 CTA 落点：与本区 docs/sdk 页的「快速开始」同源（developer 门户 quickstart），不另造入口
+const quickstartUrl = `${brotherUrl('developer')}/quickstart`;
 ---
 <!DOCTYPE html><html lang={lang}>
 <head>
@@ -106,6 +112,12 @@ const footerLinkClass = 'text-sm text-sky-100/72 transition-colors hover:text-wh
   <link rel="alternate" type="application/rss+xml" title={t('layout.rssTitle')} href="/rss.xml" />
 </head>
 <body class="flex min-h-screen flex-col text-neutral-900 dark:text-white">
+  {/* 跳至主内容（2026-10-08）：键盘用户第一个 Tab 即达；sr-only 隐藏，聚焦时以品牌胶囊形态浮出 */}
+  <a
+    href="#main-content"
+    class="sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:h-auto focus:w-auto focus:m-0 focus:overflow-visible focus:whitespace-normal focus:[clip:auto] focus:rounded-full focus:bg-primary-700 focus:px-5 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white focus:shadow-brand"
+    data-i18n="a11y.skipToContent"
+  >{t('a11y.skipToContent')}</a>
   {/* 顶栏高度此前由内层胶囊的 py-3 撑开（约 48px），与其余 13 个门户的 64px 不一致。
        改为令牌高度 + flex 居中；内层胶囊用 h-full 填满**减去 py-2 后的内容盒**（48px），
        于是外框 64px、胶囊仍悬浮——保留本站的营销站观感，同时与外框节奏对齐。 */}
@@ -117,16 +129,20 @@ const footerLinkClass = 'text-sm text-sky-100/72 transition-colors hover:text-wh
           <div class="text-[1.9rem] font-extrabold tracking-[var(--letter-spacing-display-lg)] text-primary-900 dark:text-white">Autional</div>
         </div>
       </a>
-      <nav class="hidden items-center gap-1 md:flex">
-        <a href="/features" class={navLinkClass} data-i18n="nav.features">{t('nav.features')}</a>
-        <a href="/sdk" class={navLinkClass} data-i18n="nav.sdk">{t('nav.sdk')}</a>
-        <a href="/ai" class={navLinkClass} data-i18n="nav.ai">{t('nav.ai')}</a>
-        <a href="/pricing" class={navLinkClass} data-i18n="nav.pricing">{t('nav.pricing')}</a>
-        <a href="/docs" class={navLinkClass} data-i18n="nav.docs">{t('nav.docs')}</a>
-        <a href="/blog" class={navLinkClass} data-i18n="nav.blog">{t('nav.blog')}</a>
+      {/* 桌面导航自 xl 起（2026-10-08）：md–lg 区间（768–1279px）七项 + 搜索文字 + 双语 + 主题
+          的自然宽度超出视口（实测 768→989 / 1024→1037），整页横向溢出；该区间并入汉堡菜单 */}
+      <nav class="hidden items-center gap-1 xl:flex">
+        <a href="/features" class={navLinkClass} aria-current={isCurrentPath('/features') ? 'page' : undefined} data-i18n="nav.features">{t('nav.features')}</a>
+        <a href="/sdk" class={navLinkClass} aria-current={isCurrentPath('/sdk') ? 'page' : undefined} data-i18n="nav.sdk">{t('nav.sdk')}</a>
+        <a href="/ai" class={navLinkClass} aria-current={isCurrentPath('/ai') ? 'page' : undefined} data-i18n="nav.ai">{t('nav.ai')}</a>
+        <a href="/pricing" class={navLinkClass} aria-current={isCurrentPath('/pricing') ? 'page' : undefined} data-i18n="nav.pricing">{t('nav.pricing')}</a>
+        <a href="/docs" class={navLinkClass} aria-current={isCurrentPath('/docs') ? 'page' : undefined} data-i18n="nav.docs">{t('nav.docs')}</a>
+        <a href="/blog" class={navLinkClass} aria-current={isCurrentPath('/blog') ? 'page' : undefined} data-i18n="nav.blog">{t('nav.blog')}</a>
         <a href={GITHUB_ORG_URL} class={navLinkClass}>GitHub</a>
       </nav>
-      <ClientShell client:load searchIndex={searchIndex} />
+      <ClientShell client:load searchIndex={searchIndex} currentPath={currentPath} />
+      {/* 头部 CTA（2026-10-08）：md 起常驻（含汉堡同行区间），<md 收进移动菜单；文案键 nav.getStarted 已备 */}
+      <a href={quickstartUrl} class="brand-button-primary hidden md:inline-flex" data-i18n="nav.getStarted">{t('nav.getStarted')}</a>
     </div>
   </header>
   <main class="flex-1" id="main-content"><slot /></main>
@@ -178,29 +194,47 @@ const footerLinkClass = 'text-sm text-sky-100/72 transition-colors hover:text-wh
     // chrome 语言交换（B1-5，单源机制）：LangSwitch 调 setLang() 后广播 LANG_EVENT，
     // 本脚本把带 data-i18n / data-i18n-<attr> 的静态 chrome 节点就地重写为当前语言；
     // 页面正文与博客/列表内容保持区域默认语言（不与切换联动）——文案键来自同一份 i18n 资源。
-    import { LANG_EVENT, i18nReady, restoreLang, t } from '../i18n';
+    import i18next, { LANG_EVENT, LANG_STORAGE_KEY, i18nReady, langs, langToLocale, defaultLang, t } from '../i18n';
+    import type { Lang } from '../i18n';
 
     const ATTRS = ['aria-label', 'alt', 'title', 'placeholder'] as const;
 
-    const applyChrome = () => {
+    const applyChrome = (translate: typeof t = t) => {
       const params = { year: new Date().getFullYear() };
       document.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
         const key = el.dataset.i18n;
-        if (key) el.textContent = t(key, params);
+        if (key) el.textContent = translate(key, params);
       });
       for (const attr of ATTRS) {
         document.querySelectorAll<HTMLElement>(`[data-i18n-${attr}]`).forEach((el) => {
           const key = el.getAttribute(`data-i18n-${attr}`);
-          if (key) el.setAttribute(attr, t(key, params));
+          if (key) el.setAttribute(attr, translate(key, params));
         });
       }
     };
 
-    window.addEventListener(LANG_EVENT, applyChrome);
-    // 采纳已存偏好（若有）后统一重写一次；restoreLang 内部走 setLang → 事件，此处兜底无偏好路径
+    window.addEventListener(LANG_EVENT, () => applyChrome());
+
+    // 已存偏好只做 DOM 交换（getFixedT 取词），**不切 i18next.language**（2026-10-08 #418 修复）：
+    // island 首渲必须与 SSR 的区域默认语言一致，否则 React 报文本不匹配（#418）；
+    // i18next 本体切到偏好语言延后到 hydration 之后（ClientShell 的 useEffect → restoreLang）。
+    const adoptSavedLang = (): boolean => {
+      try {
+        const saved = localStorage.getItem(LANG_STORAGE_KEY) as Lang | null;
+        if (!saved || !langs.includes(saved)) return false;
+        const locale = langToLocale(saved);
+        if (locale === langToLocale(defaultLang())) return false;
+        document.documentElement.lang = locale;
+        applyChrome(i18next.getFixedT(locale));
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    // 无偏好（或与区域默认一致）时兜底重写一次；有偏好时上面的 fixedT 交换已生效，不能再用全局 t 覆盖
     i18nReady.then(() => {
-      restoreLang();
-      applyChrome();
+      if (!adoptSavedLang()) applyChrome();
     });
   </script>
 </body></html>

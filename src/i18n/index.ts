@@ -4,7 +4,8 @@
  * - 初始语言由构建期 env 注入（DEFAULT_LANG / FALLBACK_LANG，见 astro.config.mjs 的 vite.define）；
  *   不做 navigator 探测——区域即语言（doc 22 §1.4）；
  * - 手动切换（chrome + 列表）为客户端行为：LangSwitch island 调 setLang()，无 URL 变化；
- *   偏好存 localStorage，刷新后由 restoreLang() 采纳（SSR 首帧仍为区域默认语言，属已接受代价）。
+ *   偏好存 localStorage，静态 chrome 由 LandingLayout 脚本以 getFixedT 提前交换（不切本语言），
+ *   restoreLang() 延后到 hydration 之后由 ClientShell 调用（2026-10-08：提前切本语言会造成 React #418）。
  */
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
