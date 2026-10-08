@@ -63,6 +63,7 @@ const keywords = ['Autional', t('blog.keywordIdentity'), t('blog.keywordAuth'), 
   title={`${data.title} — ${t('blog.metaTitleSuffix')}`}
   description={data.excerpt}
   ogType="article"
+  image={`/og/blog/${postSlug(post.id)}.png`}
   keywords={keywords}
   jsonLd={[articleJsonLd, breadcrumbJsonLd]}
 >

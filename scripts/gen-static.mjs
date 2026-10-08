@@ -7,6 +7,7 @@
  *   public/llms.txt            ← scripts/templates/llms.txt + 区域变量 + 语言行（行 9 / W12）
  *   public/og-default.svg      ← scripts/templates/og-default.svg，{{HOST}} 按 SITE_URL 渲染（W2）
  *   public/og-default.png      ← 由上面的 svg 同步渲染（@resvg/resvg-js；替换原手跑脚本）
+ *   public/og/blog/<slug>.png  ← 本区语言目录逐篇博客分享卡（scripts/og-blog-cards.mjs）
  *   public/ai/skill.md         ← 本区默认语言镜像文件拷贝（= skill.{zh|en}.md；行 10）
  *   public/ai/skill.md.sha256  ← 随生成关系重排（与 check-skills 门口径一致；W1）
  *
@@ -22,6 +23,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderAsync } from '@resvg/resvg-js';
 import { readBuildEnv } from './env.mjs';
+import { generateBlogCards } from './og-blog-cards.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const { siteUrl, defaultLang, cdnHost } = readBuildEnv();
@@ -29,6 +31,13 @@ const host = new URL(siteUrl).host;
 
 const pub = (p) => join(root, 'public', p);
 const tpl = (p) => readFileSync(join(root, 'scripts', 'templates', p), 'utf8');
+
+// 分享卡字体（入仓 scripts/fonts/，resvg 专用）：Noto 为站内语料子集版本，
+// 新字符不在子集内会渲染为空——重建方式见 scripts/fonts/README.md
+const cardFontFiles = () =>
+  ['Inter-Regular.ttf', 'Inter-ExtraBold.ttf', 'NotoSansSC-Regular.subset.ttf', 'NotoSansSC-Bold.subset.ttf'].map((f) =>
+    join(root, 'scripts', 'fonts', f),
+  );
 
 // ── 1. robots.txt（落点表行 6）───────────────────────────────────────────────
 writeFileSync(pub('robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap-index.xml\n`);
@@ -81,10 +90,17 @@ writeFileSync(pub(join('ai', 'skill.md.sha256')), `${createHash('sha256').update
 // ── 4. og-default.svg + .png（W2：模板化 + 同步重渲染）───────────────────────
 const ogSvg = tpl('og-default.svg').replaceAll('{{HOST}}', host);
 writeFileSync(pub('og-default.svg'), ogSvg);
-const png = await renderAsync(ogSvg, { font: { loadSystemFonts: false } });
+// resvg 不加载系统字体（构建机字体不可控），字体全部来自入仓的 scripts/fonts/；
+// 此前只有 loadSystemFonts:false 而没有 fontFiles —— 所有 <text> 渲染为空，线上分享卡长期无文字
+const png = await renderAsync(ogSvg, {
+  font: { fontFiles: cardFontFiles(), loadSystemFonts: false, defaultFontFamily: 'Inter' },
+});
 writeFileSync(pub('og-default.png'), png.asPng());
+
+// ── 5. og/blog/<slug>.png（逐篇博客分享卡；本区语言目录 + status=verified）────
+const blogCards = await generateBlogCards({ root, host, defaultLang });
 
 console.log(
   `[gen-static] region=${readBuildEnv().region} defaultLang=${defaultLang} site=${siteUrl}\n` +
-    `  robots.txt / llms.txt (blog=${blogCount}) / ai/skill.md(< skill.${defaultLang}.md) + .sha256 / og-default.svg+png (host=${host})`,
+    `  robots.txt / llms.txt (blog=${blogCount}) / ai/skill.md(< skill.${defaultLang}.md) + .sha256 / og-default.svg+png (host=${host}) / og/blog/*.png (${blogCards} 篇)`,
 );

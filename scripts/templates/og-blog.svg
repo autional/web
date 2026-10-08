@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A"/>
+      <stop offset="100%" style="stop-color:#1E3A5F"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" rx="0"/>
+  <circle cx="910" cy="180" r="290" fill="#1E3A5F" opacity="0.45"/>
+  <circle cx="280" cy="540" r="210" fill="#1E3A5F" opacity="0.28"/>
+  <!-- 品牌行：logo + 字标（与 og-default 同一视觉） -->
+  <g transform="translate(100, 80)">
+    <rect width="64" height="64" rx="16" fill="url(#accent)"/>
+    <text x="32" y="45" text-anchor="middle" font-family="Inter, 'Noto Sans SC', sans-serif" font-size="34" font-weight="800" fill="white">A</text>
+  </g>
+  <text x="182" y="122" font-family="Inter, 'Noto Sans SC', sans-serif" font-size="30" font-weight="800" fill="white" letter-spacing="-0.01em">Autional</text>
+  <!-- 分类胶囊（右对齐；x/w 由 gen-static 度量后传入） -->
+  <rect x="{{PILL_X}}" y="89" width="{{PILL_W}}" height="46" rx="23" fill="#FFFFFF" fill-opacity="0.10" stroke="#FFFFFF" stroke-opacity="0.22"/>
+  <text x="{{PILL_TEXT_X}}" y="119" font-family="Inter, 'Noto Sans SC', sans-serif" font-size="22" font-weight="700" fill="#CBD5E1">{{CATEGORY}}</text>
+  <!-- 标题（最多 3 行；字号/行位由 gen-static 度量后传入） -->
+  <text font-family="Inter, 'Noto Sans SC', sans-serif" font-size="{{TITLE_SIZE}}" font-weight="800" fill="white">{{TITLE_SPANS}}</text>
+  <rect x="100" y="{{ACCENT_Y}}" width="120" height="4" rx="2" fill="url(#accent)"/>
+  <!-- Bottom bar（区域化：{{HOST}} 由 gen-static 按 SITE_URL 渲染；日期在左） -->
+  <rect x="0" y="580" width="1200" height="50" fill="#0F172A" opacity="0.8"/>
+  <text x="100" y="612" font-family="Inter, 'Noto Sans SC', sans-serif" font-size="16" fill="#475569">{{DATE}}</text>
+  <text x="600" y="612" text-anchor="middle" font-family="Inter, 'Noto Sans SC', sans-serif" font-size="16" fill="#475569">{{HOST}}</text>
+</svg>
