@@ -121,7 +121,7 @@ const checklist = t('ai.checklist', { returnObjects: true }) as string[];
         <h2 class="text-2xl font-bold mb-4">{t('ai.checklistTitle')}</h2>
         <ul class="space-y-2 text-sm text-neutral-600 dark:text-neutral-300">
           {checklist.map((c) => (
-            <li class="flex gap-2"><span class="text-green-600">✓</span>{c}</li>
+            <li class="flex gap-2"><span class="text-success-text">✓</span>{c}</li>
           ))}
         </ul>
       </div>
@@ -169,13 +169,13 @@ const checklist = t('ai.checklist', { returnObjects: true }) as string[];
     <div class="brand-card p-6">
       <p class="font-semibold mb-3">{t('ai.filesTitle')}</p>
       <ul class="space-y-1.5 text-sm font-mono">
-        <li><a href="/ai/skill.md" class="text-primary-600 hover:underline">/ai/skill.md</a><span class="text-neutral-400 font-sans"> — {t('ai.filesMainLabel')}</span></li>
-        <li><a href={otherSkillPath} class="text-primary-600 hover:underline">{otherSkillPath}</a><span class="text-neutral-400 font-sans"> — {t('ai.filesOtherLabel')}</span></li>
-        <li><a href="/ai/references/compliance-matrix.md" class="text-primary-600 hover:underline">/ai/references/compliance-matrix.md</a><span class="text-neutral-400 font-sans"> — {t('ai.filesComplianceLabel')}</span></li>
-        <li><a href="/ai/references/config-template.md" class="text-primary-600 hover:underline">/ai/references/config-template.md</a><span class="text-neutral-400 font-sans"> — {t('ai.filesConfigLabel')}</span></li>
-        <li><a href="/llms.txt" class="text-primary-600 hover:underline">/llms.txt</a><span class="text-neutral-400 font-sans"> — {t('ai.filesLlmsLabel')}</span></li>
+        <li><a href="/ai/skill.md" class="text-primary-600 hover:underline">/ai/skill.md</a><span class="text-[var(--color-text-muted)] font-sans"> — {t('ai.filesMainLabel')}</span></li>
+        <li><a href={otherSkillPath} class="text-primary-600 hover:underline">{otherSkillPath}</a><span class="text-[var(--color-text-muted)] font-sans"> — {t('ai.filesOtherLabel')}</span></li>
+        <li><a href="/ai/references/compliance-matrix.md" class="text-primary-600 hover:underline">/ai/references/compliance-matrix.md</a><span class="text-[var(--color-text-muted)] font-sans"> — {t('ai.filesComplianceLabel')}</span></li>
+        <li><a href="/ai/references/config-template.md" class="text-primary-600 hover:underline">/ai/references/config-template.md</a><span class="text-[var(--color-text-muted)] font-sans"> — {t('ai.filesConfigLabel')}</span></li>
+        <li><a href="/llms.txt" class="text-primary-600 hover:underline">/llms.txt</a><span class="text-[var(--color-text-muted)] font-sans"> — {t('ai.filesLlmsLabel')}</span></li>
       </ul>
-      <p class="mt-4 text-xs text-neutral-400">{t('ai.filesNote', { host: SITE_HOST })}</p>
+      <p class="mt-4 text-xs text-[var(--color-text-muted)]">{t('ai.filesNote', { host: SITE_HOST })}</p>
     </div>
   </section>
 

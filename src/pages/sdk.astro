@@ -44,8 +44,8 @@ const quickstartUrl = `${brotherUrl('developer')}/quickstart`;
     <h2 class="text-2xl font-bold mb-8">{t('sdk.publishedTitle')}</h2>
     <div class="grid gap-3 sm:grid-cols-2">{published.map(p => (
       <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 flex flex-col justify-between">
-        <div><code class="text-sm font-mono font-semibold text-primary-700 dark:text-primary-300">{p.name}</code><span class="ml-2 rounded-xs bg-neutral-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-mono text-neutral-500">{p.version}</span><p class="mt-1 text-sm text-neutral-500">{p.desc}</p></div>
-        <div class="mt-3 text-xs"><code class="text-neutral-400 bg-neutral-50 dark:bg-slate-900 px-2 py-1 rounded-xs">{p.install}</code></div>
+        <div><code class="text-sm font-mono font-semibold text-primary-700 dark:text-primary-300">{p.name}</code><span class="ml-2 rounded-xs bg-neutral-100 dark:bg-surface px-2 py-0.5 text-xs font-mono text-neutral-500">{p.version}</span><p class="mt-1 text-sm text-neutral-500">{p.desc}</p></div>
+        <div class="mt-3 text-xs"><code class="text-[var(--color-text-muted)] bg-neutral-50 dark:bg-surface px-2 py-1 rounded-xs">{p.install}</code></div>
       </div>
     ))}</div>
 

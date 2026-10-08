@@ -73,22 +73,22 @@ export default function SearchModal({ isOpen, onClose, items }: Props) {
   const content = (
     <div className="fixed inset-0 z-[60] flex items-start justify-center bg-scrim/50 pt-[var(--layout-modal-offset)] backdrop-blur-sm" onClick={onClose}>
       <div
-        className="mx-4 w-full max-w-2xl overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-card dark:border-neutral-700 dark:bg-slate-900"
+        className="mx-4 w-full max-w-2xl overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-card dark:border-neutral-700 dark:bg-surface"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3 border-b border-neutral-200 px-4 py-3 dark:border-neutral-700">
-          <Search className="h-5 w-5 text-neutral-400" />
+          <Search className="h-5 w-5 text-[var(--color-text-muted)]" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t('search.placeholder')}
-            className="flex-1 bg-transparent text-base text-neutral-900 placeholder:text-neutral-400 focus:outline-none dark:text-white"
+            className="flex-1 bg-transparent text-base text-neutral-900 placeholder:text-[var(--color-text-muted)] focus:outline-none dark:text-white"
           />
           <button
             onClick={onClose}
-            className="rounded-md p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-slate-800"
+            className="rounded-md p-1 text-[var(--color-text-muted)] hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-elevated"
           >
             <X className="h-5 w-5" />
           </button>
@@ -96,7 +96,7 @@ export default function SearchModal({ isOpen, onClose, items }: Props) {
 
         <div className="max-h-[50vh] overflow-y-auto p-2">
           {query.trim() && results.length === 0 && (
-            <div className="px-4 py-8 text-center text-sm text-neutral-500 dark:text-neutral-400">
+            <div className="px-4 py-8 text-center text-sm text-neutral-500 dark:text-[var(--color-text-muted)]">
               {t('search.noResults', { query })}
             </div>
           )}
@@ -106,13 +106,13 @@ export default function SearchModal({ isOpen, onClose, items }: Props) {
               key={item.path}
               href={item.path}
               onClick={onClose}
-              className="group flex items-start gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-neutral-50 dark:hover:bg-slate-800"
+              className="group flex items-start gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-neutral-50 dark:hover:bg-elevated"
             >
               <div className="mt-0.5 shrink-0">
                 {item.path.startsWith('/blog/') ? (
-                  <Tag className="h-4 w-4 text-neutral-400 group-hover:text-primary-500" />
+                  <Tag className="h-4 w-4 text-[var(--color-text-muted)] group-hover:text-primary-500" />
                 ) : (
-                  <FileText className="h-4 w-4 text-neutral-400 group-hover:text-primary-500" />
+                  <FileText className="h-4 w-4 text-[var(--color-text-muted)] group-hover:text-primary-500" />
                 )}
               </div>
               <div className="min-w-0 flex-1">
@@ -120,11 +120,11 @@ export default function SearchModal({ isOpen, onClose, items }: Props) {
                   <span className="truncate text-sm font-medium text-neutral-900 group-hover:text-primary-600 dark:text-white dark:group-hover:text-primary-400">
                     {item.title}
                   </span>
-                  <span className="shrink-0 rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-500 dark:bg-slate-800 dark:text-neutral-400">
+                  <span className="shrink-0 rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-500 dark:bg-surface dark:text-[var(--color-text-muted)]">
                     {item.category}
                   </span>
                 </div>
-                <p className="mt-0.5 truncate text-xs text-neutral-500 dark:text-neutral-400">{item.excerpt}</p>
+                <p className="mt-0.5 truncate text-xs text-neutral-500 dark:text-[var(--color-text-muted)]">{item.excerpt}</p>
               </div>
               <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-neutral-300 opacity-0 transition-opacity group-hover:opacity-100 dark:text-neutral-600" />
             </a>
@@ -132,13 +132,13 @@ export default function SearchModal({ isOpen, onClose, items }: Props) {
 
           {!query.trim() && (
             <div className="px-4 py-6">
-              <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{t('search.hotSearches')}</p>
+              <p className="text-xs font-medium text-neutral-500 dark:text-[var(--color-text-muted)]">{t('search.hotSearches')}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {hotTags.map((tag) => (
                   <button
                     key={tag}
                     onClick={() => setQuery(tag)}
-                    className="rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-600 transition-colors hover:bg-neutral-200 dark:bg-slate-800 dark:text-neutral-300 dark:hover:bg-slate-700"
+                    className="rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-600 transition-colors hover:bg-neutral-200 dark:bg-surface dark:text-neutral-300 dark:hover:bg-elevated"
                   >
                     {tag}
                   </button>
@@ -148,7 +148,7 @@ export default function SearchModal({ isOpen, onClose, items }: Props) {
           )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-neutral-200 px-4 py-2 text-xs text-neutral-400 dark:border-neutral-700 dark:text-neutral-500">
+        <div className="flex items-center justify-between border-t border-neutral-200 px-4 py-2 text-xs text-[var(--color-text-muted)] dark:border-neutral-700 dark:text-neutral-500">
           <span>{t('search.resultCount', { count: results.length })}</span>
           <span>{t('search.closeHint')}</span>
         </div>
