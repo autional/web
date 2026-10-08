@@ -62,7 +62,8 @@ const blogPosts = await getCollection('blog', ({ data }) => data.status === 'ver
 const searchIndex = buildSearchIndex(blogPosts.filter((post) => isRegionPost(post.id)));
 
 const year = new Date().getFullYear();
-const navLinkClass = 'rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white';
+// px-3.5（14px）为 1280 边界的宽度预算让位——英文区该档仅剩 ~7px 余量，组间加间距须从这里回收，勿改回 px-4
+const navLinkClass = 'rounded-full px-3.5 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white';
 const footerLinkClass = 'text-sm text-sky-100/72 transition-colors hover:text-white';
 
 // 导航高亮单源（2026-10-08）：aria-current 由 SSR 按当前路径算，桌面静态导航与移动 island 共用同一判据
@@ -141,8 +142,9 @@ const quickstartUrl = `${brotherUrl('developer')}/quickstart`;
         <a href={GITHUB_ORG_URL} class={navLinkClass}>GitHub</a>
       </nav>
       <ClientShell client:load searchIndex={searchIndex} currentPath={currentPath} />
-      {/* 头部 CTA（2026-10-08）：md 起常驻（含汉堡同行区间），<md 收进移动菜单；文案键 nav.getStarted 已备 */}
-      <a href={quickstartUrl} class="brand-button-primary hidden md:inline-flex" data-i18n="nav.getStarted">{t('nav.getStarted')}</a>
+      {/* 头部 CTA（2026-10-08）：md 起常驻（含汉堡同行区间），<md 收进移动菜单；文案键 nav.getStarted 已备。
+          ml-3（2026-10-09）：胶囊按内容宽收缩 → justify-between 空转，组间须显式间距，否则控件硬边相撞 */}
+      <a href={quickstartUrl} class="brand-button-primary ml-3 hidden md:inline-flex" data-i18n="nav.getStarted">{t('nav.getStarted')}</a>
     </div>
   </header>
   <main class="flex-1" id="main-content"><slot /></main>

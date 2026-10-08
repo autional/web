@@ -82,7 +82,7 @@ export default function ClientShell({ searchIndex, currentPath }: { searchIndex:
           >{t('nav.getStarted')}</a>
         </div>
       </div>
-      <div className="flex items-center gap-2 xl:hidden">
+      <div className="ml-3 flex items-center gap-2 xl:hidden">
         <button onClick={() => setSearchOpen(true)} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-primary-100 bg-white/90 text-primary-700 shadow-soft transition hover:bg-sky-50 dark:border-white/10 dark:bg-white/5 dark:text-sky-100 dark:hover:bg-white/10" aria-label={t('a11y.search')}>
           <Search className="h-5 w-5" />
         </button>
