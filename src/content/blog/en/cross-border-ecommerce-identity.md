@@ -36,7 +36,7 @@ GDPR requires collecting only personal data that is "necessary for the purposes 
 
 - Registration should not ask for unnecessary personal information (e.g., gender, date of birth — unless the business actually requires it)
 - Third-party login (Google/Apple Sign-In) is an effective means of reducing data collection
-- Autional's identity-service supports minimal registration: core requirement is only email or phone number + password
+- Autional's identity-service supports minimal registration: the only core requirement is email or phone number + password
 
 ### Purpose Limitation (Article 5(1)(b))
 
@@ -68,7 +68,7 @@ Autional supports fine-grained scope splitting in the OAuth 2.0 authorization fl
 
 ### Data Localization
 
-PIPL requires that critical information infrastructure operators and personal information processors who process personal information reaching the volume specified by the national cyberspace administration must store personal information collected within China's territory domestically. If it needs to be provided overseas, they must pass a security assessment, obtain protection certification, or sign a standard contract.
+PIPL requires two categories of entities to store personal information collected within China's territory domestically: critical information infrastructure operators, and personal information processors whose volume reaches the level specified by the national cyberspace administration. If it needs to be provided overseas, they must pass a security assessment, obtain protection certification, or sign a standard contract.
 
 For cross-border e-commerce identity systems, this means:
 - Chinese user data should be stored in data centers within China's territory
@@ -97,24 +97,33 @@ Faced with multi-country data residency requirements, the most common technical 
 
 Autional's architecture natively supports this deployment model:
 
+```mermaid
+flowchart TD
+    LB["Global Load Balancer"]
+    subgraph EU["EU Region (Frankfurt)"]
+        E1["identity-service-eu"]
+        E2["session-service-eu"]
+        E3["PostgreSQL-eu — EU user data"]
+        E4["Redis-eu — EU user sessions"]
+    end
+    subgraph CN["China Region (Shanghai)"]
+        C1["identity-service-cn"]
+        C2["session-service-cn"]
+        C3["PostgreSQL-cn — China user data"]
+        C4["Redis-cn — China user sessions"]
+    end
+    subgraph US["North America Region (Oregon)"]
+        U1["identity-service-us"]
+        U2["session-service-us"]
+        U3["PostgreSQL-us — North America user data"]
+        U4["Redis-us — North America user sessions"]
+    end
+    LB --> E1
+    LB --> C1
+    LB --> U1
 ```
-Global Load Balancer
-├── EU Region (Frankfurt)
-│   ├── identity-service-eu
-│   ├── session-service-eu
-│   ├── PostgreSQL-eu (EU user data)
-│   └── Redis-eu (EU user sessions)
-├── China Region (Shanghai)
-│   ├── identity-service-cn
-│   ├── session-service-cn
-│   ├── PostgreSQL-cn (China user data)
-│   └── Redis-cn (China user sessions)
-└── North America Region (Oregon)
-    ├── identity-service-us
-    ├── session-service-us
-    ├── PostgreSQL-us (North America user data)
-    └── Redis-us (North America user sessions)
-```
+
+*Figure 1: Regional deployment — under the global load balancer, the EU, China, and North America each hold a complete identity, session, database, and cache cluster.*
 
 Key constraint: each region's user data is stored only in that region's database — no cross-region replication.
 
@@ -125,6 +134,15 @@ When users access from different regions, how do you route them to the correct r
 1. **Determine region at registration**: Based on registration IP geolocation, phone number country code, or user's self-selected country, set a `data_region` field on the user record
 2. **Route at login**: Login requests first hit the global routing layer, which forwards the request to the appropriate region's identity service based on `data_region`
 3. **Cross-region scenarios**: When a user travels from the EU to China, their login request is still routed to the EU region's server; the physical storage of data is not affected by the user's geographic location
+
+```mermaid
+flowchart TD
+    A["At registration — write data_region from IP geolocation, phone country code, or self-selected country"] --> B["At login — request hits the global routing layer first"]
+    B --> C["Forwarded to the regional identity service per data_region"]
+    C --> D["Data storage does not follow the user's physical location"]
+```
+
+*Figure 2: Login routing — the data_region written at registration decides where requests go; wherever the user travels, the data stays in its original region.*
 
 ### compliance-service Transfer Tracking
 

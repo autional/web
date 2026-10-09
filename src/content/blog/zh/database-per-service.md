@@ -42,6 +42,17 @@ claims_reviewed: true
 - notification 库宕机 → 邮件发送延迟，但登录不受影响
 - session 库宕机 → 用户需要重新登录（体验降级），但注册与重置密码仍可用
 
+```mermaid
+flowchart TD
+    Shared["共用数据库"] --> S1["登录、会话、MFA、OAuth、钱包全依赖同一个库"]
+    S1 --> S2["一旦宕机——整个认证体系全线瘫痪"]
+    Iso["数据库隔离"] --> I1["billing 库宕机——无法充值，登录照常"]
+    Iso --> I2["notification 库宕机——邮件延迟，登录不受影响"]
+    Iso --> I3["session 库宕机——重新登录即可，注册与重置密码仍可用"]
+```
+
+*图 1：共用数据库 vs 数据库隔离——同样是宕机，一边是全线瘫痪，一边只是局部降级。*
+
 这才是真正的**故障隔离**。
 
 ## Autional 的数据库隔离实践
@@ -130,6 +141,17 @@ type UserProfile struct {
 
 **关键原则**：冗余数据只在消费方服务内缓存，绝不作为跨服务的真相来源。身份数据的「单一真相来源」永远在 identity-service。
 
+```mermaid
+flowchart TD
+    Q["billing 需要用户的邮箱"] --> C{"读取频率高吗?"}
+    C -->|"低频、要最新"| API["调用 identity 的 API——顺带拿到脱敏数据"]
+    C -->|"高频、延迟敏感"| EV["订阅 user.profile.updated——本地缓存副本"]
+    API --> P["单一真相来源始终在 identity-service"]
+    EV --> P["单一真相来源始终在 identity-service"]
+```
+
+*图 2：跨服务取数的两条路——低频读调 API 拿最新数据，高频读订阅事件换本地副本；真相来源永远留在 identity-service。*
+
 ## 数据一致性与最终一致性
 
 数据库隔离用**最终一致性**换取了单库 ACID 保证：
@@ -183,7 +205,7 @@ func (s *WalletService) Withdraw(ctx context.Context, req *WithdrawRequest) erro
 - **时序写入密集**（audit）：MongoDB 分片集群支持写入的水平扩展
 - **混合型**（storage）：PostgreSQL 存元数据，MinIO 存文件二进制
 
-这种灵活性在共用数据库下是不可能的。一个计费导出任务（compliance-service 对 200 万条审计记录做全表扫描）不该占用认证查询的 I/O 带宽（identity-service 对 `users` 表的高频点查）。
+这种灵活性在共用数据库下是不可能的。一个计费导出任务（compliance-service 对 200 万条审计记录做全表扫描）不该占用认证查询的 I/O 带宽。那是 identity-service 对 `users` 表的高频点查。
 
 ## 安全边界
 

@@ -152,6 +152,18 @@ The cost: relationships chain, so one edge change can **ripple everywhere**; tup
 | "Who does this row belong to" | By relationship | Precise and transitive |
 | Reality (some of everything) | **All three** | Most systems aren't either/or — they layer |
 
+```mermaid
+flowchart TD
+    Q{"What are you governing?"} -->|"a class of people"| R["RBAC · by role<br/>simple, auditable"]
+    Q -->|"a set of conditions"| A["ABAC · by attribute<br/>flexible, dynamic"]
+    Q -->|"who owns this row"| B["ReBAC · by relationship<br/>precise, transitive"]
+    R --> M["Most systems aren't either/or<br/>they layer all three"]
+    A --> M
+    B --> M
+```
+
+*Figure 1: A selection flow — start with what you're governing and the model follows; most systems layer all three rather than picking one.*
+
 Two selection rules that get ignored far too often:
 
 1. **Finer does not mean safer.** Badly written rules leak at any granularity; badly drawn relationship edges connect data that should never have been connected.

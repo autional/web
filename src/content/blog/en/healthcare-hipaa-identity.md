@@ -41,22 +41,36 @@ This is the most core technical requirement for identity systems:
 
 It includes four implementation specifications:
 
+```mermaid
+flowchart TB
+    R["§164.312(a)(1) Access Control"] --> A["Unique user identification — required"]
+    R --> B["Emergency access procedure — required"]
+    R --> C["Automatic logoff — addressable"]
+    R --> D["Encryption and decryption — addressable"]
+    A --> A2["identity-service — globally unique ULID"]
+    B --> B2["emergency_access role — independent audit trail"]
+    C --> C2["session-service — idle and absolute timeout"]
+    D --> D2["compliance-service — field-level encryption"]
+```
+
+*Figure 1: The four implementation specifications of §164.312(a)(1) and Autional's corresponding implementations — unique ID and emergency access are required, logoff and encryption are addressable.*
+
 **Unique User Identification (Required)**: Each user must have a unique identifier for tracking their access to ePHI. Shared accounts are explicitly prohibited—"shared nurse station accounts" are one of the most common violations in HIPAA audits.
 
-Autional's identity-service inherently guarantees unique user identification. Each user has a globally unique ULID, supporting multiple login methods (username, email, phone), but the internal identifier is always a single primary key. Every audit log entry is bound to a specific user ID.
+Autional's identity-service inherently guarantees unique user identification. Each user has a globally unique ULID, supporting multiple login methods (username, email, phone). The internal identifier, however, is always a single primary key, and every audit log entry is bound to a specific user ID.
 
-**Emergency Access Procedure (Required)** : In emergency situations (e.g., life-threatening condition), authorized personnel must be able to bypass normal access controls to obtain ePHI. The "Break Glass" procedure must have an independent audit trail.
+**Emergency Access Procedure (Required)**: In emergency situations (e.g., life-threatening condition), authorized personnel must be able to bypass normal access controls to obtain ePHI. The "Break Glass" procedure must have an independent audit trail.
 
 Autional can configure a specific emergency role (e.g., `emergency_access`) for this scenario. Authorization of this role triggers an independent audit event, recorded with prominent marking in audit-service. The role is automatically revoked after emergency access ends.
 
-**Automatic Logoff (Addressable)** : Sessions must automatically terminate after a period of inactivity, preventing unauthorized individuals from accessing ePHI on a logged-in terminal.
+**Automatic Logoff (Addressable)**: Sessions must automatically terminate after a period of inactivity, preventing unauthorized individuals from accessing ePHI on a logged-in terminal.
 
 Autional's session-service supports:
 - Idle timeout: e.g., auto-logoff after 15 minutes of inactivity
 - Absolute timeout: e.g., forced re-login after 8 hours (even with continuous activity)
 - Concurrent session limits: maximum N active sessions per user simultaneously
 
-**Encryption and Decryption (Addressable)** : Implement mechanisms to encrypt and decrypt ePHI. This covers transmission encryption (TLS) and storage encryption (field-level/disk-level).
+**Encryption and Decryption (Addressable)**: Implement mechanisms to encrypt and decrypt ePHI. This covers transmission encryption (TLS) and storage encryption (field-level/disk-level).
 
 ### §164.312(b): Audit Controls
 
@@ -114,28 +128,29 @@ Autional supports TLS 1.3 across the entire gateway-to-microservice chain. The g
 
 The role structure in healthcare organizations is far more complex than in general enterprises:
 
+```mermaid
+flowchart TB
+    H["Healthcare organization"] --> P["Physicians — multiple specialties"]
+    P --> P1["Attending — read/write own department"]
+    P --> P2["Consulting — read consulted cases"]
+    P --> P3["Intern — requires attending approval"]
+    H --> N["Nurses"]
+    N --> N1["Charge nurse — read/write assigned patients"]
+    N --> N2["Shift nurse — read-only for shift patients"]
+    H --> M["Pharmacist — prescriptions read-only"]
+    H --> F["Admin and Finance — identity and insurance data only"]
+    H --> PT["Patient and family — own data or proxy read-only"]
+    H --> EX["External parties — restricted, BAA required"]
 ```
-Healthcare Organization
-├── Physicians (multiple specialties)
-│   ├── Attending Physician: read/write all patient data in their department
-│   ├── Consulting Physician: read patient data for consulted cases
-│   └── Intern Physician: requires attending approval for access
-├── Nurses
-│   ├── Charge Nurse: read/write currently responsible patients in department
-│   └── Shift Nurse: read-only access to current shift patients
-├── Pharmacist: read prescription information, cannot modify diagnoses
-├── Administration/Finance: access identity information and insurance data only, no clinical data access
-├── Patient: read-only access to their own data (Patient Portal)
-├── Patient Family: read-only with patient authorization (Proxy Access)
-└── External Parties (insurers, referral hospitals): restricted access, requires BAA agreement
-```
+
+*Figure 2: The personnel access model in healthcare — clinical roles layer by seniority, while admin, patient, and external roles each have their own boundary.*
 
 Autional's RBAC system supports this complexity through:
 
 - **Hierarchical Roles**: `doctor.senior` inherits permissions from `doctor.base`, `doctor.base` inherits from `medical_staff`
-- **Attribute-Based Permissions (ABAC)** : The same user has different access permissions for patient data in different departments. Current scope is extracted from the request context.
+- **Attribute-Based Permissions (ABAC)**: The same user has different access permissions for patient data in different departments. Current scope is extracted from the request context.
 - **Tenant + Department Isolation**: `tenant_id = hospital_A, department_id = cardiology`
-- **SoD (Segregation of Duties)** : Prescription writing vs. prescription dispensing must be performed by different roles
+- **SoD (Segregation of Duties)**: Prescription writing vs. prescription dispensing must be performed by different roles
 
 ## Field-Level Encryption for PHI
 

@@ -1,0 +1,46 @@
+/* 博客 mermaid 图表三态（由 src/lib/mermaid-diagrams.ts 驱动；仅文章页引入）。
+   pending / ready：隐藏 shiki 源码块、展示 canvas；error：恢复源码显示。
+   .js-mermaid 门控保证「脚本未接管」时（无 JS / mermaid 加载失败）源码始终可见。 */
+
+.js-mermaid .mermaid-block[data-mermaid-state='pending'] > pre,
+.js-mermaid .mermaid-block[data-mermaid-state='ready'] > pre {
+  display: none;
+}
+
+.mermaid-block[data-mermaid-state='error'] .mermaid-canvas {
+  display: none;
+}
+
+.mermaid-canvas {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+/* svg 保持自然尺寸渲染（flex:none 防止被 flex 收缩拉伸）；超宽图由 max-width
+   等比缩到容器宽（实测 0.68 倍下中文仍清晰），窄图保持原尺寸居中、不放大。
+   auto 边距负责居中；overflow-x:auto 保留为极端情况（缩放禁用等）的兜底滚动。 */
+.mermaid-canvas > svg {
+  flex: none;
+  margin-inline: auto;
+  max-width: 100%;
+  height: auto;
+}
+
+.mermaid-block figcaption {
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+/* 渲染沙箱兜底：tokens.css 在 prefers-reduced-motion: reduce 下给 * 强制
+   transition-duration: 0.01ms !important。mermaid 渲染期在 body 下的沙箱
+   （id = "d" + 渲染 id 前缀 "aum-"，见 src/lib/mermaid-diagrams.ts）里同步测量
+   标签尺寸；非零过渡时长会让测量读到过渡前的异常值（实测单节点被算成 ~1224px 高，
+   两节点图撑到 742×1312）。沙箱内恢复 0s，测量即读到最终值。
+   对未开启 reduced-motion 的访客此规则是无副作用 no-op。 */
+@media (prefers-reduced-motion: reduce) {
+  body > div[id^='daum-'],
+  body > div[id^='daum-'] * {
+    transition-duration: 0s !important;
+  }
+}

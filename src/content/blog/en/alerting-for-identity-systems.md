@@ -14,7 +14,7 @@ It's 3 AM. Your phone buzzes. You open your eyes to the 17th alert notification 
 
 This is the classic script of **Alert Fatigue**. Too much noise drowns out genuine danger signals, eventually desensitizing the entire team. Industry statistics show that **over 70% of alerts received by SREs are meaningless noise** — self-healing without human intervention, thresholds set too low, or alerts that shouldn't exist in the first place.
 
-This article focuses on one specific question: for identity systems, which metrics should have alerts? How should thresholds be set? How should priorities be assigned? Based on Autional's Prometheus metrics system and real-world operational experience, we provide a reference-ready framework you can adopt directly.
+This article focuses on one specific question: for identity systems, which metrics deserve alerts, how thresholds should be set, and how priorities should be assigned. Based on Autional's Prometheus metrics system and real-world operational experience, we provide a reference-ready framework you can adopt directly.
 
 ## Alert Tiering Framework
 
@@ -27,7 +27,18 @@ Alerting is not binary — different severities require different response metho
 | P2 | Warning | Within 1 hour | Instant Messaging + Email | No (business hours) |
 | P3 | Informational | Next business day | Email + Ticket | No |
 
-Key principle: **A P0 alert MUST be an event where users are already experiencing or are about to experience system unavailability.** If you're debating whether an alert is P0 or P1, it's probably P1.
+Key principle: **A P0 alert MUST be an event where users are already affected, or about to be unable to use the system.** If you're debating whether an alert is P0 or P1, it's probably P1.
+
+```mermaid
+flowchart TD
+    A["A metric goes abnormal"] --> Q{"Are users already affected, or about to be unable to use the system?"}
+    Q -->|"Yes"| P0["P0 Critical — respond within 5 min, phone + SMS + IM"]
+    Q -->|"No"| Q2{"Still debating whether it is P0?"}
+    Q2 -->|"Yes"| P1["P1 Severe — respond within 15 min, SMS + IM"]
+    Q2 -->|"No"| P23["P2 Warning (within 1 hour) or P3 Informational (next business day)"]
+```
+
+*Figure 1: The tiering decision — first ask whether users are already affected; if you're still debating P0 versus P1, it's probably P1; below that sit P2 and P3, which never wake anyone.*
 
 ## P0 Level: Lifesaving Alerts
 
@@ -213,6 +224,17 @@ Setting up alert rules is just the beginning. Continuously measuring alert quali
 - **Alert Noise Rate**: Percentage of alerts that auto-resolve without any human intervention. Target: < 20%.
 
 If the alert-to-incident conversion rate is persistently below 10%, the thresholds are too sensitive — loosen the thresholds or increase the `for` duration. If MTTR is high, better runbooks and automated recovery measures are needed.
+
+```mermaid
+flowchart TD
+    A["Track alert quality monthly"] --> Q{"Alert-to-incident conversion below 10%?"}
+    Q -->|"Yes"| B["Thresholds too sensitive — loosen them or extend the for duration"]
+    Q -->|"No"| Q2{"MTTR too high?"}
+    Q2 -->|"Yes"| C["Invest in runbooks and automated recovery"]
+    Q2 -->|"No"| D["On target — conversion above 30%, noise rate below 20%"]
+```
+
+*Figure 2: The alert-quality loop — low conversion loosens thresholds, high MTTR buys better runbooks; the targets close it out: above 30% conversion, below 20% noise.*
 
 ## Summary
 

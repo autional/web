@@ -25,7 +25,7 @@ Autional 从第一天起就把可观测性当作一等公民，在 OpenTelemetry
 Autional 的结构化日志方案：
 
 - **78+ 个标准化日志键**：所有日志都使用 `base/logger` 包中预定义的键常量，如 `logger_base.KeyUserID`、`logger_base.KeyTraceID`、`logger_base.KeyErrorCode`。这意味着你可以精确 `grep` 出某个用户的全部操作、某个错误码的全部出现，或某个追踪 span 内的每一步日志。
-- **请求级日志上下文**：在每个 HTTP 请求上，中间件向 `context.Context` 注入 `request_id`、`tenant_id`、`user_id`、`trace_id`。后续所有 `logger_base.FromContext(ctx)` 调用都会自动携带这些标识——只要函数接收 `ctx`，就无需手工传递日志参数。
+- **请求级日志上下文**：在每个 HTTP 请求上，中间件向 `context.Context` 注入 `request_id`、`tenant_id`、`user_id`、`trace_id`。后续所有 `logger_base.FromContext(ctx)` 调用都会自动携带这些标识。只要函数接收 `ctx`，就无需手工传递日志参数。
 - **完整错误链记录**：`error_base.Err` 携带完整错误链（`cause -> cause -> cause`），在日志输出中自动展开为 `"error_chain"` 字段，让根因一目了然。
 
 ```go
@@ -55,17 +55,19 @@ logger.Info("user login successful",
 
 Autional 中一次典型的「用户登录」请求追踪：
 
+```mermaid
+flowchart TD
+    G["gateway 1ms"] --> I["identity-service /auth/login 45ms"]
+    I --> B["bcrypt 密码校验 30ms"]
+    I --> J["JWT 令牌签发 2ms"]
+    I --> A["audit-service /log 5ms，异步"]
+    I --> S["session-service /session/create 8ms"]
+    S --> R["Redis SET 2ms"]
+    S --> P["PostgreSQL INSERT 4ms"]
+    G --> PR["profile-service /profile/me 12ms，并行"]
 ```
-gateway (1ms)
-  → identity-service /auth/login (45ms)
-      → bcrypt password verify (30ms)
-      → JWT token generate (2ms)
-      → audit-service /log (5ms, async)
-      → session-service /session/create (8ms)
-          → Redis SET (2ms)
-          → PostgreSQL INSERT (4ms)
-  → profile-service /profile/me (12ms, parallel)
-```
+
+*图 1：一次典型登录的追踪树——bcrypt 校验 30ms 是最大头，审计投递与资料查询只是旁枝。*
 
 在旧架构下，如果投诉是「登录慢」，你得逐个 SSH 登录服务、手工查日志。有了分布式追踪，一屏就能看出 `identity-service` 的 bcrypt 耗时 30ms（占总耗时 65%），而 `session-service` 的 PostgreSQL INSERT 仅耗时 4ms——一切一目了然。
 
@@ -103,14 +105,16 @@ Autional 选择直接使用 OpenTelemetry SDK，而非厂商特定的 agent。�
 
 在追踪后端（如 Jaeger）查询 `operation = POST /api/v1/auth/login` 且 `duration > 400ms` 的追踪。随机抽取 5 条，发现共同规律：
 
+```mermaid
+flowchart TD
+    I["identity-service auth/login 420ms"] --> B["bcrypt compare 28ms——正常"]
+    I --> J["JWT generate 2ms——正常"]
+    I --> S["session save 385ms——异常"]
+    S --> P["PostgreSQL INSERT 383ms"]
+    S --> R["Redis SET 2ms"]
 ```
-identity-service  auth/login  420ms
-  ├── bcrypt compare  28ms  ← Normal
-  ├── JWT generate     2ms  ← Normal
-  └── session save   385ms  ← Anomaly!
-      ├── PostgreSQL INSERT  383ms
-      └── Redis SET           2ms
-```
+
+*图 2：案例中的异常追踪——bcrypt 与 JWT 都正常，385ms 全堆在 session save 上，问题直指 PostgreSQL 写入。*
 
 问题出在 `session-service` 的 PostgreSQL 写入。
 
@@ -135,7 +139,7 @@ Autional 的可观测体系仍在演进。接下来的里程碑包括：
 
 ### 审计日志与可观测性的融合
 
-身份系统天然需要审计能力——谁在何时执行了什么操作。Autional 打通了审计日志（`audit-service` 写入 MongoDB）与结构化日志：每条审计记录都携带 `trace_id`，让你能从一条追踪直接跳到对应的审计记录，确认某个操作是由用户本人发起（而非内部调用）。这是合规审计的杀手级能力（GDPR 第 30 条——处理活动记录）。
+身份系统天然需要审计能力——谁在何时执行了什么操作。Autional 打通了审计日志（`audit-service` 写入 MongoDB）与结构化日志：每条审计记录都携带 `trace_id`。你能从一条追踪直接跳到对应的审计记录，确认某个操作是由用户本人发起（而非内部调用）。这是合规审计的杀手级能力（GDPR 第 30 条——处理活动记录）。
 
 ### 错误预算看板
 

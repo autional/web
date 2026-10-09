@@ -34,7 +34,7 @@ With bcrypt (cost factor 12), the RTX 4090 can only manage about 5000 hashes/s. 
 Crack time ≈ 6.6 × 10^15 / 5000 ≈ 1.3 × 10^12 seconds ≈ 42,000 years
 ```
 
-That's the power of **slow hashing** — the computational cost difference is just 200ms vs 2ms per login (unnoticeable to the user), but for an attacker's brute force, it's days versus millennia.
+That's the power of **slow hashing** — the computational cost difference is just 200ms vs 2ms per login, unnoticeable to the user. But for an attacker's brute force, it's days versus millennia.
 
 ### The Three Candidates: bcrypt, scrypt, argon2
 
@@ -89,9 +89,18 @@ Pepper is an application-level global secret key that is concatenated with the p
 Final stored value = bcrypt(password + pepper, cost=12)
 ```
 
+```mermaid
+flowchart LR
+    P["User password"] --> C["Concatenate pepper — held in app config, must stay secret"]
+    C --> B["bcrypt slow hash — cost=12, auto-generates a unique salt"]
+    B --> S["Stored value in DB — salt embedded inside, no pepper"]
+```
+
+*Figure 1: The full pipeline from password to storage — pepper is concatenated at the application layer, bcrypt auto-generates a unique salt embedded in the stored value, and the pepper never reaches the database.*
+
 If the database leaks but the application configuration doesn't, attackers cannot verify password guesses without knowing the pepper. But if **both leak simultaneously** (e.g., a backup snapshot containing both the database and config files), pepper provides no additional protection.
 
-This is pepper's limitation: it only helps in the specific "database leaked but config didn't" scenario. Autional uses an alternative approach — **encrypting the entire password hash field** (see field-level encryption below) — and recommends storing pepper values in a hardware security module (HSM) or cloud KMS, ensuring physical isolation from data storage.
+This is pepper's limitation: it only helps in the specific "database leaked but config didn't" scenario. Autional uses an alternative approach — **encrypting the entire password hash field** (see field-level encryption below) — and it recommends storing pepper values in a hardware security module (HSM) or cloud KMS, physically isolated from data storage.
 
 ## API Key Storage: A Different Strategy from Passwords
 
@@ -172,32 +181,13 @@ Decryption:
 
 The security of the encryption key itself is critical to the whole scheme. Autional key management strategy:
 
+```mermaid
+flowchart TD
+    A["Cloud KMS — Master Key, HSM-protected, full access audit"] -->|"Encrypts/decrypts DEK"| B["App config — encrypted DEK + key_id"]
+    B -->|"Decrypted at startup"| C["In-memory DEK — 32-byte AES-256, rotated every 90 days, never on disk"]
 ```
-Production key hierarchy:
 
-┌────────────────────────────────────┐
-│  Cloud KMS (Key Management Service)│
-│  - Master Key                      │
-│  - Encrypts/decrypts DEK           │
-│  - HSM-protected                   │
-│  - Full access audit logging       │
-└──────────────┬─────────────────────┘
-               │
-               ▼
-┌────────────────────────────────────┐
-│  Application Config (Env Vars)     │
-│  - Encrypted DEK (ciphertext)      │
-│  - key_id (pointing to KMS master) │
-└──────────────┬─────────────────────┘
-               │ decrypted at startup
-               ▼
-┌────────────────────────────────────┐
-│  In-Memory DEK (plaintext)          │
-│  - 32-byte AES-256 key             │
-│  - Process memory only, not on disk│
-│  - Rotated every 90 days           │
-└────────────────────────────────────┘
-```
+*Figure 2: The production key hierarchy — the KMS master key guards the DEK, config holds only the encrypted DEK, and it is decrypted into memory at startup; the plaintext DEK never touches disk and rotates every 90 days.*
 
 At startup, Autional uses the cloud KMS to decrypt the DEK ciphertext, keeping the plaintext DEK only in process memory. All field-level encryption and decryption operations use the in-memory DEK.
 

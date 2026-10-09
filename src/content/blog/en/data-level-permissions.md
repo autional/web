@@ -27,6 +27,17 @@ That boundary has a name: **data-level permissions**. And it's one of the two th
 
 The functional side checks "who + which resource + which action" against a list. The data side asks "which records of this resource can this user touch." Skip the separation and you get the opening scene: the role config was never wrong — the data still leaked.
 
+```mermaid
+flowchart TD
+    Click["Click: View Orders"] --> Func{"Function level: may you click?"}
+    Func -->|"No"| Deny["Blocked · 403"]
+    Func -->|"Yes"| Row["Row level: which records?<br/>All / Tenant / Department / Self"]
+    Row --> Field["Field level: which columns?<br/>Masking · Encryption"]
+    Field --> Out["Enforced at read time<br/>nothing leaves storage unfiltered"]
+```
+
+*Figure 1: Three gates behind one click — function level answers "may you click," row level draws "which records," field level decides "which columns"; all three must hold at read time.*
+
 ## Row-level: four tiers, narrowing step by step
 
 Row-level permissions answer "**which records**." In practice the most useful design is not infinitely fine rules but four tiers:
@@ -112,7 +123,7 @@ The two routes aren't exclusive: the application layer carries the semantics ("w
 
 ## A real lesson: USPS and 60 million records
 
-In November 2018, the USPS "Informed Visibility" system was publicly disclosed to have a broken object-level authorization flaw: the API behind usps.com accounts **performed no object-level authorization checks** — any **logged-in** ordinary account could query **other users'** profile data (email, username, account number, street address, phone), and the API accepted wildcards, letting a caller pull an **entire dataset** in one request.
+In November 2018, the USPS "Informed Visibility" system was publicly disclosed to have a broken object-level authorization flaw: the API behind usps.com accounts **performed no object-level authorization checks**. Any **logged-in** ordinary account could query **other users'** profile data (email, username, account number, street address, phone). The API also accepted wildcards, letting a caller pull an **entire dataset** in one request.
 
 - Roughly **60 million** users were affected;
 - An anonymous researcher had reported it **about a year earlier** with no response; KrebsOnSecurity notified USPS ahead of publication (the API had already been modified), and published on 2018-11-21;

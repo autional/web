@@ -20,7 +20,7 @@ claims_reviewed: true
 
 现实中，内部人员威胁占全部数据安全事件的 34%。面对拥有数据库管理员权限的攻击者（或恶意内部人员），传统审计日志就像一本没有页码的账本——撕掉一页、涂改一行，谁也不会知道。
 
-GDPR 第 30 条、SOX 404 条款、ISO 27001 附录 A.12.4 都明确提出：**审计日志必须防止未授权的修改。** 但大多数系统只是把日志存进数据库，再加一道应用层的「只读权限」限制——这远远不够。
+GDPR 第 30 条、SOX 404 条款、ISO 27001 附录 A.12.4 都明确提出：**审计日志必须防止未授权的修改。** 但大多数系统只是把日志存进数据库，再加一道应用层的「只读权限」限制。这远远不够。
 
 Autional 的答案是：**密码学哈希链 + Merkle 树证明。** 每一条审计日志的完整性都可以被密码学验证，无需信任任何管理员或数据库。
 
@@ -35,6 +35,15 @@ Page 1: Content = "User A logged in"  → Fingerprint_1 = hash("User A logged in
 Page 2: Content = "User A changed password" → Fingerprint_2 = hash("User A changed password" + Fingerprint_1)
 Page 3: Content = "User A exported data" → Fingerprint_3 = hash("User A exported data" + Fingerprint_2)
 ```
+
+```mermaid
+flowchart TD
+    A["日志 1<br/>指纹₁ = H（内容₁ + 初始值）"] --> B["日志 2<br/>指纹₂ = H（内容₂ + 指纹₁）"]
+    B --> C["日志 3<br/>指纹₃ = H（内容₃ + 指纹₂）"]
+    B -. "这一页被删" .-> D["指纹₂ 消失，日志 3 的链断裂<br/>校验立即报警"]
+```
+
+*图 1：哈希链——每页的指纹串住上一页；抽掉任何一页，后面的指纹链立刻断裂。*
 
 现在，如果有人试图删除「User A changed password」这一页：
 
@@ -102,15 +111,21 @@ Merkle 树在保持同等密码学保证的前提下，把校验效率提升到 
 
 把一个时间窗口内的审计记录组织成一棵二叉树：
 
+```mermaid
+flowchart TD
+    Root["根哈希"] --> AB["Hash_AB"]
+    Root --> CD["Hash_CD"]
+    AB --> A["Hash_A"]
+    AB --> B["Hash_B"]
+    CD --> C["Hash_C"]
+    CD --> D["Hash_D"]
+    A --> EA["Entry_A"]
+    B --> EB["Entry_B"]
+    C --> EC["Entry_C"]
+    D --> ED["Entry_D"]
 ```
-                  Root Hash
-                /           \
-           Hash_AB          Hash_CD
-          /      \          /      \
-     Hash_A    Hash_B    Hash_C    Hash_D
-       |          |          |          |
-    Entry_A   Entry_B   Entry_C   Entry_D
-```
+
+*图 2：Merkle 树——改任何一个叶子节点，根哈希都会随之改变。*
 
 每个叶子节点是单条审计记录的哈希；每个中间节点是其两个子节点的哈希。根哈希代表整棵树的完整性承诺——修改任何一个叶子节点都会改变根哈希。
 

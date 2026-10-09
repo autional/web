@@ -41,9 +41,23 @@ HIPAA 安全规则将保障措施分为三类：管理、物理与技术。本�
 
 它包含四项实施规范：
 
+```mermaid
+flowchart TB
+    R["§164.312(a)(1) 访问控制"] --> A["唯一用户标识 — 必需"]
+    R --> B["紧急访问流程 — 必需"]
+    R --> C["自动登出 — 可寻址"]
+    R --> D["加密与解密 — 可寻址"]
+    A --> A2["identity-service — 全局唯一 ULID"]
+    B --> B2["emergency_access 角色 — 独立审计追踪"]
+    C --> C2["session-service — 空闲与绝对超时"]
+    D --> D2["compliance-service — 字段级加密"]
+```
+
+*图 1：§164.312(a)(1) 的四项实施规范与 Autional 的对应实现——唯一标识和紧急访问是必需项，自动登出与加密是可寻址项。*
+
 **唯一用户标识（必需）**：每个用户必须拥有唯一标识符，以便追踪其对 ePHI 的访问。共享账号被明确禁止——「护士站共用账号」是 HIPAA 审计中最常见的违规之一。
 
-Autional 的 identity-service 天然保证唯一用户标识。每个用户拥有全局唯一的 ULID，支持多种登录方式（用户名、邮箱、手机号），但内部标识始终是单一主键。每一条审计日志都绑定到具体的用户 ID。
+Autional 的 identity-service 天然保证唯一用户标识。每个用户拥有全局唯一的 ULID，支持多种登录方式（用户名、邮箱、手机号）。但内部标识始终是单一主键，每一条审计日志都绑定到具体的用户 ID。
 
 **紧急访问流程（必需）**：在紧急情况下（如危及生命的状况），经授权人员必须能够绕过常规访问控制获取 ePHI。「Break Glass」（打破玻璃）流程必须具有独立的审计追踪。
 
@@ -72,7 +86,7 @@ HIPAA 要求审计日志覆盖：
 
 Autional 的 audit-service 完整覆盖这五个维度。基于 MongoDB 的文档存储模型，每条审计记录可灵活携带上下文信息——如访问的科室、患者 ID、数据类别——这对 HIPAA 审计至关重要。
 
-更重要的是，audit-service 的哈希链校验机制保证审计记录不可篡改。每次写入日志都会计算与前一条记录的哈希链接，形成链式结构。对历史日志的任何修改都会破坏哈希链，在审计校验时被立即发现。这为 HIPAA 的「审计日志完整性」要求提供了有力的技术证明。
+更重要的是，audit-service 的哈希链校验机制保证审计记录不可篡改。每次写入日志时都会计算与前一条记录的哈希链接，形成链式结构。对历史日志的任何修改都会破坏哈希链，在审计校验时被立即发现。这为 HIPAA 的「审计日志完整性」要求提供了有力的技术证明。
 
 ### §164.312(c)(1)：完整性控制
 
@@ -114,21 +128,22 @@ Autional 在网关到微服务的全链路支持 TLS 1.3。gateway-service 负�
 
 医疗机构中的角色结构远比一般企业复杂：
 
+```mermaid
+flowchart TB
+    H["医疗机构"] --> P["医师 — 多专科"]
+    P --> P1["主治医师 — 本科室患者数据读写"]
+    P --> P2["会诊医师 — 所咨询病例只读"]
+    P --> P3["实习医师 — 需主治审批"]
+    H --> N["护士"]
+    N --> N1["责任护士 — 所负责患者读写"]
+    N --> N2["轮班护士 — 当班患者只读"]
+    H --> M["药剂师 — 处方只读、不可修改诊断"]
+    H --> F["行政与财务 — 仅身份与保险数据"]
+    H --> PT["患者与家属 — 本人只读、家属凭授权只读"]
+    H --> EX["外部机构 — 受限访问、需 BAA 协议"]
 ```
-Healthcare Organization
-├── Physicians (multiple specialties)
-│   ├── Attending Physician: read/write all patient data in their department
-│   ├── Consulting Physician: read patient data for consulted cases
-│   └── Intern Physician: requires attending approval for access
-├── Nurses
-│   ├── Charge Nurse: read/write currently responsible patients in department
-│   └── Shift Nurse: read-only access to current shift patients
-├── Pharmacist: read prescription information, cannot modify diagnoses
-├── Administration/Finance: access identity information and insurance data only, no clinical data access
-├── Patient: read-only access to their own data (Patient Portal)
-├── Patient Family: read-only with patient authorization (Proxy Access)
-└── External Parties (insurers, referral hospitals): restricted access, requires BAA agreement
-```
+
+*图 2：医疗机构的人员访问模型——临床角色按职称分层，行政、患者与外部机构各有独立边界。*
 
 Autional 的 RBAC 系统通过以下方式支持这种复杂度：
 

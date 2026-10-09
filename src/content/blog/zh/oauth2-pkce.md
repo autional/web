@@ -47,7 +47,7 @@ OAuth 2.0 的授权码模式（Authorization Code Grant）工作流程如下：
 6. Attacker now accesses the API as the victim
 ```
 
-这个问题在移动端尤为严重，因为 Android 允许多个应用注册同一个自定义 URL scheme，2024 年之前的 iOS 版本也存在同样的风险。
+这个问题在移动端尤为严重——Android 允许多个应用注册同一个自定义 URL scheme。2024 年之前的 iOS 版本也有同样的风险。
 
 ## 解法：PKCE 的工作原理
 
@@ -91,6 +91,20 @@ Step 4: Send code_verifier in the token request
   If not matched → reject (401)
 ```
 
+```mermaid
+sequenceDiagram
+    participant C as 客户端
+    participant A as 授权服务器
+    C->>A: 授权请求，附 code_challenge
+    Note over A: 用户在此登录并授权
+    A-->>C: 重定向返回 authorization_code
+    C->>A: 令牌请求，附 code 与 code_verifier
+    A->>A: 重算 challenge 并比对
+    A-->>C: 匹配则签发 access_token
+```
+
+*图 1：授权码 + PKCE 的完整流程——code_challenge 随授权请求上路，code_verifier 留在客户端本地，最后一步才出示给授权服务器。*
+
 ### 攻击者为什么绕不过 PKCE？
 
 即使攻击者成功截获了授权码，他仍面临一个无解的问题：
@@ -100,6 +114,19 @@ Step 4: Send code_verifier in the token request
 - 但**攻击者拿不到 `code_verifier`**——这个值从不在网络上传输，只存在于合法客户端的本地内存中
 
 SHA256 是单向哈希函数。你无法从 `code_challenge` 反推出 `code_verifier`。没有 `code_verifier`，向令牌端点发起的请求就会被拒绝。
+
+```mermaid
+sequenceDiagram
+    participant C as 客户端
+    participant A as 授权服务器
+    participant X as 攻击者
+    A-->>C: 重定向返回 authorization_code
+    Note over X: 同名 URL scheme 截获授权码
+    X->>A: 令牌请求，附截获的 code
+    A-->>X: 拒绝——缺少匹配的 code_verifier
+```
+
+*图 2：截获不等于换到令牌——攻击者攥着授权码，却拿不出只存在于合法客户端本地的 code_verifier，令牌端点直接拒绝。*
 
 这就是 PKCE 的精髓：**用一个只存在于客户端本地的随机密钥证明身份，而这个密钥从不需要在网络上传输。**
 
@@ -231,7 +258,7 @@ const { loginWithOAuth } = useAutional();
 await loginWithOAuth({ provider: 'google' });
 ```
 
-对已经使用 React SDK（`@autional/react`）的 Autional 用户而言，**无需任何代码改动**。oauth-service 会自动以 PKCE 处理所有授权码流程，对客户端完全透明。
+对已经使用 React SDK（`@autional/react`）的 Autional 用户而言，**无需任何代码改动**。oauth-service 会自动用 PKCE 处理所有授权码流程，对客户端完全透明。
 
 ## PKCE 的局限：不是银弹
 

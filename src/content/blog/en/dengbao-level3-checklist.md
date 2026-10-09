@@ -18,6 +18,23 @@ Level 3 Dengbao evaluation covers both technical and management aspects. On the 
 
 This article selects the 20 most frequently inspected items during on-site assessments and analyzes each one.
 
+```mermaid
+flowchart TB
+    R["Dengbao Level 3 — 20 identity checks"] --> A["Identity authentication — 8 items"]
+    A --> A1["Unique IDs and login failure handling"]
+    A --> A2["Password complexity and in-transit protection"]
+    A --> A3["MFA, session management, second-factor"]
+    R --> B["Access control — 6 items"]
+    B --> B1["Least privilege and policy coverage"]
+    B --> B2["SoD and fine-grained control"]
+    R --> C["Security audit — 3 items"]
+    C --> C1["Log integrity, hash chain, retention"]
+    R --> D["Data security — 3 items"]
+    D --> D1["Encryption at rest, in transit, backup"]
+```
+
+*Figure 1: The 20 items assessed on site at Dengbao Level 3 — identity authentication (8), access control (6), security audit (3), and data security (3), with the high-frequency checkpoints for each.*
+
 ## I. Identity Authentication (8 Items)
 
 ### 1. Unique User Identity
@@ -44,7 +61,7 @@ This article selects the 20 most frequently inspected items during on-site asses
 
 **Requirement**: Authentication information shall have complexity requirements and shall be changed periodically.
 
-**On-site check**: Assessors check whether password policies cover minimum length (Level 3 typically requires ≥ 8 characters), whether three or more character types are required (uppercase, lowercase, digits, special characters), and whether password expiry is enforced.
+**On-site check**: Assessors check whether password policies cover minimum length (Level 3 typically requires ≥ 8 characters), whether three or more character types are required (uppercase, lowercase, digits, special characters). They also confirm whether password expiry is enforced.
 
 **Common pitfalls**: Password policy only enforced during registration but not during password changes; password expiry policy not actually enforced (just a UI hint); temporary passwords from admin resets not forced to change.
 
@@ -167,6 +184,15 @@ This article selects the 20 most frequently inspected items during on-site asses
 **On-site check**: Assessors attempt to delete an audit log directly from the database and check whether the system has a detection mechanism — i.e., whether the system alerts or reports an anomaly on the next verification.
 
 **How Autional meets it**: audit-service uses a hash chain to protect log integrity. Each audit record contains `prev_hash` (SHA-256 hash of the previous record) and `chain_index`. Any insertion, deletion, or modification of a log entry breaks the hash chain, which the system detects through periodic verification. Logs are stored append-only with no API for deletion.
+
+```mermaid
+flowchart LR
+    A["Insert, delete, or modify one log entry"] --> B["Hash chain breaks — later entries no longer match"]
+    B --> C["Periodic verification detects the break"]
+    C --> D["Alert — exact break location reported"]
+```
+
+*Figure 2: How the hash chain exposes tampering — any insertion, deletion, or modification breaks the link, and periodic verification reports the exact location.*
 
 ### 17. Audit Record Retention
 

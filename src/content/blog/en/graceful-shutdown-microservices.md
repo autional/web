@@ -84,7 +84,7 @@ func main() {
 }
 ```
 
-Each `WithServer` and `WithCloser` registers a **named shutdown callback**. During shutdown, they execute in **reverse registration order** (LIFO), ensuring "first created, first opened, and opened resources close in dependency order":
+Each `WithServer` and `WithCloser` registers a **named shutdown callback**. During shutdown, they execute in **reverse registration order** (LIFO): resources created and opened first are closed last, following dependency order.
 
 ### WithServer: Lifecycle Management
 
@@ -128,6 +128,26 @@ app.WithCleanup(func() { db.Close() })
 ```
 
 ## Shutdown Sequence in Detail
+
+```mermaid
+sequenceDiagram
+    participant K as Kubernetes
+    participant A as app.Run
+    participant H as HTTP
+    participant M as MQ consumer
+    participant G as gRPC
+    K->>A: SIGTERM
+    A->>H: stop new requests · drain
+    H-->>A: in-flight requests done
+    A->>M: stop subscribing · wait in-flight
+    M-->>A: all acked
+    A->>G: GracefulStop
+    G-->>A: streams complete
+    A->>A: close LIFO · audit → MQ → Redis → DB
+    A-->>K: process exits (within 30s)
+```
+
+*Figure 1: The shutdown sequence — after SIGTERM, layers wind down in order HTTP → MQ → gRPC → connection pools, all within the 30-second grace window.*
 
 ### Step 1: Stop Accepting New Requests (0-1 sec)
 
@@ -288,7 +308,7 @@ Pod billing-service-6c3d9a-xyz78 receives SIGTERM
 → 0.7s: Process exits (despite db.Close failure)
 ```
 
-Because `db.Close()` returned an error, but the `WithCloser` implementation **always calls all Closers**, never interrupting due to a single failure:
+Even though `db.Close()` returned an error, the `WithCloser` implementation **always calls all Closers**, never interrupting on a single failure:
 
 ```go
 for _, closer := range s.closers {  // reverse order
@@ -304,7 +324,7 @@ for _, closer := range s.closers {  // reverse order
 
 ### User Experience
 
-Zero-downtime graceful shutdown means: users in the middle of two-factor authentication (MFA), submitting a password reset request, or checking wallet balances—none of these in-progress operations are interrupted by deployments. Users don't notice a thing.
+Zero-downtime graceful shutdown means users in the middle of two-factor authentication (MFA), a password reset request, or checking wallet balances are never interrupted by deployments. Users don't notice a thing.
 
 ### Data Integrity
 

@@ -12,7 +12,7 @@ claims_reviewed: true
 
 Choosing an identity platform may be one of the most important technical decisions a startup makes — even more important than choosing a programming language or database. The reason is simple: **changing databases is hard; changing identity platforms is even harder.** Once your user data, authentication logic, permission models, and OAuth integrations are deeply coupled with a platform, the migration cost alone is enough to make teams abandon the idea.
 
-The 2026 identity platform market features three representative products: **Auth0** (Okta, SaaS closed-source, global market share leader), **Keycloak** (Red Hat sponsored, Apache 2.0 open-source, Java ecosystem darling), and **Autional** (domestic Go microservice architecture, open core — open-source portals and SDKs, commercial core, compliance-oriented). They represent three different product philosophies: **extreme ease-of-use vs extreme controllability vs compliance-first.**
+The 2026 identity platform market features three representative products: **Auth0** (Okta, SaaS closed-source, global market share leader), **Keycloak** (Red Hat sponsored, Apache 2.0 open-source, Java ecosystem darling), and **Autional** (China-focused Go microservice architecture, open core — open-source portals and SDKs, commercial core, compliance-oriented). They represent three different product philosophies: **extreme ease-of-use vs extreme controllability vs compliance-first.**
 
 This article provides an objective comparison across 15 dimensions. Disclaimer: the author is an Autional team member, but we strive to be fair — because we believe helping users find the truly right product for their scenario is more important than pushing Autional on everyone.
 
@@ -42,7 +42,7 @@ This article provides an objective comparison across 15 dimensions. Disclaimer: 
 
 **Auth0** wins. Auth0's documentation, SDKs, Quickstarts, and UI customization capabilities set the industry standard. Time from zero to "working" is typically less than an afternoon. Its developer-friendliness transforms "integrating identity" from a month-long project into a one-day task. If you're a 5-person startup that just wants to add login functionality fast and focus on your core product, Auth0 is the best choice.
 
-**Keycloak** is moderate. Keycloak's documentation quality has improved significantly in recent years, but the Java tech stack adds complexity that's unfriendly to non-Java teams. The admin console UI is functional but somewhat clunky — teams needing custom login pages and email templates face a steep learning curve.
+**Keycloak** is moderate. Its documentation quality has improved significantly in recent years, but the Java tech stack adds complexity that's unfriendly to non-Java teams. The admin console UI is functional but somewhat clunky — teams needing custom login pages and email templates face a steep learning curve.
 
 **Autional** is good. Autional provides a React SDK (`@autional/react`), a portal component library (`@autional/ui`), and a generated per-service TypeScript API client. Integrating login takes just one provider: wrap your app in `<AutionalProvider>` and use the `useAutional()` hooks. However, its documentation still lags behind Auth0's richness — Chinese docs are comprehensive but English docs are under construction.
 
@@ -83,7 +83,7 @@ Autional's Go microservice architecture offers clear advantages in resource effi
 
 **This is a common weakness of both Auth0 and Keycloak.**
 
-- Auth0 has no server nodes in mainland China — high latency; no ICP备案 support; no option for data residency within China.
+- Auth0 has no server nodes in mainland China — high latency; no ICP filing support; no option for data residency within China.
 - Keycloak can be self-hosted on Chinese servers to solve latency, but compliance certification is entirely self-certified.
 
 **Autional** was designed for the Chinese market from day one:
@@ -107,6 +107,15 @@ Autional's Go microservice architecture offers clear advantages in resource effi
 
 **Auth0's real cost isn't the monthly fee — it's the marginal cost at scale.** At 10K MAU, Auth0's pricing is acceptable, but at 1M MAU, the annual cost can reach millions of RMB. Conversely, the marginal cost of Keycloak approaches zero, and Autional's open-source components carry no license fees of their own — but you bear the operational costs.
 
+```mermaid
+flowchart LR
+    A["1,000 MAU — ~$35/month"] --> B["10,000 MAU — ~$500/month"]
+    B --> C["100,000 MAU — ~$2,000-3,000/month"]
+    C --> D["1,000,000 MAU — annual cost can reach millions of RMB"]
+```
+
+*Figure 1: Auth0's marginal cost climbing — each order of magnitude in MAU moves the bill up a tier; at 1M MAU the annual cost can reach millions of RMB.*
+
 ### 7. Ecosystem and Community
 
 **Auth0** has the largest ecosystem: 200+ social login integrations, 50+ SDKs, an active community forum, and a third-party integration marketplace.
@@ -116,6 +125,15 @@ Autional's Go microservice architecture offers clear advantages in resource effi
 **Autional**'s community grows around its open-source components — portals, design system, and SDKs (AGPL-3.0 / MIT) — with public documentation and API wiki. Average issue response time is < 24 hours.
 
 ## Selection Decision Guide
+
+```mermaid
+flowchart TD
+    A{"Any China-market compliance requirements?"} -->|"No, and speed to launch is key"| B["Auth0 — developer experience first"]
+    A -->|"No, but you have a Java team and ops muscle"| C["Keycloak — full control, you carry the cost"]
+    A -->|"Yes — PIPL, Dengbao, or cross-border scenarios"| D["Autional — compliance and integration first"]
+```
+
+*Figure 2: The selection decision tree — start with China compliance requirements, then follow your team's strengths to one of the three platforms.*
 
 ### Choose Auth0 if:
 

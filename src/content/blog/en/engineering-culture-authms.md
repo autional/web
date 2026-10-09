@@ -66,6 +66,20 @@ This framework uniformly manages: HTTP server startup, graceful shutdown, health
 
 This is one of our proudest engineering investments. Before every PR is submitted, the CI pipeline runs 25 Python scripts covering three tiers:
 
+```mermaid
+flowchart TD
+    A["PR submitted"] --> B["25 Python scripts · three tiers"]
+    B --> C["Architecture gates: DTO, factory types, RBAC constants"]
+    B --> D["Coding standards: error codes, encoding, internal paths"]
+    B --> E["Runtime safety: DB schema, Swagger freshness, middleware order"]
+    C --> F["Merge allowed"]
+    D --> F
+    E --> F
+    B -. "Any script fails" .-> G["CI rejects"]
+```
+
+*Figure 1: The automated gate before any merge — 25 Python scripts check in three tiers: architecture gates, coding standards, and runtime safety; if any script fails, CI rejects the PR outright.*
+
 **Architecture Gates (preventing architectural degradation):**
 - `check-dto-compliance.py`: All HTTP responses must use `dto_base.NewDataResponse` or `dto_base.NewListResponse`. Bare structs, `gin.H`, and `map[string]interface{}` as JSON responses are prohibited.
 - `check-factory-types.py`: Factory type names must match the registry.
@@ -82,7 +96,7 @@ This is one of our proudest engineering investments. Before every PR is submitte
 - `check-swagger-freshness.py`: Detects handler annotation changes without corresponding Swagger doc regeneration.
 - `check-middleware-order.py`: Verifies middleware registration order (Recovery → Logging → Auth → RBAC).
 
-**These scripts aren't because we distrust developers; it's because even the best developer can write buggy code at 2 AM.** CI doesn't get tired, doesn't get distracted, and never says "I'll let it slide this time."
+**These scripts exist not because we distrust developers, but because even the best developer can write buggy code at 2 AM.** CI doesn't get tired, doesn't get distracted, and never says "I'll let it slide this time."
 
 ### Lint-Enforced Architecture Boundaries
 
@@ -111,7 +125,7 @@ The above covers the tooling. But tooling is just the embodiment of values, not 
 
 ### Security is Default, Not Optional
 
-We have a strict rule: all GORM struct fields for password hashes, API Keys, OAuth Tokens, and MFA secrets must have `json:"-"` tags. This is not a suggestion — it's mandatory. Because historically, a developer added a new field, forgot `json:"-"`, and printed the entire struct in a log — password hashes leaked straight into ELK.
+We have a strict rule: all GORM struct fields for password hashes, API Keys, OAuth Tokens, and MFA secrets must have `json:"-"` tags. This is not a suggestion — it's mandatory. Once, a developer added a new field, forgot `json:"-"`, and printed the entire struct in a log — password hashes leaked straight into ELK.
 
 Similar rules:
 - All inter-service communication must be authenticated via `auth_mw.InternalAPIKeyAuth` — no hand-rolled verification logic allowed
@@ -142,7 +156,7 @@ An engineering culture article that only talks about successes isn't worth readi
 
 ### Mistake 1: Introducing Test Coverage Metrics Too Early
 
-Early on, we set a "80% unit test coverage" target. The result? Developers wrote mountains of meaningless tests for getters and setters to hit the metric, while core business logic tests were neglected.
+Early on, we set an "80% unit test coverage" target. The result? Developers wrote mountains of meaningless tests for getters and setters to hit the metric, while core business logic tests were neglected.
 
 What we do now: **We don't chase coverage metrics. We require integration tests for critical paths (registration, login, payment, permission validation).** One integration test covering the authentication flow is worth more than 100 unit tests testing `GetName()`.
 
@@ -167,6 +181,17 @@ Whenever we face a significant architectural decision (e.g., whether to adopt gR
 2. All engineers review and comment within 3 days
 3. If there are no major objections, the proposal passes
 4. If there are disputes, a 30-minute synchronous discussion is organized
+
+```mermaid
+flowchart TD
+    A["Any engineer proposes an RFC"] --> B["Everyone reviews within 3 days"]
+    B --> C{"Major objections?"}
+    C -- "No" --> D["Proposal passes"]
+    C -- "Yes" --> E["30-minute sync discussion"]
+    E --> F["Passes or is rejected"]
+```
+
+*Figure 2: The RFC flow for architecture decisions — anyone can propose, everyone reviews; no major objection means it passes, and a dispute goes to a 30-minute sync discussion.*
 
 This process has run for two years, producing 40+ RFCs. Three were rejected; five passed after major revisions. No one can unilaterally decide the architecture direction — and equally, no one can push architectural responsibility onto "the architect."
 

@@ -18,36 +18,40 @@ WebAuthn（Web Authentication）是 W3C 与 FIDO 联盟制定的、基于浏览�
 
 FIDO2 由两个核心部分组成：
 
+```mermaid
+flowchart TD
+    W["WebAuthn（W3C 规范）— 浏览器 JavaScript API，navigator.credentials.create() 与 navigator.credentials.get()"] --> C["CTAP2（FIDO 联盟规范）— Client-to-Authenticator 传输协议，支持 USB、NFC、BLE"]
+    C --> A["认证器 — YubiKey 硬件密钥、Touch ID 平台认证器"]
 ```
-┌──────────────────────────────────────────────┐
-│  WebAuthn (W3C Specification)                │
-│  Browser JavaScript API                       │
-│  navigator.credentials.create()              │
-│  navigator.credentials.get()                 │
-└───────────────────┬──────────────────────────┘
-                    │
-┌───────────────────▼──────────────────────────┐
-│  CTAP2 (FIDO Alliance Specification)          │
-│  Client-to-Authenticator Transport Protocol   │
-│  Supports USB, NFC, BLE                       │
-└───────────────────┬──────────────────────────┘
-                    │
-┌───────────────────▼──────────────────────────┐
-│  Authenticator                                │
-│  Hardware Security Key (YubiKey),             │
-│  Platform Authenticator (Touch ID)            │
-└──────────────────────────────────────────────┘
-```
+
+*图 1：FIDO2 的三层架构——WebAuthn 是网页能触到的 API，CTAP2 负责浏览器与认证器之间的传输，密钥生成与签名都发生在认证器内。*
 
 - **WebAuthn**：运行在浏览器中的 JavaScript API，定义了网页与认证器如何交互。开发者通过 `navigator.credentials.create()` 创建凭据，通过 `navigator.credentials.get()` 获取凭据断言。
 - **CTAP2**（Client to Authenticator Protocol）：浏览器与物理认证器之间的通信协议。当用户插入 USB 安全密钥或通过 NFC 触碰时，CTAP2 定义了数据传输格式。
 - **Authenticator（认证器）**：负责生成密钥对、保存私钥并执行签名操作的硬件或软件模块。
 
-FIDO2 并不要求开发者了解 CTAP2 的细节——浏览器负责处理 CTAP2 通信，开发者只需调用 WebAuthn API。但理解完整的协议全貌，有助于做出正确的安全架构决策。
+FIDO2 并不要求开发者了解 CTAP2 的细节——浏览器负责处理 CTAP2 通信，开发者只需调用 WebAuthn API。但理解协议全貌，有助于做出正确的安全架构决策。
 
 ## 注册流程：attestation（创建凭据）
 
 注册是整个 WebAuthn 流程的起点——用户首次把一台设备绑定到账号上。
+
+```mermaid
+sequenceDiagram
+    participant B as 浏览器
+    participant S as 服务端
+    participant A as 认证器
+    B->>S: 请求注册挑战值
+    S-->>B: 返回 challenge 与 rp.id、pubKeyCredParams 参数
+    B->>A: 经 CTAP2 请求生成密钥对
+    Note over A: 提示用户验证——指纹、人脸或 PIN
+    A-->>B: 返回 attestationObject（公钥 + 签名）
+    B->>S: 提交 attestationObject
+    S->>S: 校验 challenge、origin、RP ID 与签名
+    S-->>B: 存储公钥，注册完成
+```
+
+*图 2：注册流程的泳道时序——浏览器取挑战值，认证器生成密钥对并签名，attestationObject 回到服务端验签入库，私钥全程不出认证器。*
 
 ### 第一步：服务端生成挑战值
 
@@ -286,7 +290,7 @@ POST /api/v1/internal/mfa/webauthn/verify-authentication
 
 这种职责分离体现了 Autional 的微服务设计理念：
 
-1. **关注点分离**：identity-service 负责用户交互，mfa-service 负责密码学运算。更换签名算法或新增认证器类型，只需改动 mfa-service。
+1. **关注点分离**：identity-service 负责用户交互，mfa-service 负责密码学运算。更换签名算法或新增认证器类型时，只需改动 mfa-service。
 2. **独立扩展**：注册与认证中的密码学运算（ECDSA 校验）非常吃 CPU。通行密钥推广期间注册请求可能激增——mfa-service 可以独立扩容，不影响 identity-service。
 3. **安全边界**：公钥存储与签名校验逻辑集中在 mfa-service，缩小了审计范围，也减小了安全风险面。
 

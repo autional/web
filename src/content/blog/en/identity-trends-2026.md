@@ -48,6 +48,16 @@ From late 2025 to early 2026, several landmark events highlighted AI-driven iden
 - The black market saw "Synthetic Identity as a Service" — AI-generated complete digital identities sold for $200/month
 - A LinkedIn social engineering attack used LLMs to generate personalized phishing messages with 4x higher success rates than traditional phishing
 
+```mermaid
+flowchart TD
+    A["Deepfake beats facial recognition"] --> D["Attack surface: from cracking passwords to deceiving the trust chain"]
+    B["Synthetic Identity as a Service"] --> D
+    C["LLM-personalized phishing"] --> D
+    D --> E["Defense: from verifying credentials to verifying authenticity"]
+```
+
+*Figure 1: The attack-and-defense shift in the AI era — deepfakes, synthetic identities, and LLM phishing push the attack surface toward "deceiving the trust chain," and defense thinking shifts from "verifying credentials" to "verifying authenticity."*
+
 These events all point in the same direction: **the attack surface is shifting from "cracking passwords" to "deceiving the trust chain."**
 
 Defense thinking needs to evolve from "verify credentials" to "verify authenticity":
@@ -67,7 +77,7 @@ The traditional authentication model is: verify once at login → give you an 8-
 
 This model is no longer sufficient in the age of AI attacks. If an attacker takes over your session 5 minutes after login, your system is completely unaware — because the Token is still valid.
 
-**Continuous Authentication** core idea: continuously verify the user's identity throughout the session. This is not "ask for the password every minute," but continuous evaluation based on implicit signals:
+The core idea of **Continuous Authentication**: continuously verify the user's identity throughout the session. This is not "ask for the password every minute," but continuous evaluation based on implicit signals:
 
 - **Behavioral biometrics**: mouse movement patterns, keyboard typing rhythm, touchscreen scrolling habits
 - **Device signals**: sensor data, network environment changes, geographic location drift
@@ -77,6 +87,18 @@ When the risk score exceeds a threshold, the system can:
 1. Insert a frictionless additional verification (e.g., require fingerprint confirmation)
 2. Downgrade session permissions (temporarily disable sensitive operations)
 3. Terminate the session and require re-login
+
+```mermaid
+flowchart TD
+    A["Behavioral, device, contextual signals"] --> B["Continuous identity evaluation"]
+    B --> C{"Risk score over threshold?"}
+    C -- "No" --> D["Session continues"]
+    C -- "Yes" --> E["Insert a frictionless extra verification"]
+    C -- "Yes" --> F["Downgrade session permissions"]
+    C -- "Yes" --> G["Terminate session and require re-login"]
+```
+
+*Figure 2: The continuous authentication decision path — behavioral, device, and contextual signals feed a risk score; once it crosses the threshold, the system can insert a frictionless extra verification, downgrade session permissions, or terminate the session and require re-login.*
 
 Autional's session-service architecture has reserved the interface for continuous authentication — the `RiskEvaluator` interface allows plugging in custom risk assessment engines, and the evaluation results affect the session's trust level.
 
@@ -88,7 +110,7 @@ Gartner named "Identity Fabric" as the number one security trend for 2026. The c
 
 This drives three changes:
 
-**Identity-Aware Proxy**: The gateway no longer looks at just IP and port — it makes access decisions based on user identity and context. Autional's gateway-service is evolving in this direction — deeply integrated with identity-service to complete identity verification and basic authorization at the gateway layer.
+**Identity-Aware Proxy**: The gateway no longer looks at just IP and port — it makes access decisions based on user identity and context. Autional's gateway-service is evolving in this direction: deeply integrated with identity-service to complete identity verification and basic authorization at the gateway layer.
 
 **Identity Data Lake**: Aggregating identity signals from multiple sources into a unified analytics platform — logs, authentication events, permission changes, device signals — forming a complete identity posture awareness. audit-service is expanding into this role.
 
@@ -98,7 +120,7 @@ This drives three changes:
 
 The traditional model of identity verification is "full disclosure": to prove you are over 18, the other party sees your complete date of birth. To prove you are an employee of a company, they see your position and department.
 
-This over-disclosure is increasingly unacceptable in 2026 under increasingly stringent data privacy regulations.
+This over-disclosure is becoming unacceptable in 2026 under increasingly stringent data privacy regulations.
 
 **Selective Disclosure** allows users to disclose only the attributes needed for proof, not their full identity. Technically, this can be achieved through:
 

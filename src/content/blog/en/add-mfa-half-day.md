@@ -12,7 +12,7 @@ claims_reviewed: true
 
 > **Integration Note**: The integration time estimates ("half a day", "3.5-5 months") described in this article are reference values based on ideal conditions. Actual integration time varies depending on existing system complexity, team experience, security policy requirements, and other factors. We recommend allocating sufficient testing and deployment time in project planning.
 
-Multi-factor authentication (MFA) is one of the most effective defenses against account hijacking. Microsoft's research shows that MFA can block **99.9%** of account compromise attacks. China's MLPS 2.0 Level 3 explicitly requires the use of two or more combined authentication techniques, and the SOC 2 security standard also lists MFA as a key control.
+Multi-factor authentication (MFA) is one of the most effective defenses against account hijacking. Microsoft's research shows that MFA can block **99.9%** of account compromise attacks. China's MLPS 2.0 Level 3 explicitly requires the use of two or more combined authentication techniques. The SOC 2 security standard also lists MFA as a key control.
 
 Yet many teams still haven't adopted MFA — not because they don't need it, but because the investment seems too large. Implementing TOTP protocol, SMS sending, email sending, Passkey registration from scratch... a conservative estimate puts the development cycle at **3-6 months**.
 
@@ -41,6 +41,15 @@ And this is just the development side. After go-live, your security team needs t
 ## The Autional Solution: Everything Done in Half a Day
 
 Autional implements MFA as a standalone `mfa-service` that provides MFA capabilities to all integrated applications via OAuth 2.0 / OIDC protocols. You don't need to implement any MFA logic in your application code.
+
+```mermaid
+flowchart LR
+    A["Step 1 — Register the app: 5 minutes"] --> B["Step 2 — Integrate OAuth login: 30 minutes"]
+    B --> C["Step 3 — Enable MFA policies: 2 minutes"]
+    C --> D["Deployed, zero changes to application code"]
+```
+
+*Figure 1: Half a day in three steps — register the app, integrate OAuth login, enable MFA policies; all MFA logic stays in mfa-service, with zero changes to your application code.*
 
 ### Step 1: Register Your Application (5 minutes)
 

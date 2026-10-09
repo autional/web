@@ -115,7 +115,18 @@ After receiving the ID Token, the client (RP) must perform the following verific
 8. If using Implicit/Hybrid Flow, verify at_hash (Access Token Hash)
 ```
 
-Steps 7 and 8 — hash verification — are the most overlooked yet critical. They bind the ID Token to the Authorization Code or Access Token, preventing mixing attacks.
+```mermaid
+flowchart TD
+    A["Verify signature (JWK public key)"] --> B["Verify iss and aud"]
+    B --> C["Verify exp and iat"]
+    C --> D["If nonce present, compare against the request"]
+    D --> E["Verify c_hash or at_hash per flow"]
+    E --> F["All checks pass, accept the token"]
+```
+
+*Figure 1: The ID Token verification chain — verify the signature first, check iss and aud, validate freshness, then pin the token to this request with nonce and hashes.*
+
+Steps 7 and 8 — hash verification — are the most overlooked yet critical. They bind the ID Token to the Authorization Code or Access Token, preventing mix-up attacks.
 
 Autional oauth-service automatically computes and embeds `c_hash` and `at_hash` when issuing ID Tokens. Client SDKs automatically verify these during validation.
 
@@ -153,6 +164,18 @@ When a client requests `openid profile email` scopes, Autional includes the corr
 ## The Three OIDC Flows
 
 OIDC inherits OAuth 2.0's authorization flows and adds identity information on top. Three main flows:
+
+```mermaid
+flowchart TD
+    A["The three OIDC flows"] --> B["Authorization Code Flow"]
+    B --> B1["Front channel carries only the code — tokens exchanged via the backend (PKCE-hardened)"]
+    A --> C["Implicit Flow (deprecated)"]
+    C --> C1["Tokens returned directly in the URL fragment — removed by OAuth 2.1"]
+    A --> D["Hybrid Flow"]
+    D --> D1["Frontend gets the ID Token directly — backend exchanges the code for an Access Token"]
+```
+
+*Figure 2: The fork across the three flows — whether tokens land on the front channel or the back channel determines each flow's security and fit.*
 
 ### 1. Authorization Code Flow
 
@@ -287,7 +310,7 @@ Autional provides official OIDC client SDKs for Go, JavaScript, Python, and Java
 
 ## Summary
 
-OIDC is the most widely adopted standardized identity protocol today. It elevates OAuth 2.0 from a pure authorization protocol to a complete identity authentication protocol, enabling cross-system user identity interoperability through the standardized claims format of the ID Token.
+OIDC is the most widely adopted standardized identity protocol today. It elevates OAuth 2.0 from a pure authorization protocol to a complete identity authentication protocol. Through the standardized claims format of the ID Token, it enables cross-system user identity interoperability.
 
 Autional oauth-service, as a complete OIDC Provider, delivers:
 - Full OIDC endpoints (Authorization, Token, UserInfo, JWK, Discovery)

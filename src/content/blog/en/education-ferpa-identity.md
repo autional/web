@@ -73,7 +73,7 @@ Autional's oauth-service supports custom scopes, and compliance-service's DSAR f
 
 ## COPPA: Protecting Children Under 13
 
-COPPA (Children's Online Privacy Protection Act) is a U.S. federal law protecting the online privacy of children under 13. It is enforced by the FTC, with penalties reaching tens of thousands of dollars per violation.
+COPPA (Children's Online Privacy Protection Act) is a U.S. federal law protecting the online privacy of children under 13. The FTC enforces it, with penalties reaching tens of thousands of dollars per violation.
 
 ### Verifiable Parental Consent
 
@@ -108,7 +108,7 @@ This workflow is driven by identity-service's approval mechanism, with audit-ser
 - Withdraw consent and request data deletion
 - Control their child's interactions with other platform users
 
-These features are implemented through identity-service's user association, audit-service's activity log, and compliance-service's data deletion capabilities.
+These features are implemented through identity-service's user association, audit-service's activity log, and compliance-service's data deletion features.
 
 ## Complex Role Hierarchy
 
@@ -117,30 +117,36 @@ These features are implemented through identity-service's user association, audi
 Educational role hierarchies are more complex than typical enterprises because they span multiple dimensions:
 
 **Institutional Dimension**:
-```
-School District
-├── School A
-│   ├── Grade 1
-│   │   ├── Class 1A — Students: Alice, Bob
-│   │   └── Class 1B — Students: Carol, Dave
-│   └── Grade 2
-└── School B
+
+```mermaid
+flowchart TD
+    SD["School District"] --> SA["School A"]
+    SD --> SB["School B"]
+    SA --> G1["Grade 1"]
+    SA --> G2["Grade 2"]
+    G1 --> C1A["Class 1A — Students: Alice, Bob"]
+    G1 --> C1B["Class 1B — Students: Carol, Dave"]
 ```
 
+*Figure 1: The institutional dimension — district, school, grade, and class form a four-level structure; authorization scopes are drawn along this tree.*
+
 **Role Dimension**:
+
+```mermaid
+flowchart TD
+    Root["System Admin"] --> DA["District Admin — manages the entire district"]
+    Root --> SA["School Admin — manages one school"]
+    Root --> T["Teacher — manages their classes"]
+    T --> HT["Homeroom Teacher — additional permissions"]
+    T --> ST["Subject Teacher — only their subject"]
+    Root --> TA["Teaching Assistant — supports instruction"]
+    Root --> Stu["Student"]
+    Stu --> Minor["Minor — parent holds control rights"]
+    Stu --> Adult["Adult — self-controlled"]
+    Root --> Par["Parent — views linked students"]
 ```
-System Admin
-├── District Admin — manages the entire district
-├── School Admin — manages one school
-├── Teacher — manages their classes
-│   ├── Homeroom Teacher — additional permissions
-│   └── Subject Teacher — only their subject
-├── Teaching Assistant — supports instruction
-├── Student
-│   ├── Minor — parent holds control rights
-│   └── Adult — self-controlled
-└── Parent — views linked students
-```
+
+*Figure 2: The role dimension — branches down from System Admin; students split into Minor and Adult, where control rights pass from parent to student.*
 
 **Data Dimension**:
 - Grade records: Teacher can write, Student can read, Parent can read (linked students only)

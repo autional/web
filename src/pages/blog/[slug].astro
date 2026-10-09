@@ -4,6 +4,7 @@ import Layout from '../../layouts/LandingLayout.astro';
 import { t } from '../../i18n';
 import { isRegionPost, postSlug } from '../../lib/blog-lang';
 import { SITE_URL } from '../../lib/site-env';
+import '../../styles/blog-diagrams.css';
 
 type DataFilter = { data: CollectionEntry<'blog'>['data'] };
 
@@ -117,4 +118,8 @@ const keywords = ['Autional', t('blog.keywordIdentity'), t('blog.keywordAuth'), 
       </a>
     </div>
   </article>
+  <script>
+    import { initMermaidDiagrams } from '../../lib/mermaid-diagrams';
+    void initMermaidDiagrams();
+  </script>
 </Layout>

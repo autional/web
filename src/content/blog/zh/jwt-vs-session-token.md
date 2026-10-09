@@ -28,6 +28,18 @@ claims_reviewed: true
 
 **路线 B（有状态）**：令牌只是一串无意义的随机字符串。签发时，服务端把这串字符串与对应用户信息一起存到后端。每次请求，服务端用令牌字符串去存储中查询身份信息——这就是 **Session Token** 的核心思想。
 
+```mermaid
+flowchart TD
+    Q["令牌怎么证明身份"] --> A["路线 A 无状态（JWT）"]
+    Q --> B["路线 B 有状态（Session Token）"]
+    A --> A1["把身份信息编码进令牌，用数字签名防伪造"]
+    A1 --> A2["服务端验签即可，无需查询外部存储"]
+    B --> B1["令牌只是一串无意义的随机字符串"]
+    B1 --> B2["服务端拿字符串去存储中查询身份"]
+```
+
+*图 1：两条路线的分野——JWT 把身份装进令牌本体，Session Token 把身份留在服务端存储。*
+
 理解了这两条路线，两种令牌各自的强项与局限就一目了然了。
 
 ## JWT 深度剖析：无状态的代价与收益
@@ -52,7 +64,7 @@ eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIwMUFSO....  ← Header
 
 这是 JWT 的核心卖点。服务端无需维护会话存储，也无需在每次请求时查询外部缓存。在微服务架构中，这意味着服务 A、服务 B、服务 C 可以各自独立校验同一个 JWT，而无需共享任何状态。
 
-Autional 的架构完美体现了这一优势：identity-service 签发 JWT 后，包含 session-service、profile-service、wallet-service 在内的全部 27 个微服务都能独立校验，无需每次都去询问签发方。
+Autional 的架构完美体现了这一优势：identity-service 签发 JWT 后，包含 session-service、profile-service、wallet-service 在内的全部 27 个微服务都能独立校验。无需每次询问签发方。
 
 **2. 水平扩容无需状态同步**
 
@@ -165,36 +177,15 @@ Autional 的 session-service 支持以上全部能力，包括会话超时、闲
 
 Autional 的设计理念是：**你不应该在 JWT 与 Session Token 之间被迫二选一。** session-service 同时支持两种模式，各自在 Autional 架构中承担相应角色：
 
+```mermaid
+flowchart TD
+    A["客户端请求"] --> B["gateway-service"]
+    B --> B1["JWT 校验（无状态、快）— 验签、检查 exp、提取 user_id 与 roles、转发下游"]
+    B1 --> C["session-service"]
+    C --> C1["Session Token 校验（有状态、可控）— 查 Redis、检查吊销、即时终止"]
 ```
-┌──────────────────────────────────────────────────┐
-│                  Client Request                    │
-└───────────────────┬──────────────────────────────┘
-                    │
-                    ▼
-┌──────────────────────────────────────────────────┐
-│              gateway-service                       │
-│  ┌─────────────────────────────────────────────┐  │
-│  │ JWT Verification (stateless, fast)           │  │
-│  │ - Verify signature (RS256)                   │  │
-│  │ - Check expiration time (exp claim)          │  │
-│  │ - Extract user_id, tenant_id, roles          │  │
-│  │ - Forward to downstream services             │  │
-│  └─────────────────────────────────────────────┘  │
-└───────────────────┬──────────────────────────────┘
-                    │
-                    ▼
-┌──────────────────────────────────────────────────┐
-│             session-service                        │
-│  ┌─────────────────────────────────────────────┐  │
-│  │ Session Token Verification (stateful,        │  │
-│  │ controllable)                                 │  │
-│  │ - Query Redis for Session details            │  │
-│  │ - Check if Session is revoked                │  │
-│  │ - Record last activity time                  │  │
-│  │ - Support instant revocation (DELETE session) │  │
-│  └─────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────┘
-```
+
+*图 2：Autional 的双模式校验路径——gateway-service 用 JWT 做无状态快校验，session-service 用会话记录做有状态管控。*
 
 ### 具体机制
 
@@ -204,7 +195,7 @@ Autional 的设计理念是：**你不应该在 JWT 与 Session Token 之间被�
 
 **双重吊销保障**：
 - 日常场景：JWT 有效期较短（默认 15 分钟），配合刷新令牌自动续期，减少吊销需求。
-- 紧急场景：管理员通过 session-service 吊销 Session 记录。虽然 JWT 本身仍在有效期内，但 gateway-service 在关键操作（改密、销号、资金交易等）时会回查 session-service，确认 Session 是否仍然有效。
+- 紧急场景：管理员通过 session-service 吊销 Session 记录。虽然 JWT 本身仍在有效期内，但 gateway-service 在关键操作（改密、销号、资金交易等）时会回查 session-service，确认 Session 是否有效。
 
 这套设计既保留了 JWT 的高性能（网关层快速校验），又保留了 Session Token 的可控性（关键操作实时检查）。
 

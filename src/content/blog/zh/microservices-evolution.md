@@ -74,7 +74,7 @@ auth-handler-service → auth-service → auth-repository-service
 | compliance-service | GDPR/DSAR、数据导出、同意管理 | PostgreSQL |
 | gateway-service | API 网关、限流、路由聚合 | — |
 
-每个服务拥有自己的数据库实例（或 schema）。**服务之间不共享数据库，只通过 API 通信。** 这保证了每个服务能独立选择最合适的存储方案——比如 audit-service 选用 MongoDB 而非 PostgreSQL，因为审计日志天然是文档形态，写入吞吐需求远超关系型查询需求。
+每个服务拥有自己的数据库实例（或 schema）。**服务之间不共享数据库，只通过 API 通信。** 这保证了每个服务能独立选择最合适的存储方案。比如 audit-service 选用 MongoDB 而非 PostgreSQL——审计日志天然是文档形态，写入吞吐需求远超关系型查询需求。
 
 ### 拆分优先级：从边缘到核心
 
@@ -87,6 +87,17 @@ auth-handler-service → auth-service → auth-repository-service
 
 整个拆分历时 8 个月，全程保持生产服务在线。关键策略是**绞杀者模式**（Strangler Fig Pattern）：先在单体中用接口抽象边界，把实现逐步迁移到新服务，最后切断旧路径。
 
+```mermaid
+flowchart TD
+    M["单体应用"] --> S1["第一步：边缘无状态服务——audit、notification 耦合最松"]
+    S1 --> S2["第二步：高频独立模块——session、mfa 先隔离先扩容"]
+    S2 --> S3["第三步：核心业务——identity 内的 RBAC 与 OAuth 耦合最深"]
+    S3 --> S4["第四步：基础设施类——gateway、storage 风险最低"]
+    S4 --> R["27 个独立微服务——绞杀者模式，全程在线"]
+```
+
+*图 1：由边缘到核心的四步拆分——每一步只动耦合最松的一块，绞杀者模式让生产服务全程在线。*
+
 ## 我们必须解决的三个技术挑战
 
 微服务不是银弹。以下是我们遇到的最大三个挑战及 Autional 的解法。
@@ -94,6 +105,25 @@ auth-handler-service → auth-service → auth-repository-service
 ### 挑战一：分布式追踪——一次登录穿越 6 个服务
 
 用户输入密码 → `gateway-service` 路由 → `identity-service` 校验密码 → `session-service` 创建会话 → `mfa-service` 检查 MFA 要求 → `audit-service` 记录登录 → `notification-service` 发送登录提醒。
+
+```mermaid
+sequenceDiagram
+    participant G as gateway-service
+    participant I as identity-service
+    participant S as session-service
+    participant M as mfa-service
+    participant A as audit-service
+    participant N as notification-service
+    G->>I: 路由登录请求
+    I->>I: 校验密码
+    I->>S: 创建会话
+    S->>M: 检查 MFA 要求
+    M->>A: 记录登录
+    A->>N: 发送登录提醒
+    Note over G,N: 每一跳都带上 traceparent，由 OpenTelemetry 串成完整调用链
+```
+
+*图 2：一次登录的完整路径——请求依次穿过 6 个服务，每一跳都携带 traceparent，慢在哪一环一眼可见。*
 
 如果一次登录耗时过长，你怎么定位是哪一环慢了？
 
@@ -107,7 +137,7 @@ auth-handler-service → auth-service → auth-repository-service
 - **MQ 消息**：`micro-pkg/consumer/middleware.Tracing()` 从消息头提取追踪上下文
 - **数据库查询**：GORM 插件自动记录 SQL 耗时
 
-效果：Jaeger UI 展示单次登录请求的完整调用链，把定位慢查询与异常节点的时间从「猜 + 加日志 + 重新部署」（30 分钟）缩短到 30 秒。
+效果：Jaeger UI 展示单次登录请求的完整调用链。定位慢查询与异常节点，从「猜 + 加日志 + 重新部署」（30 分钟）缩短到 30 秒。
 
 ### 挑战二：优雅停机——27 个服务不能乱起乱停
 

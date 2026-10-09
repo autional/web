@@ -64,19 +64,35 @@ Content-Type: application/json
 
 Server-side logic:
 
+```mermaid
+flowchart TD
+    C["Client: generate a key<br/>resend it verbatim"] --> Empty{"Empty key?"}
+    Empty -->|"Yes"| Pass["Pass through<br/>idempotency off"]
+    Empty -->|"No"| Q{"Look up<br/>key → first result"}
+    Q -->|"Miss"| Run["Execute<br/>persist key → result"]
+    Q -->|"Hit · same payload"| Re["Return the result<br/>no re-execution"]
+    Q -->|"Hit · different payload"| Err["Return 422<br/>same token, new content"]
 ```
-On request:
-  Empty key    → pass through (idempotency not engaged)
-  Look up "key → first result" store:
-    Hit, identical payload   → return the first result; do not execute again
-    Hit, different payload   → 422 (one token can't cover two different operations)
-    Miss                     → execute, persist "key → result", respond
-```
+
+*Figure 1: Key resolution — an unseen key executes; a seen key compares payloads: identical returns the stored result, different returns 422.*
 
 Two engineering details:
 
-- **A database unique constraint backstops concurrency**: when two same-key requests arrive simultaneously and both miss the cache, a unique index on `(tenant, idempotency_key)` guarantees only one can insert; the loser reads the first result and returns it. The cache is for speed; the constraint is the floor.
-- **Expiry**: Stripe's documented behavior is to return the original result for **24 hours**; an IETF draft for the `Idempotency-Key` header (draft-ietf-httpapi-idempotency-key-header) saw version 07 expire in April 2026, with newer revisions still in progress — it has never become an RFC, but Stripe, Adyen, Square and others run its de facto rules in production: keys must be unique, must not be reused with different content, and may expire over time.
+- **A database unique constraint backstops concurrency**: when two same-key requests arrive simultaneously and both miss the cache, a unique index on `(tenant, idempotency_key)` guarantees only one can insert. The loser reads the first result and returns it. The cache is for speed; the constraint is the floor.
+- **Expiry**: Stripe's documented behavior is to return the original result for **24 hours**; an IETF draft for the `Idempotency-Key` header (draft-ietf-httpapi-idempotency-key-header) saw version 07 expire in April 2026, with newer revisions still in progress. It has never become an RFC, but Stripe, Adyen, Square and others run its de facto rules in production: keys must be unique, must not be reused with different content, and may expire over time.
+
+```mermaid
+sequenceDiagram
+    participant A as Request A (key K)
+    participant S as Server: unique index
+    participant B as Request B (key K)
+    A->>S: same idempotency key, at once
+    B->>S: same idempotency key, at once
+    S-->>A: constraint grants → execute
+    S-->>B: conflict → read back first result
+```
+
+*Figure 2: Two concurrent same-key requests — both miss the cache; the unique index lets one execute while the other takes the conflict and reads back the first result.*
 
 The one client bug that matters: **resending without the key, or with a new key.** Reusing the same token, the system recognizes "the same payment again." A new token means **a brand-new payment** in the system's eyes — charged again. Generate the key when the operation starts, keep it in memory, send it unchanged on every retry.
 
@@ -101,7 +117,7 @@ Money endpoints typically **use two at once**: middleware caching for speed, a d
 
 ## Evidence: duplicate charges aren't rare
 
-A June 2026 study (SSRN 6895958, published by the reconciliation vendor Rexi) analyzed **97,028** financial complaints filed with the U.S. Consumer Financial Protection Bureau between January 2021 and December 2025, isolating the patterns consistent with **reconciliation failures — including duplicate charges that were never reversed**. Those complaints closed with **monetary relief** at a rate of **9.96%** — nearly **3×** the 3.51% rate of other financial payment complaints.
+A June 2026 study (SSRN 6895958, published by the reconciliation vendor Rexi) analyzed **97,028** financial complaints filed with the U.S. Consumer Financial Protection Bureau between January 2021 and December 2025. It isolates the patterns consistent with **reconciliation failures — including duplicate charges that were never reversed**. Those complaints closed with **monetary relief** at a rate of **9.96%** — nearly **3×** the 3.51% rate of other financial payment complaints.
 
 The damage to users is direct, and the cause is rarely "one extra click" — it's a long-tail, cumulative, manual-recovery operational burden. The study's sample spans 11 fintech companies; for vendor research, we relay the figures without extrapolating beyond them.
 

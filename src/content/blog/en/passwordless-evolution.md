@@ -146,24 +146,19 @@ Data points proving Passkey has reached critical mass:
 
 Autional has had built-in full WebAuthn RP support since 2025:
 
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant I as identity-service
+    participant M as mfa-service
+    B->>I: 1. Request registration challenge
+    I-->>B: 2. Return challenge and parameters
+    Note over B: User completes fingerprint, face, or hardware key verification
+    B->>M: 3. Return attestation
+    M-->>B: 4. Verify signature and store public key, registration success
 ```
-Browser                             Autional
-  │                                  │
-  │ 1. Request registration challenge│
-  │─────────────────────────────→   │ identity-service
-  │                                  │ generate challenge + user ID
-  │ 2. Return challenge + params     │
-  │←─────────────────────────────   │
-  │                                  │
-  │ [User completes fingerprint/Face/ │
-  │  hardware key verification]      │
-  │                                  │
-  │ 3. Return attestation            │
-  │─────────────────────────────→   │ mfa-service
-  │                                  │ verify signature + store public key
-  │ 4. Registration success          │
-  │←─────────────────────────────   │
-```
+
+*Figure 1: The Passkey registration sequence — the browser fetches a challenge, the user confirms with fingerprint or face on-device, and the attestation returns to mfa-service to verify and store the public key; the private key never leaves the device.*
 
 The assertion flow during login is similar—server sends a challenge, platform authenticator signs with private key, server verifies with public key.
 
@@ -171,7 +166,7 @@ The assertion flow during login is similar—server sends a challenge, platform 
 
 ### Continuous Authentication
 
-From "verify once at login" to "continuous verification." Based on behavioral biometrics (typing rhythm, mouse movement patterns) and contextual signals (location, time, device state), trust is continuously assessed throughout the session.
+From "verify once at login" to "continuous verification." Based on behavioral biometrics (typing rhythm, mouse movement patterns) and contextual signals (location, time, device state), the system continuously assesses trust throughout the session.
 
 ### Recovery Without Passwords
 

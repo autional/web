@@ -29,7 +29,7 @@ OAuth 2.0's Authorization Code Grant works as follows:
 3. The authorization server returns an `authorization_code` via the redirect URL
 4. The client exchanges this `code` + `client_secret` for an `access_token` at the token endpoint
 
-This flow is secure in server-side applications (where `client_secret` can be stored safely) — even if an attacker intercepts the authorization code in step 3, without the `client_secret` they cannot exchange it for a token in step 4.
+This flow is secure in server-side applications (where `client_secret` can be stored safely). Even if an attacker intercepts the authorization code in step 3, without the `client_secret` they cannot exchange it for a token in step 4.
 
 ### But in Mobile Apps and SPAs…
 
@@ -91,15 +91,42 @@ Step 4: Send code_verifier in the token request
   If not matched → reject (401)
 ```
 
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant A as Authorization Server
+    C->>A: Authorization request with code_challenge
+    Note over A: User logs in and authorizes here
+    A-->>C: Redirect returns authorization_code
+    C->>A: Token request with code and code_verifier
+    A->>A: Recompute challenge and compare
+    A-->>C: Match, issue access_token
+```
+
+*Figure 1: The full Authorization Code + PKCE flow — code_challenge rides along with the authorization request, while code_verifier stays local to the client and is only presented at the last step.*
+
 ### Why Can't an Attacker Bypass PKCE?
 
 Even if an attacker successfully intercepts the authorization code, they face an unsolvable problem:
 
 - The attacker can see `code_challenge` (transmitted in plaintext in step 3's URL)
 - The attacker can intercept the `authorization_code` (returned in step 3)
-- But **the attacker doesn't have the `code_verifier`** — this value is never transmitted over the network, it exists only in the legitimate client's local memory
+- But **the attacker doesn't have the `code_verifier`** — this value is never transmitted over the network; it exists only in the legitimate client's local memory
 
 SHA256 is a one-way hash function. You cannot reverse `code_challenge` to derive `code_verifier`. Without `code_verifier`, the request to the token endpoint will be rejected.
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant A as Authorization Server
+    participant X as Attacker
+    A-->>C: Redirect returns authorization_code
+    Note over X: Intercepts the code via the same URL scheme
+    X->>A: Token request with the stolen code
+    A-->>X: Rejected — no matching code_verifier
+```
+
+*Figure 2: Interception is not exchange — the attacker holds the authorization code but cannot produce the locally-kept code_verifier, so the token endpoint rejects the request.*
 
 That's the essence of PKCE: **Prove identity with a random secret held locally on the client, without ever transmitting that secret over the network.**
 

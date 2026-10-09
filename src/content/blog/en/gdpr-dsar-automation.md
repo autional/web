@@ -35,6 +35,21 @@ Autional's erasure orchestration coordinates 7 services:
 | Points | Anonymize loyalty data |
 | Notification | Delete notification history |
 
+```mermaid
+flowchart LR
+    A["DSAR — access or erasure request"] --> O["Erasure orchestration — coordinates 7 services"]
+    O --> S1["Identity — soft-delete, session revocation"]
+    O --> S2["Profile — delete profiles and version history"]
+    O --> S3["Session — revoke all active sessions"]
+    O --> S4["MFA — erase MFA configurations"]
+    O --> S5["OAuth — revoke all tokens"]
+    O --> S6["Points — anonymize loyalty data"]
+    O --> S7["Notification — delete notification history"]
+    O -. "every action logged" .-> H["Merkle hash entry — immutable audit trail"]
+```
+
+*Figure 1: The erasure orchestration behind a DSAR — the orchestrator coordinates 7 services, and every action leaves a Merkle hash entry.*
+
 ## Hash-Chain Verification
 
 Every DSAR action produces a Merkle tree hash entry, creating an immutable audit trail that proves when, how, and by whom data was accessed or deleted.

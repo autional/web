@@ -210,6 +210,16 @@ FIDO2 approach (public-key cryptography):
   ✅ Advantage: server only stores public keys. Even if the server is breached, attackers only get public keys.
 ```
 
+```mermaid
+flowchart LR
+    A["共享密钥方案"] --> B["服务端保存种子密钥"]
+    B --> C["服务端被攻破：全部密钥泄露"]
+    A2["公钥方案 FIDO2"] --> B2["私钥留在设备，服务器只存公钥"]
+    B2 --> C2["服务端被攻破：攻击者只拿到公钥"]
+```
+
+*图 1：共享密钥与公钥两种信任模型——前者把全部风险压在服务端，后者让服务端被攻破也拿不到任何用户凭据。*
+
 ### FIDO2 为什么能抗钓鱼
 
 钓鱼攻击的做法是把用户引到一个与真实站点几乎一模一样的假站点，诱骗用户输入凭证。但在 FIDO2 下：
@@ -254,23 +264,20 @@ FIDO2 approach (public-key cryptography):
 
 Autional mfa-service 统一管理上述所有 MFA 协议：
 
+```mermaid
+flowchart TD
+    subgraph MFA["mfa-service"]
+        H1["SMS OTP Handler"]
+        H2["TOTP Handler"]
+        H3["FIDO2/WebAuthn Handler"]
+        PE["MFA Policy Engine：租户级策略配置 / 用户 MFA 注册管理 / 自适应认证强度选择"]
+        H1 --> PE
+        H2 --> PE
+        H3 --> PE
+    end
 ```
-┌──────────────────────────────────────────────────┐
-│                  mfa-service                       │
-│                                                    │
-│  ┌──────────┐  ┌──────────┐  ┌────────────────┐   │
-│  │ SMS OTP  │  │   TOTP   │  │ FIDO2/WebAuthn │   │
-│  │ Handler  │  │ Handler  │  │   Handler      │   │
-│  └────┬─────┘  └────┬─────┘  └───────┬────────┘   │
-│       │             │                │             │
-│  ┌────▼─────────────▼────────────────▼──────────┐  │
-│  │          MFA Policy Engine                    │  │
-│  │  - Tenant-level MFA policy configuration     │  │
-│  │  - User MFA registration management          │  │
-│  │  - Adaptive auth strength selection          │  │
-│  └──────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────┘
-```
+
+*图 2：mfa-service 架构——三种协议 Handler 汇聚到同一个 MFA Policy Engine，策略、注册与认证强度都由引擎统一管理。*
 
 ### 多通道注册
 
@@ -304,7 +311,7 @@ Autional mfa-service 统一管理上述所有 MFA 协议：
 }
 ```
 
-系统默认使用用户配置的主认证方式，但当主方式不可用时会自动回退到替代方式（如硬件密钥不在身边）。
+系统默认使用用户配置的主认证方式。当主方式不可用时会自动回退到替代方式（如硬件密钥不在身边）。
 
 ### 自适应 MFA 策略
 

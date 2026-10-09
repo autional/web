@@ -14,9 +14,22 @@ claims_reviewed: true
 
 ## Financial Identity: The Ceiling of Security Requirements
 
-Financial industry information system security requirements are arguably the most demanding across all verticals. A payment platform must simultaneously meet PCI-DSS requirements for card data security, China's MLPS 2.0 system grading requirements, AML (Anti-Money Laundering) KYC identity verification requirements, and Personal Information Protection Law (PIPL) user data protection requirements.
+Financial industry information system security requirements are arguably the most demanding across all verticals. A payment platform must simultaneously meet PCI-DSS requirements for card data security, China's MLPS 2.0 system grading requirements, and AML (Anti-Money Laundering) KYC identity verification requirements. It must also meet the Personal Information Protection Law's (PIPL) user data protection requirements.
 
 These compliance standards do not exist in isolation — they have significant overlap in identity authentication and access control. This article systematically breaks down the compliance framework for financial identity systems and analyzes how Autional meets these requirements through its microservice architecture.
+
+```mermaid
+flowchart TB
+    A["PCI-DSS 4.0 — card data security and access control"] --> D["Unified financial identity infrastructure"]
+    B["MLPS 2.0 — Level 3+, Level 4 for core payments"] --> D
+    C["KYC and AML — business identity verification"] --> D
+    D --> E["identity-service — RBAC and unique IDs"]
+    D --> F["mfa-service — strong authentication"]
+    D --> G["audit-service — hash chain auditing"]
+    D --> H["wallet-service — signed transactions, non-repudiation"]
+```
+
+*Figure 1: Where the three compliance frameworks overlap — PCI-DSS, MLPS 2.0, and KYC/AML requirements all land on the same identity infrastructure.*
 
 ### Why "Good Enough" Won't Work for Financial Identity
 
@@ -90,6 +103,20 @@ Autional's approach:
 - Signature results are persistently stored alongside audit logs
 - Combined with audit-service's hash chain auditing capability, forming a complete evidence chain
 
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant W as wallet-service
+    participant A as audit-service
+    U->>W: Initiates a critical operation, e.g. large transfer
+    W-->>U: Requests secondary confirmation and private-key signature
+    U->>W: Submits the signature
+    W->>A: Persists the signature result
+    A-->>W: Writes to the hash-chain audit log
+```
+
+*Figure 2: The non-repudiation sequence — critical operations require the user's private-key signature, and the result is persisted with audit logs into the hash chain.*
+
 ### Operations Audit (Bastion Host Integration)
 
 Financial institutions commonly require all operational activities to be performed through bastion hosts with screen recording for audit. Autional's identity system needs to integrate with bastion host systems:
@@ -107,7 +134,7 @@ Another layer of identity requirements in the financial industry comes from AML/
 - **Document OCR**: Automatic extraction of ID card/passport information, reducing manual entry errors
 - **Risk scoring**: Risk score calculation based on device fingerprint, behavioral characteristics, and geolocation
 
-Autional's design philosophy separates identity information management (identity-service) from identity verification processes (mfa-service + session-service). KYC-related data is stored in identity-service's `user_verifications` table, with sensitive fields (like ID numbers) using field-level encryption to ensure data remains unreadable even in the event of a database breach.
+Autional's design philosophy separates identity information management (identity-service) from identity verification processes (mfa-service + session-service). KYC-related data is stored in identity-service's `user_verifications` table, with sensitive fields (like ID numbers) encrypted at the field level. Even in the event of a database breach, the plaintext stays unreadable.
 
 ## Autional's Complete Financial Solution
 

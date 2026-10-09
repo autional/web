@@ -28,6 +28,18 @@ These two requirements can be fulfilled in two fundamentally different ways:
 
 **Approach B (Stateful)**: The token is just a random string with no inherent meaning. When issued, the server stores this string together with the corresponding user information on the backend. On each request, the server queries the storage using the token string to retrieve identity information — this is the core concept behind **Session Tokens**.
 
+```mermaid
+flowchart TD
+    Q["How does a token prove identity"] --> A["Approach A — stateless (JWT)"]
+    Q --> B["Approach B — stateful (Session Token)"]
+    A --> A1["Identity encoded into the token itself, protected by a digital signature"]
+    A1 --> A2["Server only verifies the signature, no storage lookup"]
+    B --> B1["Token is just a meaningless random string"]
+    B1 --> B2["Server looks up identity in storage by that string"]
+```
+
+*Figure 1: The fork in the road — JWT packs identity into the token itself; Session Token keeps identity in server-side storage.*
+
 Understanding these two approaches makes it clear what each token type's strengths and limitations are.
 
 ## Deep Dive into JWT: The Costs and Benefits of Statelessness
@@ -165,36 +177,15 @@ When multiple microservices all need to verify sessions, each service must acces
 
 Autional's design philosophy is: **you should not be forced to choose between JWT and Session Tokens.** session-service supports both modes simultaneously, each serving its role in the Autional architecture:
 
+```mermaid
+flowchart TD
+    A["Client request"] --> B["gateway-service"]
+    B --> B1["JWT Verification (stateless, fast) — verify signature, check exp, extract identity, forward downstream"]
+    B1 --> C["session-service"]
+    C --> C1["Session Token Verification (stateful, controllable) — query Redis, check revocation, instant termination"]
 ```
-┌──────────────────────────────────────────────────┐
-│                  Client Request                    │
-└───────────────────┬──────────────────────────────┘
-                    │
-                    ▼
-┌──────────────────────────────────────────────────┐
-│              gateway-service                       │
-│  ┌─────────────────────────────────────────────┐  │
-│  │ JWT Verification (stateless, fast)           │  │
-│  │ - Verify signature (RS256)                   │  │
-│  │ - Check expiration time (exp claim)          │  │
-│  │ - Extract user_id, tenant_id, roles          │  │
-│  │ - Forward to downstream services             │  │
-│  └─────────────────────────────────────────────┘  │
-└───────────────────┬──────────────────────────────┘
-                    │
-                    ▼
-┌──────────────────────────────────────────────────┐
-│             session-service                        │
-│  ┌─────────────────────────────────────────────┐  │
-│  │ Session Token Verification (stateful,        │  │
-│  │ controllable)                                 │  │
-│  │ - Query Redis for Session details            │  │
-│  │ - Check if Session is revoked                │  │
-│  │ - Record last activity time                  │  │
-│  │ - Support instant revocation (DELETE session) │  │
-│  └─────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────┘
-```
+
+*Figure 2: Autional's dual-mode verification path — gateway-service runs fast stateless JWT checks, session-service adds stateful session control.*
 
 ### Specific Mechanism
 
@@ -204,7 +195,7 @@ Autional's design philosophy is: **you should not be forced to choose between JW
 
 **Dual Revocation Guarantee**:
 - Daily scenario: JWT has a short lifespan (default 15 minutes), paired with automatic refresh token renewal, reducing the need for revocation.
-- Emergency scenario: Admins revoke the Session record through session-service. Although the JWT itself is still within its validity period, gateway-service re-checks with session-service on critical operations (password change, account deletion, financial transactions, etc.) to confirm whether the Session is still valid.
+- Emergency scenario: Admins revoke the Session record through session-service. Although the JWT itself is still within its validity period, gateway-service re-checks with session-service on critical operations (password change, account deletion, financial transactions). This check confirms whether the Session is still valid.
 
 This design retains both JWT's high performance (fast verification at the gateway layer) and Session Token's controllability (real-time check for critical operations).
 

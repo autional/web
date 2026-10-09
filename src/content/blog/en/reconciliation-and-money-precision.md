@@ -28,7 +28,20 @@ Here's why that fails:
 | Missing or extra entry | May still balance | Caught |
 | Fits | A rough sense | **"Every cent has a trail"** |
 
-**Totals look balanced. Entries actually balance.** Entry-level reconciliation requires one prerequisite: every payment carries the **same reference** on both sides — an internal reference and the provider's reference, both kept in the record, so matching can recognize "the same payment."
+**Totals look balanced. Entries actually balance.** Entry-level reconciliation requires one prerequisite: every payment carries the **same reference** on both sides — an internal reference and the provider's reference. Both stay in the record, so matching can recognize "the same payment."
+
+```mermaid
+sequenceDiagram
+    participant P as Platform ledger
+    participant G as Provider ledger
+    P->>G: payment initiated, shared reference attached
+    G-->>P: settlement callback
+    Note over P,G: each side books its entry, both keep the reference
+    P->>G: scheduled reconciliation, entry by entry
+    Note over P,G: matched entries close — mismatches park until traced
+```
+
+*Figure 1: The reconciliation two-lane — each ledger books its own entries and matches them by the shared reference; mismatches park in a review queue until traced, never auto-adjusted.*
 
 ## Where differences come from
 
@@ -39,6 +52,16 @@ A mismatch doesn't mean fraud or a broken formula. The most common differences f
 | Only on our side | Validation failed / transaction didn't complete | Chase the state; reverse if needed |
 | Only on the provider's side | Missed recording / lost callback | Record it — and find out why it was missed |
 | Both sides, different amounts | Fees / FX / discounts | Check the fee convention; adjust per rules |
+
+```mermaid
+flowchart TD
+    D["A mismatch at reconciliation"] --> Q{"Which side has it?"}
+    Q -->|"Only our side"| R1["Didn't complete<br/>chase or reverse"]
+    Q -->|"Only the provider's side"| R2["Missed entry<br/>record and trace"]
+    Q -->|"Both, different amounts"| R3["Amount differs<br/>check the convention"]
+```
+
+*Figure 2: The mismatch causal chain — first ask which side holds the record: only ours, only the provider's, or both with different amounts; three shapes, three responses.*
 
 The usual suspects: retries, **refunds**, fee conventions, cross-day and timezone gaps, missed entries, and differing amount conventions (tax-inclusive vs exclusive).
 

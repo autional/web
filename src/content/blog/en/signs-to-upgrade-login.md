@@ -46,6 +46,20 @@ One morning, your support team receives complaints from 3 users: "Someone logged
 
 You hastily add an IP blacklist and rate limit of 100 requests per hour, but this is **damage control after the fact**. User trust has been broken, and you don't even know how many other accounts were affected.
 
+```mermaid
+sequenceDiagram
+    participant A as Attacker IP pool
+    participant L as /login endpoint
+    participant U as Users
+    participant T as Your team
+    A->>L: ~500,000 attempts between 2 AM and 4 AM
+    Note over L: No anomaly detection — nobody notices
+    U->>T: 3 users report suspicious account activity
+    T->>L: Blacklist and 100-per-hour rate limit added after the fact
+```
+
+*Figure 1: The Signal 2 attack timeline — the overnight attempts go completely unnoticed, you learn about the breach from 3 user complaints, and the blacklist and rate limit arrive after the fact.*
+
 ### Root of the Problem
 
 A login endpoint without rate limiting is like a house without an alarm — attackers can take their time trying, and you only find out when a neighbor (your user) tells you "your house looks like it's been broken into."
@@ -54,7 +68,7 @@ Moreover, post-incident IP blacklisting isn't a long-term solution. Attackers ca
 
 ### How Autional Solves This
 
-Gateway-level distributed rate limiting covers three dimensions: IP-level, user-level, and global. When attack thresholds are exceeded: rate limiting kicks in returning 429 (blocking the attack), while simultaneously pushing security alerts to you. The adaptive MFA engine automatically escalates authentication strength for affected accounts. You don't need to learn about attacks from your users — the system tells you first.
+Gateway-level distributed rate limiting covers three dimensions: IP-level, user-level, and global. When attack thresholds are exceeded: rate limiting kicks in, returning 429 (blocking the attack), while simultaneously pushing security alerts to you. The adaptive MFA engine automatically escalates authentication strength for affected accounts. You don't need to learn about attacks from your users — the system tells you first.
 
 ## Signal 3: You Can't Answer "Who Did What and When"
 
@@ -114,7 +128,7 @@ Your team is developing a third product. Every time a new product launches, you 
 4. Reconfigure rate limiting, password policies, MFA integration
 5. Let operations manage yet another identity database
 
-Your team now has three independent login systems, three different token formats, and three different MFA integration methods. Every time a security incident occurs, you need to patch vulnerabilities across all three systems. Your engineers spend more time reinventing wheels than on business innovation.
+Your team now has three independent login systems, three token formats, and three MFA integration methods. Every time a security incident occurs, you need to patch vulnerabilities across all three systems. Your engineers spend more time reinventing wheels than on business innovation.
 
 ### Root of the Problem
 
@@ -142,6 +156,16 @@ Autional is an independently deployed identity service, not a library embedded i
 
 ## Three Upgrade Paths
 
+```mermaid
+flowchart TD
+    A{"Which signals did you hit?"} -->|"Only signals 2 or 3"| B["Path A — harden the existing solution"]
+    A -->|"Signals 1, 4, or 5 as well"| C{"Strong ops team wanting full control?"}
+    C -->|"Yes"| D["Path B — integrate an open-source framework"]
+    C -->|"No"| E["Path C — use Autional"]
+```
+
+*Figure 2: How the three upgrade paths split — harden first if only signals 2 or 3 apply; when enterprise-grade capabilities are needed, strong ops teams go open-source and everyone else picks Autional.*
+
 ### Path A: Harden Your Existing Solution
 
 Suitable when only signals 2 or 3 apply. Add rate limiting, strengthen password policies, and fill in audit logs on top of your existing login module. Lower cost, but won't solve signals 1, 4, or 5.
@@ -152,7 +176,7 @@ Use open-source identity solutions like Keycloak, ORY, or SuperTokens. Suitable 
 
 ### Path C: Use Autional
 
-For teams that need enterprise-grade identity capabilities quickly without wanting to maintain identity infrastructure. Autional provides server-side identity microservice suites connected via standard protocols. Password policies, MFA, SSO, RBAC, audit logs, data encryption, compliance mapping — these capabilities are built-in, not third-party libraries that need integration.
+For teams that need enterprise-grade identity capabilities quickly without wanting to maintain identity infrastructure. Autional provides a server-side identity microservice suite that connects via standard protocols. Password policies, MFA, SSO, RBAC, audit logs, data encryption, compliance mapping — these capabilities are built-in, not third-party libraries that need integration.
 
 None of the three paths is absolutely good or bad — it depends on your team size, security needs, and R&D strategy. But one thing is certain: **when signals appear, waiting is not an option.** Identity system security debt doesn't decrease over time — it increases with user growth and advancing attack methods.
 

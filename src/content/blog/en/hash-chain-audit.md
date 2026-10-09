@@ -20,7 +20,7 @@ This is a dangerous assumption.
 
 In reality, insider threats account for 34% of all data security incidents. Against an attacker (or malicious insider) with database administrator privileges, traditional audit logs are like a ledger without page numbers—delete a page, modify a line, and no one will ever know.
 
-GDPR Article 30, SOX Section 404, and ISO 27001 Annex A.12.4 all clearly require: **Audit logs must be protected against unauthorized modification.** But most systems merely store logs in a database with an application-layer "read-only permission" restriction—this is far from sufficient.
+GDPR Article 30, SOX Section 404, and ISO 27001 Annex A.12.4 all clearly require: **Audit logs must be protected against unauthorized modification.** But most systems merely store logs in a database with an application-layer "read-only permission" restriction. That is far from sufficient.
 
 Autional's answer: **Cryptographic hash chains + Merkle tree proofs.** Every audit log entry's integrity can be cryptographically verified without trusting any administrator or database.
 
@@ -35,6 +35,15 @@ Page 1: Content = "User A logged in"  → Fingerprint_1 = hash("User A logged in
 Page 2: Content = "User A changed password" → Fingerprint_2 = hash("User A changed password" + Fingerprint_1)
 Page 3: Content = "User A exported data" → Fingerprint_3 = hash("User A exported data" + Fingerprint_2)
 ```
+
+```mermaid
+flowchart TD
+    A["Page 1<br/>Fingerprint₁ = H(content₁ + init)"] --> B["Page 2<br/>Fingerprint₂ = H(content₂ + Fingerprint₁)"]
+    B --> C["Page 3<br/>Fingerprint₃ = H(content₃ + Fingerprint₂)"]
+    B -. "This page is deleted" .-> D["Fingerprint₂ is gone, Page 3 breaks<br/>chain check alerts instantly"]
+```
+
+*Figure 1: A hash chain — each fingerprint locks onto the previous one; pull out any page and the chain behind it breaks.*
 
 Now, if someone tries to delete "User A changed password":
 
@@ -102,15 +111,21 @@ Merkle trees improve verification efficiency to O(log n) while maintaining the s
 
 Audit entries within a time window are organized into a binary tree:
 
+```mermaid
+flowchart TD
+    Root["Root Hash"] --> AB["Hash_AB"]
+    Root --> CD["Hash_CD"]
+    AB --> A["Hash_A"]
+    AB --> B["Hash_B"]
+    CD --> C["Hash_C"]
+    CD --> D["Hash_D"]
+    A --> EA["Entry_A"]
+    B --> EB["Entry_B"]
+    C --> EC["Entry_C"]
+    D --> ED["Entry_D"]
 ```
-                  Root Hash
-                /           \
-           Hash_AB          Hash_CD
-          /      \          /      \
-     Hash_A    Hash_B    Hash_C    Hash_D
-       |          |          |          |
-    Entry_A   Entry_B   Entry_C   Entry_D
-```
+
+*Figure 2: The Merkle tree — change any leaf and the root hash changes with it.*
 
 Each leaf node is the hash of a single audit entry; each intermediate node is the hash of its two child nodes. The Root Hash represents the integrity commitment of the entire tree—modifying any leaf node changes the root hash.
 
@@ -182,7 +197,7 @@ For enterprises needing to pass various compliance audits, hash-chain audit logs
 |------------|-------------|
 | "Please trust that our logs are complete" | "Here is the cryptographic proof, you can verify it yourself" |
 | Relies on administrator operational discipline | Cryptographically guaranteed, cannot be bypassed |
-| Compliance audits require大量 manual checking | Automated verification, one-click integrity report generation |
+| Compliance audits require extensive manual checking | Automated verification, one-click integrity report generation |
 | After a data breach, cannot prove logs weren't tampered with | Merkle proof provides court-admissible digital evidence |
 
 GDPR Article 33 requires notifying the supervisory authority within 72 hours of discovering a data breach. If a company cannot prove the integrity of their audit logs—who can trust that the time they "discovered" the breach is real, rather than covering up months of evidence?

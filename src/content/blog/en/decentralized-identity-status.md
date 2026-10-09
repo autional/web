@@ -14,7 +14,7 @@ claims_reviewed: true
 
 In the traditional identity model, your digital identity doesn't belong to you — it belongs to every service provider you register with.
 
-You use Google to sign in to a hundred websites → Google knows which sites you visit. You use WeChat to log into fifty apps → WeChat knows which apps you use. Every time you register for a new service, you create a new "digital分身" — scattered across the internet, beyond your control, with no ability to link them together.
+You use Google to sign in to a hundred websites → Google knows which sites you visit. You use WeChat to log into fifty apps → WeChat knows which apps you use. Every time you register for a new service, you create a new "digital alter ego" — scattered across the internet, beyond your control, with no ability to link them together.
 
 **Self-Sovereign Identity (SSI)** aims to reverse this model:
 
@@ -22,6 +22,15 @@ You use Google to sign in to a hundred websites → Google knows which sites you
 - You obtain Verifiable Credentials (VCs) from trusted institutions — government-issued digital IDs, university-issued digital degrees, bank-issued credit score proofs
 - When you need to prove something to a service provider, you present a verifiable credential — instead of registering a new account
 - The service provider verifies the credential's signature, trusts the issuer, and doesn't need to store your password
+
+```mermaid
+flowchart LR
+    I["Issuer — government, university, bank"] -->|"Signs a verifiable credential"| H["Holder — you, credential in a wallet"]
+    H -->|"Presents the credential as proof"| V["Verifier — the service provider"]
+    V -. "Verifies the signature, trusts the issuer" .-> I
+```
+
+*Figure 1: The SSI trust triangle — the issuer signs a credential, you keep it in your wallet and present it to a service provider; the provider verifies the signature and trusts the issuer, with no password ever stored.*
 
 This sounds great. But how close is it to reality?
 
@@ -131,6 +140,15 @@ China has multiple DID explorations:
 
 Service providers won't support DID login because users don't have DID wallets. Users don't have DID wallets because no service providers support DID login. eIDAS 2.0 is trying to break this cycle through regulation — mandating that public services accept EUDI Wallets.
 
+```mermaid
+flowchart LR
+    A["Service providers don't support DID login"] -->|"Users have no reason to get a wallet"| B["Users don't have DID wallets"]
+    B -->|"Providers have no reason to support it"| A
+    R["eIDAS 2.0 mandates public services accept EUDI Wallets"] -.->|"Regulation breaks the cycle"| A
+```
+
+*Figure 2: The chicken-and-egg deadlock — no provider support means no wallets, and no wallets mean even less reason to support them; eIDAS 2.0 tries to break the cycle by regulation.*
+
 ### 2. Key Recovery Is a Fatal UX Problem
 
 The biggest practical obstacle: if you lose your DID private key, your entire digital identity is gone. There's no "forgot password" — because there's no centralized password reset service.
@@ -150,7 +168,7 @@ A verifiable credential's cryptographic validity is one thing; its legal validit
 
 ## Autional Strategy: Pragmatic Evolution, Not Radical Revolution
 
-Autional takes a "observe, integrate, evolve" approach to decentralized identity:
+Autional takes an "observe, integrate, evolve" approach to decentralized identity:
 
 **Short-term (2026): DID Exploration**
 - Added `did` module in internal architecture: basic DID resolution and creation for `did:web` and `did:key` methods

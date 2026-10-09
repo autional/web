@@ -55,17 +55,19 @@ Logs tell you the result of each step. Metrics tell you the overall system trend
 
 A typical "user login" request trace in Autional:
 
+```mermaid
+flowchart TD
+    G["gateway 1ms"] --> I["identity-service /auth/login 45ms"]
+    I --> B["bcrypt password verify 30ms"]
+    I --> J["JWT token generate 2ms"]
+    I --> A["audit-service /log 5ms, async"]
+    I --> S["session-service /session/create 8ms"]
+    S --> R["Redis SET 2ms"]
+    S --> P["PostgreSQL INSERT 4ms"]
+    G --> PR["profile-service /profile/me 12ms, parallel"]
 ```
-gateway (1ms)
-  → identity-service /auth/login (45ms)
-      → bcrypt password verify (30ms)
-      → JWT token generate (2ms)
-      → audit-service /log (5ms, async)
-      → session-service /session/create (8ms)
-          → Redis SET (2ms)
-          → PostgreSQL INSERT (4ms)
-  → profile-service /profile/me (12ms, parallel)
-```
+
+*Figure 1: The trace tree of a typical login — bcrypt verification at 30ms is the biggest slice; audit delivery and the profile lookup are side branches.*
 
 In the old architecture, if "login is slow" was the complaint, you had to SSH into each service and check logs manually. With distributed tracing, one screen shows you that `identity-service` bcrypt took 30ms (65% of total), while `session-service`'s PostgreSQL INSERT took only 4ms — everything is crystal clear.
 
@@ -103,14 +105,16 @@ Open the `http_request_duration_seconds` panel in Grafana. Confirm that the late
 
 In the tracing backend (e.g., Jaeger), query for traces with `operation = POST /api/v1/auth/login` and `duration > 400ms`. Sample 5 traces at random and find a common pattern:
 
+```mermaid
+flowchart TD
+    I["identity-service auth/login 420ms"] --> B["bcrypt compare 28ms — normal"]
+    I --> J["JWT generate 2ms — normal"]
+    I --> S["session save 385ms — anomaly"]
+    S --> P["PostgreSQL INSERT 383ms"]
+    S --> R["Redis SET 2ms"]
 ```
-identity-service  auth/login  420ms
-  ├── bcrypt compare  28ms  ← Normal
-  ├── JWT generate     2ms  ← Normal
-  └── session save   385ms  ← Anomaly!
-      ├── PostgreSQL INSERT  383ms
-      └── Redis SET           2ms
-```
+
+*Figure 2: The anomalous trace from the case — bcrypt and JWT are normal; all 385ms sits on session save, pointing straight at the PostgreSQL write.*
 
 The problem is in `session-service`'s PostgreSQL write.
 
@@ -135,7 +139,7 @@ Autional's observability system continues to evolve. The next milestones include
 
 ### Convergence of Audit Logging and Observability
 
-Identity systems naturally require audit capabilities — who performed what action and when. Autional bridges audit logging (`audit-service` writing to MongoDB) with structured logging: every audit record carries a `trace_id`, allowing you to jump directly from a trace to the corresponding audit record and confirm that an operation was initiated by the user (not an internal call). This is a killer feature for compliance auditing (GDPR Article 30 — records of processing activities).
+Identity systems naturally require audit capabilities — who performed what action and when. Autional bridges audit logging (`audit-service` writing to MongoDB) with structured logging: every audit record carries a `trace_id`. You can jump directly from a trace to the corresponding audit record and confirm that an operation was initiated by the user (not an internal call). This is a killer feature for compliance auditing (GDPR Article 30 — records of processing activities).
 
 ### Error Budget Dashboard
 

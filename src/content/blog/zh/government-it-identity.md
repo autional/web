@@ -81,6 +81,15 @@ Autional 对这些要求的覆盖：
 
 对政务系统而言，这意味着必须使用国家密码管理局认可的商用密码算法（即用 SM 算法替代国际算法）：
 
+```mermaid
+flowchart TD
+    SM2["SM2 — 替代 RSA / ECDSA"] --> U2["JWT 签名、密钥协商、SM2 证书体系"]
+    SM3["SM3 — 替代 SHA-256"] --> U3["口令加盐哈希、数据完整性、哈希链校验"]
+    SM4["SM4 — 替代 AES"] --> U4["传输加密、字段级存储加密、配置加密"]
+```
+
+*图 1：SM 算法替换对照——SM2 接手 RSA/ECDSA，SM3 接手 SHA-256，SM4 接手 AES，以及它们各自在身份系统里的落点。*
+
 ### SM2：椭圆曲线公钥密码算法
 
 SM2 替代 RSA 与 ECDSA，应用于：
@@ -113,7 +122,7 @@ SM4 替代 AES，应用于：
 
 **挑战一：算法性能差异**。由于椭圆曲线参数与协议细节的不同，SM2 签名比 ECDSA 慢 2-3 倍。解法：Autional 在生成 JWT 时进行批量预签名，并池化身份令牌以供复用。
 
-**挑战二：密码库依赖**。Go 标准库不包含 SM 算法，需要 `tjfoc/gmsm` 或 `emmansun/gmsm` 等第三方库，而这些库的维护者与成熟度需要评估。Autional 使用经过独立安全审计的 SM 库版本，并做持续的 CI 验证。
+**挑战二：密码库依赖**。Go 标准库不包含 SM 算法，需要 `tjfoc/gmsm` 或 `emmansun/gmsm` 等第三方库——这些库的维护者与成熟度都需要评估。Autional 使用经过独立安全审计的 SM 库版本，并做持续的 CI 验证。
 
 **挑战三：TLS 适配**。标准 TLS 握手使用 ECDHE + RSA/AES，而 SM TLS 应使用 ECDHE + SM2/SM4。但 SM TLS 的实现规范（GM/T 0024《SSL VPN 技术规范》）与国际 TLS 1.3 并不完全兼容。Autional 采用双协议栈方案：内网通信使用 SM TLS，外网通信使用标准 TLS 1.3。
 
@@ -124,6 +133,18 @@ SM4 替代 AES，应用于：
 - **CPU 架构**：x86 → ARM（鲲鹏、飞腾）/ LoongArch（龙芯）
 - **操作系统**：Windows → 麒麟 / 统信 UOS
 - **数据库**：SQL Server/Oracle → DM（达梦）/ 人大金仓 / GaussDB
+
+```mermaid
+flowchart LR
+    X["x86"] --> K["ARM — 鲲鹏、飞腾 / LoongArch — 龙芯"]
+    W["Windows"] --> U["麒麟 / 统信 UOS"]
+    D["SQL Server / Oracle"] --> M["DM — 达梦 / 人大金仓 / GaussDB"]
+    S["MinIO / S3"] --> O["杉岩 / XSKY 等国产对象存储"]
+    R["Redis"] --> G["Garnet / Tendis 等兼容实现"]
+    Q["RabbitMQ"] --> RQ["RocketMQ / 国产 Pulsar"]
+```
+
+*图 2：信创替代映射——从 CPU、操作系统、数据库，到存储、缓存、消息队列，每一层都有一条国产化替换路径。*
 
 对 Autional 而言，信创适配的核心工作包括：
 

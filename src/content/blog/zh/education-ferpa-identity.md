@@ -73,7 +73,7 @@ Autional 的 oauth-service 支持自定义 scope，compliance-service 的 DSAR �
 
 ## COPPA：保护 13 岁以下儿童
 
-COPPA（《儿童在线隐私保护法》）是一部保护 13 岁以下儿童在线隐私的美国联邦法律，由 FTC 负责执法，单次违规的罚款可达数万美元。
+COPPA（《儿童在线隐私保护法》）是一部保护 13 岁以下儿童在线隐私的美国联邦法律，由 FTC 负责执法。单次违规的罚款可达数万美元。
 
 ### 可验证的家长同意
 
@@ -97,7 +97,7 @@ Autional 为 COPPA 合规提供以下技术支持：
 
 该工作流由 identity-service 的审批机制驱动，audit-service 记录每一步的时间戳与操作人。
 
-**数据最小化**：COPPA 要求只收集提供在线服务所合理必需的信息。Autional 的注册流程支持按年龄裁剪必填字段：
+**数据最小化**：COPPA 要求只收集为提供在线服务所合理必需的信息。Autional 的注册流程支持按年龄裁剪必填字段：
 - 13 岁以下：最小字段集（昵称、口令、家长邮箱）
 - 13-17 岁：可增加邮箱
 - 18 岁以上：标准注册流程
@@ -108,7 +108,7 @@ Autional 为 COPPA 合规提供以下技术支持：
 - 撤回同意并要求删除数据
 - 控制孩子与平台上其它用户的互动
 
-这些能力通过 identity-service 的用户关联、audit-service 的活动日志与 compliance-service 的数据删除能力实现。
+这些能力通过 identity-service 的用户关联、audit-service 的活动日志与 compliance-service 的数据删除功能实现。
 
 ## 复杂的角色层级
 
@@ -117,30 +117,36 @@ Autional 为 COPPA 合规提供以下技术支持：
 教育场景的角色层级比典型企业更复杂，因为它跨越多个维度：
 
 **机构维度**：
-```
-School District
-├── School A
-│   ├── Grade 1
-│   │   ├── Class 1A — Students: Alice, Bob
-│   │   └── Class 1B — Students: Carol, Dave
-│   └── Grade 2
-└── School B
+
+```mermaid
+flowchart TD
+    SD["School District"] --> SA["School A"]
+    SD --> SB["School B"]
+    SA --> G1["Grade 1"]
+    SA --> G2["Grade 2"]
+    G1 --> C1A["Class 1A — Students: Alice, Bob"]
+    G1 --> C1B["Class 1B — Students: Carol, Dave"]
 ```
 
+*图 1：机构维度——学区、学校、年级、班级构成四层结构，权限范围沿这棵树逐层划定。*
+
 **角色维度**：
+
+```mermaid
+flowchart TD
+    Root["System Admin"] --> DA["District Admin — manages the entire district"]
+    Root --> SA["School Admin — manages one school"]
+    Root --> T["Teacher — manages their classes"]
+    T --> HT["Homeroom Teacher — additional permissions"]
+    T --> ST["Subject Teacher — only their subject"]
+    Root --> TA["Teaching Assistant — supports instruction"]
+    Root --> Stu["Student"]
+    Stu --> Minor["Minor — parent holds control rights"]
+    Stu --> Adult["Adult — self-controlled"]
+    Root --> Par["Parent — views linked students"]
 ```
-System Admin
-├── District Admin — manages the entire district
-├── School Admin — manages one school
-├── Teacher — manages their classes
-│   ├── Homeroom Teacher — additional permissions
-│   └── Subject Teacher — only their subject
-├── Teaching Assistant — supports instruction
-├── Student
-│   ├── Minor — parent holds control rights
-│   └── Adult — self-controlled
-└── Parent — views linked students
-```
+
+*图 2：角色维度——System Admin 之下逐层细分；学生再分 Minor 与 Adult，控制权随之从家长移交到本人。*
 
 **数据维度**：
 - 成绩记录：教师可写，学生可读，家长可读（仅限关联学生）

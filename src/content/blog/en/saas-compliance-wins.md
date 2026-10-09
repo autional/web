@@ -71,7 +71,7 @@ Large enterprise customers typically have their own Security Operations Centers 
 - No need to manually check audit logs in "another system"
 - Security alerts integrate into the customer's existing alerting and response workflows
 
-**Integrate into customer security operations, rather than asking customers to change their habits to fit you.**
+**Integrate into customer security operations, rather than making customers change their habits to fit you.**
 
 ### 4. GSMA Data Protection Assessment
 
@@ -80,6 +80,18 @@ If your customers are from the EU or have GDPR compliance needs, Autional's DSAR
 ## Real-World Scenario Simulation
 
 Imagine you're the founder of a SaaS project management tool with 50 SMB customers. One day, a well-known domestic bank expresses purchasing interest but includes a 120-page security review document.
+
+```mermaid
+flowchart TD
+    Q["A bank sends a 120-page security review"] --> N["Without Autional — check and build item by item"]
+    N --> N1["Password policy 2 weeks, audit logging 4 weeks, MFA 6 weeks"]
+    N1 --> N2["Assemble documents, answer line by line 2-3 weeks — total 2-3 months"]
+    Q --> Y["With Autional — 90% of capabilities built in"]
+    Y --> Y1["Swap in OAuth endpoints half a day, configure policies 10 minutes, export reports 2 minutes"]
+    Y1 --> Y2["Answer the questionnaire 1-2 days — total 1-2 weeks, passes first time"]
+```
+
+*Figure 1: Two ways through the same 120-page security review — building it yourself is measured in months, Autional compresses it to weeks.*
 
 **Without Autional**:
 - Check each item against your current system—which pass, which don't
@@ -110,4 +122,4 @@ When your customers—especially financial, healthcare, government, and large en
 
 Autional makes these trust infrastructure components part of the product's native capabilities, enabling SaaS teams to turn "security compliance" from the biggest obstacle in the sales process into the biggest selling point.
 
-**In 2026, compliance is the strongest competitive moat in the SaaS赛道.**
+**In 2026, compliance is the strongest competitive moat in the SaaS space.**

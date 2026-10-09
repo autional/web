@@ -20,7 +20,7 @@ This is especially true in authentication. The following 7 mistakes were already
 
 In 2025, GitHub's automated scanning detected over 2 million public repositories containing commits with suspected secrets. Once your API key, database password, or JWT signing key appears in code, it lives forever in git history — even if you delete the file and commit again.
 
-Worse still, attackers have built automated GitHub scanning tools that can extract keys within seconds of a new commit being pushed and attempt to use them immediately.
+Worse still, attackers have built automated GitHub scanning tools. Within seconds of a new commit being pushed, the key is extracted and tried immediately.
 
 ### Real-World Case
 
@@ -125,6 +125,15 @@ Access Token (JWT): valid for 15 minutes, used for API call authentication
 Refresh Token (opaque string): valid for 7 days, used only to obtain new Access Tokens
 ```
 
+```mermaid
+flowchart LR
+    A["Login success"] --> B["Access Token — 15 minutes, for API calls"]
+    B -->|"expires"| C["Refresh Token — 7 days, used only to get new tokens"]
+    C -->|"exchanges for a new one"| B
+```
+
+*Figure 1: The short-lived access token plus long-lived refresh token cycle — when the 15-minute access token expires, the 7-day refresh token exchanges for a new one; a stolen access token has only a 15-minute abuse window.*
+
 ```go
 // Right way
 token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
@@ -153,13 +162,15 @@ If those employee accounts had been required to use hardware security keys (FIDO
 
 ### How to Fix
 
+```mermaid
+flowchart TD
+    A["Minimum MFA requirements for admin accounts"] --> B["Must be FIDO2/WebAuthn (not SMS OTP or TOTP alone)"]
+    A --> C["Must use a hardware security key (not just platform authenticator)"]
+    A --> D["Must verify at every login (no remember-this-device)"]
+    A --> E["MFA device loss needs an approval workflow (not self-service recovery)"]
 ```
-Minimum MFA requirements for admin accounts:
-├── Must be FIDO2/WebAuthn (not SMS OTP or TOTP alone)
-├── Must use a hardware security key (not just platform authenticator)
-├── Must verify at every login (no "remember this device")
-└── MFA device loss requires an approval workflow to recover (not self-service)
-```
+
+*Figure 2: The MFA baseline for admin accounts — FIDO2/WebAuthn and a hardware security key are hard requirements, every login must be verified, and a lost device can only be recovered through an approval workflow.*
 
 **How Autional prevents this**: The RBAC system's predefined `super_admin` role mandates FIDO2/WebAuthn (and this is how Autional itself operates). Sensitive operations in the admin console (creating API Keys, modifying permissions, viewing audit logs) trigger secondary MFA verification. Admin MFA status is continuously monitored — accounts without MFA enabled are flagged and alerted.
 
@@ -207,7 +218,7 @@ When a user changes their password, an anomalous login is detected, or an admini
 
 ### Real-World Case
 
-In 2022, a major customer of a SaaS collaboration platform reported that after they terminated an employee and deactivated their account, the former employee could still access company data through an already-logged-in mobile app session for up to 48 hours — because the system had no mechanism to revoke mobile sessions.
+In 2022, a major customer of a SaaS collaboration platform reported that after they terminated an employee and deactivated their account, the former employee could still access company data for up to 48 hours — through an already-logged-in mobile app session. The system had no mechanism to revoke mobile sessions.
 
 ### How to Fix
 

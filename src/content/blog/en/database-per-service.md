@@ -42,6 +42,17 @@ This is the most critical problem. If the shared database instance goes down:
 - notification DB down → email delivery is delayed, but login is unaffected
 - session DB down → users need to re-login (degraded experience), but registration and password reset still work
 
+```mermaid
+flowchart TD
+    Shared["One shared database"] --> S1["Login, session, MFA, OAuth, and wallet all depend on it"]
+    S1 --> S2["It goes down — the whole auth system goes down with it"]
+    Iso["Per-service databases"] --> I1["billing DB down — no top-ups, login unaffected"]
+    Iso --> I2["notification DB down — emails delayed, login unaffected"]
+    Iso --> I3["session DB down — re-login needed, registration and password reset still work"]
+```
+
+*Figure 1: One shared database versus per-service databases — the same crash means total paralysis on one side, a contained degradation on the other.*
+
 That's real **fault isolation**.
 
 ## Autional Database Isolation in Practice
@@ -130,6 +141,17 @@ This pattern is widely used in Autional:
 
 **Key principle**: Redundant data is only cached within the consuming service, never used as a cross-service source of truth. The "single source of truth" for identity data always remains in identity-service.
 
+```mermaid
+flowchart TD
+    Q["billing needs a user's email"] --> C{"How often is it read?"}
+    C -->|"Low volume, needs the latest"| API["Call identity's API — gets sanitized data for free"]
+    C -->|"High volume, latency-sensitive"| EV["Subscribe to user.profile.updated — keep a local copy"]
+    API --> P["The single source of truth stays in identity-service"]
+    EV --> P["The single source of truth stays in identity-service"]
+```
+
+*Figure 2: Two ways to read another service's data — call the API for fresh, low-volume reads, subscribe to events for high-volume ones; the source of truth never leaves identity-service.*
+
 ## Data Consistency and Eventual Consistency
 
 Database isolation trades single-database ACID guarantees for **eventual consistency**:
@@ -183,7 +205,7 @@ Database isolation lets each service independently choose its database configura
 - **Time-series write-heavy** (audit): MongoDB sharded cluster supports horizontal write scaling
 - **Hybrid** (storage): PostgreSQL for metadata, MinIO for file binaries
 
-This flexibility is impossible with a shared database. A billing export task (compliance-service full-table scan of 2 million audit records) shouldn't consume I/O bandwidth from authentication queries (identity-service high-frequency point reads on the `users` table).
+This flexibility is impossible with a shared database. A billing export task (compliance-service full-table scan of 2 million audit records) shouldn't consume I/O bandwidth from authentication queries. Those are identity-service's high-frequency point reads on the `users` table.
 
 ## Security Boundaries
 
@@ -220,7 +242,7 @@ Isolation enables more flexible backup granularity. Audit logs (tens of GB, larg
 
 ## Summary
 
-Database-per-service isn't a silver bullet, but in identity and authentication systems, the benefits far outweigh the costs:
+Database-per-Service isn't a silver bullet, but in identity and authentication systems, the benefits far outweigh the costs:
 
 | Benefit | Description |
 |---------|-------------|

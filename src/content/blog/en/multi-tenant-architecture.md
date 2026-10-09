@@ -21,6 +21,15 @@ Shared database with tenant_id on every row. Balance of security and efficiency 
 ### Hybrid
 Critical tenants get physical isolation; free-tier tenants share logically.
 
+```mermaid
+flowchart TD
+    Q{"What level of isolation does the tenant need?"} -->|"Strictest regulation, budget allows"| P["Physical — a separate database instance per tenant"]
+    Q -->|"Most cases"| L["Logical — one shared database, tenant_id on every row"]
+    Q -->|"Critical tenants plus free tier"| H["Hybrid — critical tenants physical, free tier logical"]
+```
+
+*Figure 1: Choosing among the three isolation models — match each tenant to its regulatory needs and budget, with logical isolation as Autional's most common default.*
+
 ## Key Design Decisions
 
 1. **Tenant ID in every query** — enforced by repository layer, verified by CI

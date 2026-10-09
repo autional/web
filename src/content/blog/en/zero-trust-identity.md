@@ -49,7 +49,7 @@ Request: User A wants to access the customer database
      Allow / Deny / Require additional verification
 ```
 
-Key difference: these checks aren't done once at login then trusted for 8 hours — they can be re-evaluated on every request.
+Key difference: these checks aren't done once at login and then trusted for 8 hours — they can be re-evaluated on every request.
 
 ### Pillar Two: Least Privilege
 
@@ -86,7 +86,7 @@ In the zero trust model, you don't assume your defenses are perfect. Quite the o
 
 The problem with traditional authentication models: **authentication is one-time, trust is persistent.**
 
-A user logs in, gets a Session Token, and for the next 8 hours, the system unconditionally trusts that token. Even if during those 8 hours, the user's IP address jumps from Beijing to New York, the device changes from a company laptop to an unfamiliar Android phone, and behavior shifts from viewing documents to exporting all customer data — the system takes no notice, because the token is valid.
+A user logs in, gets a Session Token, and for the next 8 hours, the system unconditionally trusts that token. Even if the user's IP address jumps from Beijing to New York, the device changes from a company laptop to an unfamiliar Android phone, and behavior shifts from viewing documents to exporting all customer data. The system takes no notice, because the token is valid.
 
 Zero trust requires **continuous verification** — dynamically assessing trust levels throughout the session's entire lifecycle:
 
@@ -111,6 +111,17 @@ Trust score < 50  → Require re-authentication (Step-Up Auth)
 Trust score < 20  → Immediately terminate session, generate security event
 Trust score >= 50 → Continue normal access
 ```
+
+```mermaid
+flowchart TD
+    A["Session established — trust score 100"] --> B["Recalculate every 5 minutes or before each sensitive operation"]
+    B --> C{"Recalculated trust score"}
+    C -->|"below 50"| D["Require re-authentication — Step-Up"]
+    C -->|"below 20"| E["Terminate session, generate security event"]
+    C -->|"50 or above"| F["Continue normal access"]
+```
+
+*Figure 1: Dynamic session trust scoring — starting from 100 at login, the system keeps recalculating; dropping below 50 triggers Step-Up, below 20 terminates the session.*
 
 This dynamic assessment renders stolen tokens worthless — even if an attacker obtains a valid Session Token, they can't continue using it when behavior patterns change dramatically.
 

@@ -33,7 +33,7 @@ For processing sensitive personal information (biometric data, financial account
 - **Consent records**: Autional's identity-service automatically creates consent records during user registration and login, precisely recording the time, version, scope, and IP address of consent
 - **Granular consent**: Supports separate consent by information type (basic profile, contact info, location data, behavioral data) rather than "blanket consent"
 - **Revocation mechanism**: Users can withdraw consent at any time—the system automatically stops corresponding data processing and records the revocation
-- **Version management**: When the privacy policy updates, the system automatically pushes new consent requests to all affected users. User data for those who haven't provided new-version consent is suspended
+- **Version management**: When the privacy policy updates, the system automatically pushes new consent requests to all affected users. Data processing for users who haven't consented to the new version is suspended
 
 > **PIPL Article 22**: When transferring personal information due to merger, division, dissolution, bankruptcy declaration, etc., the processor shall inform individuals of the recipient's name and contact information.
 >
@@ -57,11 +57,17 @@ Individuals have the following rights over their personal information:
 
 Autional has a built-in complete Data Subject Access Request (DSAR) processing pipeline:
 
-```
-User submits request → Identity verification (MFA) → Data aggregation (multi-service parallel) → Generation/Execution → Notify user
+```mermaid
+flowchart LR
+    A["User submits request"] --> B["Identity verification — MFA"]
+    B --> C["Data aggregation — services in parallel"]
+    C --> D["Generation or execution"]
+    D --> E["Notify user"]
 ```
 
-1. **Self-service access and export**: Users submit data export requests through the End-User Portal or API. The system calls each microservice (identity, profile, session, audit, etc.) in parallel via internal APIs, aggregates all user data, and generates a machine-readable JSON export package
+*Figure 1: The DSAR pipeline — the request passes MFA identity verification, data is aggregated from microservices in parallel, and the result is delivered back to the user.*
+
+1. **Self-service access and export**: Users submit data export requests through the End-User Portal or API. The system calls each microservice (identity, profile, session, audit, etc.) in parallel via internal APIs and aggregates all user data. The result is a machine-readable JSON export package
 2. **Data portability**: The export package uses standardized JSON Schema that can be directly imported into other compatible systems, satisfying data portability rights
 3. **Self-service correction**: Users can directly modify basic information (display name, avatar, contact info, etc.), with each correction automatically logged in the audit trail
 4. **Automated deletion**: Data deletion requests automatically trigger: account anonymization, cascading cleanup of related data, and deletion notifications for data shared with third parties. Deletion operations retain audit records
@@ -129,6 +135,17 @@ The industry-recognized notification deadline is **72 hours**.
    - Auto-populates known information (incident time, data types affected, quantity estimates), speeding up notification preparation
 3. **Incident tracing**: Hash-chained audit logs enable rapid tracing of breach scope—which user data was accessed? When did it start? Who performed the operation?
 4. **SIEM integration**: Security events are automatically pushed to SIEM systems, ensuring security operations teams respond immediately
+
+```mermaid
+flowchart LR
+    A["Real-time detection — bulk exports, off-hours escalation"] --> B["Security incident created automatically"]
+    B --> C["Pre-built templates — user notice, regulator report"]
+    C --> D["Notified within 72 hours"]
+    B --> E["Pushed to SIEM"]
+    B --> F["Hash-chain audit — trace the breach scope"]
+```
+
+*Figure 2: The incident notification chain — detection creates the incident, pre-built templates support the 72-hour notification deadline, and hash-chain audits keep the evidence traceable.*
 
 ## PIPL Compliance Checklist
 

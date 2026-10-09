@@ -59,7 +59,7 @@ gRPC contracts are `.proto` files—**guaranteed at compile time**:
 - New fields don't affect existing callers (Protobuf backward compatibility)
 - Deprecated fields marked `reserved` cause compile errors if reused
 
-In Autional, all `.proto` files are generated uniformly by `scripts/generate-proto.ps1`, and `check-grpc-compliance.py` in the CI pipeline ensures generated code is consistent with proto definitions—eliminating runtime bugs like "the doc says accept int, but the code passes string."
+In Autional, all `.proto` files are generated uniformly by `scripts/generate-proto.ps1`. `check-grpc-compliance.py` in the CI pipeline ensures generated code is consistent with proto definitions—eliminating runtime bugs like "the doc says accept int, but the code passes string."
 
 ### Streaming
 
@@ -77,7 +77,7 @@ Client Streaming:    Streaming Request→Single Response (batch upload)
 Bidirectional:       Bidirectional streams (real-time alerts, conversations)
 ```
 
-In the compliance report export scenario, compliance-service calls audit-service's `ExportAuditLogs` method, audit-service pushes data in batches via Server Streaming, and compliance-service writes to CSV as it receives—without waiting for the full dataset to load into memory.
+In the compliance report export scenario, compliance-service calls audit-service's `ExportAuditLogs` method. audit-service pushes data in batches via Server Streaming, and compliance-service writes to CSV as it receives—without waiting for the full dataset to load into memory.
 
 ## Autional's gRPC Security Architecture
 
@@ -194,6 +194,24 @@ Using compliance-service executing GDPR data export as an example, here's the co
    → ExportAuditLogs(user_id, stream) → streams audit logs
 6. compliance-service assembles data → generates export file → uploads to storage-service
 ```
+
+```mermaid
+sequenceDiagram
+    participant G as Gateway
+    participant C as compliance-service
+    participant I as identity-service
+    participant P as profile-service
+    participant A as audit-service
+    participant S as storage-service
+    G->>C: Forward GDPR export request (HTTP)
+    C->>I: GetUser and ListUserRoles (gRPC)
+    C->>P: GetProfile (gRPC)
+    C->>A: ExportAuditLogs — gRPC streaming
+    A-->>C: Stream audit logs in batches
+    C->>S: Upload export file
+```
+
+*Figure 1: The compliance scan call chain — the gateway hands the GDPR export request to compliance-service, which fans out over gRPC to identity, profile, and audit before uploading the file to storage-service.*
 
 Steps 3-5 are all gRPC calls, each carrying the same Trace ID. If `GetUser` in step 3 fails, compliance-service can quickly return an error (rather than timing out) and log the failing gRPC status code:
 

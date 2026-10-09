@@ -81,47 +81,33 @@ Sliding windows are far more accurate than fixed windows, but in high-precision 
 
 The token bucket is the industry's most popular rate-limiting algorithm and the default in Autional gateway-service.
 
+```mermaid
+flowchart TD
+    R["Refiller: adds r tokens per second"] --> B["Token bucket: holds up to b tokens"]
+    B --> P["Token taken, request passes"]
+    B --> X["Bucket empty, request rejected"]
 ```
-Token Bucket Model:
-┌─────────────────────────┐
-│    Token Refiller        │
-│  Adds tokens at fixed    │  Rate: r tokens/sec
-│  rate. Capacity: b       │
-└───────────┬─────────────┘
-            │
-            ▼
-┌─────────────────────────┐
-│    Token Bucket (cap b)  │
-│  ◉ ◉ ◉ ◉ ◉ ◉ ○ ○ ○     │  Current tokens: 6
-└───────────┬─────────────┘
-            │
-            ▼
-      Take 1 token → Pass
-      No token → Reject
-```
+
+*Figure 1: The token bucket — a refiller drips tokens in at fixed rate r, capacity b caps how big a burst can be saved up; take a token and pass, find the bucket empty and get rejected.*
 
 Core parameters:
 - **Rate r**: Tokens added per second (steady-state rate)
 - **Capacity b**: Max tokens the bucket can hold (allowed burst)
 
-This is the beauty of the token bucket—**controlled bursts**. With `r=10, b=100`: normally 10 requests/second; but if the bucket accumulates 100 tokens (after idle time), it can handle 100 requests instantly without violating the long-term average rate.
+This is the beauty of the token bucket—**controlled bursts**. With `r=10, b=100`: normally 10 requests/second; but if the bucket accumulates 100 tokens (after idle time), it can handle 100 requests instantly. That doesn't violate the long-term average rate—it just spends the allowance saved up during idle time.
 
 ### Fourth Generation: Leaky Bucket
 
 The leaky bucket is the mirror image of the token bucket: token bucket refills at a fixed rate and allows bursts; leaky bucket processes requests at a fixed rate and smooths output.
 
+```mermaid
+flowchart TD
+    Q["Requests arrive at any rate"] --> L["Leaky bucket queue: fixed capacity"]
+    L --> O["Fixed-rate outflow, peaks smoothed"]
+    Q --> X["Queue full, request dropped"]
 ```
-    Requests in (any rate)
-       │  │  │  │  │  │
-       ▼  ▼  ▼  ▼  ▼  ▼
-┌─────────────────────────┐
-│    Leaky Bucket (queue)  │
-│  ◉ ◉ ◉ ◉ ◉ ◉ ◉  ...     │  Overflow → drop
-└───────────┬─────────────┘
-            │
-            ▼
-      Fixed-rate outflow
-```
+
+*Figure 2: The leaky bucket — accept arrivals at any rate up to the brim, release them at one steady rate; when the queue fills up, drops replace delay and downstream sees a flat flow.*
 
 The leaky bucket suits traffic-shaping scenarios—where you need a steady request rate delivered to downstream services. But for bursts, the leaky bucket drops rather than queues, resulting in worse UX than the token bucket.
 
@@ -223,7 +209,7 @@ EVAL "
 " 1 "ratelimit:login:ip:192.168.1.1" 60 30 1715692800000
 ```
 
-Autional gateway-service has this Redis rate limiter built in—developers don't need to implement it themselves. It auto-enables distributed mode via `redis` connection info in the gateway config; if Redis is unavailable, it gracefully degrades to local rate limiting (each instance counts independently) and triggers an alert.
+Autional gateway-service has this Redis rate limiter built in—developers don't need to implement it themselves. It auto-enables distributed mode via `redis` connection info in the gateway config. If Redis is unavailable, it gracefully degrades to local rate limiting (each instance counts independently) and triggers an alert.
 
 ## Real-World Scenario: Complete Brute-Force Defense Chain
 

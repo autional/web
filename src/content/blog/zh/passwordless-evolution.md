@@ -147,24 +147,19 @@ FIDO2 是 U2F 的演进，包含两个核心标准：
 
 Autional 自 2025 年起内置完整的 WebAuthn RP 支持：
 
+```mermaid
+sequenceDiagram
+    participant B as 浏览器
+    participant I as identity-service
+    participant M as mfa-service
+    B->>I: 1. 请求注册挑战
+    I-->>B: 2. 返回挑战值与参数
+    Note over B: 用户完成指纹、人脸或硬件密钥验证
+    B->>M: 3. 返回 attestation
+    M-->>B: 4. 验证签名并存储公钥，注册成功
 ```
-Browser                             Autional
-  │                                  │
-  │ 1. Request registration challenge│
-  │─────────────────────────────→   │ identity-service
-  │                                  │ generate challenge + user ID
-  │ 2. Return challenge + params     │
-  │←─────────────────────────────   │
-  │                                  │
-  │ [User completes fingerprint/Face/ │
-  │  hardware key verification]      │
-  │                                  │
-  │ 3. Return attestation            │
-  │─────────────────────────────→   │ mfa-service
-  │                                  │ verify signature + store public key
-  │ 4. Registration success          │
-  │←─────────────────────────────   │
-```
+
+*图 1：通行密钥注册的泳道时序——浏览器取挑战值，用户在设备上完成指纹或人脸确认，attestation 回到 mfa-service 验签并存储公钥，私钥全程不出设备。*
 
 登录时的断言流程与之类似——服务器发送挑战值，平台认证器用私钥签名，服务器用公钥验证。
 
@@ -172,7 +167,7 @@ Browser                             Autional
 
 ### 持续认证
 
-从「登录时验证一次」走向「持续验证」。基于行为生物特征（打字节奏、鼠标移动模式）与上下文信号（位置、时间、设备状态），在整个会话过程中持续评估信任度。
+从「登录时验证一次」走向「持续验证」。基于行为生物特征（打字节奏、鼠标移动模式）与上下文信号（位置、时间、设备状态），系统在整个会话过程中持续评估信任度。
 
 ### 没有密码的账号恢复
 

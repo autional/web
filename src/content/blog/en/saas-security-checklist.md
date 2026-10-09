@@ -32,7 +32,7 @@ This checklist covers 8 security domains and 30 specific checks. Each item has t
 
 **Why it matters**: NordPass statistics show `123456` remains the most commonly used password globally. These are the first entries in attackers' dictionary attacks.
 
-**How Autional does it**: Built-in blacklist of 100,000 commonly used weak passwords based on Have I Been Pwned's Pwned Passwords dataset. Passwords are checked in real-time against the blacklist during setup. The blacklist updates regularly.
+**How Autional does it**: Built-in blacklist of 100,000 commonly used weak passwords based on Have I Been Pwned's Pwned Passwords dataset. Passwords are checked against the blacklist in real time during setup. The blacklist updates regularly.
 
 ### 3. Use bcrypt/scrypt/argon2 for Password Hashing
 
@@ -64,7 +64,7 @@ This checklist covers 8 security domains and 30 specific checks. Each item has t
 
 **Why it matters**: If users don't know why their password is weak, they won't actively choose strong ones. A good strength indicator can reduce weak password rates by 40%.
 
-**How Autional does it**: The login page (auth-pages) has a built-in password strength indicator that evaluates and displays strength in real-time (Weak/Medium/Strong/Very Strong), based on password entropy rather than simple rules.
+**How Autional does it**: The login page (auth-pages) has a built-in password strength indicator that evaluates and displays strength in real time (Weak/Medium/Strong/Very Strong), based on password entropy rather than simple rules.
 
 ## II. Multi-Factor Authentication (5 Items)
 
@@ -108,6 +108,16 @@ This checklist covers 8 security domains and 30 specific checks. Each item has t
 
 **How Autional does it**: The adaptive MFA engine uses a 7-dimensional risk score (device fingerprint, IP reputation, geolocation, behavior patterns, time factors, failure history, sensitive operation context) to dynamically determine authentication strength. Low risk: skip MFA; high risk: mandate WebAuthn.
 
+```mermaid
+flowchart TD
+    L["Login request"] --> R["Adaptive MFA engine — 7-dimension risk score"]
+    D["Device fingerprint, IP reputation, geolocation, behavior patterns, time factors, failure history, sensitive operation context"] --> R
+    R --> Lo["Low risk — skip MFA"]
+    R --> Hi["High risk — require WebAuthn"]
+```
+
+*Figure 1: The adaptive MFA decision path — seven risk signals feed a single score; low risk passes through, high risk escalates to WebAuthn.*
+
 ## III. Session Management (4 Items)
 
 ### 12. Absolute Timeout and Idle Timeout?
@@ -145,6 +155,16 @@ This checklist covers 8 security domains and 30 specific checks. Each item has t
 **What to check**: Is there rate limiting on the login endpoint? Is there global rate limiting on APIs?
 
 **How Autional does it**: gateway-service implements three-layer rate limiting: IP-level (60s window, 30 requests), user-level (5min window, 10 requests), global-level (10s window, 500 requests). Redis-backed distributed rate limiting enables shared counting across multiple gateway instances.
+
+```mermaid
+flowchart LR
+    Rq["Request"] --> A["IP level — 30 requests per 60s"]
+    A --> B["User level — 10 requests per 5 min"]
+    B --> C["Global level — 500 requests per 10s"]
+    C --> P["Allowed"]
+```
+
+*Figure 2: Three-layer rate limiting — requests pass through the IP-level, user-level, and global-level gates in turn, with Redis-backed counters shared across gateway instances.*
 
 ### 17. Do Inter-Service APIs Use Internal Authentication?
 

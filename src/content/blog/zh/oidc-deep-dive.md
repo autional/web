@@ -115,7 +115,18 @@ ID Token 是 OIDC 的核心创新。它是由授权服务器签名的 JWT，包�
 8. If using Implicit/Hybrid Flow, verify at_hash (Access Token Hash)
 ```
 
-第 7、8 步——哈希校验——是最容易被忽略却至关重要的一环。它们把 ID Token 与授权码或访问令牌绑定，防止混淆攻击。
+```mermaid
+flowchart TD
+    A["验签（JWK 公钥）"] --> B["校验 iss 与 aud"]
+    B --> C["校验 exp 与 iat"]
+    C --> D["有 nonce 则比对请求时的原值"]
+    D --> E["按流程校验 c_hash 或 at_hash"]
+    E --> F["全部通过，接受令牌"]
+```
+
+*图 1：ID Token 的校验链条——先验签，再核对 iss 与 aud，然后检查时效，最后用 nonce 与哈希把令牌钉回本次请求。*
+
+第 7、8 步的哈希校验最容易被忽略，却至关重要。它们把 ID Token 与授权码或访问令牌绑定，防止混淆攻击。
 
 Autional oauth-service 在签发 ID Token 时自动计算并内嵌 `c_hash` 与 `at_hash`。客户端 SDK 在校验时自动验证。
 
@@ -153,6 +164,18 @@ Autional oauth-service 在签发 ID Token 时自动计算并内嵌 `c_hash` 与 
 ## OIDC 的三种流程
 
 OIDC 继承了 OAuth 2.0 的授权流程并叠加身份信息。主要有三种流程：
+
+```mermaid
+flowchart TD
+    A["OIDC 三种流程"] --> B["授权码流程"]
+    B --> B1["前端只过授权码，令牌经后端通道换取（PKCE 加固）"]
+    A --> C["Implicit 流程（已废弃）"]
+    C --> C1["令牌直接从 URL fragment 返回，OAuth 2.1 已移除"]
+    A --> D["混合流程"]
+    D --> D1["前端直接拿到 ID Token，后端用授权码换访问令牌"]
+```
+
+*图 2：三种流程的分野——令牌在前端还是后端通道落地，决定了各自的安全性与适用场景。*
 
 ### 1. 授权码流程
 
@@ -287,7 +310,7 @@ Autional 提供 Go、JavaScript、Python、Java 的官方 OIDC 客户端 SDK，�
 
 ## 总结
 
-OIDC 是当今采用最广泛的标准化身份协议。它把 OAuth 2.0 从纯粹的授权协议提升为完整的身份认证协议，并通过 ID Token 的标准化 claims 格式，实现了跨系统的用户身份互通。
+OIDC 是当今采用最广泛的标准化身份协议。它把 OAuth 2.0 从纯粹的授权协议提升为完整的身份认证协议。通过 ID Token 的标准化 claims 格式，它实现了跨系统的用户身份互通。
 
 Autional oauth-service 作为完整的 OIDC Provider，提供：
 - 完整的 OIDC 端点（Authorization、Token、UserInfo、JWK、Discovery）

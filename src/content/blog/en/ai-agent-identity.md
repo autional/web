@@ -40,7 +40,7 @@ But these "accounts" don't fit that model:
 | AI Agent | Automated procurement, automated customer service | Makes decisions and operations on behalf of humans |
 | RPA Bot | Automated data entry | Simulates human UI operations |
 
-Gartner predicts that by 2028, non-human identities will outnumber human identities. This trend will only accelerate in the context of the AI Agent rise.
+Gartner predicts that by 2028, non-human identities will outnumber human identities. This trend will only accelerate as AI Agents rise.
 
 ## New Demands AI Agents Place on Identity Systems
 
@@ -58,6 +58,16 @@ User logs in → obtains access token (scope: procurement.*)
              → agent obtains a restricted token (scope: procurement.create, procurement.read)
              → agent uses the restricted token to operate on behalf of the user
 ```
+
+```mermaid
+flowchart TD
+    A["User logs in — access token with procurement.*"] --> B["Token Exchange (RFC 8693)"]
+    B --> C["Agent restricted token — procurement.create and procurement.read"]
+    C --> D["Agent acts under the act claim on behalf of the user"]
+    D --> E["Audit log records both user_id and actor_id"]
+```
+
+*Figure 1: The delegation chain — the user's token is narrowed via RFC 8693 Token Exchange into a limited-scope agent token; the agent acts under the act claim, and the audit log records both delegator and Actor.*
 
 Key distinction: the agent's token scope is explicitly limited by the user — the user has `procurement.*` but only grants the agent `procurement.create` + `procurement.read`, not `procurement.approve`.
 

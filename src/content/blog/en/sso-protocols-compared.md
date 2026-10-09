@@ -51,6 +51,22 @@ Complete SAML 2.0 Web Browser SSO flow:
 7. SP establishes user session, grants access
 ```
 
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant SP as Service Provider
+    participant IdP as Identity Provider
+    B->>SP: Accesses the app
+    SP-->>B: Not authenticated, redirect AuthnRequest
+    B->>IdP: Submits AuthnRequest (HTTP Redirect)
+    Note over IdP: Authenticates the user, e.g. password plus TOTP
+    IdP-->>B: Returns SAML Assertion (HTTP POST)
+    B->>SP: Submits the Assertion
+    SP->>SP: Verifies signature, establishes session
+```
+
+*Figure 1: The full SAML Web Browser SSO round trip — the browser carries the AuthnRequest to the IdP, then returns with a signed assertion; the SP verifies it and establishes a session.*
+
 Key security mechanisms:
 - **XML Digital Signature**: SP uses IdP's public key to verify the Assertion hasn't been tampered with
 - **NotBefore / NotOnOrAfter**: Assertions have a time window; expired assertions are invalid
@@ -85,8 +101,8 @@ OAuth 2.0 (RFC 6749) defines an authorization framework that allows third-party 
 
 - **Resource Owner**: the user
 - **Client**: the third-party application (e.g., a calendar app that needs to read your Google Calendar)
-- **Authorization Server**: the authorization server (e.g., Google's OAuth endpoint)
-- **Resource Server**: the resource server (e.g., Google Calendar API)
+- **Authorization Server**: e.g., Google's OAuth endpoint
+- **Resource Server**: e.g., Google Calendar API
 
 ### Four Grant Types
 
@@ -237,30 +253,17 @@ CAS has a very simple design involving three core roles:
 
 Autional integrates all SSO protocols within `oauth-service`:
 
-```
-oauth-service (Port 11006)
-├── OAuth 2.0 (RFC 6749)
-│   ├── Authorization Code Grant + PKCE
-│   ├── Client Credentials Grant
-│   ├── Token Introspection (RFC 7662)
-│   └── Token Revocation (RFC 7009)
-├── OIDC (based on OAuth 2.0)
-│   ├── OIDC Discovery
-│   ├── id_token (JWT, RS256)
-│   ├── UserInfo Endpoint
-│   └── RP-Initiated Logout + Back-Channel Logout
-├── SAML 2.0
-│   ├── SP-Initiated SSO
-│   ├── IdP-Initiated SSO
-│   ├── SAML Metadata import/export
-│   └── Attribute Statement mapping
-└── CAS
-    ├── CAS 1.0 / 2.0 / 3.0 protocol
-    ├── Proxy Ticket (CAS PT) support
-    └── CASTGC session management
+```mermaid
+flowchart TD
+    S["oauth-service (port 11006)"] --> O1["OAuth 2.0 (RFC 6749) — Authorization Code + PKCE, Client Credentials, Introspection (RFC 7662), Revocation (RFC 7009)"]
+    S --> O2["OIDC — Discovery, id_token (JWT, RS256), UserInfo, RP-Initiated Logout and Back-Channel Logout"]
+    S --> O3["SAML 2.0 — SP- and IdP-Initiated SSO, Metadata import/export, attribute mapping"]
+    S --> O4["CAS — 1.0 / 2.0 / 3.0, Proxy Ticket, CASTGC session management"]
 ```
 
-All protocols share the same user source (`identity-service`), the same MFA policies (`mfa-service`), and the same audit logs (`audit-service`). This means you can serve from one platform simultaneously: frontend SPAs logging in via OIDC, enterprise customers via SAML, internal management systems via CAS — all sharing the same user identities, security policies, and audit records.
+*Figure 2: All four protocols unified inside oauth-service — each branch complete on its own, one platform covering everything.*
+
+All protocols share the same user source (`identity-service`), the same MFA policies (`mfa-service`), and the same audit logs (`audit-service`). This means you can serve from one platform simultaneously: frontend SPAs logging in via OIDC, enterprise customers via SAML, internal management systems via CAS. All of them share the same user identities, security policies, and audit records.
 
 ---
 

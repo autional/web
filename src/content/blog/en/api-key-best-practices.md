@@ -35,7 +35,7 @@ Before discussing best practices, let's look at the most common security traps:
 API_KEY = "sk-7b3f8a2d1e4c5f6g7h8i9j0k1l2m3n4o5p"
 ```
 
-Whether you delete this line later or not, once committed, it exists in git history forever. Even if the repository is private, if anyone's account is compromised, attackers can scan all historical commits.
+Whether you delete this line later or not, once committed, it exists in git history forever. Even if the repository is private, if a single contributor's account is compromised, attackers can scan all historical commits.
 
 ### Anti-Pattern 2: Stored in Configuration Files
 
@@ -62,7 +62,7 @@ API requests may be recorded in log files, monitoring systems, and error trackin
 
 "This key has been in use for two years and never caused a problem."
 
-No problems don't mean secure. The key may have been exposed in a data breach without the attacker having used it yet. The longer a key's "lifetime," the greater the probability of exposure.
+The absence of problems doesn't mean the key is secure. The key may have been exposed in a data breach without the attacker having used it yet. The longer a key's "lifetime," the greater the probability of exposure.
 
 ### Anti-Pattern 5: Shared Keys, No Scope Restrictions
 
@@ -156,17 +156,16 @@ Autional supports multi-dimensional permission constraints:
 
 Key rotation should not be a "once a year" operation — it should be an automated process:
 
+```mermaid
+flowchart TD
+    A["Generate new key, store hash"] --> B["Old and new keys active in parallel (15 min)"]
+    B --> C["Monitor old key usage, confirm client migration"]
+    C --> D{"Old key usage dropped to zero?"}
+    D -->|"Yes"| E["Revoke old key"]
+    D -->|"No"| F["Alert and manual review"]
 ```
-┌──────────────────────────────────────────────────┐
-│              Key Rotation Automation Flow         │
-├──────────────────────────────────────────────────┤
-│  1. Generate new key, store hash                  │
-│  2. Old and new keys active in parallel (15 min)  │
-│  3. Monitor old key usage — confirm client migration│
-│  4. Old key usage drops to 0 → revoke old key      │
-│  5. If usage hasn't dropped → alert, manual review  │
-└──────────────────────────────────────────────────┘
-```
+
+*Figure 1: Automated key rotation — the old and new keys run in parallel through a 15-minute grace period; once old-key usage hits zero the key is revoked, otherwise an alert triggers manual review.*
 
 Autional provides a complete rotation lifecycle:
 
@@ -194,12 +193,17 @@ Autional's anomaly detection engine continuously monitors these metrics. When an
 
 In Autional, an API Key goes through a complete lifecycle from birth to death:
 
+```mermaid
+flowchart LR
+    A["Create — full key shown once"] --> B["Activate"]
+    B --> C["Monitor — live usage dashboard"]
+    C --> D["Expiry warning — Webhook notify"]
+    D --> E["Rotate — parallel grace period"]
+    E --> F["Revoke — audit log"]
+    F --> G["Archive — compliance retention"]
 ```
-Create → Activate → Monitor → Expiry Warning → Rotate → Revoke → Archive
-  │              │         │          │          │        │        │
-  └─ Show once   └─ Dashboard └─ Webhook └─ Grace   └─ Audit └─ Compliance
-     Full key      Live        Notify     Period     Log      Retention
-```
+
+*Figure 2: The complete lifecycle of an API Key — the full key is shown once at creation, then the key moves through activation, monitoring, expiry warning, rotation, and revocation before being archived.*
 
 Every state transition generates an audit log — yes, the kind protected by a hash chain.
 

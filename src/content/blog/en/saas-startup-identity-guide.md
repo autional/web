@@ -39,7 +39,7 @@ Your SaaS has just launched, with users in the low hundreds. What you need:
 
 **Build effort**: 1-2 weeks (one full-stack engineer), covering registration/login page, password hashing, session storage, and middleware.
 
-**Autional Private Deployment (commercial license)**: Use Autional's identity-service for user registration and login, session-service for session management. No additional MFA or SSO needed. 30-minute integration.
+**Autional Private Deployment (commercial license)**: identity-service handles user registration and login, session-service handles session management. No additional MFA or SSO needed. 30-minute integration.
 
 **Key reminder**: Even at this stage, some infrastructure decisions are hard to reverse:
 - User passwords must use Argon2id hashing (not bcrypt, definitely not SHA256)
@@ -69,6 +69,16 @@ You've signed your first enterprise customer. Requirements suddenly escalate:
 3. Metadata XML alignment and testing (2-3 rounds typically)
 4. Production verification (30 minutes)
 5. Subsequent SSO troubleshooting (30 minutes each time)
+
+```mermaid
+flowchart LR
+    A["Configure IdP trust — 30 minutes"] --> B["Call with customer IT — 1 hour × both sides' engineers"]
+    B --> C["Metadata XML alignment and testing — 2-3 rounds typically"]
+    C --> D["Production verification — 30 minutes"]
+    D --> E["Ongoing SSO troubleshooting — 30 minutes each time"]
+```
+
+*Figure 1: Onboarding one enterprise customer's SSO — five small steps that, multiplied across 50 customers, exceed 100 person-hours of support per year.*
 
 With 50 enterprise customers, SSO-related support costs alone can exceed 100 person-hours per year—before counting code maintenance.
 
@@ -122,7 +132,7 @@ The total cost of building clearly exceeds buying—and that doesn't account for
 
 "We only need simple login right now. We'll add SSO later when we have enterprise customers."
 
-The problem: by the time you have 100,000 users, 10 tables depending on the user ID field, and 5 microservices each with their own auth middleware—your "add SSO" effort is 3-5x larger than "use it from day one."
+The problem: by the time you have 100,000 users, 10 tables depending on the user ID field, and 5 microservices each with their own auth middleware, your "add SSO" effort is 3-5x larger than "use it from day one."
 
 ### Mistake 2: Shared Accounts
 
@@ -134,7 +144,7 @@ This isn't a technical problem—it's a critical compliance failure. HIPAA, SOC 
 
 "Our team is strong. Writing our own identity system is no problem."
 
-Technical capability isn't the bottleneck. The bottleneck is ongoing maintenance—OAuth 2.1 drafts are being published, SAML 4.0 is under discussion, new Passkey specifications are advancing, and there are new security CVEs to track every quarter. Can a 20-person startup's product team handle all of this?
+Technical capability isn't the bottleneck. The bottleneck is ongoing maintenance—OAuth 2.1 drafts are being published, SAML 4.0 is under discussion, Passkey specifications keep advancing, and every quarter brings new security CVEs to track. Can a 20-person startup's product team handle all of this?
 
 ### Mistake 4: Coupling Identity with Business Systems
 
@@ -146,14 +156,13 @@ This coupling becomes excruciating when you need to support multiple application
 
 Autional's design philosophy is "progressive adoption"—you don't need all 15 microservices on day one:
 
+```mermaid
+flowchart LR
+    A["Phase 1 MVP — identity-service and session-service"] --> B["Phase 2 Growth — add mfa-service, oauth-service, audit-service, and RBAC"]
+    B --> C["Phase 3 Enterprise — add compliance-service, tenant-service, billing-service, wallet-service, notification-service"]
 ```
-Phase 1 (MVP)          Phase 2 (Growth)         Phase 3 (Enterprise)
-identity-service       + mfa-service            + compliance-service
-session-service        + oauth-service          + tenant-service
-                       + audit-service          + billing-service (quota)
-                       + RBAC (roles/permissions) + wallet-service
-                                                 + notification-service
-```
+
+*Figure 2: Progressive adoption — two services in Phase 1, MFA, SSO, and auditing added on demand in Phase 2, enterprise services in Phase 3.*
 
 This progressive adoption lets you:
 - Stage 1: deploy only 2 services with minimal resource consumption

@@ -84,7 +84,7 @@ func main() {
 }
 ```
 
-每个 `WithServer` 与 `WithCloser` 都注册了一个**具名停机回调**。停机时它们按**注册顺序的逆序**（LIFO）执行，确保「先创建、先打开的资源后关闭」，符合依赖顺序：
+每个 `WithServer` 与 `WithCloser` 都注册了一个**具名停机回调**。停机时它们按**注册顺序的逆序**（LIFO）执行，确保「先创建、先打开的资源后关闭」，符合依赖顺序。
 
 ### WithServer：生命周期管理
 
@@ -128,6 +128,26 @@ app.WithCleanup(func() { db.Close() })
 ```
 
 ## 停机时序详解
+
+```mermaid
+sequenceDiagram
+    participant K as Kubernetes
+    participant A as app.Run
+    participant H as HTTP
+    participant M as MQ 消费者
+    participant G as gRPC
+    K->>A: SIGTERM
+    A->>H: 停收新请求 · 排水
+    H-->>A: 在途请求完成
+    A->>M: 停订阅 · 等在途消息
+    M-->>A: 全部 ack
+    A->>G: GracefulStop
+    G-->>A: 流传输完成
+    A->>A: 按 LIFO 关闭审计 → MQ → Redis → DB
+    A-->>K: 进程退出（30 秒内）
+```
+
+*图 1：停机时序——SIGTERM 到达后，按 HTTP → MQ → gRPC → 连接池的顺序分层收尾，全程在 30 秒宽限内完成。*
 
 ### 第一步：停止接受新请求（0-1 秒）
 

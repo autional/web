@@ -47,7 +47,7 @@ In 2024, the U.S. SEC's X (formerly Twitter) account was compromised via SIM swa
 
 **2. SS7 Protocol Vulnerabilities**
 
-SS7 (Signaling System No. 7) is the signaling protocol between telecom carriers, designed in the 1970s with几乎没有 security considerations. Attackers with SS7 access (typically through compromised smaller foreign carriers or black-market access) can intercept or redirect SMS messages.
+SS7 (Signaling System No. 7) is the signaling protocol between telecom carriers, designed in the 1970s with almost no security considerations. Attackers with SS7 access (typically through compromised smaller foreign carriers or black-market access) can intercept or redirect SMS messages.
 
 **3. Phishing Attacks**
 
@@ -210,6 +210,16 @@ FIDO2 approach (public-key cryptography):
   ✅ Advantage: server only stores public keys. Even if the server is breached, attackers only get public keys.
 ```
 
+```mermaid
+flowchart LR
+    A["Shared-secret approach"] --> B["Server stores the seed secret"]
+    B --> C["Server breached: every secret leaks"]
+    A2["Public-key approach, FIDO2"] --> B2["Private key stays on device, server holds only public keys"]
+    B2 --> C2["Server breached: attackers get public keys only"]
+```
+
+*Figure 1: Shared secrets vs public keys — one model puts every risk on the server; the other leaves a breached server with nothing but useless public keys.*
+
 ### Why FIDO2 Resists Phishing
 
 Phishing attacks work by luring users to a fake site that looks identical to the real one, tricking them into entering credentials. But with FIDO2:
@@ -221,7 +231,7 @@ Phishing attacks work by luring users to a fake site that looks identical to the
 5. Mismatch → authenticator refuses to sign
 6. Even with a perfect phishing page, attackers can't pass the authenticator
 
-This is protocol-level phishing protection — not "advise users to check the URL," but cryptographically impossible to authenticate under the wrong domain.
+This is protocol-level phishing protection — not "advise users to check the URL," but authentication that is cryptographically impossible under the wrong domain.
 
 ### Scorecard
 
@@ -254,23 +264,20 @@ This is protocol-level phishing protection — not "advise users to check the UR
 
 Autional mfa-service manages all of the above MFA protocols in a unified way:
 
+```mermaid
+flowchart TD
+    subgraph MFA["mfa-service"]
+        H1["SMS OTP Handler"]
+        H2["TOTP Handler"]
+        H3["FIDO2/WebAuthn Handler"]
+        PE["MFA Policy Engine: tenant-level policy / user MFA registration / adaptive auth strength selection"]
+        H1 --> PE
+        H2 --> PE
+        H3 --> PE
+    end
 ```
-┌──────────────────────────────────────────────────┐
-│                  mfa-service                       │
-│                                                    │
-│  ┌──────────┐  ┌──────────┐  ┌────────────────┐   │
-│  │ SMS OTP  │  │   TOTP   │  │ FIDO2/WebAuthn │   │
-│  │ Handler  │  │ Handler  │  │   Handler      │   │
-│  └────┬─────┘  └────┬─────┘  └───────┬────────┘   │
-│       │             │                │             │
-│  ┌────▼─────────────▼────────────────▼──────────┐  │
-│  │          MFA Policy Engine                    │  │
-│  │  - Tenant-level MFA policy configuration     │  │
-│  │  - User MFA registration management          │  │
-│  │  - Adaptive auth strength selection          │  │
-│  └──────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────┘
-```
+
+*Figure 2: The mfa-service architecture — three protocol handlers funnel into one MFA Policy Engine that owns policy, registration, and adaptive strength selection.*
 
 ### Multi-Channel Registration
 
@@ -304,7 +311,7 @@ Users can register multiple MFA methods simultaneously in their security setting
 }
 ```
 
-The system uses the user's configured primary method by default, but automatically falls back to alternative methods if the primary one is unavailable (e.g., hardware key not nearby).
+The system uses the user's configured primary method by default. If the primary one is unavailable (e.g., hardware key not nearby), it automatically falls back to alternative methods.
 
 ### Adaptive MFA Policy
 

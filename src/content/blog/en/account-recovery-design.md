@@ -50,6 +50,17 @@ The design details worth aligning to standards:
 - **Security questions (KBA) are out.** §3.1.1.2 is blunt: verifiers and CSPs SHALL NOT prompt subscribers to use knowledge-based authentication ("What was the name of your first pet?") or security questions. Anyone can look up the answers — security questions as recovery are keys hung on the door handle.
 - **Recovery endpoints must be rate-limited** (§3.2.2's general rate-limiting requirement): requests, code attempts, and reset submissions each need throttling and lockout policy.
 
+```mermaid
+flowchart TD
+    A["Request: request"] --> B["Uniform response<br/>existence stays hidden"]
+    B --> C{"Verify a credential<br/>email / SMS / recovery code"}
+    C -->|"fail · over limit"| D["Throttle and lock<br/>cool down"]
+    C -->|"pass"| E["Complete: complete<br/>reset the password"]
+    E --> F["Revoke every session<br/>notify the owner"]
+```
+
+*Figure 1: The recovery spine — request → verify → complete; uniform responses block enumeration, throttling blocks guessing, and completion revokes sessions and notifies the owner.*
+
 ## Stopping impersonation: four requirements
 
 Recovery security isn't measured by "can the rightful owner get through" — it's measured by **"can an impersonator get through."** Four things, none optional:

@@ -51,6 +51,22 @@ SAML 涉及三个角色：
 7. SP establishes user session, grants access
 ```
 
+```mermaid
+sequenceDiagram
+    participant B as 浏览器
+    participant SP as Service Provider
+    participant IdP as Identity Provider
+    B->>SP: 访问应用
+    SP-->>B: 未认证，重定向 AuthnRequest
+    B->>IdP: 提交 AuthnRequest（HTTP Redirect）
+    Note over IdP: 认证用户，例如密码加 TOTP
+    IdP-->>B: 返回 SAML Assertion（HTTP POST）
+    B->>SP: 提交 Assertion
+    SP->>SP: 验签通过，建立会话
+```
+
+*图 1：SAML Web Browser SSO 的完整往返——浏览器把 AuthnRequest 送到 IdP，再带着签名断言回到 SP，SP 验签后建立会话。*
+
 关键安全机制：
 
 - **XML 数字签名**：SP 使用 IdP 的公钥验证断言未被篡改
@@ -242,30 +258,17 @@ CAS 的设计非常简单，涉及三个核心角色：
 
 Autional 把全部 SSO 协议整合在 `oauth-service` 中：
 
-```
-oauth-service (Port 11006)
-├── OAuth 2.0 (RFC 6749)
-│   ├── Authorization Code Grant + PKCE
-│   ├── Client Credentials Grant
-│   ├── Token Introspection (RFC 7662)
-│   └── Token Revocation (RFC 7009)
-├── OIDC (based on OAuth 2.0)
-│   ├── OIDC Discovery
-│   ├── id_token (JWT, RS256)
-│   ├── UserInfo Endpoint
-│   └── RP-Initiated Logout + Back-Channel Logout
-├── SAML 2.0
-│   ├── SP-Initiated SSO
-│   ├── IdP-Initiated SSO
-│   ├── SAML Metadata import/export
-│   └── Attribute Statement mapping
-└── CAS
-    ├── CAS 1.0 / 2.0 / 3.0 protocol
-    ├── Proxy Ticket (CAS PT) support
-    └── CASTGC session management
+```mermaid
+flowchart TD
+    S["oauth-service（端口 11006）"] --> O1["OAuth 2.0（RFC 6749）— Authorization Code + PKCE、Client Credentials、Introspection（RFC 7662）、Revocation（RFC 7009）"]
+    S --> O2["OIDC — Discovery、id_token（JWT，RS256）、UserInfo、RP-Initiated Logout 与 Back-Channel Logout"]
+    S --> O3["SAML 2.0 — SP 与 IdP 发起的 SSO、Metadata 导入导出、属性映射"]
+    S --> O4["CAS — 1.0 / 2.0 / 3.0 协议、Proxy Ticket、CASTGC 会话管理"]
 ```
 
-所有协议共享同一套用户源（`identity-service`）、同一套 MFA 策略（`mfa-service`）与同一套审计日志（`audit-service`）。这意味着你可以用一个平台同时服务：前端 SPA 走 OIDC 登录，企业客户走 SAML，内部管理系统走 CAS——它们共享同一份用户身份、安全策略与审计记录。
+*图 2：四种协议统一在 oauth-service 内——每个协议分支各自完整，一个平台全覆盖。*
+
+所有协议共享同一套用户源（`identity-service`）、同一套 MFA 策略（`mfa-service`）与同一套审计日志（`audit-service`）。这意味着你可以用一个平台同时服务：前端 SPA 走 OIDC 登录，企业客户走 SAML，内部管理系统走 CAS。它们共享同一份用户身份、安全策略与审计记录。
 
 ---
 

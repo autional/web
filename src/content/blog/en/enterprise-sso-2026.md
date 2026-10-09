@@ -20,6 +20,16 @@ Single Sign-On (SSO) is the foundation of modern enterprise identity management.
 - **OAuth 2.0** — API authorization, not authentication
 - **CAS** — academic environments, legacy adoption
 
+```mermaid
+flowchart TD
+    A{"What are you solving?"} -->|"Enterprise SaaS single sign-on"| B["SAML 2.0 — broadest ecosystem"]
+    A -->|"Modern, mobile-friendly apps"| C["OIDC — modern and lightweight"]
+    A -->|"API authorization, not authentication"| D["OAuth 2.0 — authorization only"]
+    A -->|"Academic or legacy environments"| E["CAS — for existing deployments"]
+```
+
+*Figure 1: Protocol selection at a glance — SAML 2.0 for enterprise SaaS, OIDC for modern and mobile apps, OAuth 2.0 strictly for API authorization, and CAS for academic or legacy scenarios.*
+
 ### Architecture Patterns
 
 **Centralized Gateway**: A unified authentication proxy that handles all SSO traffic. Best for organizations with diverse application stacks.

@@ -25,7 +25,7 @@ At 2:15 AM, a DBA running a data cleanup script misses a `WHERE` clause and trun
 ### Impact
 
 - All user-related authentication operations fail
-- JWT tokens containing user info may be stale, but since tokens are self-contained, existing tokens remain valid within their expiration (depending on token design)
+- JWT tokens containing user info may be stale. But since tokens are self-contained, existing tokens remain valid within their expiration (depending on token design)
 - All sessions are invalidated (sessions stored in DB)
 
 ### Autional Recovery Strategy
@@ -55,6 +55,16 @@ Going live immediately after database recovery would cause 100% cache misses, an
 2. 5-15 minutes: traffic ramped to 50%, database load monitored
 3. After 15 minutes: if DB load is normal, ramp to 100%
 
+```mermaid
+flowchart TD
+    B["Full backup — pg_dump daily at 2:00 AM, kept 30 days"] --> R["Replay WAL to the target point in time"]
+    W["Incremental backup — WAL archived hourly, kept 7 days"] --> R
+    R --> D["Database restored — estimated 15-30 minutes"]
+    D --> C["Cache warming — traffic ramped 20%, 50%, then 100%"]
+```
+
+*Figure 1: The full database recovery path — a nightly full backup plus hourly WAL archives replay to the target point in time, then stepped cache warming keeps a cold cache from overwhelming the freshly restored database.*
+
 ## Scenario 2: Full Regional Outage
 
 ### Disaster Description
@@ -76,7 +86,7 @@ Autional Enterprise supports database primary-standby replication:
 - Standby in region B, continuously replicating asynchronously
 - When region A is unavailable, operators perform failover: promote the standby to primary, update the database connection address in service configuration
 
-The problem with asynchronous replication is potentially losing the last few seconds of data. For an identity system, is this acceptable?
+The problem with asynchronous replication is that it can lose the last few seconds of data. For an identity system, is this acceptable?
 - **Newly registered users**: worst case, the user needs to re-register. Manageable impact.
 - **Password changes**: if a user changed their password 3 seconds before the outage and the data wasn't synced to the standby, the user may need to use the old password. A "forgot password" flow serves as fallback.
 - **Audit logs**: audit-service stores audit data in MongoDB, written asynchronously via MQ. Unconsumed MQ messages are taken over by new consumers after standby promotion.
@@ -103,6 +113,16 @@ Autional chooses an **active-passive (primary-standby) architecture**:
 - On failover, the standby region scales to full capacity
 
 This gives an RTO (Recovery Time Objective) of 10-15 minutes and an RPO (Recovery Point Objective) of less than 5 seconds of data loss. For 99.99% of SaaS scenarios, these metrics are sufficient.
+
+```mermaid
+flowchart TD
+    F["Region A outage"] --> P["Promote the standby to primary, update the DB connection address"]
+    P --> S["Rebuild stateless services in the standby region — 3-5 minutes"]
+    S --> N["Switch DNS to the new region's gateway"]
+    N --> M["RTO 10-15 minutes, RPO under 5 seconds"]
+```
+
+*Figure 2: The failover sequence — promote the standby, rebuild stateless services, switch DNS; the whole move lands at 10-15 minutes of RTO and under 5 seconds of data loss.*
 
 ## Scenario 3: Misconfigured Rollout
 
@@ -135,7 +155,7 @@ For high-risk config changes (JWT_SECRET, database connection strings, MQ config
 4. Wait another 10 minutes
 5. Full rollout
 
-But this requires an automated toolchain to execute. Manual kubectl apply makes canary deployment just a wishful thought.
+But this requires an automated toolchain to execute. Manual kubectl apply turns canary deployment into wishful thinking.
 
 **Step 3: Independent Secret Management**
 

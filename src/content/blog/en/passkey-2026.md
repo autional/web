@@ -14,9 +14,21 @@ The era of passwords is coming to an end. With the widespread adoption of FIDO2 
 
 ## What is a Passkey?
 
-A Passkey is a passwordless authentication method based on public-key cryptography. Unlike traditional username + password, a Passkey stores the private key securely on the user's device (such as the Secure Enclave on a phone or the TPM on a computer), while the server only stores the corresponding public key.
+A Passkey is a passwordless authentication method based on public-key cryptography. Unlike traditional username + password, a Passkey stores the private key securely on the user's device (such as the Secure Enclave on a phone or the TPM on a computer). The server only stores the corresponding public key.
 
 During each login, the server sends a random challenge to the device, which signs it with the private key and returns it. The server verifies the signature using the stored public key. Throughout this process, the private key never leaves the device — even if an attacker breaches the server, they cannot obtain the user's credential.
+
+```mermaid
+sequenceDiagram
+    participant S as Server
+    participant D as User device
+    S->>D: Send a random challenge
+    D->>D: Sign with the private key after fingerprint or face confirmation
+    D-->>S: Return the signature
+    Note over S,D: The server verifies with the stored public key — the private key never leaves the device
+```
+
+*Figure 1: The Passkey challenge-response flow — the server sends a challenge, the device signs with its private key, and the server verifies with the stored public key; the private key never leaves the device.*
 
 ## Why Adopt Passkey Now?
 
@@ -31,7 +43,7 @@ Autional comes with complete WebAuthn server-side support — no additional inte
 
 1. **Admin side**: Enable the Passkey option in MFA policies, and configure acceptable authenticator types (platform authenticators / cross-platform authenticators).
 2. **User side**: After logging in, users navigate to "Security Settings" and click "Add Passkey." The system automatically invokes the browser's WebAuthn API, guiding the user through fingerprint, facial, or hardware key registration.
-3. **Login flow**: The login page automatically detects whether the device supports Passkey, prioritizing passkeyless login. If a registered Passkey is detected, conditional mediation is initiated for automatic authentication.
+3. **Login flow**: The login page automatically detects whether the device supports Passkey, prioritizing passwordless login. If a registered Passkey is detected, conditional mediation is initiated for automatic authentication.
 
 The entire integration process is transparent to developers — Autional's identity-service and mfa-service already handle the complete protocol flow for both registration (attestation) and authentication (assertion).
 

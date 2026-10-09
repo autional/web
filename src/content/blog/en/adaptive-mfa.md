@@ -33,6 +33,17 @@ The system computes a real-time risk score at each login attempt, then automatic
 
 This is not a static rule — it's dynamically computed. The same user logging in from the corporate network on a weekday morning might be low risk, but logging in from another country at weekend midnight becomes high risk.
 
+```mermaid
+flowchart TD
+    L["A login attempt"] --> S{"Real-time risk score 0 - 100"}
+    S -->|"Low 0 - 30"| A["Password only, MFA skipped"]
+    S -->|"Medium 31 - 60"| B["Password + TOTP or SMS code"]
+    S -->|"High 61 - 85"| C["Password + FIDO2 hardware key + SMS"]
+    S -->|"Critical 86 - 100"| D["Login denied, alert triggered"]
+```
+
+*Figure 1: The risk-score decision flow — every login attempt is scored in real time, and the 0-100 band decides how many verification steps it has to pass.*
+
 ## Autional's Risk Assessment Engine: 7 Dimensions
 
 Autional's Adaptive MFA engine doesn't rely on a single signal but synthesizes information across 7 dimensions to build a risk profile:
@@ -53,7 +64,7 @@ IP Reputation Query: → Known proxy/VPN? → Datacenter IP? → Tor exit node?
                       → Failed login count from this IP in last 24h → GeoIP database match
 ```
 
-Autional integrates an IP reputation database to query the risk labels of login IPs in real time. Proxy, VPN, and Tor exit nodes automatically receive risk score increases. It also maintains internal statistics: when failed login attempts from the same IP within 24 hours exceed a threshold, that IP's risk score continues to rise.
+Autional integrates an IP reputation database to query the risk labels of login IPs in real time. Proxy, VPN, and Tor exit nodes automatically receive risk score increases. It also maintains internal statistics. When failed login attempts from the same IP within 24 hours exceed a threshold, that IP's risk score continues to rise.
 
 ### 3. Geolocation (Weight: 15%)
 
@@ -112,7 +123,16 @@ Key design decision: **the score leans conservative**. When data for a dimension
 
 If an attacker tries once → triggers medium risk → enters TOTP. Second attempt → same device → if the device fingerprint looks normal → risk might decrease.
 
-To prevent this kind of "slow probing" attack, Autional introduces an adversarial bonus: when multiple logins requiring MFA verification occur within a short time window (15 minutes), even if each individual risk score is below the threshold, the system accumulates a bonus score that gradually pushes the total higher.
+To prevent this kind of "slow probing" attack, Autional introduces an adversarial bonus. When multiple logins requiring MFA verification occur within a short time window (15 minutes), even if each individual risk score is below the threshold, the system accumulates a bonus score that gradually pushes the total higher.
+
+```mermaid
+flowchart LR
+    T1["Attempt 1: medium risk triggered, TOTP entered"] --> T2["Attempt 2: same device, fingerprint looks normal, single score below threshold"]
+    T2 --> T3["Adversarial bonus accumulates inside the 15-minute window"]
+    T3 --> T4["Total score creeps up, authentication requirement escalates"]
+```
+
+*Figure 2: The adversarial bonus — each individual attempt can look harmless, but near-threshold logins inside the 15-minute window stack up and push the requirement higher.*
 
 ## MFA Policy Configuration: Full Control for Admins
 

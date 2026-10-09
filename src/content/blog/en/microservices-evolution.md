@@ -74,7 +74,7 @@ Our principle: **one service = one complete business capability**.
 | compliance-service | GDPR/DSAR, data export, consent management | PostgreSQL |
 | gateway-service | API gateway, rate limiting, route aggregation | — |
 
-Each service owns its own database instance (or schema). **Services don't share databases; they communicate only via APIs.** This ensures each service can choose the best storage solution independently — for example, audit-service uses MongoDB over PostgreSQL because audit logs are naturally document-oriented, with write throughput far exceeding relational query needs.
+Each service owns its own database instance (or schema). **Services don't share databases; they communicate only via APIs.** This ensures each service can choose the best storage solution independently. For example, audit-service uses MongoDB over PostgreSQL — audit logs are naturally document-oriented, with write throughput far exceeding relational query needs.
 
 ### Split Priority: From Edge to Core
 
@@ -87,6 +87,17 @@ We adopted a gradual "edge-to-core" splitting strategy:
 
 The entire split took 8 months while keeping production services online. The key strategy was the **Strangler Fig Pattern**: first abstract boundaries with interfaces in the monolith, incrementally migrate implementations to new services, then cut off the old paths.
 
+```mermaid
+flowchart TD
+    M["The monolith"] --> S1["Step 1 — edge stateless services, audit and notification, loosest coupling"]
+    S1 --> S2["Step 2 — high-frequency modules, session and mfa, isolate to scale"]
+    S2 --> S3["Step 3 — core business, RBAC and OAuth inside identity, deepest coupling"]
+    S3 --> S4["Step 4 — infrastructure, gateway and storage, lowest migration risk"]
+    S4 --> R["16 independent services — Strangler Fig kept production online throughout"]
+```
+
+*Figure 1: The edge-to-core split in four steps — each step moves the loosest-coupled piece first, keeping production online the whole way.*
+
 ## Three Technical Challenges We Had to Solve
 
 Microservices are no silver bullet. Here are the three biggest challenges we faced and Autional's solutions.
@@ -94,6 +105,25 @@ Microservices are no silver bullet. Here are the three biggest challenges we fac
 ### Challenge 1: Distributed Tracing — One Login Traverses 6 Services
 
 User enters password → `gateway-service` routes → `identity-service` verifies password → `session-service` creates session → `mfa-service` checks MFA requirement → `audit-service` logs the login → `notification-service` sends login alert.
+
+```mermaid
+sequenceDiagram
+    participant G as gateway-service
+    participant I as identity-service
+    participant S as session-service
+    participant M as mfa-service
+    participant A as audit-service
+    participant N as notification-service
+    G->>I: route the login request
+    I->>I: verify the password
+    I->>S: create the session
+    S->>M: check the MFA requirement
+    M->>A: log the login
+    A->>N: send the login alert
+    Note over G,N: every hop carries traceparent, stitched into one call chain by OpenTelemetry
+```
+
+*Figure 2: One login end to end — the request passes through six services, each hop carrying traceparent, so the slow link is visible at a glance.*
 
 If a login takes too long, how do you pinpoint which link is slow?
 
@@ -107,7 +137,7 @@ We implemented unified tracing at all inter-service communication points:
 - **MQ messages**: `micro-pkg/consumer/middleware.Tracing()` extracts trace context from message headers
 - **Database queries**: GORM plugin auto-records SQL latency
 
-Result: The Jaeger UI shows the complete call chain for a single login request, reducing the time to locate slow queries and anomalous nodes from "guesswork + add logs + redeploy" (30 minutes) to 30 seconds.
+Result: The Jaeger UI shows the complete call chain for a single login request. Locating a slow query or an anomalous node drops from "guesswork + add logs + redeploy" (30 minutes) to 30 seconds.
 
 ### Challenge 2: Graceful Shutdown — 16 Services Must Not Start and Stop Chaotically
 

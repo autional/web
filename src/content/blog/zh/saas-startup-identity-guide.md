@@ -39,7 +39,7 @@ claims_reviewed: true
 
 **自研成本**：1-2 周（1 名全栈工程师），涵盖注册/登录页、密码哈希、会话存储与中间件。
 
-**Autional 私有化部署（商业授权）**：用 Autional 的 identity-service 做用户注册与登录，session-service 做会话管理。无需额外的 MFA 或 SSO。30 分钟完成接入。
+**Autional 私有化部署（商业授权）**：identity-service 负责用户注册与登录，session-service 负责会话管理。无需额外的 MFA 或 SSO。30 分钟完成接入。
 
 **关键提醒**：即使在阶段一，有些基础设施决策也是难以回头的：
 
@@ -72,6 +72,16 @@ claims_reviewed: true
 3. 元数据 XML 对齐与联调（通常 2-3 轮）
 4. 生产环境验证（30 分钟）
 5. 后续 SSO 排障（每次 30 分钟）
+
+```mermaid
+flowchart LR
+    A["配置 IdP 信任关系 — 30 分钟"] --> B["与客户 IT 开线上会议 — 1 小时 × 双方工程师"]
+    B --> C["元数据 XML 对齐与联调 — 通常 2-3 轮"]
+    C --> D["生产环境验证 — 30 分钟"]
+    D --> E["后续 SSO 排障 — 每次 30 分钟"]
+```
+
+*图 1：每接入一家企业客户的 SSO 流程——五个步骤单看都不大，乘上 50 家客户后，仅支持成本每年就超过 100 人时。*
 
 按 50 家企业客户算，仅 SSO 相关的支持成本每年就会超过 100 人时——还没算代码维护。
 
@@ -126,7 +136,7 @@ claims_reviewed: true
 
 「我们现在只需要简单登录。等有了企业客户再加 SSO。」
 
-问题是：等到你有 10 万用户、10 张表依赖用户 ID 字段、5 个微服务各写了一套认证中间件时——你「加 SSO」的工作量，是「第一天就用」的 3-5 倍。
+问题是：等到你有 10 万用户、10 张表依赖用户 ID 字段、5 个微服务各写了一套认证中间件时，「加 SSO」的工作量是「第一天就用」的 3-5 倍。
 
 ### 误区二：共用账号
 
@@ -150,14 +160,13 @@ claims_reviewed: true
 
 Autional 的设计理念是「渐进式采用」——你不需要第一天就上齐 27 个微服务：
 
+```mermaid
+flowchart LR
+    A["阶段一 MVP — identity-service 与 session-service"] --> B["阶段二 Growth — 增加 mfa-service、oauth-service、audit-service 与 RBAC"]
+    B --> C["阶段三 Enterprise — 增加 compliance-service、tenant-service、billing-service、wallet-service、notification-service"]
 ```
-Phase 1 (MVP)          Phase 2 (Growth)         Phase 3 (Enterprise)
-identity-service       + mfa-service            + compliance-service
-session-service        + oauth-service          + tenant-service
-                       + audit-service          + billing-service (quota)
-                       + RBAC (roles/permissions) + wallet-service
-                                                 + notification-service
-```
+
+*图 2：渐进式采用——阶段一只需两个服务，阶段二按需加上 MFA、SSO 与审计，阶段三再扩展企业级服务。*
 
 这种渐进式采用让你可以：
 
@@ -173,4 +182,4 @@ session-service        + oauth-service          + tenant-service
 2. **选择能陪你成长的平台**，而不是「大而全但用不上」的方案
 3. **把工程时间花在核心业务上**——身份的事交给专业的人
 
-Autional 为 SaaS 创始人提供了一条清晰的路径：从私有化部署快速起步，到企业级 SSO、合规与多地域部署——云托管（路线图中）开放后，身份系统还能随业务托管演进。
+Autional 为 SaaS 创始人提供了一条清晰的路径：从私有化部署快速起步，到企业级 SSO、合规与多地域部署——云托管（路线图中）开放后，身份系统还能随业务一起演进。

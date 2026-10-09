@@ -20,6 +20,14 @@ Let's start with a common misconception: **SLA (Service Level Agreement), SLO (S
 - **SLO** is a target — "Login success rate must be ≥ 99.9%"
 - **SLA** is a contractual commitment — "If login success rate falls below 99.9%, we will refund 10% of the monthly fee"
 
+```mermaid
+flowchart LR
+    A["SLI — measured: login success rate 99.97% over 30 days"] --> B["SLO — target: login success rate ≥ 99.9%"]
+    B --> C["SLA — contract: refund 10% of the monthly fee below 99.9%"]
+```
+
+*Figure 1: Three roles, three jobs — SLI is what you measure, SLO is the target you set for yourself, SLA is the contractual promise that costs money when missed.*
+
 Most teams skip defining SLIs, pick an SLO number arbitrarily, and then write it into an SLA contract. The result: either the SLO is too loose to matter (you never reach it anyway, so the penalty never applies), or too strict that teams are constantly firefighting. This article takes a systematic approach from the perspective of identity systems — how to define SLIs, set SLOs, and how Autional uses technical measures to guarantee these targets.
 
 ## SLI Selection: What Should an Identity System Measure?
@@ -44,7 +52,7 @@ This leads to a key methodology: **distinguish between "errors" and "failures."*
 
 ### 2. Token Issuance Latency (P99)
 
-When a user clicks "Login," authentication completing within 1 second is a smooth experience; above 3 seconds is a poor one. But averages can be deceptive — if 90% of logins complete in 100ms and 10% take 5 seconds, the average might be 590ms, which looks acceptable, but 10% of users are enduring a 5-second wait.
+When a user clicks "Login," authentication completing within 1 second is a smooth experience; above 3 seconds is a poor one. But averages can be deceptive — if 90% of logins complete in 100ms and 10% take 5 seconds, the average might be 590ms, which looks acceptable. But 10% of users are enduring a 5-second wait.
 
 **Always use percentiles to define latency SLIs, never averages.**
 
@@ -120,6 +128,16 @@ Autional provides two independent health check endpoints for each service:
 - Used for Kubernetes readiness probe; removes from Service on failure, re-adds on success
 
 Why two probes? If the DB connection pool is exhausted, `/health` might still return 200 (the process isn't dead), but `/ready` will return 503 (cannot handle requests). Kubernetes stops sending traffic to that Pod on readiness failure, but does not restart it (since liveness is normal — it might be a transient DB fault). When the DB recovers, `/ready` automatically restores, and the Pod resumes receiving traffic — zero operational intervention.
+
+```mermaid
+flowchart TD
+    D["Database connection pool exhausted"] --> H["/health still returns 200 — process alive, no Pod restart"]
+    D --> R["/ready returns 503 — traffic pulled from the Pod"]
+    R --> Rec["Database recovers, /ready restores itself"]
+    Rec --> T["Pod resumes receiving traffic — zero human intervention"]
+```
+
+*Figure 2: Each probe minds its own business — when the pool is exhausted, liveness holds off and readiness pulls the traffic; when the DB recovers, the Pod walks back in on its own.*
 
 ### Result Caching
 

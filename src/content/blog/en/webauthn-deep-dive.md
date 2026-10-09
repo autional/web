@@ -18,26 +18,13 @@ This article will go layer by layer from the protocol level, and finally show ho
 
 FIDO2 consists of two core components:
 
+```mermaid
+flowchart TD
+    W["WebAuthn (W3C specification) — the browser JavaScript API, navigator.credentials.create() and get()"] --> C["CTAP2 (FIDO Alliance specification) — the client-to-authenticator transport protocol, over USB, NFC, BLE"]
+    C --> A["Authenticator — YubiKey hardware keys, Touch ID platform authenticators"]
 ```
-┌──────────────────────────────────────────────┐
-│  WebAuthn (W3C Specification)                │
-│  Browser JavaScript API                       │
-│  navigator.credentials.create()              │
-│  navigator.credentials.get()                 │
-└───────────────────┬──────────────────────────┘
-                    │
-┌───────────────────▼──────────────────────────┐
-│  CTAP2 (FIDO Alliance Specification)          │
-│  Client-to-Authenticator Transport Protocol   │
-│  Supports USB, NFC, BLE                       │
-└───────────────────┬──────────────────────────┘
-                    │
-┌───────────────────▼──────────────────────────┐
-│  Authenticator                                │
-│  Hardware Security Key (YubiKey),             │
-│  Platform Authenticator (Touch ID)            │
-└──────────────────────────────────────────────┘
-```
+
+*Figure 1: The three-layer FIDO2 stack — WebAuthn is the API web pages can touch, CTAP2 carries browser-to-authenticator traffic, and key generation plus signing happen inside the authenticator.*
 
 - **WebAuthn**: The JavaScript API running in the browser, defining how web pages interact with authenticators. Developers create credentials via `navigator.credentials.create()` and obtain credential assertions via `navigator.credentials.get()`.
 - **CTAP2** (Client to Authenticator Protocol): The communication protocol between the browser and physical authenticators. When a user plugs in a USB security key or taps via NFC, CTAP2 defines the data transfer format.
@@ -48,6 +35,23 @@ FIDO2 doesn't require developers to understand CTAP2 details — the browser han
 ## Registration Flow: Attestation (Credential Creation)
 
 Registration is the starting point of the entire WebAuthn flow — the user binding a device to their account for the first time.
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant S as Server
+    participant A as Authenticator
+    B->>S: Request registration challenge
+    S-->>B: Return challenge with rp.id and pubKeyCredParams
+    B->>A: Request a new key pair over CTAP2
+    Note over A: Prompts the user to verify — fingerprint, face, or PIN
+    A-->>B: Return attestationObject (public key + signature)
+    B->>S: Submit attestationObject
+    S->>S: Verify challenge, origin, RP ID, and signature
+    S-->>B: Store public key, registration complete
+```
+
+*Figure 2: The registration swimlane — the browser fetches a challenge, the authenticator generates a key pair and signs, the attestationObject returns to the server for verification and public-key storage, and the private key never leaves the authenticator.*
 
 ### Step 1: Server Generates Challenge
 
@@ -294,7 +298,7 @@ For developers integrating Autional, enabling Passkey requires just three steps:
 2. **Frontend code (zero lines)**: Autional's login page (auth-pages) already has the complete WebAuthn flow built-in. The user's browser automatically detects Passkey support.
 3. **User registration**: After logging in, the user goes to security settings, clicks "Add Passkey," and the system automatically calls `navigator.credentials.create()`, guiding the user through fingerprint/face registration.
 
-The entire process requires the integrator to understand zero underlying concepts like CTAP2, CBOR, COSE Key, or attestation.
+The entire process requires zero understanding of underlying concepts like CTAP2, CBOR, COSE Key, or attestation.
 
 ## Security Best Practices
 

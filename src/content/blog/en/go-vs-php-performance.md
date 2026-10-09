@@ -12,7 +12,7 @@ claims_reviewed: true
 
 > **Note**: Performance data in this article comes from internal benchmark environments. Production results may vary depending on hardware configuration, network conditions, and concurrency patterns.
 
-In the web development world, there's a long-standing myth: "Language performance doesn't matter; the database is the bottleneck." In identity authentication systems, this myth is shattered by reality. Modern SaaS platforms handle tens of millions of logins, token validations, and MFA checks daily — operations where a significant amount of CPU time is spent on cryptographic computation and protocol processing, not database I/O.
+In the web development world, there's a long-standing myth: "Language performance doesn't matter; the database is the bottleneck." In identity authentication systems, this myth is shattered by reality. Modern SaaS platforms handle tens of millions of logins, token validations, and MFA checks daily. A significant amount of their CPU time goes to cryptographic computation and protocol processing — not database I/O.
 
 Autional chose Go as its primary language from the start. Let's look at real data to see exactly where Go microservices outperform traditional PHP monoliths in identity systems.
 
@@ -39,6 +39,16 @@ Go's concurrency model is "one connection, one goroutine":
 | P99 latency (1000 concurrent) | 3,200ms | 87ms | 37× |
 
 Once concurrency exceeds the worker count, PHP's p99 latency grows exponentially — this isn't a database issue, it's a fundamental limitation of the process model.
+
+```mermaid
+flowchart LR
+    R["The same burst of concurrent logins"] --> P["PHP-FPM — a fixed process pool, the rest queue"]
+    R --> G["Go — goroutines grow on demand, all run concurrently"]
+    P --> P2["p99 latency climbs exponentially with load"]
+    G --> G2["The only bottleneck left is the crypto itself"]
+```
+
+*Figure 1: Two concurrency models diverge — once the process pool caps out, requests queue, while goroutines keep stretching; the p99 curves split from there.*
 
 ## Memory Usage: 30MB vs 5KB
 
@@ -152,7 +162,18 @@ Throughput: 30,000 / second
 
 Go's CPU utilization approaches 100% (bcrypt is compute-intensive), but requests never queue. bcrypt computation is the bottleneck — Autional uses **asynchronous hash verification** (offloading bcrypt operations to a goroutine pool to avoid blocking the scheduler) and **connection pool reuse** to ensure the database doesn't become a secondary bottleneck.
 
-Even when scaling is needed, Kubernetes HPA can spin up new Pods within 30 seconds based on CPU usage, and Go services' lightning-fast startup makes scaling effects immediately visible.
+Even when scaling is needed, Kubernetes HPA can spin up new Pods within 30 seconds based on CPU usage. Go services start so fast that the new capacity kicks in immediately.
+
+```mermaid
+flowchart TD
+    L["30,000 concurrent logins at once"] --> B["bcrypt verification becomes the CPU bottleneck — no queueing, but CPU near 100%"]
+    B --> A1["Async hash verification — bcrypt offloaded to a goroutine pool"]
+    B --> A2["Connection pool reuse — the database never becomes a second bottleneck"]
+    A1 --> S["When scaling is needed, HPA adds Pods within 30 seconds on CPU"]
+    A2 --> S
+```
+
+*Figure 2: Where the bottleneck moves under a surge — bcrypt holds without queueing, async hashing and pooling keep the database clear, and HPA adds room on demand.*
 
 ## Autional's Go Architecture Experience
 

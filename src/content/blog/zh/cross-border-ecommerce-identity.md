@@ -50,7 +50,7 @@ GDPR 要求只收集「实现处理目的所必需」的个人数据。对身份
 
 GDPR 赋予了数据主体一系列权利，这些权利对身份系统有直接的技术要求：
 
-**访问权（第 15 条）**：用户有权索取你持有的全部与其相关的数据副本。Autional 的 compliance-service 内置 DSAR（数据主体访问请求）自动化，可以自动聚合来自多个服务（identity-service、profile-service、session-service 等）的用户数据，并生成结构化数据报告。
+**访问权（第 15 条）**：用户有权索取你持有的全部与其相关的数据副本。Autional 的 compliance-service 内置 DSAR（数据主体访问请求）自动化——自动聚合来自 identity-service、profile-service、session-service 等多个服务的用户数据，并生成结构化数据报告。
 
 **擦除权/被遗忘权（第 17 条）**：用户可以要求删除其个人数据。Autional 支持软删除 + 硬删除双模式：软删除会停用账号但保留审计所需的记录；硬删除会彻底移除数据。两种模式都可通过 API 触发。
 
@@ -70,7 +70,7 @@ Autional 在 OAuth 2.0 授权流程中支持细粒度的 scope 拆分。需要�
 
 ### 数据本地化
 
-PIPL 要求关键信息基础设施运营者和处理个人信息达到国家网信部门规定数量的个人信息处理者，将在中华人民共和国境内收集和产生的个人信息存储在境内。确需向境外提供的，应当通过安全评估、获得保护认证或签订标准合同。
+PIPL 要求两类主体把在中华人民共和国境内收集和产生的个人信息存储在境内：关键信息基础设施运营者，以及处理个人信息达到国家网信部门规定数量的个人信息处理者。确需向境外提供的，应当通过安全评估、获得保护认证或签订标准合同。
 
 对跨境电商身份系统而言，这意味着：
 
@@ -102,24 +102,33 @@ CCPA（加州消费者隐私法案）及其升级版 CPRA（加州隐私权法�
 
 Autional 的架构原生支持这种部署模式：
 
+```mermaid
+flowchart TD
+    LB["全局负载均衡器"]
+    subgraph EU["欧盟区域（法兰克福）"]
+        E1["identity-service-eu"]
+        E2["session-service-eu"]
+        E3["PostgreSQL-eu — 欧盟用户数据"]
+        E4["Redis-eu — 欧盟用户会话"]
+    end
+    subgraph CN["中国区域（上海）"]
+        C1["identity-service-cn"]
+        C2["session-service-cn"]
+        C3["PostgreSQL-cn — 中国用户数据"]
+        C4["Redis-cn — 中国用户会话"]
+    end
+    subgraph US["北美区域（俄勒冈）"]
+        U1["identity-service-us"]
+        U2["session-service-us"]
+        U3["PostgreSQL-us — 北美用户数据"]
+        U4["Redis-us — 北美用户会话"]
+    end
+    LB --> E1
+    LB --> C1
+    LB --> U1
 ```
-全局负载均衡器
-├── 欧盟区域（法兰克福）
-│   ├── identity-service-eu
-│   ├── session-service-eu
-│   ├── PostgreSQL-eu（欧盟用户数据）
-│   └── Redis-eu（欧盟用户会话）
-├── 中国区域（上海）
-│   ├── identity-service-cn
-│   ├── session-service-cn
-│   ├── PostgreSQL-cn（中国用户数据）
-│   └── Redis-cn（中国用户会话）
-└── 北美区域（俄勒冈）
-    ├── identity-service-us
-    ├── session-service-us
-    ├── PostgreSQL-us（北美用户数据）
-    └── Redis-us（北美用户会话）
-```
+
+*图 1：区域化部署——全局负载均衡器之下，欧盟、中国、北美各自持有一套完整的身份、会话、数据库与缓存集群。*
 
 关键约束：每个区域的用户数据只存放在该区域的数据库中——不做跨区域复制。
 
@@ -130,6 +139,15 @@ Autional 的架构原生支持这种部署模式：
 1. **注册时确定区域**：根据注册 IP 的地理位置、手机号国家码或用户自选国家，在用户记录上设置 `data_region` 字段
 2. **登录时路由**：登录请求先到全局路由层，路由层根据 `data_region` 将请求转发到相应区域的身份服务
 3. **跨区域场景**：当用户从欧盟前往中国，其登录请求依然被路由到欧盟区域的服务器；数据的物理存储位置不受用户地理位置影响
+
+```mermaid
+flowchart TD
+    A["注册时 — 按 IP 地理、手机号国家码或自选国家写入 data_region"] --> B["登录时 — 请求先到全局路由层"]
+    B --> C["按 data_region 转发到对应区域的身份服务"]
+    C --> D["数据存储位置不随用户的地理位置改变"]
+```
+
+*图 2：登录路由——注册时写入的 data_region 决定请求去向；用户人到哪里，数据都留在原区域。*
 
 ### compliance-service 传输记录
 

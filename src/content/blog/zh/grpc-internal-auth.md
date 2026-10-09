@@ -59,7 +59,7 @@ gRPC 的契约是 `.proto` 文件——**在编译期就得到保证**：
 - 新增字段不影响既有调用方（Protobuf 向后兼容）
 - 标记为 `reserved` 的废弃字段若被复用会导致编译错误
 
-在 Autional 中，所有 `.proto` 文件统一由 `scripts/generate-proto.ps1` 生成，CI 流水线中的 `check-grpc-compliance.py` 确保生成代码与 proto 定义一致——杜绝「文档说接受 int，代码却传了 string」这类运行时 bug。
+在 Autional 中，所有 `.proto` 文件统一由 `scripts/generate-proto.ps1` 生成。CI 流水线中的 `check-grpc-compliance.py` 确保生成代码与 proto 定义一致——杜绝「文档说接受 int，代码却传了 string」这类运行时 bug。
 
 ### 流式传输
 
@@ -77,7 +77,7 @@ Client Streaming:    Streaming Request→Single Response (batch upload)
 Bidirectional:       Bidirectional streams (real-time alerts, conversations)
 ```
 
-在合规报告导出场景中，compliance-service 调用 audit-service 的 `ExportAuditLogs` 方法，audit-service 通过 Server Streaming 分批推送数据，compliance-service 边收边写入 CSV——不必等整个数据集加载进内存。
+在合规报告导出场景中，compliance-service 调用 audit-service 的 `ExportAuditLogs` 方法。audit-service 通过 Server Streaming 分批推送数据，compliance-service 边收边写入 CSV——不必等整个数据集加载进内存。
 
 ## Autional 的 gRPC 安全架构
 
@@ -194,6 +194,24 @@ Gateway → [identity-service: GetUser] → [profile-service: GetProfile] → [c
    → ExportAuditLogs(user_id, stream) → streams audit logs
 6. compliance-service assembles data → generates export file → uploads to storage-service
 ```
+
+```mermaid
+sequenceDiagram
+    participant G as 网关
+    participant C as compliance-service
+    participant I as identity-service
+    participant P as profile-service
+    participant A as audit-service
+    participant S as storage-service
+    G->>C: 转发 GDPR 导出请求（HTTP）
+    C->>I: GetUser、ListUserRoles（gRPC）
+    C->>P: GetProfile（gRPC）
+    C->>A: ExportAuditLogs——gRPC 流式传输
+    A-->>C: 分批推送审计日志
+    C->>S: 上传导出文件
+```
+
+*图 1：合规扫描的调用链——网关把 GDPR 导出请求交给 compliance-service，它再经 gRPC 分头向 identity、profile、audit 取数，最后把文件交给 storage-service 落盘。*
 
 第 3-5 步都是 gRPC 调用，各自携带同一个 Trace ID。如果第 3 步的 `GetUser` 失败，compliance-service 可以快速返回错误（而不是等到超时），并记录失败的 gRPC 状态码：
 

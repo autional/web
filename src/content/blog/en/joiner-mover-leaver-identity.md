@@ -52,11 +52,36 @@ JML's engineering form puts account creation, permissioning, and revocation on *
 | **Active** | Usable | Job packages attached | Present (listable, revocable) |
 | **Disabled** | Entrance closed | Revoked | **All terminated** |
 
+```mermaid
+stateDiagram-v2
+    [*] --> pending : invitation issued (limited · single-use · email-bound)
+    pending --> active : the person sets a password; joined
+    active --> active : transfer: permission packages swapped
+    active --> disabled : leaving: disable
+    note right of disabled : one command — roster + permissions + sessions
+```
+
+*Figure 1: One lifecycle, three states — joining moves pending → active, a transfer just swaps permission packages, leaving moves active → disabled; disabling is one command, not a sequence.*
+
 Three design decisions carry the weight:
 
 - **Invitations instead of manual creation.** New people arrive through a **time-limited, single-use, email-bound invitation**, and **they set their own password** — removing "someone else set it" at the source. This follows the standards: NIST SP 800-63A dedicates its own volume to enrollment precisely to make "where accounts come from" explicit.
 - **Disabling is one command, not a sequence.** Setting the state to disabled performs **roster update + permission revocation + session termination** in one action. "Account disabled but the person still logged in" is a design defect, not an operator slip.
 - **Disabled ≠ erased.** Disabling closes the entrance; retention and deletion are a separate track, governed by retention policy and compliance. Don't delete data inside the offboarding flow.
+
+```mermaid
+sequenceDiagram
+    participant HR as Upstream: leave event
+    participant N as Roster
+    participant P as Permissions
+    participant S as Sessions
+    HR->>N: set disabled
+    HR->>P: revoke roles
+    HR->>S: terminate all
+    Note over N,S: one command — all three cut together
+```
+
+*Figure 2: The offboarding three-lane — one upstream leave event cuts roster, permissions, and sessions together; skip any lane and "gone" is only a word on paper.*
 
 The standards line up: NIST SP 800-53's **AC-2 (Account Management)** requires disabling inactive accounts (AC-2(3)) and auto-expiry for temporary accounts (AC-2(2)); SP 800-63B-3 §6 covers authenticator binding, loss, revocation, and renewal (moved to §4, Authenticator Event Management, in the -4 revision) — **authenticator lifecycle and account lifecycle are parallel timelines, and offboarding has to close both** (killing sessions addresses the authenticator side).
 

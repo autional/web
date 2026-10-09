@@ -79,7 +79,16 @@ Autional coverage of these requirements:
 
 Article 27 of the Cryptography Law, effective January 1, 2020, clearly states: "Operators of critical information infrastructure shall, in accordance with laws, regulations, and cryptography-related standards, use commercial cryptography for protection."
 
-For government systems, this means must use commercial cryptographic algorithms approved by the State Cryptography Administration (i.e., SM algorithms replacing international algorithms):
+For government systems, this means they must use commercial cryptographic algorithms approved by the State Cryptography Administration (i.e., SM algorithms replacing international algorithms):
+
+```mermaid
+flowchart TD
+    SM2["SM2 — replaces RSA / ECDSA"] --> U2["JWT signing, key agreement, SM2 certificate PKI"]
+    SM3["SM3 — replaces SHA-256"] --> U3["Salted password hashing, data integrity, hash chain verification"]
+    SM4["SM4 — replaces AES"] --> U4["Transit encryption, field-level storage encryption, config encryption"]
+```
+
+*Figure 1: The SM algorithm substitution map — SM2 takes over RSA/ECDSA, SM3 takes over SHA-256, SM4 takes over AES, and where each of them lands in the identity system.*
 
 ### SM2: Elliptic Curve Public Key Cryptography Algorithm
 
@@ -125,6 +134,18 @@ Xinchuang (Information Technology Application Innovation) aims to achieve indepe
 - **OS**: Windows → Kylin / Tongxin UOS
 - **Database**: SQL Server/Oracle → DM (DaMeng) / Kingbase / GaussDB
 
+```mermaid
+flowchart LR
+    X["x86"] --> K["ARM — Kunpeng, Phytium / LoongArch — Loongson"]
+    W["Windows"] --> U["Kylin / Tongxin UOS"]
+    D["SQL Server / Oracle"] --> M["DM — DaMeng / Kingbase / GaussDB"]
+    S["MinIO / S3"] --> O["Shanyan / XSKY and other domestic object storage"]
+    R["Redis"] --> G["Garnet, Tendis and other Redis-compatible caches"]
+    Q["RabbitMQ"] --> RQ["RocketMQ / domestic Pulsar distributions"]
+```
+
+*Figure 2: The Xinchuang substitution map — every layer, from CPU and OS to database, storage, cache, and message queue, has a domestic replacement path.*
+
 For Autional, the core work of Xinchuang adaptation includes:
 
 ### Build Adaptation
@@ -143,7 +164,7 @@ Autional supports database driver switching through the infra-client/gorm factor
 
 ### Storage Adaptation
 
-- File storage: switching from MinIO/S3 to domestic object storage (e.g.,杉岩, XSKY)
+- File storage: switching from MinIO/S3 to domestic object storage (e.g., Shanyan, XSKY)
 - Cache: switching from Redis to Redis-protocol-compatible domestic caches (e.g., Garnet, Tendis)
 
 ### Middleware Adaptation

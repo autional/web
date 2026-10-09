@@ -213,6 +213,16 @@ spec:
 
 **Why identity-service uses CPU while session-service uses QPS?** Every identity-service request involves bcrypt hash comparison (CPU-intensive), making CPU usage linearly correlated with traffic. Session-service requests are primarily Redis queries and DB writes (I/O-intensive) — CPU usage doesn't accurately reflect load, so custom Prometheus metrics (`http_requests_per_second`) are used instead.
 
+```mermaid
+flowchart TD
+    Q["How should this service scale?"] --> M{"Where is the bottleneck?"}
+    M -->|"CPU — bcrypt hash comparison"| C1["CPU utilization 70% — identity-service"]
+    M -->|"I/O — Redis queries and DB writes"| C2["Custom Prometheus QPS metric — session-service"]
+    M -->|"Backlog — audit writes"| C3["MQ queue depth, KEDA scaling — audit-service"]
+```
+
+*Figure 1: Picking the scaling signal — CPU-bound services watch CPU, I/O-bound ones watch a custom QPS metric, queue-driven ones watch MQ depth.*
+
 ### Audit Service Special Handling
 
 `audit-service` has a dual-role design: `api` (receives audit writes) + `processor` (consumes MQ messages). In K8s, these roles run as different Deployments from the same image:
@@ -254,6 +264,17 @@ Combined with `micro-middleware/app`'s graceful shutdown mechanism (SIGTERM → 
 5. The Pod closes DB/Redis/MQ connections and exits
 6. Meanwhile, the new Pod has already started receiving traffic (`maxSurge: 1`)
 
+```mermaid
+flowchart TD
+    A["K8s sends SIGTERM to the old Pod"] --> B["Pod marks /ready unhealthy immediately"]
+    B --> C["K8s removes the Pod from the Service Endpoint"]
+    C --> D["In-flight requests drain — 30s timeout"]
+    D --> E["Close DB, Redis, and MQ connections, then exit"]
+    E --> F["Meanwhile the new Pod already serves traffic, zero loss"]
+```
+
+*Figure 2: The rolling-update relay in six steps — the old Pod sheds traffic before exiting while the new Pod takes over, losing nothing.*
+
 This process ensures **zero traffic loss during rolling updates**.
 
 ## Migration Path: Docker Compose to K8s
@@ -281,9 +302,9 @@ Don't cut all traffic over to K8s at once. Deploy the full application in K8s fi
 
 ## Real-World Lessons
 
-1. **Resource limits are not "suggestions," they are "protections."** We once encountered a service that kept restarting due to OOM from a memory leak, but without CPU limits, each restart's compilation/initialization phase consumed all CPU on the node, slowing down co-located services. **Always set limits.**
+1. **Resource limits are not "suggestions," they are "protections."** We once encountered a service whose memory leak kept triggering OOM restarts. Without CPU limits, each restart's compilation/initialization phase consumed all CPU on the node, slowing down co-located services. **Always set limits.**
 2. **Never use `latest` as a Docker image tag.** Use Git commit SHAs or semantic version numbers. With `imagePullPolicy: Always`, `latest` can cause Pods to pull different image versions on restart without you ever noticing.
-3. **Set `initialDelaySeconds` generously for health checks.** Autional's identity-service needs to connect to the database, run AutoMigrate, and preload caches on startup. If initialDelay is too short, K8s will start killing the Pod before it's ready (due to readiness probe failures), causing an infinite restart loop.
+3. **Set `initialDelaySeconds` generously for health checks.** Autional's identity-service needs to connect to the database, run AutoMigrate, and preload caches on startup. If initialDelay is too short, the readiness probe fails before the app is ready, and K8s kills the Pod — an infinite restart loop.
 
 Containerization is not the goal — it's a means. Whether running single-machine with Docker Compose or a cluster with K8s, there is only one standard: **When the service goes down at 3 AM, can it recover automatically? If not, it's not properly deployed yet.**
 

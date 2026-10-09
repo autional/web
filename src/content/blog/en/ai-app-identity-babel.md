@@ -112,35 +112,24 @@ When all apps are connected to Autional, the previous chaos becomes clear order:
 
 ### Architecture Diagram
 
+```mermaid
+flowchart TD
+    CRM["CRM App (AI-Generated)"] --> OA["OAuth 2.0 / OIDC"]
+    TIX["Ticket App (AI-Generated)"] --> OA
+    DASH["Data Dashboard (AI-Generated)"] --> OA
+    OA --> AUTH["Autional Unified Auth"]
+    AUTH --> RBAC["RBAC Permissions"]
+    AUTH --> MFA["MFA"]
+    AUTH --> AUD["Audit Logs"]
 ```
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│   CRM App    │  │  Ticket App  │  │ Data Dashboard│
-│ (AI-Generated)│  │ (AI-Generated)│  │ (AI-Generated)│
-└──────┬───────┘  └──────┬───────┘  └──────┬───────┘
-       │                 │                 │
-       └─────────────────┼─────────────────┘
-                        │
-                   OAuth 2.0 / OIDC
-                        │
-                 ┌──────┴──────┐
-                 │   Autional    │
-                 │ Unified Auth  │
-                 └──────┬──────┘
-                        │
-        ┌───────────────┼───────────────┐
-        │               │               │
-   ┌────┴────┐    ┌────┴────┐    ┌────┴────┐
-   │  RBAC   │    │   MFA   │    │  Audit  │
-   │ Permissions│  │ Multi-  │    │   Logs  │
-   │          │    │ Factor  │    │         │
-   └─────────┘    └─────────┘    └─────────┘
-```
+
+*Figure 1: AI-generated apps stop managing users themselves — they delegate authentication to Autional over OAuth 2.0 / OIDC, while permissions, MFA, and audit logs converge at the platform layer.*
 
 ## A New Division of Labor for the AI Era
 
 AI coding tools dramatically accelerate the **business logic** portion of applications — CRUD operations, data presentation, workflow orchestration. But **identity authentication** is an area that should not be repeatedly reinvented. It involves cryptography, protocol implementation, compliance requirements, and security auditing — a lapse in any one area can cause a serious security incident.
 
-Autional's role is to fill this gap: **You use AI to generate business logic; Autional handles identity security.** This division of labor lets developers focus on business code that truly creates value, rather than reimplementing login, registration, password reset, MFA, permission management, and audit logging in every AI-generated app.
+Autional's role is to fill this gap: **You use AI to generate business logic; Autional handles identity security.** This division of labor lets developers focus on business code that truly creates value. Login, registration, password reset, MFA, permission management, and audit logging no longer need to be rebuilt in every AI-generated app.
 
 ### Key Data Point
 

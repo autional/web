@@ -12,7 +12,7 @@ claims_reviewed: true
 
 There's a widely shared joke in tech circles: "The most expensive trait of a programmer isn't writing code — it's saying, 'I can write that too.'" This rings especially true for identity systems. Almost any engineering team can cobble together a "working" login and registration system in a month — password hashing, JWT issuance, Redis session management. It looks simple. Why spend tens of thousands a year on a ready-made solution?
 
-The answer is: **Authentication (login system) and Identity Platform are two entirely different things.** The former is a feature module; the latter is a system engineering effort requiring ongoing investment, continuous compliance, and sustained security. The gap between them is like the gap between building a go-kart in your garage and operating an automobile production line.
+The answer is: **Authentication (login system) and Identity Platform are two entirely different things.** The former is a feature module; the latter is a system engineering effort requiring ongoing investment, continuous compliance, and sustained security. The gap is like the one between building a go-kart in your garage and operating an automobile production line.
 
 > **Integration Note**: The TCO calculations in this article are based on typical industry scenarios (mid-level engineer salaries in first-tier cities, general cloud service pricing). Actual costs vary by team location, tech stack, service provider pricing, and market conditions. Compliance costs are referenced to the Chinese market; other regions should follow local regulatory guidance. Autional pricing is subject to the latest official pricing page.
 
@@ -25,6 +25,16 @@ For identity systems, TCO can be broken down into three phases:
 ```
 TCO = Initial Build Cost + Annual Operations Cost + Implicit Risk Cost
 ```
+
+```mermaid
+flowchart TD
+    A["Initial build — approx. ¥192K-240K"] --> D["Year-1 in-house TCO — approx. ¥429K-1,017K"]
+    B["Annual operations — approx. ¥136K/year"] --> D
+    C["Implicit risk — approx. ¥100K-640K/year"] --> D
+    D --> E["3-year cumulative — approx. ¥903K-2,571K"]
+```
+
+*Figure 1: The three-part bill of building in-house — initial build, annual operations, and implicit risk combine into the year-one and three-year TCO figures.*
 
 Let's unpack each item with formulas and reasonable market reference values.
 
@@ -76,7 +86,7 @@ Based on a mid-level backend engineer's annual salary of ¥300,000-450,000 (incl
 Initial build cost = 6.4 months × ¥30,000/month × 1 person ≈ ¥192,000
 ```
 
-If multiple engineers work in parallel (a 3-person team developing different modules concurrently), total person-months remain the same, but calendar time can be compressed to 2-3 months. However, larger teams incur higher communication overhead, and actual person-months typically increase by 20-30%:
+If multiple engineers work in parallel (a 3-person team developing different modules concurrently), total person-months remain the same, but calendar time can be compressed to 2-3 months. However, bigger teams incur higher communication overhead, and actual person-months typically rise by 20-30%:
 
 ```
 3-person parallel build cost = 6.4 × 1.25 × ¥30,000 ≈ ¥240,000
@@ -169,9 +179,23 @@ Compare with Autional:
 3. **Your team has fewer than 50 people** — small teams lack the bandwidth to maintain a full identity platform. Buying lets you focus on your core business.
 4. **You are fundraising or preparing for acquisition** — investors and acquirers scrutinize whether the identity system is professionally built during due diligence. A homegrown "good enough" login system is a liability.
 
+```mermaid
+flowchart LR
+    B1["Extremely unique needs, no platform fits"] --> B["Building may make sense"]
+    B2["Zero compliance requirements — internal tool"] --> B
+    B3["You are an identity platform company"] --> B
+    B --> B4["Even then, a professional services team is often better"]
+    P1["You have external users"] --> P["Buy"]
+    P2["Any compliance requirement — GDPR, PIPL, SOC 2, MLPS"] --> P
+    P3["Team under 50 people"] --> P
+    P4["Fundraising or preparing for acquisition"] --> P
+```
+
+*Figure 2: Build vs buy — three signals on the left point toward building, four on the right point toward buying; most SaaS products land on the right.*
+
 ## Final Thoughts
 
-The purpose of this TCO calculation is not to say "buying is always cheaper than building." The truth is: **if all you really need is a login box, building it for a month might indeed cost less than buying for a year.** But the problem is that almost every SaaS product needs not a "login box" but an "identity platform" — a system engineering effort requiring sustained investment in security, compliance, features, and operations.
+The purpose of this TCO calculation is not to say "buying is always cheaper than building." The truth is: **if all you really need is a login box, building it for a month might indeed cost less than buying for a year.** But the problem is that almost every SaaS product needs not a "login box" but an "identity platform." And that platform is a system engineering effort, requiring sustained investment in security, compliance, features, and operations.
 
 When running the numbers, include the implicit costs. When evaluating, include the risk premium. You should arrive at a sufficiently clear number. And that number will most likely point you toward "buy."
 

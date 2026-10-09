@@ -36,7 +36,7 @@ pnpm dev:auth
 docker compose -f docker-compose.infra.yml up -d
 ```
 
-这个文件里只有基础设施容器——27 个微服务没有一个通过 Docker 运行，它们都是直接在 Windows 上跑的原生 Go 二进制。好处是：
+这个文件里只有基础设施容器——27 个微服务没有一个通过 Docker 运行。它们都是直接在 Windows 上跑的原生 Go 二进制。好处是：
 - 近乎零延迟的热重载（Go 编译通常 < 5s）
 - 可直接用 delve 调试器打断点调试
 - 环境变量与配置文件直接从本地文件系统读取
@@ -211,7 +211,17 @@ spec:
         averageUtilization: 70
 ```
 
-**为什么 identity-service 用 CPU 而 session-service 用 QPS？** identity-service 的每个请求都涉及 bcrypt 哈希比对（CPU 密集型），因此 CPU 使用率与流量呈线性相关。session-service 的请求主要是 Redis 查询与数据库写入（I/O 密集型）——CPU 使用率无法准确反映负载，所以要改用自定义 Prometheus 指标（`http_requests_per_second`）。
+**为什么 identity-service 用 CPU 而 session-service 用 QPS？** identity-service 的每个请求都涉及 bcrypt 哈希比对（CPU 密集型），因此 CPU 使用率与流量呈线性相关。session-service 的请求主要是 Redis 查询与数据库写入（I/O 密集型），CPU 使用率无法准确反映负载——所以要改用自定义 Prometheus 指标（`http_requests_per_second`）。
+
+```mermaid
+flowchart TD
+    Q["这个服务该按什么扩缩容?"] --> M{"瓶颈长在哪里?"}
+    M -->|"CPU——bcrypt 哈希比对"| C1["CPU 使用率 70%——identity-service"]
+    M -->|"I/O——Redis 查询与数据库写入"| C2["Prometheus 自定义 QPS 指标——session-service"]
+    M -->|"队列积压——审计写入"| C3["MQ 队列深度，KEDA 扩缩容——audit-service"]
+```
+
+*图 1：扩缩容指标的选型——CPU 密集型看 CPU，I/O 密集型看自定义 QPS，队列型看 MQ 深度。*
 
 ### audit-service 的特殊处理
 
@@ -254,6 +264,17 @@ spec:
 5. Pod 关闭 DB/Redis/MQ 连接并退出
 6. 与此同时，新 Pod 已经开始接收流量（`maxSurge: 1`）
 
+```mermaid
+flowchart TD
+    A["K8s 向旧 Pod 发送 SIGTERM"] --> B["Pod 立即把 /ready 标记为不健康"]
+    B --> C["K8s 把 Pod 从 Service Endpoint 摘除"]
+    C --> D["等待在途请求处理完成——30s 超时"]
+    D --> E["关闭 DB、Redis、MQ 连接后退出"]
+    E --> F["期间新 Pod 已接管流量，零丢失"]
+```
+
+*图 2：滚动更新的六步接力——旧 Pod 先摘流量再退场，新 Pod 同时顶上，整个过程零丢包。*
+
 这个过程确保**滚动更新期间零流量丢失**。
 
 ## 迁移路径：从 Docker Compose 到 K8s
@@ -281,9 +302,9 @@ kompose convert -f docker-compose.yml -o k8s/
 
 ## 实战教训
 
-1. **资源限制不是「建议」，而是「保护」。** 我们曾遇到一个服务因内存泄漏不断 OOM 重启，但由于没设 CPU 限制，每次重启的编译/初始化阶段都会占满节点 CPU，拖慢了同节点上的其它服务。**一定要设置 limits。**
+1. **资源限制不是「建议」，而是「保护」。** 我们曾遇到一个服务因内存泄漏不断 OOM 重启。由于没设 CPU 限制，每次重启的编译/初始化阶段都会占满节点 CPU，拖慢同节点上的其它服务。**一定要设置 limits。**
 2. **绝不要用 `latest` 作为 Docker 镜像标签。** 使用 Git commit SHA 或语义化版本号。在 `imagePullPolicy: Always` 下，`latest` 可能让 Pod 在重启时拉到不同版本的镜像，而你浑然不觉。
-3. **健康检查的 `initialDelaySeconds` 要给足。** Autional 的 identity-service 启动时需要连接数据库、执行 AutoMigrate、预加载缓存。如果 initialDelay 太短，K8s 会在它还没就绪时就因 readiness 探针失败而杀掉 Pod，导致无限重启循环。
+3. **健康检查的 `initialDelaySeconds` 要给足。** Autional 的 identity-service 启动时需要连接数据库、执行 AutoMigrate、预加载缓存。如果 initialDelay 太短，readiness 探针会在服务尚未就绪时失败，K8s 随即杀掉 Pod——陷入无限重启循环。
 
 容器化不是目的，而是手段。无论用 Docker Compose 单机跑，还是用 K8s 集群跑，标准只有一个：**凌晨 3 点服务挂了，它能自动恢复吗？如果不能，那就还没算部署好。**
 

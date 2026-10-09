@@ -16,6 +16,17 @@ claims_reviewed: true
 
 This article interprets the identity-related requirements of Dengbao 2.0 article by article and analyzes how Autional meets these requirements.
 
+```mermaid
+flowchart TB
+    R["Dengbao 2.0 identity requirements"] --> A["Identity authentication — passwords, MFA, transport security"]
+    R --> B["Access control — RBAC, least privilege, SoD"]
+    R --> C["Security audit — full coverage, hash chain"]
+    R --> D["Data encryption — in transit and at rest"]
+    R --> E["Incident response — real-time monitoring, graded handling"]
+```
+
+*Figure 1: The five identity-related requirement groups in Dengbao 2.0, and the key mechanisms behind each.*
+
 ## Dengbao Classification Overview
 
 Dengbao 2.0 classifies information system security protection into five levels. For most SaaS and commercial platforms, Level 2 (System Audit Protection) and Level 3 (Security Marking Protection) are the most common evaluation grades. This article uses Level 3 requirements as the primary reference.
@@ -42,9 +53,9 @@ Dengbao 2.0 divides security requirements into two categories: technical and man
 - **Login failure lockout**: Automatically locks accounts after consecutive login failures exceeding a threshold; both lockout duration and failure count are configurable
 - **Session timeout**: Session lifecycle management via session-service, supporting idle timeout and absolute timeout
 
-**Multi-Factor Authentication (MFA)**: Autional's mfa-service provides an out-of-the-box solution for Dengbao 2.0's requirement of "two or more combined authentication methods." It supports TOTP time-based one-time codes, SMS verification codes, email verification codes, and Passkey (WebAuthn) — four authentication methods. Administrators can precisely control which users and which scenarios require MFA through policy configuration.
+**Multi-Factor Authentication (MFA)**: Dengbao 2.0 requires "two or more combined authentication methods." Autional's mfa-service provides an out-of-the-box solution. It supports TOTP time-based one-time codes, SMS verification codes, email verification codes, and Passkey (WebAuthn) — four authentication methods. Administrators can precisely control which users and which scenarios require MFA through policy configuration.
 
-**Transmission Security**: Autional enforces HTTPS/TLS 1.3 across the entire chain. Communication from the gateway layer to microservices and inter-microservice internal communication all use mTLS encryption. Passwords undergo client-side PBKDF2 salted hashing before transmission, ensuring authentication information is not eavesdropped on the entire transmission path.
+**Transmission Security**: Autional enforces HTTPS/TLS 1.3 across the entire chain. Traffic from the gateway layer to microservices, and between microservices, uses mTLS encryption. Passwords undergo client-side PBKDF2 salted hashing before transmission, ensuring authentication information is not eavesdropped on the entire transmission path.
 
 ## II. Access Control (Secure Computing Environment L3-2)
 
@@ -97,6 +108,17 @@ admin.AdminRequiredWith("super_admin")
 1. **Automatic HTTP middleware audit**: All requests are automatically recorded — timestamp, operator ID, tenant ID, IP address, request path, HTTP method, response status code, and duration
 2. **Domain event publishing**: Business services publish domain events (user registration, role changes, permission modifications, etc.) via `micro-pkg/event.Publisher`; the audit-service subscribes and automatically records them
 3. **Explicit audit logging**: Critical operations can proactively call the audit API to record additional context
+
+```mermaid
+flowchart LR
+    A["HTTP middleware — all requests logged"] --> D["audit-service — unified recording"]
+    B["Domain events — published by services"] --> D
+    C["Explicit reporting — critical operations"] --> D
+    D --> E["Hash chain — change one entry, the rest break"]
+    E --> F["Merkle proof — independent verification"]
+```
+
+*Figure 2: The audit pipeline — three collection channels feed audit-service, the hash chain exposes any change, and Merkle proofs let auditors verify without trusting admins.*
 
 **Hash Chain Tamper-Proofing**: This is Autional's most core differentiating audit capability. Each audit record contains:
 
@@ -166,7 +188,7 @@ Teams using Autional can accelerate dengbao certification along the following pa
 | 3. Operational Monitoring | Continuous operation and audit evidence collection | Automated audit logs + security dashboard | 1-3 months |
 | 4. Compliance Evaluation | Submit to evaluation institution | Audit log export + compliance report generation | Per evaluator schedule |
 
-Autional is preparing for Dengbao 2.0 Level 3 evaluation. Its built-in security capabilities cover the vast majority of identity-related requirements in Dengbao 2.0. If you are preparing for dengbao evaluation, Autional can shorten the identity compliance cycle from months to days.
+Autional is preparing for Dengbao 2.0 Level 3 evaluation. Its built-in security capabilities cover the vast majority of these identity-related requirements. If you are preparing for dengbao evaluation, Autional can shorten the identity compliance cycle from months to days.
 
 ---
 

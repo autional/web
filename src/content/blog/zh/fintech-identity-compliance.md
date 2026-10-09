@@ -18,6 +18,19 @@ claims_reviewed: true
 
 这些合规标准并非彼此孤立——它们在身份鉴别与访问控制上有大量重叠。本文系统拆解金融身份系统的合规框架，并分析 Autional 如何通过微服务架构满足这些要求。
 
+```mermaid
+flowchart TB
+    A["PCI-DSS 4.0 — 卡数据安全与访问控制"] --> D["统一的金融身份基础设施"]
+    B["等保 2.0 — 三级起、核心支付四级"] --> D
+    C["KYC 与 AML — 业务身份核验"] --> D
+    D --> E["identity-service — RBAC 与唯一标识"]
+    D --> F["mfa-service — 强认证"]
+    D --> G["audit-service — 哈希链审计"]
+    D --> H["wallet-service — 交易签名、不可否认"]
+```
+
+*图 1：三套合规框架在身份层的重叠——PCI-DSS、等保 2.0 与 KYC/AML 的要求最终落到同一套身份基础设施上。*
+
 ### 为什么金融身份不能「差不多就行」
 
 试想一下：2025 年，金融行业数据泄露的平均成本为 590 万美元——是跨行业平均水平的 1.5 倍。与身份相关的攻击（凭证盗用、会话劫持、权限滥用）占泄露事件的 60% 以上。
@@ -42,7 +55,7 @@ PCI-DSS 4.0 要求 7.1.1 明确指出：**访问控制策略必须基于「知�
 3. 权限变更必须有审计日志
 4. 特权账号必须有额外管控
 
-落到实处就是：不能让所有运维人员都拿 root，不能让所有开发都能连生产数据库，不能让所有客服都能看到完整卡号。
+落到实处就是：不能让所有运维人员都拿 root，不能让所有开发都连上生产数据库，不能让所有客服都看到完整卡号。
 
 Autional 的 RBAC 实现完整覆盖了这些要求。identity-service 内置符合 NIST RBAC 标准（Core + Hierarchical + Static SoD）的权限体系：
 
@@ -90,6 +103,20 @@ Autional 的做法：
 - 签名结果随审计日志持久化保存
 - 结合 audit-service 的哈希链审计能力，形成完整证据链
 
+```mermaid
+sequenceDiagram
+    participant U as 用户
+    participant W as wallet-service
+    participant A as audit-service
+    U->>W: 发起大额转账等关键操作
+    W-->>U: 要求二次确认与私钥签名
+    U->>W: 提交私钥签名
+    W->>A: 持久化签名结果
+    A-->>W: 写入哈希链审计日志
+```
+
+*图 2：交易不可否认的时序——关键操作要求用户私钥签名，签名结果随审计日志持久化，最终并入哈希链证据链。*
+
 ### 运维审计（堡垒机对接）
 
 金融机构通常要求所有运维操作都通过堡垒机执行并录屏留痕。Autional 的身份系统需要与堡垒机系统对接：
@@ -107,7 +134,7 @@ Autional 的做法：
 - **证件 OCR**：自动提取身份证/护照信息，减少人工录入错误
 - **风险评分**：基于设备指纹、行为特征与地理位置计算风险分
 
-Autional 的设计理念是把身份信息管理（identity-service）与身份核验流程（mfa-service + session-service）分开。KYC 相关数据存放在 identity-service 的 `user_verifications` 表中，敏感字段（如身份证号）使用字段级加密，确保即使数据库泄露也无法读取明文。
+Autional 的设计理念是把身份信息管理（identity-service）与身份核验流程（mfa-service + session-service）分开。KYC 相关数据存放在 identity-service 的 `user_verifications` 表中，敏感字段（如身份证号）使用字段级加密。即使数据库泄露，也无法读取明文。
 
 ## Autional 的金融完整方案
 
