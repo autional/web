@@ -1,4 +1,4 @@
-<!-- generated: core@ffb54a28b76c · region: cn · lang: zh — do not edit directly -->
+<!-- generated: core@2bfed789ef9f · region: cn · lang: zh — do not edit directly -->
 
 # 配置模板参考
 
@@ -19,7 +19,7 @@ import { AutionalProvider, useAutional, RequireAuth } from '@autional/react';
 export const autionalConfig = {
   appId: '{APP_ID}',
   issuer: 'https://api.autional.cn',
-  apiUrl: 'https://api.autional.cn',
+  apiUrl: 'https://api.autional.cn/bff',
   syncTabs: true,
 };
 
@@ -35,7 +35,7 @@ Next.js：在根 layout 用 `@autional/next` 的 Provider 包裹，并用其 mid
 # Autional — 公开配置（可提交 git）
 AUTIONAL_APP_ID={APP_ID}
 AUTIONAL_ISSUER=https://api.autional.cn
-AUTIONAL_API_URL=https://api.autional.cn
+AUTIONAL_API_URL=https://api.autional.cn/bff
 ```
 
 按框架使用公开前缀：`VITE_`（Vite）、`NEXT_PUBLIC_`（Next.js）、`REACT_APP_`（CRA）；Node 无需前缀。
@@ -64,7 +64,7 @@ AUTIONAL_API_URL=https://api.autional.cn
 ## 配置信息
 - App ID: {APP_ID}
 - Issuer: https://api.autional.cn
-- API URL: https://api.autional.cn
+- API URL: https://api.autional.cn/bff
 - 管理员: {ADMIN_EMAIL}
 
 ## 安全策略

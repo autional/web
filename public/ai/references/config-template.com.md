@@ -1,4 +1,4 @@
-<!-- generated: core@ffb54a28b76c · region: com · lang: en — do not edit directly -->
+<!-- generated: core@2bfed789ef9f · region: com · lang: en — do not edit directly -->
 
 # Configuration Templates
 
@@ -19,7 +19,7 @@ import { AutionalProvider, useAutional, RequireAuth } from '@autional/react';
 export const autionalConfig = {
   appId: '{APP_ID}',
   issuer: 'https://api.autional.com',
-  apiUrl: 'https://api.autional.com',
+  apiUrl: 'https://api.autional.com/bff',
   syncTabs: true,
 };
 
@@ -35,7 +35,7 @@ Next.js: wrap the root layout with the provider from `@autional/next` and protec
 # Autional — public configuration (safe to commit)
 AUTIONAL_APP_ID={APP_ID}
 AUTIONAL_ISSUER=https://api.autional.com
-AUTIONAL_API_URL=https://api.autional.com
+AUTIONAL_API_URL=https://api.autional.com/bff
 ```
 
 Use the framework's public prefix when needed: `VITE_` (Vite), `NEXT_PUBLIC_` (Next.js), `REACT_APP_` (CRA); none for Node.
@@ -64,7 +64,7 @@ Use the framework's public prefix when needed: `VITE_` (Vite), `NEXT_PUBLIC_` (N
 ## Configuration
 - App ID: {APP_ID}
 - Issuer: https://api.autional.com
-- API URL: https://api.autional.com
+- API URL: https://api.autional.com/bff
 - Admin: {ADMIN_EMAIL}
 
 ## Security policy
