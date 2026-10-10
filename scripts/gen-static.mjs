@@ -10,11 +10,14 @@
  *   public/og/blog/<slug>.png  ← 本区语言目录逐篇博客分享卡（scripts/og-blog-cards.mjs）
  *   public/ai/skill.md         ← 本区默认语言镜像文件拷贝（= skill.{zh|en}.md；行 10）
  *   public/ai/skill.md.sha256  ← 随生成关系重排（与 check-skills 门口径一致；W1）
+ *   public/ai/references/<名>.md ← 本区 references 镜像拷贝（= <名>.<cn|com>.md；B1 修复）
  *
  * 纪律：
  * - 这些路径均为生成物：已 gitignore + `git rm --cached`（勿手改、勿入库）；
- * - skill.en.md / skill.zh.md 是**入仓镜像**（上游 SDK 生成物字节保真，W1），本脚本只读不写；
- *   内容内区域 URL 的问题归 skills 分发线（docs 10/11），不在站点侧改写；
+ * - skill.en.md / skill.zh.md / references/*.{cn,com}.md 是**入仓镜像**（上游 SDK 生成物字节保真，W1），
+ *   本脚本只读不写；内容内区域 URL 的问题归 skills 分发线（docs 10/11），不在站点侧改写；
+ * - **区/lang 校验（B1 修复配套）**：skill 镜像 frontmatter 与 references 镜像首行须与本区一致，
+ *   不符即抛错——镜像错位会静默把错区内容的文档发给 agent（发布管线校验腿）；
  * - 幂等：同一 env 重复执行输出一致；env 缺省兜底 cn（scripts/env.mjs）。
  */
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
@@ -26,7 +29,7 @@ import { readBuildEnv } from './env.mjs';
 import { generateBlogCards } from './og-blog-cards.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const { siteUrl, defaultLang, cdnHost } = readBuildEnv();
+const { region, siteUrl, defaultLang, cdnHost } = readBuildEnv();
 const host = new URL(siteUrl).host;
 
 const pub = (p) => join(root, 'public', p);
@@ -84,8 +87,27 @@ writeFileSync(pub('llms.txt'), llms);
 const skillSrc = pub(join('ai', `skill.${defaultLang}.md`));
 if (!existsSync(skillSrc)) throw new Error(`skill 镜像缺失：public/ai/skill.${defaultLang}.md（入仓镜像文件，勿删）`);
 const skillBytes = readFileSync(skillSrc);
+const skillFm = skillBytes.toString('utf8').split('---')[1] ?? '';
+if (!new RegExp(`^region: ${region}$`, 'm').test(skillFm) || !new RegExp(`^lang: ${defaultLang}$`, 'm').test(skillFm))
+  throw new Error(
+    `skill 镜像区/lang 不符：public/ai/skill.${defaultLang}.md（期望 region: ${region} / lang: ${defaultLang}）——镜像错位或上游产物错误，拒绝生成`,
+  );
 writeFileSync(pub(join('ai', 'skill.md')), skillBytes);
 writeFileSync(pub(join('ai', 'skill.md.sha256')), `${createHash('sha256').update(skillBytes).digest('hex')}  skill.md\n`);
+
+// ── 3b. ai/references/<名>.md（B1 修复：按区选 references 镜像）──────────────
+// 镜像是「区内主语言版」，命名以**区域**为轴（<名>.com.md / <名>.cn.md）——区域才是内容差异的
+// 真实维度（issuer/合规档位按区不同）；生成的无名版即 skill 正文引用的站点路径。
+const refsDir = pub(join('ai', 'references'));
+const refMirrors = readdirSync(refsDir).filter((f) => f.endsWith(`.${region}.md`));
+if (!refMirrors.length) throw new Error(`references 区镜像缺失：public/ai/references/*.${region}.md（入仓镜像文件，勿删）`);
+for (const f of refMirrors) {
+  const mirrorBytes = readFileSync(join(refsDir, f));
+  const firstLine = mirrorBytes.toString('utf8', 0, 200).split('\n')[0];
+  if (!firstLine.includes(`region: ${region}`))
+    throw new Error(`references 区标记不符：${f}（首行未见 region: ${region}）——镜像错位，拒绝生成`);
+  writeFileSync(join(refsDir, f.replace(new RegExp(`\\.${region}\\.md$`), '.md')), mirrorBytes);
+}
 
 // ── 4. og-default.svg + .png（W2：模板化 + 同步重渲染）───────────────────────
 const ogSvg = tpl('og-default.svg').replaceAll('{{HOST}}', host);
@@ -101,6 +123,6 @@ writeFileSync(pub('og-default.png'), png.asPng());
 const blogCards = await generateBlogCards({ root, host, defaultLang });
 
 console.log(
-  `[gen-static] region=${readBuildEnv().region} defaultLang=${defaultLang} site=${siteUrl}\n` +
-    `  robots.txt / llms.txt (blog=${blogCount}) / ai/skill.md(< skill.${defaultLang}.md) + .sha256 / og-default.svg+png (host=${host}) / og/blog/*.png (${blogCards} 篇)`,
+  `[gen-static] region=${region} defaultLang=${defaultLang} site=${siteUrl}\n` +
+    `  robots.txt / llms.txt (blog=${blogCount}) / ai/skill.md(< skill.${defaultLang}.md) + .sha256 / ai/references/*.md(< *.${region}.md ×${refMirrors.length}) / og-default.svg+png (host=${host}) / og/blog/*.png (${blogCards} 篇)`,
 );

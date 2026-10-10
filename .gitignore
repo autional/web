@@ -35,6 +35,10 @@ public/og-default.png
 public/og/blog/
 public/ai/skill.md
 public/ai/skill.md.sha256
+# references：无名版为按区生成物（B1 修复）；*.cn.md / *.com.md 为入仓镜像
+public/ai/references/*.md
+!public/ai/references/*.cn.md
+!public/ai/references/*.com.md
 
 # Local dual-region build outputs (sequence C: dist-cn / dist-com)
 /dist-cn/
