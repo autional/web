@@ -1,4 +1,4 @@
-<!-- generated: core@2bfed789ef9f · region: com · lang: en — do not edit directly -->
+<!-- generated: core@87c827301112 · region: com · lang: en — do not edit directly -->
 
 # Configuration Templates
 
@@ -22,6 +22,13 @@ export const autionalConfig = {
   apiUrl: 'https://api.autional.com/bff',
   syncTabs: true,
 };
+
+// Same-origin proxy form (apiUrl on your own origin, e.g. a /bff reverse proxy)?
+// The default authorize URL only rewrites an "api." host into "auth." — any other host
+// carries through and lands on the API plane, which serves no login UI. Pin the auth plane:
+//   await autional.loginWithOAuth({
+//     authorizeUrl: 'https://auth.autional.com/oauth/api/v1/oauth/authorize',
+//   });
 
 export { AutionalProvider, useAutional, RequireAuth };
 ```
