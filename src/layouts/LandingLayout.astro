@@ -150,7 +150,7 @@ const quickstartUrl = `${brotherUrl('developer')}/quickstart`;
   <main class="flex-1" id="main-content"><slot /></main>
   <footer class="mt-12 px-4 pb-6 sm:px-6">
     <div class="mx-auto max-w-7xl rounded-xxl bg-primary-900 px-6 py-12 text-white shadow-brand sm:px-10">
-      <div class="grid grid-cols-1 gap-10 md:grid-cols-5">
+      <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-6">
         <div class="md:col-span-2">
           <a href="/" class="inline-flex items-center">
             <div class="text-[2rem] font-extrabold tracking-[var(--letter-spacing-display-lg)] text-white">Autional</div>
@@ -168,10 +168,14 @@ const quickstartUrl = `${brotherUrl('developer')}/quickstart`;
           <li><a href="/docs" class={footerLinkClass} data-i18n="footer.docs">{t('footer.docs')}</a></li>
           <li><a href="/sdk" class={footerLinkClass} data-i18n="footer.sdk">{t('footer.sdk')}</a></li>
           <li><a href="/ai" class={footerLinkClass} data-i18n="footer.ai">{t('footer.ai')}</a></li>
+        </ul></div>
+        <div><h3 class="text-sm font-semibold text-white" data-i18n="footer.resources">{t('footer.resources')}</h3><ul class="mt-4 space-y-3">
           <li><a href={brotherUrl('docs')} class={footerLinkClass} data-i18n="footer.docsPortal">{t('footer.docsPortal')}</a></li>
           <li><a href={brotherUrl('developer')} class={footerLinkClass} data-i18n="footer.devPortal">{t('footer.devPortal')}</a></li>
           <li><a href={brotherUrl('reference')} class={footerLinkClass} data-i18n="footer.apiReference">{t('footer.apiReference')}</a></li>
           <li><a href={brotherUrl('wiki')} class={footerLinkClass} data-i18n="footer.apiWiki">{t('footer.apiWiki')}</a></li>
+          <li><a href={brotherUrl('status')} class={footerLinkClass} data-i18n="footer.status">{t('footer.status')}</a></li>
+          <li><a href="/portals" class={footerLinkClass} data-i18n="footer.allPortals">{t('footer.allPortals')}</a></li>
         </ul></div>
         <div><h3 class="text-sm font-semibold text-white" data-i18n="footer.company">{t('footer.company')}</h3><ul class="mt-4 space-y-3">
           <li><a href="/about" class={footerLinkClass} data-i18n="footer.about">{t('footer.about')}</a></li>
@@ -186,7 +190,7 @@ const quickstartUrl = `${brotherUrl('developer')}/quickstart`;
         <div class="flex flex-wrap gap-4">
           <a href="/privacy" class="transition-colors hover:text-white" data-i18n="footer.privacy">{t('footer.privacy')}</a>
           <a href="/terms" class="transition-colors hover:text-white" data-i18n="footer.terms">{t('footer.terms')}</a>
-          <a href="/trust" class="transition-colors hover:text-white" data-i18n="footer.trust">{t('footer.trust')}</a>
+          <a href={brotherUrl('trust')} class="transition-colors hover:text-white" data-i18n="footer.trust">{t('footer.trust')}</a>
         </div>
       </div>
     </div>

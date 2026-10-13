@@ -26,6 +26,7 @@ export const STATIC_PAGE_DEFS: readonly { path: string; key: string }[] = [
   { path: '/compare', key: 'compare' },
   { path: '/roadmap', key: 'roadmap' },
   { path: '/showcase', key: 'showcase' },
+  { path: '/portals', key: 'portals' },
   { path: '/trust', key: 'trust' },
   { path: '/docs', key: 'docs' },
   { path: '/sdk', key: 'sdk' },

@@ -327,6 +327,7 @@
     },
     "title": "Trust & Compliance",
     "lead": "Autional is built with security and compliance as core design principles — not afterthoughts.",
+    "portalLink": "Visit Trust Center",
     "cards": [
       { "title": "Data Encryption", "desc": "All sensitive fields encrypted with AES-256-GCM at rest. Key rotation supported. SM4-GCM for Chinese national standard compliance." },
       { "title": "Password Security", "desc": "argon2id hashing with per-tenant pepper. Password transmission supports ECDH symmetric and RSA asymmetric encryption." },
@@ -362,6 +363,30 @@
       { "title": "Feature Overview", "desc": "SSO, MFA, Passkey, RBAC, NHI, Multi-Tenancy, Audit, Compliance — comprehensive identity management.", "label": "Browse Features" },
       { "title": "SDK & npm Packages", "desc": "@autional/react and other published components, ready to install.", "label": "View SDK" }
     ]
+  },
+  "portals": {
+    "meta": {
+      "title": "All Portals — Autional",
+      "description": "One place for every public Autional site and portal: documentation, developer, API reference, API wiki, status, and trust center.",
+      "keywords": "Autional, portals, site index, documentation, API, status, trust center"
+    },
+    "title": "All Portals",
+    "lead": "The single entry point to every Autional site and portal. Can't find the page you need? Start here.",
+    "contentHeading": "Product & Documentation",
+    "serviceHeading": "Service & Trust",
+    "contentItems": [
+      { "title": "Main Site", "desc": "Features, pricing, comparisons, and roadmap." },
+      { "title": "Docs Portal", "desc": "Full documentation for deployment, configuration, and operations." },
+      { "title": "Developer Portal", "desc": "Quickstart, SDKs, and integration guides." },
+      { "title": "API Reference", "desc": "Interactive Swagger/OpenAPI documentation." },
+      { "title": "API Wiki", "desc": "Static per-endpoint API documentation." }
+    ],
+    "serviceItems": [
+      { "title": "Service Status", "desc": "Live availability and incident history for every microservice." },
+      { "title": "Trust Center", "desc": "Security practices, data protection, and compliance progress." },
+      { "title": "Demo Environment", "desc": "Try each service in a live demo environment." }
+    ],
+    "footnote": "Sign-in and console portals are not listed here; they are reached after signing in via the organization entry."
   },
   "notFound": {
     "meta": { "title": "404 — Page Not Found | Autional", "description": "Page not found" },
@@ -569,6 +594,7 @@
     "description": "AI-powered identity infrastructure for modern SaaS platforms. Authentication, SSO, passkey, tenant isolation, audit, and developer APIs in one coherent system.",
     "platform": "Platform",
     "developers": "Developers",
+    "resources": "Resources",
     "company": "Company",
     "features": "Features",
     "pricing": "Pricing",
@@ -582,6 +608,8 @@
     "devPortal": "Dev Portal",
     "apiReference": "API Reference",
     "apiWiki": "API Wiki",
+    "status": "Status",
+    "allPortals": "All Portals",
     "about": "About",
     "blog": "Blog",
     "faq": "FAQ",
@@ -631,6 +659,7 @@
       "compare": { "title": "Compare", "excerpt": "An honest comparison with Auth0, Clerk, WorkOS and other identity platforms" },
       "roadmap": { "title": "Roadmap", "excerpt": "See what we have accomplished and what we are planning" },
       "showcase": { "title": "Showcase", "excerpt": "Real demo environments and a tour of platform capabilities" },
+      "portals": { "title": "All Portals", "excerpt": "A single entry point to every site and portal" },
       "trust": { "title": "Security & Compliance", "excerpt": "Our security architecture and compliance commitment" },
       "docs": { "title": "Developer Docs", "excerpt": "API Reference, SDKs & Tools, Concept Guides" },
       "sdk": { "title": "SDK", "excerpt": "Published npm packages and SDKs in the pipeline" },

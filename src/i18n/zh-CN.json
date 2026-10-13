@@ -327,6 +327,7 @@
     },
     "title": "信任与合规",
     "lead": "Autional 将安全与合规作为核心设计原则，而不是事后补充。",
+    "portalLink": "访问信任中心",
     "cards": [
       { "title": "数据加密", "desc": "所有敏感字段在静态存储时均以 AES-256-GCM 加密，支持密钥轮换。面向中国国家标准的合规场景提供 SM4-GCM。" },
       { "title": "密码安全", "desc": "采用 argon2id 哈希，支持按租户配置 pepper。密码传输支持 ECDH 对称加密与 RSA 非对称加密。" },
@@ -362,6 +363,30 @@
       { "title": "功能总览", "desc": "SSO、MFA、通行密钥（Passkey）、RBAC、NHI、多租户、审计、合规 —— 完整的身份管理能力。", "label": "浏览功能特性" },
       { "title": "SDK 与 npm 软件包", "desc": "@autional/react 等已发布组件，均可直接安装。", "label": "查看 SDK" }
     ]
+  },
+  "portals": {
+    "meta": {
+      "title": "全部门户 — Autional",
+      "description": "Autional 公开站点与门户的总入口：文档、开发者、API 参考、API Wiki、服务状态与信任中心。",
+      "keywords": "Autional, 门户, 站点导航, 文档, API, 服务状态, 信任中心"
+    },
+    "title": "全部门户",
+    "lead": "Autional 各站点与门户的总入口。找不到想要的页面，从这里出发。",
+    "contentHeading": "产品与文档",
+    "serviceHeading": "服务与信任",
+    "contentItems": [
+      { "title": "产品主站", "desc": "功能特性、定价、方案对比与路线图。" },
+      { "title": "文档门户", "desc": "部署形态、配置机制与运维指南的完整文档。" },
+      { "title": "开发者门户", "desc": "快速开始、SDK 与接入指南。" },
+      { "title": "API 参考", "desc": "交互式 Swagger/OpenAPI 文档。" },
+      { "title": "API Wiki", "desc": "逐端点生成的静态 API 说明。" }
+    ],
+    "serviceItems": [
+      { "title": "服务状态", "desc": "各微服务的实时可用性与历史事件。" },
+      { "title": "信任中心", "desc": "安全实践、数据保护与合规建设进展。" },
+      { "title": "演示环境", "desc": "逐一体验各服务的演示环境。" }
+    ],
+    "footnote": "登录类与后台类门户不在此列，需经组织入口登录后访问。"
   },
   "notFound": {
     "meta": { "title": "404 — 页面未找到 | Autional", "description": "页面未找到" },
@@ -569,6 +594,7 @@
     "description": "面向 AI 生成应用的身份层。认证、SSO、通行密钥（Passkey）、租户隔离、审计与开发者 API，统一在一个连贯的系统中。",
     "platform": "平台",
     "developers": "开发者",
+    "resources": "资源与门户",
     "company": "公司",
     "features": "功能特性",
     "pricing": "定价",
@@ -582,6 +608,8 @@
     "devPortal": "开发者门户",
     "apiReference": "API 参考",
     "apiWiki": "API Wiki",
+    "status": "服务状态",
+    "allPortals": "全部门户",
     "about": "关于我们",
     "blog": "博客",
     "faq": "常见问题",
@@ -631,6 +659,7 @@
       "compare": { "title": "方案对比", "excerpt": "与 Auth0、Clerk、WorkOS 等身份平台的诚实对比" },
       "roadmap": { "title": "路线图", "excerpt": "已交付成果与后续规划" },
       "showcase": { "title": "演示与展示", "excerpt": "真实演示环境与产品能力一览" },
+      "portals": { "title": "全部门户", "excerpt": "全部站点与门户的总入口" },
       "trust": { "title": "安全与合规", "excerpt": "安全架构与合规建设进展" },
       "docs": { "title": "开发者文档", "excerpt": "快速开始、API 参考与概念指南" },
       "sdk": { "title": "SDK", "excerpt": "已发布 npm 软件包与规划中的 SDK" },

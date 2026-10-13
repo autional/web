@@ -1,0 +1,45 @@
+---
+import Layout from '../layouts/LandingLayout.astro';
+import { t } from '../i18n';
+import { brotherUrl } from '../lib/site-env';
+
+// 门户目录（HTML sitemap）：把散落在多个子域的门户集中成一个可索引的入口页。
+// 定位=导航与发现，不作为排名手段（站wide/footer 链接排名价值低，见 SEO 研究结论）。
+// 只收录**公开内容/服务门户**；登录类与后台类（brand/user/authenticator/admin/platform/security）
+// 一律不列——口径：保留门户间适当隔离，营销站不为登录/管理入口做导航（用户 2026-10-13 裁定）。
+interface PortalItem { title: string; desc: string }
+
+const contentItems = t('portals.contentItems', { returnObjects: true }) as PortalItem[];
+const serviceItems = t('portals.serviceItems', { returnObjects: true }) as PortalItem[];
+
+// href 与 i18n 条目同序；兄弟站随本区根域派生（W7），站内保持相对路径
+const groups = [
+  { heading: t('portals.contentHeading'), items: contentItems, hrefs: ['/', brotherUrl('docs'), brotherUrl('developer'), brotherUrl('reference'), brotherUrl('wiki')] },
+  { heading: t('portals.serviceHeading'), items: serviceItems, hrefs: [brotherUrl('status'), brotherUrl('trust'), brotherUrl('demo')] },
+];
+
+const hostOf = (href: string) => new URL(href, Astro.site).host;
+---
+<Layout title={t('portals.meta.title')} description={t('portals.meta.description')} keywords={t('portals.meta.keywords')}>
+  <section class="mx-auto max-w-5xl px-4 py-20">
+    <div class="text-center mb-16">
+      <h1 class="text-4xl font-bold sm:text-5xl">{t('portals.title')}</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">{t('portals.lead')}</p>
+    </div>
+    {groups.map((g) => (
+      <div class="mb-14">
+        <h2 class="text-xl font-bold mb-6">{g.heading}</h2>
+        <div class="grid gap-4 sm:grid-cols-2">
+          {g.items.map((item, i) => (
+            <a href={g.hrefs[i]} class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 transition-colors hover:border-primary-400">
+              <h3 class="font-semibold">{item.title}</h3>
+              <p class="mt-1 text-sm text-neutral-500 leading-relaxed">{item.desc}</p>
+              <code class="mt-2 block text-xs text-[var(--color-text-muted)] font-mono">{hostOf(g.hrefs[i])}</code>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+    <p class="mt-10 text-center text-sm text-neutral-500">{t('portals.footnote')}</p>
+  </section>
+</Layout>

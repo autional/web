@@ -10,6 +10,7 @@
 - {{SITE_URL}}/about
 - {{SITE_URL}}/faq
 - {{SITE_URL}}/trust
+- {{SITE_URL}}/portals
 
 ## AI Onboarding ({{AI_SECTION}})
 - {{AI_TUTORIAL_LABEL}}: {{SITE_URL}}/ai
