@@ -6,7 +6,7 @@ tags: ["反模式", "安全错误", "最佳实践"]
 readTime: "7 分钟"
 excerpt: "这些认证错误，你可能每天都在犯。从硬编码 API Key 到永不过期的 JWT，从明文密码到把敏感信息写进日志——本文梳理 7 个最常见的身份反模式，每一条都配有真实的数据泄露案例与可执行的修复方案，并说明 Autional 如何在架构层面消除这些错误。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -33,8 +33,8 @@ Wrong:
 const API_KEY = "tk_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"  // Hardcoded
 
 Right:
-const API_KEY = process.env.AUTHMS_API_KEY  // Environment variable
-if (!API_KEY) throw new Error("AUTHMS_API_KEY not set")
+const API_KEY = process.env.AUTIONAL_API_KEY  // Environment variable
+if (!API_KEY) throw new Error("AUTIONAL_API_KEY not set")
 ```
 
 进一步的做法：

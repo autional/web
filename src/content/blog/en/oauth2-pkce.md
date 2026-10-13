@@ -6,7 +6,7 @@ tags: ["OAuth", "Security", "Mobile"]
 readTime: "7 min"
 excerpt: "The OAuth 2.1 draft makes PKCE mandatory for all authorization code flows, officially retiring the Implicit flow. This article explains PKCE's principles, attack scenarios, step-by-step implementation, and how Autional enables zero-code OAuth 2.1 adaptation — oauth-service has PKCE built in, fully automated server-side."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

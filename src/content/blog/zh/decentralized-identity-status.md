@@ -6,7 +6,7 @@ tags: ["去中心化", "DID", "SSI", "Web3"]
 readTime: "10 分钟"
 excerpt: "自主主权身份（SSI）与去中心化标识符（DID）被宣传为数字身份的未来。但真实的落地情况如何？哪些已经实现，哪些还停留在概念验证阶段？本文对 DID/SSI 在 2026 年的实际状态做出冷静评估。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

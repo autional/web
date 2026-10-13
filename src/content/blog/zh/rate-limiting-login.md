@@ -6,7 +6,7 @@ tags: ["限流", "DDoS", "安全"]
 readTime: "9 分钟"
 excerpt: "登录端点是攻击者最爱的靶子。从令牌桶到滑动窗口，从 IP 级到用户级，从单机到分布式——本文通过一次真实的暴力破解场景，逐层剖析限流策略的演进，以及 Autional gateway-service 如何为每个租户提供可配置的多维防护。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

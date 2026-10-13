@@ -6,7 +6,7 @@ tags: ["安全清单", "SaaS", "最佳实践"]
 readTime: "8 分钟"
 excerpt: "一份面向 SaaS 产品负责人与技术决策者的 30 项身份安全清单，覆盖密码策略、MFA 强制、会话管理、API 安全、审计日志、数据加密、访问控制、供应链安全八大领域。每一项都包含「检查什么」与「Autional 怎么做」，30 分钟完成一次系统性的安全自查。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

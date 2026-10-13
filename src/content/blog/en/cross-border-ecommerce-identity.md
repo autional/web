@@ -6,7 +6,7 @@ tags: ["Cross-Border E-Commerce", "GDPR", "Cross-Border Data"]
 readTime: "9 minutes"
 excerpt: "Cross-border e-commerce faces the most complex identity compliance challenges: overlapping jurisdiction of GDPR, PIPL, CCPA, and other multi-country regulations, plus compliance requirements for cross-border data transfers. This article analyzes how to build a global identity system supporting multi-region deployment, data residency, and international data transfers."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

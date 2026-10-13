@@ -6,7 +6,7 @@ tags: ["AI Apps", "Unified Auth", "SSO"]
 readTime: "9 min"
 excerpt: "AI coding tools can produce a fully functional application in hours, but when you have 3 or more AI-generated apps, identity authentication becomes a Babel Tower. This article explores how Autional's unified authentication layer solves this challenge."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

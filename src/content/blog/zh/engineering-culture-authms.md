@@ -6,7 +6,7 @@ tags: ["工程文化", "团队", "微服务"]
 readTime: "8 分钟"
 excerpt: "15 个人、27 个微服务、25 个 CI 检查脚本——Autional 如何在快速迭代的同时守住代码质量与架构一致性？本文记录了我们团队的工程文化、工具链，以及三条踩坑换来的教训。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

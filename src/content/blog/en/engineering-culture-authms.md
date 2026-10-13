@@ -4,13 +4,13 @@ date: "2026-06-19"
 category: "Project"
 tags: ["Engineering Culture", "Team", "Microservices"]
 readTime: "8 min"
-excerpt: "15 people, 16 microservices, 25 CI check scripts — how does Autional maintain code quality and architectural consistency while iterating at speed? This article documents our team's engineering culture, toolchain, and lessons learned from three hard-earned mistakes."
+excerpt: "15 people, 27 microservices, 25 CI check scripts — how does Autional maintain code quality and architectural consistency while iterating at speed? This article documents our team's engineering culture, toolchain, and lessons learned from three hard-earned mistakes."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
-In early 2024, Autional was just a Go monolith maintained by a 3-person team. Two years later, we have 15 people, 16 microservices, roughly 430K lines of Go code, and 1437 API endpoints. More importantly — **these endpoints didn't grow wild; they follow the same set of architectural constraints, coding standards, and engineering workflows.**
+In early 2024, Autional was just a Go monolith maintained by a 3-person team. Two years later, we have 15 people, 27 microservices, roughly 430K lines of Go code, and 1437 API endpoints. More importantly — **these endpoints didn't grow wild; they follow the same set of architectural constraints, coding standards, and engineering workflows.**
 
 This article is about the engineering culture behind it — not the cliché "we love coding" slogans, but the concrete tools, processes, and decision logic. Including our smartest choices and the decisions that make us want to slap ourselves.
 

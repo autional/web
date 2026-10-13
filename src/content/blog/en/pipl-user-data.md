@@ -6,7 +6,7 @@ tags: ["PIPL", "Data Privacy", "Personal Information Protection"]
 readTime: "9 min"
 excerpt: "A deep dive into how China's Personal Information Protection Law (PIPL) impacts user data management, and how Autional helps enterprises achieve compliance through built-in informed consent, DSAR automation, audit trails, and more."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

@@ -6,7 +6,7 @@ tags: ["SLA", "SLO", "Reliability"]
 readTime: "8 min"
 excerpt: "99.9% and 99.99% differ by a factor of 10 — for identity systems, that's the difference between 8.76 hours and 52 minutes of downtime per year. Starting from SLI selection, this article dives into how Autional achieves enterprise-grade availability guarantees through health checks, dual probes, and error budget mechanisms."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

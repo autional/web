@@ -6,7 +6,7 @@ tags: ["SSO", "SAML", "OAuth" ,"OIDC"]
 readTime: "12 min"
 excerpt: "A comprehensive guide to SSO architecture patterns, protocol selection, and security best practices for enterprise deployments in 2026."
 status: "verified"
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

@@ -6,7 +6,7 @@ tags: ["Decentralization", "DID", "SSI", "Web3"]
 readTime: "10 min"
 excerpt: "Self-Sovereign Identity (SSI) and Decentralized Identifiers (DID) are promoted as the future of digital identity. But what's the real adoption picture? What's actually implemented and what's still in proof-of-concept? This article provides a sober assessment of DID/SSI's actual state in 2026."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

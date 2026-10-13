@@ -6,7 +6,7 @@ tags: ["Hash Chain", "Audit", "Tamper-Proof"]
 readTime: "7 min"
 excerpt: "When an internal administrator tries to delete a suspicious login record, how does a cryptographic hash chain expose such tampering? Learn how Autional uses hash chains and Merkle trees to build immutable data integrity proofs for audit logs."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

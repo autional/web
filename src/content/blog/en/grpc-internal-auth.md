@@ -6,7 +6,7 @@ tags: ["gRPC", "Service-to-Service Communication", "Security"]
 readTime: "7 min"
 excerpt: "How Autional uses gRPC to build a secure communication layer between microservices—from Protobuf's efficiency advantages to TLS/mTLS transport security, from JWT+API Key dual-mode authentication to full-link OpenTelemetry tracing."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

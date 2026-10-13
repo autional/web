@@ -6,7 +6,7 @@ tags: ["SaaS", "Startup", "Architecture"]
 readTime: "8 min"
 excerpt: "One of the most common mistakes SaaS founders make is underestimating identity system complexity. This article maps the identity requirements evolution from MVP to enterprise product, analyzing the true TCO of build vs. buy, to help you make the right identity platform decision."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -154,7 +154,7 @@ This coupling becomes excruciating when you need to support multiple application
 
 ## How Autional Grows with Your SaaS
 
-Autional's design philosophy is "progressive adoption"—you don't need all 15 microservices on day one:
+Autional's design philosophy is "progressive adoption"—you don't need all 27 microservices on day one:
 
 ```mermaid
 flowchart LR

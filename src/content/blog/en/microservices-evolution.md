@@ -4,13 +4,13 @@ date: "2026-03-30"
 category: "Architecture"
 tags: ["Microservices", "Evolution", "Engineering"]
 readTime: "15 min"
-excerpt: "Autional evolved from a startup monolith to 16 independent microservices powering enterprise-grade identity authentication. This article dives into the motivations, methodology, technical challenges, and hard-won lessons of the拆分 journey, covering distributed tracing, graceful shutdown, database isolation, and other key decisions — providing first-hand reference for teams considering microservices adoption."
+excerpt: "Autional evolved from a startup monolith to 27 independent microservices powering enterprise-grade identity authentication. This article dives into the motivations, methodology, technical challenges, and hard-won lessons of the拆分 journey, covering distributed tracing, graceful shutdown, database isolation, and other key decisions — providing first-hand reference for teams considering microservices adoption."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
-In early 2024, the first version of Autional was a Go monolith under 8,000 lines of code. It ran on a single server, connected to one PostgreSQL instance and one Redis — enough to handle login and registration for early customers. Two years later, Autional has evolved into 16 independent microservices, processing hundreds of millions of authentication requests daily for businesses of all sizes.
+In early 2024, the first version of Autional was a Go monolith under 8,000 lines of code. It ran on a single server, connected to one PostgreSQL instance and one Redis — enough to handle login and registration for early customers. Two years later, Autional has evolved into 27 independent microservices, processing hundreds of millions of authentication requests daily for businesses of all sizes.
 
 This article documents that evolution — not just the technology choices, but the continuous iteration of a team across architecture decisions, engineering culture, and product philosophy.
 

@@ -6,7 +6,7 @@ tags: ["GDPR", "DSAR", "隐私", "自动化"]
 readTime: "10 分钟"
 excerpt: "如何借助现代 IAM 平台自动化处理 GDPR 数据主体访问请求（DSAR），并通过哈希链审计实现可验证的完整性。"
 status: "verified"
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

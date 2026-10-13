@@ -6,7 +6,7 @@ tags: ["Dengbao", "Level 3", "Compliance Checklist"]
 readTime: "9 min"
 excerpt: "In Dengbao Level 3 certification, identity authentication and access control are key audit domains. This article breaks down the 20 specific requirements that certification assessors focus on during on-site inspections, analyzes evaluation criteria and common pitfalls, and shows how Autional meets core Dengbao Level 3 requirements through built-in password policies, MFA, RBAC, audit logs, and data encryption."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

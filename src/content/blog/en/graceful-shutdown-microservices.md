@@ -6,7 +6,7 @@ tags: ["Graceful Shutdown", "Operations", "Reliability"]
 readTime: "7 min"
 excerpt: "When Kubernetes sends SIGTERM, does your microservice die immediately or gracefully wrap up within 30 seconds? Autional's unified Application bootstrapper ensures 16 services shut down gracefully—including HTTP request draining, MQ message completion, gRPC connection closure, and database pool release."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -17,7 +17,7 @@ Service restarts are the norm in production—Kubernetes rolling updates, node e
 - gRPC streams cut off mid-way, downstream services receiving `UNAVAILABLE` errors
 - Database connection pool violently closed, uncommitted transactions rolled back
 
-Autional's 16 microservices achieve **zero-downtime graceful shutdown** through the unified `micro-middleware/app` bootstrapper.
+Autional's 27 microservices achieve **zero-downtime graceful shutdown** through the unified `micro-middleware/app` bootstrapper.
 
 ## Wild Shutdown vs Graceful Shutdown
 
@@ -58,7 +58,7 @@ Consumers are unaware. Kubernetes `terminationGracePeriodSeconds` is set to 30 s
 Each service builds its startup configuration via a Builder in `main.go`:
 
 ```go
-import app_pkg "gitee.com/linmes/authms/micro-middleware/app"
+import app_pkg "gitee.com/autional/service-core/micro-middleware/app"
 
 func main() {
     cfg := config.Load("configs/service/identity-service.yaml")
@@ -336,7 +336,7 @@ The complete shutdown sequence is recorded in logs. If a Pod consistently fails 
 
 ## Summary
 
-Autional's `micro-middleware/app` bootstrapper uses less than 300 lines of code to uniformly manage the lifecycle of 16 microservices:
+Autional's `micro-middleware/app` bootstrapper uses less than 300 lines of code to uniformly manage the lifecycle of 27 microservices:
 
 - **Declarative Registration**: Builder pattern with `WithServer` + `WithCloser`
 - **Signal-Driven**: Listens for SIGTERM/SIGINT, automatically triggers shutdown sequence

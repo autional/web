@@ -6,7 +6,7 @@ tags: ["Cryptography", "Security", "Hash"]
 readTime: "10 min"
 excerpt: "Cryptography is the foundation of identity systems. Bad cryptography is worse than no cryptography. This article covers the bcrypt vs argon2 choice, correct use of salt and pepper, secure API Key hashing and storage, field-level PII encryption (AES-256-GCM), and how Autional bakes these security practices into its architecture."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

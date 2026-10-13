@@ -6,7 +6,7 @@ tags: ["JWT", "Session", "Token"]
 readTime: "12 min"
 excerpt: "JWT and Session Tokens are the two most fundamental token types in identity authentication systems. This article provides a thorough comparison across four dimensions — security, performance, scalability, and statelessness — and reveals how Autional's session-service lets you have the best of both worlds through dual-mode support."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -64,7 +64,7 @@ eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIwMUFSO....  ← Header
 
 This is JWT's core selling point. The server does not need to maintain session storage or query external caches on every request. In a microservice architecture, this means Service A, Service B, and Service C can independently verify the same JWT without sharing any state.
 
-Autional's architecture perfectly demonstrates this advantage: once identity-service issues a JWT, all 15 microservices including session-service, profile-service, and wallet-service can verify it independently without querying the issuing service every time.
+Autional's architecture perfectly demonstrates this advantage: once identity-service issues a JWT, all 27 microservices including session-service, profile-service, and wallet-service can verify it independently without querying the issuing service every time.
 
 **2. Horizontal Scaling Without State Synchronization**
 

@@ -6,7 +6,7 @@ tags: ["哈希链", "审计", "防篡改"]
 readTime: "7 分钟"
 excerpt: "当内部管理员试图删除一条可疑的登录记录时，密码学哈希链如何让这种篡改无所遁形？了解 Autional 如何用哈希链与 Merkle 树为审计日志构建不可篡改的数据完整性证明。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

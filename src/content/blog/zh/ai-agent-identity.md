@@ -6,7 +6,7 @@ tags: ["AI 智能体", "AI 安全", "未来"]
 readTime: "9 分钟"
 excerpt: "当 AI 智能体代替你发送邮件、审批采购、提交代码时，身份系统面临一个棘手问题：真正完成认证的到底是 AI 还是人？本文探讨非人类身份（NHI）管理的前沿挑战以及 Autional 的应对思路。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

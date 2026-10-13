@@ -6,7 +6,7 @@ tags: ["Anti-Patterns", "Security Mistakes", "Best Practices"]
 readTime: "7 minutes"
 excerpt: "These authentication mistakes — you may be making them every day. From hardcoded API keys to non-expiring JWTs, from unsalted passwords to logging sensitive information — this article covers 7 of the most common identity anti-patterns, each with a real-world data breach case and actionable fixes. How Autional eliminates these mistakes at the architectural level? Read on."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -33,8 +33,8 @@ Wrong:
 const API_KEY = "tk_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"  // Hardcoded
 
 Right:
-const API_KEY = process.env.AUTHMS_API_KEY  // Environment variable
-if (!API_KEY) throw new Error("AUTHMS_API_KEY not set")
+const API_KEY = process.env.AUTIONAL_API_KEY  // Environment variable
+if (!API_KEY) throw new Error("AUTIONAL_API_KEY not set")
 ```
 
 Going further:

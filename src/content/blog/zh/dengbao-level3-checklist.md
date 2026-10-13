@@ -6,7 +6,7 @@ tags: ["等保", "三级", "合规检查清单"]
 readTime: "9 分钟"
 excerpt: "在等保三级测评中，身份鉴别与访问控制是重点审查域。本文拆解测评机构在现场检查时关注的 20 项具体要求，分析评价口径与常见失分点，并说明 Autional 如何通过内置的密码策略、MFA、RBAC、审计日志与数据加密满足等保三级核心要求。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

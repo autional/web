@@ -6,7 +6,7 @@ tags: ["SSO", "SAML", "OAuth", "OIDC"]
 readTime: "10 分钟"
 excerpt: "SAML、OAuth 2.0、OIDC、CAS——四个名字、四种协议、四种截然不同的设计哲学。很多工程师分不清 OAuth 2.0 与 OIDC，而一些企业用户死守 SAML 拒绝 JWT。本文从协议历史、工作原理、适用场景三个维度系统拆解这四种 SSO 协议，并给出按业务需求选型的决策指南。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

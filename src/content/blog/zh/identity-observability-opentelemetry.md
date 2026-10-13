@@ -6,7 +6,7 @@ tags: ["可观测性", "OpenTelemetry", "分布式追踪"]
 readTime: "10 分钟"
 excerpt: "身份系统是安全基础设施的底座，其可观测性直接决定故障发现与根因定位的速度。本文拆解 Autional 如何基于 OpenTelemetry 构建日志、指标、分布式追踪三位一体的可观测体系，并通过一次登录慢排查案例展示全链路追踪的实战价值。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

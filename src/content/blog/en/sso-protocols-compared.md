@@ -6,7 +6,7 @@ tags: ["SSO", "SAML", "OAuth", "OIDC"]
 readTime: "10 min"
 excerpt: "SAML, OAuth 2.0, OIDC, CAS — four names, four protocols, four fundamentally different design philosophies. Many engineers can't distinguish OAuth 2.0 from OIDC, while some enterprise users insist on SAML and refuse JWT. This article systematically breaks down these four SSO protocols from three dimensions — protocol history, working principles, and applicable scenarios — and provides a decision guide for choosing the right one based on business needs."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

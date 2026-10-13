@@ -6,7 +6,7 @@ tags: ["跨境电商", "GDPR", "数据跨境"]
 readTime: "9 分钟"
 excerpt: "跨境电商面临最复杂的身份合规挑战：GDPR、PIPL、CCPA 等多国法规的管辖重叠，以及数据跨境传输的合规要求。本文分析如何构建一个支持多区域部署、数据驻留与跨境传输的全球化身份系统。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

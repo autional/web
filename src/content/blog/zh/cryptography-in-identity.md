@@ -6,7 +6,7 @@ tags: ["密码学", "安全", "哈希"]
 readTime: "10 分钟"
 excerpt: "密码学是身份系统的基石。糟糕的密码学比不用密码学更可怕。本文覆盖 bcrypt 与 argon2 的选型、盐与胡椒的正确用法、API Key 的安全哈希与存储、字段级 PII 加密（AES-256-GCM），以及 Autional 如何把这些安全实践内建到架构中。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

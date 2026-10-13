@@ -6,7 +6,7 @@ tags: ["MFA", "TOTP", "FIDO2"]
 readTime: "10 分钟"
 excerpt: "MFA 不是「多一个验证码」这么简单。不同 MFA 协议在安全性、用户体验与抗钓鱼能力上差异巨大。本文对比 TOTP、HOTP、短信 OTP 与 FIDO2/WebAuthn 四种主流 MFA 协议的工作原理、安全强度与适用场景，并展示 Autional mfa-service 如何通过基于风险的自适应选择提供最优认证体验。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

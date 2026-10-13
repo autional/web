@@ -6,7 +6,7 @@ tags: ["Healthcare", "HIPAA", "Data Protection"]
 readTime: "10 min"
 excerpt: "HIPAA imposes strict technical requirements on access control, audit trails, and transmission security for healthcare information. This article details each HIPAA Security Rule specification related to identity authentication and how Autional builds a HIPAA-compliant identity infrastructure."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

@@ -6,7 +6,7 @@ tags: ["免密", "通行密钥", "演进史"]
 readTime: "8 分钟"
 excerpt: "从 1960 年代分时系统的密码，到 2026 年即将成为默认选项的通行密钥，身份认证走过了半个世纪的演进。本文复盘每一个关键里程碑，说明每一步解决了什么问题，以及下一步将走向哪里。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

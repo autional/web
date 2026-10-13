@@ -6,7 +6,7 @@ tags: ["Reconciliation", "Money Precision", "Payments", "Architecture"]
 readTime: "10 min"
 excerpt: "0.1 + 0.2 isn't 0.3 — not because computers can't add, but because money should never be stored approximately. And two ledgers will always drift apart: reconciliation doesn't compare totals, it compares every entry. From a stock exchange that \"lost\" half its index to rounding over 22 months, to a bank's 1.3-billion-record migration gone wrong — plus the disciplines that keep money honest."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

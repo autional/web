@@ -6,7 +6,7 @@ tags: ["MFA", "Quick Integration", "Dev Efficiency"]
 readTime: "6 min"
 excerpt: "Traditionally, adding multi-factor authentication to an existing system takes months of development. With Autional, you can go from app registration to a fully functional MFA deployment in just half a day. This article walks you through the entire process step by step."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -74,8 +74,8 @@ app.get('/auth/callback', async (req, res) => {
     body: JSON.stringify({
       grant_type: 'authorization_code',
       code,
-      client_id: process.env.AUTHMS_CLIENT_ID,
-      client_secret: process.env.AUTHMS_CLIENT_SECRET,
+      client_id: process.env.AUTIONAL_CLIENT_ID,
+      client_secret: process.env.AUTIONAL_CLIENT_SECRET,
       redirect_uri: 'https://yourapp.com/auth/callback',
     }),
   });

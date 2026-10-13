@@ -6,7 +6,7 @@ tags: ["医疗", "HIPAA", "数据保护"]
 readTime: "10 分钟"
 excerpt: "HIPAA 对医疗信息的访问控制、审计追踪与传输安全提出了严格的技术要求。本文逐条拆解 HIPAA 安全规则中与身份认证相关的规范，以及 Autional 如何构建符合 HIPAA 的身份基础设施。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

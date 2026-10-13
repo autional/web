@@ -6,7 +6,7 @@ tags: ["SLA", "SLO", "可靠性"]
 readTime: "8 分钟"
 excerpt: "99.9% 与 99.99% 相差 10 倍——对身份系统而言，这是每年 8.76 小时与 52 分钟不可用的差距。本文从 SLI 的选取出发，拆解 Autional 如何通过健康检查、双探针与错误预算机制达成企业级可用性保障。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

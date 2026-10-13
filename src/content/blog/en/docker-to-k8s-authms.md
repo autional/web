@@ -6,7 +6,7 @@ tags: ["Docker", "Kubernetes", "Deployment"]
 readTime: "10 min"
 excerpt: "Autional's deployment journey started with docker-compose for local development and eventually reached production-grade Kubernetes clusters. This article documents key decisions along the way: how to design Dockerfiles for build-once-run-anywhere, managing stateful services in K8s, ConfigMap and Secrets best practices, and real-world results of horizontal autoscaling."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -36,7 +36,7 @@ Infrastructure dependencies (PostgreSQL, Redis, RabbitMQ) run locally via `docke
 docker compose -f docker-compose.infra.yml up -d
 ```
 
-This file contains only infrastructure containers — none of the 15 microservices run through Docker; they run as native Go binaries directly on Windows. The benefits:
+This file contains only infrastructure containers — none of the 27 microservices run through Docker; they run as native Go binaries directly on Windows. The benefits:
 - Near-zero latency hot-reload (Go compilation typically < 5s)
 - Direct delve debugger support for breakpoint debugging
 - Environment variables and config files read directly from the local filesystem
@@ -47,7 +47,7 @@ When deployment to a test environment or small production environment is needed,
 
 ### Unified Dockerfile: One Template for 15 Services
 
-Autional has 15 microservices but only **one Dockerfile** (at `docker/Dockerfile.service`). All differentiation is done via build args:
+Autional has 27 microservices but only **one Dockerfile** (at `docker/Dockerfile.service`). All differentiation is done via build args:
 
 ```dockerfile
 ARG SERVICE_NAME          # e.g., identity-service
@@ -62,7 +62,7 @@ docker build \
   --build-arg SERVICE_NAME=identity-service \
   --build-arg SERVICE_PORT=11001 \
   -f docker/Dockerfile.service \
-  -t authms/identity-service:latest .
+  -t autional/identity-service:latest .
 ```
 
 The core value of this design: **adding a new service does not require a new Dockerfile.** As long as the service follows the standard directory structure (`micro-services/{name}/cmd/server/main.go`), the build system automatically adapts. All 15 services share the same build layer cache (Go dependency cache, build cache), so building a second service with `--build-arg` after the first takes only seconds.
@@ -101,7 +101,7 @@ services:
         SERVICE_PORT: 11001
     environment:
       <<: [*postgres-env, *redis-env]
-      POSTGRES_DB: authms_identity
+      POSTGRES_DB: autional_identity
     ports:
       - "11001:11001"
 ```
@@ -230,14 +230,14 @@ flowchart TD
 ```yaml
 # api role
 - name: audit-service-api
-  image: authms/audit-service:latest
+  image: autional/audit-service:latest
   env:
   - name: ROLE
     value: "api"
 
 # processor role
 - name: audit-service-processor
-  image: authms/audit-service:latest
+  image: autional/audit-service:latest
   env:
   - name: ROLE
     value: "processor"

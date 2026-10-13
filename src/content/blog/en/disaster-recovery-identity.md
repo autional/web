@@ -6,7 +6,7 @@ tags: ["Disaster Recovery", "High Availability", "Backup"]
 readTime: "8 min"
 excerpt: "The identity system is the one piece of infrastructure that cannot fail — when it goes down, every service that depends on it becomes unavailable. This article systematically examines Autional's disaster recovery strategy across three typical disaster scenarios: database corruption, regional outage, and misconfigured rollout. Covering PITR backups, stateless painless rebuilds, DLQ message preservation, and minimizing blast radius through architecture."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -32,7 +32,7 @@ At 2:15 AM, a DBA running a data cleanup script misses a `WHERE` clause and trun
 
 **Step 1: Point-in-Time Recovery (PITR)**
 
-Autional gives each service its own independent PostgreSQL database (`authms_identity`, `authms_session`, `authms_mfa`, etc.), each backed up independently, so recovery doesn't require rebuilding the entire cluster. Autional backup strategy:
+Autional gives each service its own independent PostgreSQL database (`autional_identity`, `autional_session`, `autional_mfa`, etc.), each backed up independently, so recovery doesn't require rebuilding the entire cluster. Autional backup strategy:
 
 - **Full backup**: `pg_dump` daily at 2:00 AM, retained 30 days
 - **Incremental backup**: WAL archive every hour, retained 7 days

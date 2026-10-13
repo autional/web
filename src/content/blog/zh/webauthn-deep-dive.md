@@ -6,7 +6,7 @@ tags: ["WebAuthn", "FIDO2", "Passkey"]
 readTime: "12 分钟"
 excerpt: "WebAuthn 是近年来身份认证领域最重要的标准。本文从 CTAP2 协议讲起，逐层拆解完整的注册与认证流程，梳理平台认证器与漫游认证器的安全差异，并展示 Autional 的 mfa-service 与 identity-service 如何协作，交付一套完整的 WebAuthn 服务端实现。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -68,7 +68,7 @@ Server Processing:
 Server → Client:
     {
       "challenge": "base64url...",
-      "rp": { "id": "iam.tianv.com", "name": "Autional" },
+      "rp": { "id": "auth.autional.com", "name": "Autional" },
       "user": {
         "id": "base64url...",
         "name": "user@example.com",
@@ -86,7 +86,7 @@ Server → Client:
     }
 ```
 
-`rp.id` 是 Relying Party ID——它必须是当前域名的合法子集。例如服务运行在 `iam.tianv.com` 上，`rp.id` 可以是 `iam.tianv.com`，但不能是 `example.com`。这个限制是 WebAuthn 抗钓鱼的核心机制之一。
+`rp.id` 是 Relying Party ID——它必须是当前域名的合法子集。例如服务运行在 `auth.autional.com` 上，`rp.id` 可以是 `auth.autional.com`，但不能是 `example.com`。这个限制是 WebAuthn 抗钓鱼的核心机制之一。
 
 `authenticatorSelection` 控制：
 

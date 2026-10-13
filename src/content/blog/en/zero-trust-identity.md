@@ -6,7 +6,7 @@ tags: ["Zero Trust", "Continuous Verification", "Security Architecture"]
 readTime: "8 min"
 excerpt: "Enterprise security is undergoing a fundamental shift from the castle-moat model to zero trust architecture. Why is VPN no longer a guarantee of security? How are continuous verification and dynamic trust reshaping identity authentication systems?"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

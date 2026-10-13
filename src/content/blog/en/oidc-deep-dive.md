@@ -6,7 +6,7 @@ tags: ["OIDC", "OpenID Connect", "OAuth"]
 readTime: "10 min"
 excerpt: "OIDC is an identity layer built on top of OAuth 2.0. This article provides an in-depth analysis of ID Token structure (JWT claims), the UserInfo endpoint's role, the differences between Authorization Code, Implicit, and Hybrid flows, and how Autional oauth-service delivers complete OIDC Provider capabilities."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -48,7 +48,7 @@ The ID Token is OIDC's core innovation. It's a JWT signed by the authorization s
 
 // Payload
 {
-  "iss": "https://iam.tianv.com",                    // Issuer
+  "iss": "https://api.autional.com",                    // Issuer
   "sub": "01ARZ3NDEKTSV4RRFFQ69G5FAV",           // Subject (user unique ID)
   "aud": "app_client_id_12345",                   // Audience (must be the client's client_id)
   "exp": 1715693800,                              // Expiration time
@@ -241,8 +241,8 @@ Autional oauth-service is a complete OIDC Provider, implementing the following e
 Each tenant can have its own independent OIDC domain and configuration:
 
 ```
-https://tenant-a.iam.tianv.com/.well-known/openid-configuration
-https://tenant-b.iam.tianv.com/.well-known/openid-configuration
+https://api.autional.com/tenant-a/.well-known/openid-configuration
+https://api.autional.com/tenant-b/.well-known/openid-configuration
 ```
 
 Each tenant's JWK key pair is managed independently, and key rotation happens at the tenant level. This means a key leak in one tenant doesn't affect others.
@@ -283,7 +283,7 @@ Below is a standard OIDC client integration with Autional:
 ```javascript
 // 1. Discover OIDC Provider configuration
 const config = await fetch(
-  'https://iam.tianv.com/.well-known/openid-configuration'
+  'https://api.autional.com/.well-known/openid-configuration'
 ).then(r => r.json());
 
 // 2. Build authorization request

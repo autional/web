@@ -6,7 +6,7 @@ tags: ["多租户", "SaaS", "隔离", "B2B"]
 readTime: "9 分钟"
 excerpt: "B2B SaaS 平台中多租户身份管理的架构模式——隔离、性能与合规的取舍。"
 status: "verified"
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

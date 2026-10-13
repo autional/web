@@ -6,7 +6,7 @@ tags: ["SSO", "SAML", "OAuth" ,"OIDC"]
 readTime: "12 分钟"
 excerpt: "面向 2026 年企业部署场景的 SSO 综合指南，涵盖架构模式、协议选型与安全最佳实践。"
 status: "verified"
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

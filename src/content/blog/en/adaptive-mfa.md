@@ -6,7 +6,7 @@ tags: ["MFA", "Security", "AI"]
 readTime: "9 min"
 excerpt: "Traditional MFA strategies take a one-size-fits-all approach — either annoying users or leaving security gaps. Autional's Adaptive MFA engine evaluates 7 risk dimensions including device fingerprint, IP reputation, and behavioral patterns to dynamically determine authentication strength: silently pass low-risk logins, enforce hardware keys for high-risk ones. This article dives into the risk engine design and real-world applications."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

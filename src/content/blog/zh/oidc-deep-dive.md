@@ -6,7 +6,7 @@ tags: ["OIDC", "OpenID Connect", "OAuth"]
 readTime: "10 分钟"
 excerpt: "OIDC 是构建在 OAuth 2.0 之上的身份层。本文深入解析 ID Token 的结构（JWT claims）、UserInfo 端点的作用、授权码/Implicit/混合三种流程的差异，以及 Autional oauth-service 如何提供完整的 OIDC Provider 能力。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -48,7 +48,7 @@ ID Token 是 OIDC 的核心创新。它是由授权服务器签名的 JWT，包�
 
 // Payload
 {
-  "iss": "https://iam.tianv.com",                    // Issuer
+  "iss": "https://api.autional.com",                    // Issuer
   "sub": "01ARZ3NDEKTSV4RRFFQ69G5FAV",           // Subject (user unique ID)
   "aud": "app_client_id_12345",                   // Audience (must be the client's client_id)
   "exp": 1715693800,                              // Expiration time
@@ -241,8 +241,8 @@ Autional oauth-service 是一个完整的 OIDC Provider，实现以下端点：
 每个租户可以拥有独立的 OIDC 域名与配置：
 
 ```
-https://tenant-a.iam.tianv.com/.well-known/openid-configuration
-https://tenant-b.iam.tianv.com/.well-known/openid-configuration
+https://api.autional.com/tenant-a/.well-known/openid-configuration
+https://api.autional.com/tenant-b/.well-known/openid-configuration
 ```
 
 每个租户的 JWK 密钥对独立管理，密钥轮换在租户级别进行。这意味着某个租户的密钥泄露不会影响其他租户。
@@ -283,7 +283,7 @@ oidc:
 ```javascript
 // 1. Discover OIDC Provider configuration
 const config = await fetch(
-  'https://iam.tianv.com/.well-known/openid-configuration'
+  'https://api.autional.com/.well-known/openid-configuration'
 ).then(r => r.json());
 
 // 2. Build authorization request

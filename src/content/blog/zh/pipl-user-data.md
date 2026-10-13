@@ -6,7 +6,7 @@ tags: ["PIPL", "数据隐私", "个人信息保护"]
 readTime: "9 分钟"
 excerpt: "深入解析《中华人民共和国个人信息保护法》（PIPL）对用户数据管理的影响，并说明 Autional 如何通过内置的告知同意、DSAR 自动化、审计留痕等能力，帮助企业达成合规。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

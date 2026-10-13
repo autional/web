@@ -6,7 +6,7 @@ tags: ["安全", "通行密钥", "WebAuthn"]
 readTime: "8 分钟"
 excerpt: "深入解析 FIDO2/WebAuthn 协议，并手把手演示如何在 Autional 中启用通行密钥（Passkey）免密登录，兼顾安全性与用户体验。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

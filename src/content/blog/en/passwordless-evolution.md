@@ -6,7 +6,7 @@ tags: ["Passwordless", "Passkey", "Evolution"]
 readTime: "8 min"
 excerpt: "From 1960s time-sharing system passwords to Passkeys set to become the default in 2026, identity authentication has undergone half a century of evolution. This article reviews every key milestone, explaining why each step solved the previous problem and where the next step is headed."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

@@ -6,7 +6,7 @@ tags: ["账号生命周期", "JML", "权限回收", "安全", "离职"]
 readTime: "10 分钟"
 excerpt: "账号不是「开」出来的，是「请」进来的；权限不是一个个「勾」的，是按工种整包发的；人走的时候，不是退块工牌——是把门、钥匙、还开着的灯一起断掉。本文用夏威夷卫生部 3400 份死亡记录、Okta 366 家租户、Twitter 2020 三个真实教训，讲清入职、转岗、离职三件事背后的同一条生命线。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

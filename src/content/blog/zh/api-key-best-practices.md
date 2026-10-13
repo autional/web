@@ -6,7 +6,7 @@ tags: ["API Key", "密钥管理", "安全实践"]
 readTime: "7 分钟"
 excerpt: "硬编码的 API Key 是攻击者的金矿。从 GitHub 泄密到生产环境失陷，一个泄露的密钥就足以让整个安全边界崩塌。本文介绍 Autional 如何做到零摩擦的安全密钥管理。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

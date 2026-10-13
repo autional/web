@@ -6,7 +6,7 @@ tags: ["数据权限", "行级权限", "字段级", "访问控制", "安全"]
 readTime: "9 分钟"
 excerpt: "「有查看订单权限」不等于「能看所有订单」——同一个按钮背后是两件事：准不准你点，和点下去你能碰到哪些数据。行级管「哪几条」，字段级管「哪几样」。本文用 USPS 6000 万用户的事故讲清这道边界的必要性，给出 PostgreSQL RLS 与字段脱敏的落地方式，以及为什么「界面上藏住」根本不等于安全。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

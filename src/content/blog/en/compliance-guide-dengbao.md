@@ -6,7 +6,7 @@ tags: ["Dengbao", "Compliance", "Security Certification"]
 readTime: "10 minutes"
 excerpt: "An in-depth interpretation of Dengbao 2.0's specific requirements for identity authentication systems, and how Autional helps you pass dengbao evaluation through built-in security capabilities."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

@@ -6,7 +6,7 @@ tags: ["幂等", "支付", "分布式", "架构"]
 readTime: "9 分钟"
 excerpt: "用户在付款页卡住时连点两下、后端超时后自动重试、支付渠道的回调重复投递——重复请求不是异常，而是常态。幂等设计要回答的只有一个问题：同一笔付款，系统认不认得出它和第一次是同一笔？本文拆解状态机、幂等键、回调验签三道关，并用「先冻结、再扣款」解释资金为什么要多走一步。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

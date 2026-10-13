@@ -6,7 +6,7 @@ tags: ["金融", "合规", "PCI-DSS"]
 readTime: "10 分钟"
 excerpt: "金融行业面对最严苛的身份合规要求。本文深入剖析 PCI-DSS、中国等保（MLPS）与 KYC 如何具体约束身份系统，以及如何借助 Autional 的 compliance-service 与 wallet-service 构建合规的金融身份基础设施。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

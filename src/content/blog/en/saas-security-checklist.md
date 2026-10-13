@@ -6,7 +6,7 @@ tags: ["Security Checklist", "SaaS", "Best Practices"]
 readTime: "8 min"
 excerpt: "A 30-item identity security checklist for SaaS product owners and technical decision-makers. Covers eight domains: password policy, MFA enforcement, session management, API security, audit logging, data encryption, access control, and supply chain security. Each item includes 'What to check' and 'How Autional does it.' Complete a systematic security self-audit in 30 minutes."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

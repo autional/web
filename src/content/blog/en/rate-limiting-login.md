@@ -6,7 +6,7 @@ tags: ["Rate Limiting", "DDoS", "Security"]
 readTime: "9 min"
 excerpt: "Login endpoints are attackers' favorite targets. From token buckets to sliding windows, from IP-level to user-level rate limiting, from single-node to distributed rate limiting—this article walks through a real brute-force attack scenario, layer by layer, showing the evolution of rate-limiting strategies and how Autional gateway-service provides configurable multi-dimensional protection for every tenant."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

@@ -6,7 +6,7 @@ tags: ["Decision Guide", "Upgrade", "Assessment"]
 readTime: "6 min"
 excerpt: "Is your login system built in-house or using an open-source library? Have customers asked about SSO or MFA and you couldn't answer? Has your login endpoint ever been brute-forced? Can your audit logs tell you who did what? — If these questions make you uneasy, it's time to consider an upgrade. This article outlines 5 clear signals to help you make the right decision at the right time."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

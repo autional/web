@@ -6,7 +6,7 @@ tags: ["Idempotency", "Payments", "Distributed Systems", "Architecture"]
 readTime: "9 min"
 excerpt: "A user double-clicks when the payment page stalls, a backend retries after a timeout, a payment provider redelivers its callback — duplicate requests aren't an anomaly, they're the norm. Idempotency design answers one question: when the same payment arrives twice, can the system tell it's the same payment? This article breaks down the three gates — state machine, idempotency key, webhook signature — and why money moves through a freeze-then-capture step."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

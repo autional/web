@@ -6,7 +6,7 @@ tags: ["AI 应用", "统一认证", "SSO"]
 readTime: "9 分钟"
 excerpt: "AI 编程工具能在几小时内产出一个功能完整的应用，但当你拥有 3 个甚至更多 AI 生成的应用时，身份认证就变成了一座巴别塔。本文探讨 Autional 的统一认证层如何解决这一挑战。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

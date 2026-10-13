@@ -6,7 +6,7 @@ tags: ["Go", "Performance", "High Concurrency"]
 readTime: "10 min"
 excerpt: "From concurrency models to memory usage, from cold start to throughput — a comprehensive comparison of Go microservices versus PHP monolith in identity authentication scenarios. During flash-sale login surges, Go achieves over 20x the throughput of PHP."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -181,7 +181,7 @@ Here are the key practices Autional has accumulated with Go microservice archite
 
 ### 1. Independent Compilation per Service
 
-Each of the 15 microservices is an independent Go module, referencing local dependencies via `replace` directives. This means modifying `base/error` only requires recompiling the 2-3 affected services, not the entire project.
+Each of the 27 microservices is an independent Go module, referencing local dependencies via `replace` directives. This means modifying `base/error` only requires recompiling the 2-3 affected services, not the entire project.
 
 ### 2. Generics Reduce Code Duplication
 

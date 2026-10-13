@@ -6,7 +6,7 @@ tags: ["SaaS", "Enterprise", "Compliance"]
 readTime: "8 min"
 excerpt: "Compliance is no longer a cost center—it's a core competitive advantage for SaaS products. This article analyzes how Autional helps SaaS teams turn security and compliance capabilities into a key weapon for winning enterprise customers."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

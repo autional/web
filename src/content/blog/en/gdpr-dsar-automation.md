@@ -6,7 +6,7 @@ tags: ["GDPR", "DSAR", "Privacy", "Automation"]
 readTime: "10 min"
 excerpt: "How to automate GDPR Data Subject Access Requests (DSAR) using modern IAM platforms with hash-chain audit verification."
 status: "verified"
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

@@ -6,7 +6,7 @@ tags: ["TCO", "ROI", "自建与采购"]
 readTime: "9 分钟"
 excerpt: "「登录系统我们自己写一个不就行了，为什么要花钱买？」——几乎每一位潜在的 Autional 客户都问过这个问题。本文用真实的工程经济学算一笔账：3 个月开发加持续维护的完整 TCO，以及那些常被忽略的隐性成本——安全审计、合规补课与研发上手文档。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

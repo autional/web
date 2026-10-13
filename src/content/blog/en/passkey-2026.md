@@ -6,7 +6,7 @@ tags: ["Security", "Passkey", "WebAuthn"]
 readTime: "8 min"
 excerpt: "An in-depth look at the FIDO2/WebAuthn protocol, with a step-by-step guide to enabling Passkey passwordless authentication in Autional for enhanced security and user experience."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

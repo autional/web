@@ -6,7 +6,7 @@ tags: ["账号找回", "恢复码", "安全", "NIST"]
 readTime: "9 分钟"
 excerpt: "恢复是账号「最弱的那一刻」——它是绕开日常钥匙的后门，所以必须更重、更慢。邮箱码、短信码、恢复码、恢复联系人，四条「第二条路」各有失效时刻；设计不当的找回流程，会从救命通道变成「账号探测器」。本文按 NIST SP 800-63B-4 讲清恢复流程的四个防冒充要件，以及一次性恢复码、完成即踢会话等关键做法。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

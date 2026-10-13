@@ -6,7 +6,7 @@ tags: ["Identity Lifecycle", "JML", "Access Review", "Security", "Offboarding"]
 readTime: "10 min"
 excerpt: "Accounts aren't \"created\" — they're invited. Permissions aren't ticked one by one — they come as whole job packages. And when someone leaves, it isn't a badge handed back: it's the door, the keys, and every light still on, cut together. Three real lessons — 3,400 death records in Hawaii, 366 Okta tenants, and Twitter in 2020 — behind one lifecycle."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

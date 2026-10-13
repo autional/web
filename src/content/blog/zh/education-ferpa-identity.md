@@ -6,7 +6,7 @@ tags: ["教育", "FERPA", "未成年人"]
 readTime: "8 分钟"
 excerpt: "教育科技产品同时面对 FERPA（学生教育记录保护）、COPPA（儿童在线隐私保护）以及复杂的角色层级（学生/家长/教师/管理员）。本文分析如何在保护未成年人的前提下构建灵活的教育身份系统。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

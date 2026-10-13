@@ -6,7 +6,7 @@ tags: ["Education", "FERPA", "Minors"]
 readTime: "8 min"
 excerpt: "EdTech products face FERPA (student education records protection), COPPA (children's online privacy protection), and complex role hierarchies (student/parent/teacher/admin). This article analyzes how to build a flexible education identity system while protecting minors."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

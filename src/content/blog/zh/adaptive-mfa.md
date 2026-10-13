@@ -6,7 +6,7 @@ tags: ["MFA", "安全", "AI"]
 readTime: "9 分钟"
 excerpt: "传统的 MFA 策略采取一刀切的做法——要么让用户烦不胜烦，要么留下安全缺口。Autional 的自适应 MFA 引擎评估设备指纹、IP 信誉、行为模式等 7 个风险维度，动态决定认证强度：低风险登录静默放行，高风险登录强制使用硬件密钥。本文深入剖析风险引擎的设计与实际应用。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

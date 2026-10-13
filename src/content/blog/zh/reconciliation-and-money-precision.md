@@ -6,7 +6,7 @@ tags: ["对账", "金额精度", "支付", "浮点数"]
 readTime: "10 分钟"
 excerpt: "0.1 加 0.2 不等于 0.3，不是电脑不会算——是钱压根不该用「差不多」的方式存。而两本账之间必然有差：对账要做的不是对总数，是对每一笔。本文从 Vancouver 交易所 22 个月「跌掉一半」的舍入事故讲到 TSB 银行 13 亿条数据的迁移故障，给出差异处理、时间戳纪律与金额存储的完整做法。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

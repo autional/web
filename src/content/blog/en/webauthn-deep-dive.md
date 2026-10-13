@@ -6,7 +6,7 @@ tags: ["WebAuthn", "FIDO2", "Passkey"]
 readTime: "12 min"
 excerpt: "WebAuthn is the most important standard in identity authentication in recent years. This article starts from the CTAP2 protocol, analyzes the complete registration and authentication flows layer by layer, examines the security differences between platform authenticators and roaming authenticators, and shows how Autional mfa-service + identity-service collaborate to deliver a complete WebAuthn server-side implementation."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -68,7 +68,7 @@ Server Processing:
 Server → Client:
     {
       "challenge": "base64url...",
-      "rp": { "id": "iam.tianv.com", "name": "Autional" },
+      "rp": { "id": "auth.autional.com", "name": "Autional" },
       "user": {
         "id": "base64url...",
         "name": "user@example.com",
@@ -86,7 +86,7 @@ Server → Client:
     }
 ```
 
-`rp.id` is the Relying Party ID — it must be a valid subset of the current domain. For example, if the service runs on `iam.tianv.com`, `rp.id` can be `iam.tianv.com`, but cannot be `example.com`. This restriction is one of WebAuthn's core anti-phishing mechanisms.
+`rp.id` is the Relying Party ID — it must be a valid subset of the current domain. For example, if the service runs on `auth.autional.com`, `rp.id` can be `auth.autional.com`, but cannot be `example.com`. This restriction is one of WebAuthn's core anti-phishing mechanisms.
 
 `authenticatorSelection` controls:
 - `authenticatorAttachment: "platform"` — platform authenticators only (e.g., Touch ID, Windows Hello)

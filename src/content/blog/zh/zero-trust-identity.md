@@ -6,7 +6,7 @@ tags: ["零信任", "持续验证", "安全架构"]
 readTime: "8 分钟"
 excerpt: "企业安全正在从城堡-护城河模型向零信任架构发生根本性转变。为什么 VPN 不再是安全的保障？持续验证与动态信任又如何重塑身份认证体系？"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

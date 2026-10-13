@@ -6,7 +6,7 @@ tags: ["数据库隔离", "微服务", "数据安全"]
 readTime: "8 分钟"
 excerpt: "Autional 的 27 个微服务各自拥有独立的 PostgreSQL 数据库。这种「数据库即服务边界」的模式带来了故障隔离、独立扩缩容与更坚固的安全边界。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -61,20 +61,20 @@ flowchart TD
 
 | 服务 | 数据库 | 核心职责 |
 |---------|----------|-------------------|
-| identity-service | `authms_identity` | 用户、角色、权限、租户 |
-| profile-service | `authms_profile` | 用户扩展属性、部门 |
-| tenant-service | `authms_tenant` | 租户配置、订阅、白标 |
-| session-service | `authms_session` | 登录会话、刷新令牌 |
-| mfa-service | `authms_mfa` | 多因素认证（TOTP/短信/邮件） |
-| oauth-service | `authms_oauth` | OAuth 2.0 / OIDC 授权 |
-| wallet-service | `authms_wallet` | 钱包余额、交易流水 |
-| point-service | `authms_point` | 积分体系 |
-| billing-service | `authms_billing` | 计费、账单、支付 |
-| notification-service | `authms_notification` | 通知模板、渠道、发送记录 |
-| communication-service | `authms_communication` | 邮件、短信、Webhook |
-| storage-service | `authms_storage` | 文件存储元数据 |
-| audit-service | `authms_audit`（MongoDB） | 审计日志 |
-| compliance-service | `authms_compliance` | 合规报告、数据导出 |
+| identity-service | `autional_identity` | 用户、角色、权限、租户 |
+| profile-service | `autional_profile` | 用户扩展属性、部门 |
+| tenant-service | `autional_tenant` | 租户配置、订阅、白标 |
+| session-service | `autional_session` | 登录会话、刷新令牌 |
+| mfa-service | `autional_mfa` | 多因素认证（TOTP/短信/邮件） |
+| oauth-service | `autional_oauth` | OAuth 2.0 / OIDC 授权 |
+| wallet-service | `autional_wallet` | 钱包余额、交易流水 |
+| point-service | `autional_point` | 积分体系 |
+| billing-service | `autional_billing` | 计费、账单、支付 |
+| notification-service | `autional_notification` | 通知模板、渠道、发送记录 |
+| communication-service | `autional_communication` | 邮件、短信、Webhook |
+| storage-service | `autional_storage` | 文件存储元数据 |
+| audit-service | `autional_audit`（MongoDB） | 审计日志 |
+| compliance-service | `autional_compliance` | 合规报告、数据导出 |
 | 其他服务 | 各自独立数据库 | — |
 
 > 说明：audit-service 使用 MongoDB 而不是 PostgreSQL，因为审计日志数据是面向文档的（非结构化、以追加为主、时序写入），访问模式与关系型数据库有本质区别。这种数据库类型的多样性本身就是隔离带来的好处。
@@ -87,8 +87,8 @@ flowchart TD
 # tenant-service connection config
 POSTGRES_HOST: postgres
 POSTGRES_PORT: 5432
-POSTGRES_DB: authms_tenant
-POSTGRES_USER: authms_tenant
+POSTGRES_DB: autional_tenant
+POSTGRES_USER: autional_tenant
 POSTGRES_PASSWORD: ${TENANT_DB_PASSWORD}
 ```
 
@@ -160,10 +160,10 @@ flowchart TD
 
 当用户注册时，会涉及多个服务：
 
-1. identity-service 创建用户 → 写入 `authms_identity`
+1. identity-service 创建用户 → 写入 `autional_identity`
 2. 发布 `user.created` 事件到 RabbitMQ
-3. profile-service 消费事件 → 创建默认档案 → 写入 `authms_profile`
-4. wallet-service 消费事件 → 创建空钱包 → 写入 `authms_wallet`
+3. profile-service 消费事件 → 创建默认档案 → 写入 `autional_profile`
+4. wallet-service 消费事件 → 创建空钱包 → 写入 `autional_wallet`
 
 如果第 3 步失败，事件会进入死信队列（DLQ），触发告警并重试。
 
@@ -235,7 +235,7 @@ func (s *WalletService) Withdraw(ctx context.Context, req *WithdrawRequest) erro
 pg_dumpall -h pgbouncer -U authuser > /backups/all_dbs_$(date +%Y%m%d).sql
 
 # Single DB backup (on-demand, e.g., identity hourly)
-pg_dump -h pgbouncer -U authuser -d authms_identity > /backups/identity_$(date +%Y%m%d%H).sql
+pg_dump -h pgbouncer -U authuser -d autional_identity > /backups/identity_$(date +%Y%m%d%H).sql
 ```
 
 隔离带来了更灵活的备份粒度。审计日志（数十 GB、每日增量大）可以有自己的备份窗口，与身份核心数据（数百 MB、变更频率低）分开。

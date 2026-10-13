@@ -6,7 +6,7 @@ tags: ["gRPC", "服务间通信", "安全"]
 readTime: "7 分钟"
 excerpt: "Autional 如何用 gRPC 构建微服务之间的安全通信层——从 Protobuf 的效率优势，到 TLS/mTLS 传输安全，从 JWT + API Key 双模式认证，到全链路 OpenTelemetry 追踪。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

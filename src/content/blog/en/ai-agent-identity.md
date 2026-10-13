@@ -6,7 +6,7 @@ tags: ["AI Agent", "AI Security", "Future"]
 readTime: "9 min"
 excerpt: "When an AI Agent sends emails, approves purchases, and commits code on your behalf, identity systems face a thorny question: who actually completed the authentication — the AI or the human? This article explores the frontier challenges of Non-Human Identity (NHI) management and Autional's approach."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

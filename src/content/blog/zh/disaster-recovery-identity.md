@@ -6,7 +6,7 @@ tags: ["容灾", "高可用", "备份"]
 readTime: "8 分钟"
 excerpt: "身份系统是唯一不能出故障的基础设施——它一旦宕机，所有依赖它的服务都会随之不可用。本文系统梳理 Autional 在三类典型灾难场景下的容灾策略：数据库损坏、区域级故障、配置发布失误。涵盖 PITR 备份、无状态服务的快速重建、DLQ 消息保全，以及如何通过架构设计把故障影响半径压到最小。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -32,7 +32,7 @@ claims_reviewed: true
 
 **第一步：时间点恢复（PITR）**
 
-Autional 为每个服务分配独立的 PostgreSQL 数据库（`authms_identity`、`authms_session`、`authms_mfa` 等），各自独立备份，恢复时无需重建整个集群。Autional 的备份策略：
+Autional 为每个服务分配独立的 PostgreSQL 数据库（`autional_identity`、`autional_session`、`autional_mfa` 等），各自独立备份，恢复时无需重建整个集群。Autional 的备份策略：
 
 - **全量备份**：每天凌晨 2:00 执行 `pg_dump`，保留 30 天
 - **增量备份**：每小时归档 WAL，保留 7 天

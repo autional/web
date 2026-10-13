@@ -6,7 +6,7 @@ tags: ["政府", "信创", "SM 算法"]
 readTime: "10 分钟"
 excerpt: "政务信息系统对身份认证有独特的技术要求：等保三级是基线，SM2/SM3/SM4 算法是硬性要求，信创环境适配是部署前提。本文分析政务场景下身份系统的建设策略，以及 Autional 如何支撑这些要求。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

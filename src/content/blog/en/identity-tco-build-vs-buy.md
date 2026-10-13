@@ -6,7 +6,7 @@ tags: ["TCO", "ROI", "Build vs Buy"]
 readTime: "9 min"
 excerpt: "\"We can just build a login system ourselves — why pay for it?\" — nearly every potential Autional customer has asked this question. This article uses real engineering economics to run the numbers: the complete TCO of 3 months of development plus ongoing maintenance, and the hidden costs that are often overlooked — security audits, compliance fill-ins, and developer onboarding documentation."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

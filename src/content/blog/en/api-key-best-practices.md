@@ -6,7 +6,7 @@ tags: ["API Key", "Key Management", "Security Practices"]
 readTime: "7 minutes"
 excerpt: "Hardcoded API keys are a goldmine for attackers. From GitHub leaks to production compromise, a single compromised key can collapse your entire security boundary. Learn how Autional achieves zero-friction secure key management."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

@@ -6,7 +6,7 @@ tags: ["微服务", "架构演进", "工程"]
 readTime: "15 分钟"
 excerpt: "Autional 从一个初创公司的单体应用，演进为支撑企业级身份认证的 27 个独立微服务。本文深入拆分的动因、方法论、技术挑战与踩过的坑，涵盖分布式追踪、优雅停机、数据库隔离等关键决策——为考虑微服务化的团队提供一手参考。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

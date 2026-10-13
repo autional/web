@@ -6,7 +6,7 @@ tags: ["JWT", "Session", "令牌"]
 readTime: "12 分钟"
 excerpt: "JWT 与 Session Token 是身份认证系统中最基础的两种令牌形态。本文从安全、性能、扩展性与无状态四个维度做完整对比，并解析 Autional 的 session-service 如何通过双模式并存，让你不必在两者之间二选一。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

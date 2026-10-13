@@ -6,7 +6,7 @@ tags: ["Go", "性能", "高并发"]
 readTime: "10 分钟"
 excerpt: "从并发模型到内存占用，从冷启动到吞吐量——在身份认证场景下全面对比 Go 微服务与 PHP 单体。在秒杀登录洪峰中，Go 的吞吐量可达 PHP 的 20 倍以上。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

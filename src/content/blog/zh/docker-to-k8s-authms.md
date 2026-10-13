@@ -6,7 +6,7 @@ tags: ["Docker", "Kubernetes", "部署"]
 readTime: "10 分钟"
 excerpt: "Autional 的部署之路从本地开发的 docker-compose 起步，最终走到生产级 Kubernetes 集群。本文记录了沿途的关键决策：如何设计「一次构建、处处运行」的 Dockerfile、如何在 K8s 中管理有状态服务、ConfigMap 与 Secret 的最佳实践，以及水平自动扩缩容的真实效果。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -62,7 +62,7 @@ docker build \
   --build-arg SERVICE_NAME=identity-service \
   --build-arg SERVICE_PORT=11001 \
   -f docker/Dockerfile.service \
-  -t authms/identity-service:latest .
+  -t autional/identity-service:latest .
 ```
 
 这个设计的核心价值是：**新增一个服务不需要新增 Dockerfile。** 只要服务遵循标准目录结构（`micro-services/{name}/cmd/server/main.go`），构建系统就会自动适配。27 个服务共用同一份构建层缓存（Go 依赖缓存、构建缓存），因此在构建完第一个服务后，用 `--build-arg` 构建第二个服务只需几秒。
@@ -101,7 +101,7 @@ services:
         SERVICE_PORT: 11001
     environment:
       <<: [*postgres-env, *redis-env]
-      POSTGRES_DB: authms_identity
+      POSTGRES_DB: autional_identity
     ports:
       - "11001:11001"
 ```
@@ -230,14 +230,14 @@ flowchart TD
 ```yaml
 # api role
 - name: audit-service-api
-  image: authms/audit-service:latest
+  image: autional/audit-service:latest
   env:
   - name: ROLE
     value: "api"
 
 # processor role
 - name: audit-service-processor
-  image: authms/audit-service:latest
+  image: autional/audit-service:latest
   env:
   - name: ROLE
     value: "processor"

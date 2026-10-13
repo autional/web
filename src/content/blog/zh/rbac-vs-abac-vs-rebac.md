@@ -6,7 +6,7 @@ tags: ["RBAC", "ABAC", "ReBAC", "权限模型", "最小权限"]
 readTime: "10 分钟"
 excerpt: "登录成功只是进门，进门之后「你能做什么」是另一套规矩。RBAC 按岗位、ABAC 按条件、ReBAC 按关系——三种模型答的是三个不同的问题。本文从 NIST 的标准时间线讲到 Google Zanzibar 的万亿级实践，给出一张「什么场景选哪套」的决策表，以及 Autional 三层并存（角色打底、条件收窄、关系兜底）的落地方式。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

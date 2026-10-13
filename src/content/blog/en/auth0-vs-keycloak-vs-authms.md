@@ -6,7 +6,7 @@ tags: ["Competitive Analysis", "Auth0", "Keycloak"]
 readTime: "12 minutes"
 excerpt: "Auth0, Keycloak, and Autional are three representative identity platforms on the 2026 market, embodying SaaS closed-source, community open-source, and open-source portals/SDKs respectively. This article provides an in-depth 15-dimension comparison without bias — each product has its optimal use case, and the cost of choosing wrong is often not technical, but financial and compliance-related."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -25,7 +25,7 @@ This article provides an objective comparison across 15 dimensions. Disclaimer: 
 | Language | Node.js | Java (WildFly/Quarkus) | Go |
 | Runtime Memory (Idle) | N/A (SaaS) | 400-800 MB | 50-80 MB (per service) |
 | Database | Managed (opaque) | PostgreSQL / MySQL / Oracle | PostgreSQL (per-service databases) |
-| Microservices | No (black box) | No (single app) | Yes (15 independent microservices) |
+| Microservices | No (black box) | No (single app) | Yes (27 independent microservices) |
 | MFA Support | SMS / Email / TOTP / WebAuthn / Push | SMS / Email / TOTP / WebAuthn | SMS / Email / TOTP / WebAuthn / Biometrics |
 | SSO Protocols | OIDC / SAML / OAuth 2.0 / WS-Fed | OIDC / SAML / OAuth 2.0 | OIDC / SAML / OAuth 2.0 / CAS |
 | RBAC | Supported (requires additional payment) | Built-in | Built-in NIST RBAC (Core + Hierarchical + SoD) |

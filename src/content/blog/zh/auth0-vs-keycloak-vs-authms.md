@@ -6,7 +6,7 @@ tags: ["竞品分析", "Auth0", "Keycloak"]
 readTime: "12 分钟"
 excerpt: "Auth0、Keycloak 与 Autional 是 2026 年市场上三个有代表性的身份平台，分别代表 SaaS 闭源、社区开源与门户/SDK 开源三种路线。本文不带偏见地从 15 个维度深入对比——每款产品都有其最优场景，而选错的代价往往不是技术性的，而是财务与合规性的。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

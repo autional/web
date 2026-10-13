@@ -6,7 +6,7 @@ tags: ["OAuth", "安全", "移动端"]
 readTime: "7 分钟"
 excerpt: "OAuth 2.1 草案将 PKCE 变为所有授权码流程的强制要求，正式淘汰 Implicit 流程。本文讲解 PKCE 的原理、攻击场景、分步实现，以及 Autional 如何做到零代码适配 OAuth 2.1——oauth-service 已内置 PKCE，服务端全自动化。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

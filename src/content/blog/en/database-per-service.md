@@ -4,15 +4,15 @@ date: "2026-05-14"
 category: "Architecture"
 tags: ["Database Isolation", "Microservices", "Data Security"]
 readTime: "8 min"
-excerpt: "Autional's 16 microservices each have their own independent PostgreSQL database. This 'database-as-service-boundary' model delivers fault isolation, independent scaling, and hardened security boundaries."
+excerpt: "Autional's 27 microservices each have their own independent PostgreSQL database. This 'database-as-service-boundary' model delivers fault isolation, independent scaling, and hardened security boundaries."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
 In microservice architecture, one question keeps coming up: "Does every service really need its own database? Isn't sharing a single database simpler?"
 
-The answer is: for identity and authentication systems, database isolation isn't over-engineering — it's a **cornerstone of security and reliability**. Autional has strictly followed the Database-per-Service pattern from day one, with 16 microservices each having their own independent PostgreSQL database. Here are our design considerations and lessons learned.
+The answer is: for identity and authentication systems, database isolation isn't over-engineering — it's a **cornerstone of security and reliability**. Autional has strictly followed the Database-per-Service pattern from day one, with 27 microservices each having their own independent PostgreSQL database. Here are our design considerations and lessons learned.
 
 ## Why Can't We Share a Database?
 
@@ -61,20 +61,20 @@ That's real **fault isolation**.
 
 | Service | Database | Core Responsibility |
 |---------|----------|-------------------|
-| identity-service | `authms_identity` | Users, roles, permissions, tenants |
-| profile-service | `authms_profile` | Extended user attributes, departments |
-| tenant-service | `authms_tenant` | Tenant config, subscriptions, white-label |
-| session-service | `authms_session` | Login sessions, refresh tokens |
-| mfa-service | `authms_mfa` | Multi-factor auth (TOTP/SMS/Email) |
-| oauth-service | `authms_oauth` | OAuth 2.0 / OIDC authorization |
-| wallet-service | `authms_wallet` | Wallet balance, transaction history |
-| point-service | `authms_point` | Loyalty points system |
-| billing-service | `authms_billing` | Billing, invoices, payments |
-| notification-service | `authms_notification` | Notification templates, channels, send records |
-| communication-service | `authms_communication` | Email, SMS, Webhook |
-| storage-service | `authms_storage` | File storage metadata |
-| audit-service | `authms_audit` (MongoDB) | Audit logs |
-| compliance-service | `authms_compliance` | Compliance reports, data exports |
+| identity-service | `autional_identity` | Users, roles, permissions, tenants |
+| profile-service | `autional_profile` | Extended user attributes, departments |
+| tenant-service | `autional_tenant` | Tenant config, subscriptions, white-label |
+| session-service | `autional_session` | Login sessions, refresh tokens |
+| mfa-service | `autional_mfa` | Multi-factor auth (TOTP/SMS/Email) |
+| oauth-service | `autional_oauth` | OAuth 2.0 / OIDC authorization |
+| wallet-service | `autional_wallet` | Wallet balance, transaction history |
+| point-service | `autional_point` | Loyalty points system |
+| billing-service | `autional_billing` | Billing, invoices, payments |
+| notification-service | `autional_notification` | Notification templates, channels, send records |
+| communication-service | `autional_communication` | Email, SMS, Webhook |
+| storage-service | `autional_storage` | File storage metadata |
+| audit-service | `autional_audit` (MongoDB) | Audit logs |
+| compliance-service | `autional_compliance` | Compliance reports, data exports |
 | Other services | Independent DB each | — |
 
 > Note: audit-service uses MongoDB instead of PostgreSQL because audit log data is document-oriented (unstructured append-heavy data, time-series writes) with a fundamentally different access pattern from relational databases. This database type diversity is itself a benefit of isolation.
@@ -87,8 +87,8 @@ Each service connects to its own database using an independent database user:
 # tenant-service connection config
 POSTGRES_HOST: postgres
 POSTGRES_PORT: 5432
-POSTGRES_DB: authms_tenant
-POSTGRES_USER: authms_tenant
+POSTGRES_DB: autional_tenant
+POSTGRES_USER: autional_tenant
 POSTGRES_PASSWORD: ${TENANT_DB_PASSWORD}
 ```
 
@@ -160,10 +160,10 @@ Database isolation trades single-database ACID guarantees for **eventual consist
 
 When a user registers, multiple services are involved:
 
-1. identity-service creates user → writes to `authms_identity`
+1. identity-service creates user → writes to `autional_identity`
 2. Publishes `user.created` event to RabbitMQ
-3. profile-service consumes event → creates default profile → writes to `authms_profile`
-4. wallet-service consumes event → creates empty wallet → writes to `authms_wallet`
+3. profile-service consumes event → creates default profile → writes to `autional_profile`
+4. wallet-service consumes event → creates empty wallet → writes to `autional_wallet`
 
 If step 3 fails, the event enters the Dead Letter Queue (DLQ), triggering an alert for retry.
 
@@ -235,7 +235,7 @@ All 16 services' database connections go through PgBouncer (transaction pooling 
 pg_dumpall -h pgbouncer -U authuser > /backups/all_dbs_$(date +%Y%m%d).sql
 
 # Single DB backup (on-demand, e.g., identity hourly)
-pg_dump -h pgbouncer -U authuser -d authms_identity > /backups/identity_$(date +%Y%m%d%H).sql
+pg_dump -h pgbouncer -U authuser -d autional_identity > /backups/identity_$(date +%Y%m%d%H).sql
 ```
 
 Isolation enables more flexible backup granularity. Audit logs (tens of GB, large daily increments) can have their own backup window, separate from core identity data (hundreds of MB, low change frequency).

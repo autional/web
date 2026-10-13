@@ -6,7 +6,7 @@ tags: ["Observability", "OpenTelemetry", "Distributed Tracing"]
 readTime: "10 min"
 excerpt: "Identity systems are the bedrock of security infrastructure, and their observability directly impacts incident detection and root cause localization speed. This article dissects how Autional built a unified observability system integrating logs, metrics, and distributed tracing on top of OpenTelemetry, and demonstrates the practical value of full-link tracing through a slow-login troubleshooting case."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

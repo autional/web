@@ -6,7 +6,7 @@ tags: ["MFA", "TOTP", "FIDO2"]
 readTime: "10 min"
 excerpt: "MFA isn't just 'one more verification code.' Different MFA protocols vary enormously in security, user experience, and phishing resistance. This article compares TOTP, HOTP, SMS OTP, and FIDO2/WebAuthn — the four mainstream MFA protocols — across working principles, security strengths, and applicable scenarios, and shows how Autional mfa-service delivers an optimal authentication experience through risk-based adaptive selection."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

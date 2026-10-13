@@ -6,7 +6,7 @@ tags: ["SaaS", "创业公司", "架构"]
 readTime: "8 分钟"
 excerpt: "SaaS 创始人最常见的错误之一，就是低估身份系统的复杂度。本文梳理从 MVP 到企业级产品的身份需求演进，分析自研与采购的真实 TCO，帮你做出正确的身份平台决策。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

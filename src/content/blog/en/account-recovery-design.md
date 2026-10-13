@@ -6,7 +6,7 @@ tags: ["Account Recovery", "Security", "MFA", "NIST"]
 readTime: "9 min"
 excerpt: "Recovery is the weakest moment in an account's life — a back door around the everyday keys, so it has to be heavier and slower. Email codes, SMS codes, recovery codes, recovery contacts: all four backup paths have a failure moment, and a badly designed reset flow turns a lifeline into an \"account detector.\" This article walks through NIST SP 800-63B-4's four anti-impersonation requirements and the practices that make them real."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

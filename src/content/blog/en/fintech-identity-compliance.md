@@ -6,7 +6,7 @@ tags: ["Finance", "Compliance", "PCI-DSS"]
 readTime: "10 min"
 excerpt: "The financial industry faces the most stringent identity compliance requirements. This article provides an in-depth analysis of how PCI-DSS, China's MLPS (Multi-Level Protection Scheme), and KYC concretely constrain identity systems, and how to build compliant financial identity infrastructure using Autional's compliance-service and wallet-service."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -178,4 +178,4 @@ Financial industry regulations typically require RPO < 15 minutes and RTO < 4 ho
 
 Financial identity compliance is not optional — it's mandatory. PCI-DSS defines the technical baseline for payment security, China's MLPS 2.0 defines system security grading requirements, and KYC/AML defines business identity verification standards. Together, they form a complete compliance map for financial identity systems.
 
-Autional's 15 microservices cover every key node in this map — from KYC identity verification during registration, to MFA authentication during login, to RBAC permission validation during operations, to post-event audit log archiving. This is not a system where you "just write a login page" — it's a compliance-oriented, engineered identity infrastructure.
+Autional's 27 microservices cover every key node in this map — from KYC identity verification during registration, to MFA authentication during login, to RBAC permission validation during operations, to post-event audit log archiving. This is not a system where you "just write a login page" — it's a compliance-oriented, engineered identity infrastructure.

@@ -6,7 +6,7 @@ tags: ["Multi-Tenant", "SaaS", "Isolation", "B2B"]
 readTime: "9 min"
 excerpt: "Architecture patterns for multi-tenant identity management in B2B SaaS platforms — isolation, performance, and compliance."
 status: "verified"
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

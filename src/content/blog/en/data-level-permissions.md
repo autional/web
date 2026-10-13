@@ -6,7 +6,7 @@ tags: ["Access Control", "Data Security", "BOLA", "Architecture", "Least Privile
 readTime: "9 min"
 excerpt: "\"Has the view-orders permission\" does not mean \"can see every order.\" Two separate things hide behind one button: whether you may click it, and which data you touch when you do. Row-level rules govern which records; field-level rules govern which columns. This article walks through the USPS BOLA incident, PostgreSQL RLS, field masking, and why hiding a column in the UI secures nothing."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

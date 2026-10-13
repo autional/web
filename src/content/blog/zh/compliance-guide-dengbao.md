@@ -6,7 +6,7 @@ tags: ["等保", "合规", "安全认证"]
 readTime: "10 分钟"
 excerpt: "深入解读等保 2.0 对身份认证系统的具体要求，以及 Autional 如何凭借内置的安全能力帮助你通过等保测评。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

@@ -6,7 +6,7 @@ tags: ["Trends", "2026", "Industry Outlook"]
 readTime: "10 min"
 excerpt: "The identity landscape is undergoing a profound transformation. From the mainstream adoption of Passkey to the rise of AI identity, six forces are reshaping the future of digital identity. This article provides an in-depth analysis of the technical essence of each trend, the current ecosystem landscape, and their impact on the Autional product roadmap."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

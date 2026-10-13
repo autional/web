@@ -6,7 +6,7 @@ tags: ["告警", "监控", "运维"]
 readTime: "7 分钟"
 excerpt: "告警疲劳是运维团队的头号杀手——噪声太多会淹没真正重要的告警。本文给出身份系统的分级告警策略，从 P0 救火级到 P3 趋势级，并附可直接使用的 Prometheus 告警规则示例，帮助团队从「到处都在叫」走向「只有真正重要的才响」。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

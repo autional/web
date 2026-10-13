@@ -6,7 +6,7 @@ tags: ["Alerting", "Monitoring", "Operations"]
 readTime: "7 min"
 excerpt: "Alert fatigue is the number one killer for operations teams — too much noise drowns out truly important alerts. This article lays out a tiered alerting strategy for identity systems, covering everything from P0 lifesaving alerts to P3 trend alerts, with ready-to-use Prometheus alerting rule examples to help teams evolve from 'everything is screaming' to 'only the truly important gets through.'"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

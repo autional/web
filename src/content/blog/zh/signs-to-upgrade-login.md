@@ -6,7 +6,7 @@ tags: ["决策指南", "升级", "评估"]
 readTime: "6 分钟"
 excerpt: "你的登录系统是自研的，还是基于开源库搭的？客户问起 SSO 或 MFA 时，你答不上来？登录端点被暴力破解过？审计日志能说清谁做了什么吗？——如果这些问题让你心里发虚，就该考虑升级了。本文梳理 5 个明确的信号，帮你判断何时该做决定。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

@@ -6,7 +6,7 @@ tags: ["MFA", "快速集成", "研发效率"]
 readTime: "6 分钟"
 excerpt: "传统上，为现有系统接入多因素认证需要数月的开发周期。借助 Autional，从注册应用到完成可用的 MFA 部署只需半天。本文手把手带你走完整个流程。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -74,8 +74,8 @@ app.get('/auth/callback', async (req, res) => {
     body: JSON.stringify({
       grant_type: 'authorization_code',
       code,
-      client_id: process.env.AUTHMS_CLIENT_ID,
-      client_secret: process.env.AUTHMS_CLIENT_SECRET,
+      client_id: process.env.AUTIONAL_CLIENT_ID,
+      client_secret: process.env.AUTIONAL_CLIENT_SECRET,
       redirect_uri: 'https://yourapp.com/auth/callback',
     }),
   });

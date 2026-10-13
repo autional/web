@@ -6,7 +6,7 @@ tags: ["趋势", "2026", "行业展望"]
 readTime: "10 分钟"
 excerpt: "身份领域正经历深刻变革。从通行密钥（Passkey）的主流化到 AI 身份的崛起，六股力量正在重塑数字身份的未来。本文深入分析每个趋势的技术本质、当前生态格局，以及它们对 Autional 产品路线图的影响。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

@@ -6,7 +6,7 @@ tags: ["SaaS", "企业客户", "合规"]
 readTime: "8 分钟"
 excerpt: "合规不再是成本中心——它是 SaaS 产品的核心竞争优势。本文分析 Autional 如何帮助 SaaS 团队把安全与合规能力变成赢得企业客户的关键武器。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

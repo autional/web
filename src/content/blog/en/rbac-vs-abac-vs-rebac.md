@@ -6,7 +6,7 @@ tags: ["RBAC", "ABAC", "ReBAC", "Access Control", "Least Privilege"]
 readTime: "10 min"
 excerpt: "Logging in gets you through the door — deciding what you can do inside is an entirely different question. RBAC answers it by role, ABAC by attributes, ReBAC by relationships. This article traces the standards timeline from NIST to Google Zanzibar and lays out a decision table for choosing between them, plus how Autional runs all three layers together."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 

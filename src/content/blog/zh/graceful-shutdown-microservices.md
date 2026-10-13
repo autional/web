@@ -6,7 +6,7 @@ tags: ["优雅停机", "运维", "可靠性"]
 readTime: "7 分钟"
 excerpt: "当 Kubernetes 发出 SIGTERM 时，你的微服务是直接暴毙，还是在 30 秒内优雅收尾？Autional 的统一 Application 启动框架让 27 个服务都能优雅停机——涵盖 HTTP 请求排空、MQ 消息处理完成、gRPC 连接关闭与数据库连接池释放。"
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
@@ -58,7 +58,7 @@ T+12s  Process exits
 每个服务在 `main.go` 中通过 Builder 构建启动配置：
 
 ```go
-import app_pkg "gitee.com/linmes/authms/micro-middleware/app"
+import app_pkg "gitee.com/autional/service-core/micro-middleware/app"
 
 func main() {
     cfg := config.Load("configs/service/identity-service.yaml")

@@ -6,7 +6,7 @@ tags: ["Government", "Xinchuang", "SM Algorithms"]
 readTime: "10 min"
 excerpt: "Government information systems have unique technical requirements for identity authentication: Level 3 Classified Protection is the baseline, SM2/SM3/SM4 algorithms are mandatory, and Xinchuang environment adaptation is a deployment prerequisite. This article analyzes the strategy for building identity systems in government scenarios and how Autional supports these requirements."
 status: verified
-reviewed_by: "butler-exec"
+reviewed_by: "editorial"
 claims_reviewed: true
 ---
 
