@@ -314,7 +314,7 @@
     "lead": "我们已经构建的、正在构建的，以及前进的方向。所有日期均为预估，可能调整。",
     "completed": { "period": "已完成", "items": ["多租户架构，按租户隔离", "SAML 2.0 + OIDC + OAuth 2.1 企业级 SSO", "MFA：TOTP、短信、邮件、WebAuthn/FIDO2/Passkey", "自适应 MFA —— 基于风险的 7 类信号认证", "NHI（非人类身份）—— 智能体/机器人/设备生命周期", "RBAC + ABAC + ReBAC + PIM 授权模型", "Merkle 哈希链审计，支持 GDPR DSAR 自动化", "8 个合规框架（GDPR/SOX/PCI/HIPAA/ISO/等保/PIPL/PSD2）", "国密算法：SM2/SM3/SM4、Ed25519", "27 个微服务共 1,400+ 个 REST API 端点", "npm SDK 与设计系统软件包已发布（@autional/react、@autional/ui 等）", "Webhook 事件系统，支持 600+ 种事件类型", "用于内部通信的 gRPC 服务网格", "密码传输加密（ECDH/RSA/哈希/明文）", "字段级 AES-256-GCM 加密，支持密钥轮换", "身份 API 支持 IPv6 双栈"] },
     "future": {
-      "q4_2026": { "period": "2026 Q4", "items": ["Autional Cloud 公测（即将推出）", "React SDK v1.0 稳定版", "Vue 与 Next.js SDK", "管理控制台体验改版"] },
+      "q4_2026": { "period": "2026 Q4", "items": ["Autional Cloud 公测（即将推出）", "React SDK v1.0 稳定版", "管理控制台体验改版"] },
       "h1_2027": { "period": "2027 H1", "items": ["SOC 2 Type II 审计", "多区域云部署", "WebAuthn 通行密钥透传", "企业级审计归档"] },
       "h2_2027": { "period": "2027 H2", "items": ["Go 与 Python SDK", "AI 智能体原生认证（NHI）", "Autional MCP Server 与 AI 编码工具集成", "Bolt.new 与 Lovable.dev 模板", "Kubernetes Operator"] }
     }
@@ -459,9 +459,8 @@
     "leadGithub": "GitHub 组织页",
     "leadSuffix": "查看。",
     "entries": [
-      { "date": "2026-10-05", "version": "开源组件发布", "items": ["@autional/onboard 0.1.0 —— 项目初始化 CLI 首发", "@autional/tokens 0.1.0-rc.7 发布"] },
-      { "date": "2026-10-04", "version": "开源组件发布", "items": ["@autional/ui 0.1.0-rc.38 发布", "@autional/shared 0.1.0-rc.26 发布"] },
-      { "date": "2026-10-03", "version": "开源组件发布", "items": ["@autional/tailwind-preset 0.1.0-rc.2 发布"] },
+      { "date": "2026-10-07", "version": "设计系统更新", "items": ["@autional/ui 0.1.0-rc.48、@autional/tokens 0.1.0-rc.17 发布", "@autional/shared 0.1.0-rc.35、@autional/tailwind-preset 0.1.0-rc.10 发布"] },
+      { "date": "2026-10-06", "version": "SDK 0.3 系列发布", "items": ["@autional/react、@autional/vue、@autional/next、@autional/node 0.3.0 发布", "@autional/core 0.3.2、@autional/onboard 0.4.0 发布"] },
       { "date": "2026-09-29", "version": "开源组件首发", "items": ["@autional/react 0.1.0-rc 发布 —— React SDK 登陆 npm", "@autional/ui、@autional/tokens、@autional/tailwind-preset、@autional/shared 首个 rc 版本发布"] },
       { "date": "2026-06-30", "version": "2.0.0-rc.1", "items": ["网关 CORS 默认对所有来源开启", "DNS 解析加固 —— 遥测、数据库与 Redis 统一防阻断", "启用 GOMEMLIMIT 以防止 OOM", "租户连接池韧性改进"] }
     ]
@@ -520,6 +519,10 @@
     "publishedTitle": "已发布的 npm 软件包",
     "packages": [
       { "name": "@autional/react", "desc": "React —— AutionalProvider、useAutional、RequireAuth", "install": "npm install @autional/react" },
+      { "name": "@autional/vue", "desc": "Vue —— createAutional 插件、useAutional、vAuth 指令", "install": "npm install @autional/vue" },
+      { "name": "@autional/next", "desc": "Next.js —— 服务端与客户端适配", "install": "npm install @autional/next" },
+      { "name": "@autional/node", "desc": "Node.js —— 服务端身份客户端", "install": "npm install @autional/node" },
+      { "name": "@autional/core", "desc": "核心 SDK —— 框架无关的认证客户端", "install": "npm install @autional/core" },
       { "name": "@autional/onboard", "desc": "项目初始化 CLI", "install": "npx @autional/onboard" },
       { "name": "@autional/ui", "desc": "React 组件库 —— 门户与管理面组件", "install": "npm install @autional/ui" },
       { "name": "@autional/tokens", "desc": "设计令牌 —— 颜色、排版与间距 CSS 变量", "install": "npm install @autional/tokens" },

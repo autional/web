@@ -314,7 +314,7 @@
     "lead": "What we've built, what we're building, and where we're headed. All dates are estimates and subject to change.",
     "completed": { "period": "Completed", "items": ["Multi-tenant architecture with per-tenant isolation", "SAML 2.0 + OIDC + OAuth 2.1 enterprise SSO", "MFA: TOTP, SMS, Email, WebAuthn/FIDO2/Passkey", "Adaptive MFA — risk-based 7-signal authentication", "NHI (Non-Human Identity) — Agent/Robot/Device lifecycle", "RBAC + ABAC + ReBAC + PIM authorization models", "Merkle hash chain audit with GDPR DSAR automation", "8 compliance frameworks (GDPR/SOX/PCI/HIPAA/ISO/Dengbao/PIPL/PSD2)", "National Cryptography: SM2/SM3/SM4, Ed25519", "1,400+ REST API endpoints across 27 microservices", "npm SDK and design system packages published (@autional/react, @autional/ui, and more)", "Webhook event system with 600+ event types", "gRPC service mesh for internal communication", "Password transmission encryption (ECDH/RSA/hash/plain)", "Field-level AES-256-GCM encryption with key rotation", "IPv6 dual-stack support for identity APIs"] },
     "future": {
-      "q4_2026": { "period": "2026 Q4", "items": ["Autional Cloud public beta (coming soon)", "React SDK v1.0 stable", "Vue and Next.js SDKs", "Admin Console redesign"] },
+      "q4_2026": { "period": "2026 Q4", "items": ["Autional Cloud public beta (coming soon)", "React SDK v1.0 stable", "Admin Console redesign"] },
       "h1_2027": { "period": "2027 H1", "items": ["SOC 2 Type II audit", "Multi-region cloud deployment", "WebAuthn passkey pass-through", "Enterprise audit archive"] },
       "h2_2027": { "period": "2027 H2", "items": ["Go and Python SDKs", "AI Agent Native authentication (NHI)", "Autional MCP Server and AI coding tool integration", "Bolt.new and Lovable.dev templates", "Kubernetes Operator"] }
     }
@@ -459,9 +459,8 @@
     "leadGithub": "GitHub organization page",
     "leadSuffix": ".",
     "entries": [
-      { "date": "2026-10-05", "version": "Open-Source Component Release", "items": ["@autional/onboard 0.1.0 — project scaffolding CLI debut", "@autional/tokens 0.1.0-rc.7 released"] },
-      { "date": "2026-10-04", "version": "Open-Source Component Release", "items": ["@autional/ui 0.1.0-rc.38 released", "@autional/shared 0.1.0-rc.26 released"] },
-      { "date": "2026-10-03", "version": "Open-Source Component Release", "items": ["@autional/tailwind-preset 0.1.0-rc.2 released"] },
+      { "date": "2026-10-07", "version": "Design System Update", "items": ["@autional/ui 0.1.0-rc.48 and @autional/tokens 0.1.0-rc.17 released", "@autional/shared 0.1.0-rc.35 and @autional/tailwind-preset 0.1.0-rc.10 released"] },
+      { "date": "2026-10-06", "version": "SDK 0.3 Series", "items": ["@autional/react, @autional/vue, @autional/next, and @autional/node 0.3.0 released", "@autional/core 0.3.2 and @autional/onboard 0.4.0 released"] },
       { "date": "2026-09-29", "version": "Open-Source Component Debut", "items": ["@autional/react 0.1.0-rc released — React SDK lands on npm", "First rc releases of @autional/ui, @autional/tokens, @autional/tailwind-preset, and @autional/shared"] },
       { "date": "2026-06-30", "version": "2.0.0-rc.1", "items": ["Gateway CORS enabled for all origins by default", "DNS resolution hardening — unified anti-blocking for telemetry, database, and Redis", "GOMEMLIMIT enforcement to prevent OOM", "Tenant connection pool resilience improvements"] }
     ]
@@ -520,6 +519,10 @@
     "publishedTitle": "Published npm Packages",
     "packages": [
       { "name": "@autional/react", "desc": "React — AutionalProvider, useAutional, RequireAuth", "install": "npm install @autional/react" },
+      { "name": "@autional/vue", "desc": "Vue — createAutional plugin, useAutional, vAuth directive", "install": "npm install @autional/vue" },
+      { "name": "@autional/next", "desc": "Next.js — server and client adapters", "install": "npm install @autional/next" },
+      { "name": "@autional/node", "desc": "Node.js — server-side identity client", "install": "npm install @autional/node" },
+      { "name": "@autional/core", "desc": "Core SDK — framework-agnostic auth client", "install": "npm install @autional/core" },
       { "name": "@autional/onboard", "desc": "Project scaffolding CLI", "install": "npx @autional/onboard" },
       { "name": "@autional/ui", "desc": "React component library — portal and admin UI", "install": "npm install @autional/ui" },
       { "name": "@autional/tokens", "desc": "Design tokens — color, typography, and spacing CSS variables", "install": "npm install @autional/tokens" },
