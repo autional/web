@@ -53,7 +53,7 @@
       "logoAlt": "Autional mark",
       "eyebrow": "Identity Command",
       "title": "Operational Overview",
-      "status": "All systems healthy",
+      "status": "Illustrative UI",
       "authMix": "Authentication Mix",
       "riskAwareLine1": "Risk-aware",
       "riskAwareLine2": "sign-ins",
@@ -63,8 +63,8 @@
     "stats": {
       "services": "Identity Services",
       "endpoints": "API Endpoints",
-      "sla": "SLA Ready",
-      "latency": "Median Response"
+      "stack": "Built With",
+      "license": "Open Source"
     },
     "builtWith": { "label": "Built With" },
     "capabilities": {
@@ -119,7 +119,7 @@
     "hero": {
       "titleLine1": "Enterprise Identity Infrastructure.",
       "titleLine2": "Open Source.",
-      "lead": "27 microservices, 1,400+ APIs, npm SDK packages, 15+ compliance frameworks — everything your AI-generated app needs for identity."
+      "lead": "27 microservices, 1,400+ APIs, npm SDK packages, 8 compliance frameworks — everything your AI-generated app needs for identity."
     },
     "sections": [
       {
@@ -239,7 +239,7 @@
         "items": [
           "1,400+ RESTful API endpoints across 27 microservices, versioned and documented",
           "gRPC service mesh — 9 microservices with gRPC interfaces",
-          "SDK: @autional/react and other npm packages published; framework adapters for Vue, Next.js and more are on the roadmap",
+          "SDK: @autional/react, Vue, Next.js, Node and more npm packages and framework adapters published",
           "Auto-generated TypeScript types — from OpenAPI specs (38K+ lines)",
           "600+ webhook event types — HMAC-signed delivery across all services",
           "Swagger/OpenAPI — interactive docs for every endpoint",
@@ -298,10 +298,10 @@
     "linkLabels": { "pricing": "View Pricing", "features": "Browse Features", "docs": "Read Docs" },
     "comparisons": [
       { "name": "vs Auth0", "url": "#auth0", "pros": ["Open-source portals and SDKs — no vendor lock-in", "Transparent pricing, no surprise MAU bills", "AI-native — designed for AI-generated apps", "Commercial licensing available; cloud on the roadmap (coming soon)"], "cons": ["Smaller ecosystem than Auth0", "Fewer third-party integrations", "Younger community"], "verdict": "Auth0 is the incumbent. Autional is the open alternative — same enterprise features, zero lock-in, built for the AI era." },
-      { "name": "vs Clerk", "url": "#clerk", "pros": ["Open-source portals and SDKs (AGPL-3.0 / MIT)", "Enterprise SSO included (not an add-on)", "Multi-tenant architecture built for B2B SaaS", "27 microservices for true enterprise scale"], "cons": ["Fewer pre-built UI components", "No built-in billing (yet)"], "verdict": "Clerk has beautiful UI. Autional has enterprise depth — and its portals and SDKs are open source." },
-      { "name": "vs WorkOS", "url": "#workos", "pros": ["Complete user system, not just enterprise add-ons", "AI-gen workflow first — Bolt/Lovable/Cursor", "No vendor lock-in — no per-connection pricing", "Commercial license with source access for compliance"], "cons": ["No FGA (yet)", "Smaller sales/enterprise team"], "verdict": "WorkOS helps you sell to enterprise. Autional helps you build AI apps that have users. Different focus — broader coverage." },
+      { "name": "vs Clerk", "url": "#clerk", "pros": ["Open-source portals and SDKs (AGPL-3.0 / MIT)", "Enterprise SSO included (not an add-on)", "Multi-tenant architecture built for B2B SaaS", "27 microservices for true enterprise scale"], "cons": ["Fewer pre-built UI components", "Closed-source (proprietary)"], "verdict": "Clerk has beautiful UI. Autional has enterprise depth — and its portals and SDKs are open source." },
+      { "name": "vs WorkOS", "url": "#workos", "pros": ["Complete user system, not just enterprise add-ons", "AI-gen workflow first — Bolt/Lovable/Cursor", "No vendor lock-in — no per-connection pricing", "Commercial license with source access for compliance"], "cons": ["Primarily enterprise SSO/directory add-ons (narrower surface)", "Smaller sales/enterprise team"], "verdict": "WorkOS helps you sell to enterprise. Autional helps you build AI apps that have users. Different focus — broader coverage." },
       { "name": "vs Bolt.new Built-in Auth", "url": "#bolt", "pros": ["Goes where Bolt's auth stops — SSO, MFA, RBAC, audit", "Works with any AI tool, not just Bolt", "Scales from MVP to enterprise without migration", "Enterprise features without enterprise pricing"], "cons": ["Not as simple as Bolt's zero-config auth for MVPs", "Requires SDK integration for basic auth"], "verdict": "Bolt.new gives you basic email/password. Autional gives you everything else — when your AI-generated app outgrows Bolt's built-in auth." },
-      { "name": "vs Building In-House", "url": "#build", "pros": ["3-6 months of engineering time saved", "Ongoing security maintenance eliminated", "1,400+ APIs built and tested", "Enterprise compliance ready from day one"], "cons": ["Cloud hosting is on the roadmap (coming soon) — private deployment (commercial license) for now", "Dependency on external platform"], "verdict": "Building auth is building a security product. Let Autional handle the identity layer while you focus on what makes your AI app unique." }
+      { "name": "vs Building In-House", "url": "#build", "pros": ["3-6 months of engineering time saved", "Ongoing security maintenance eliminated", "1,400+ APIs built and tested", "Enterprise compliance tooling from day one"], "cons": ["Cloud hosting is on the roadmap (coming soon) — private deployment (commercial license) for now", "Dependency on external platform"], "verdict": "Building auth is building a security product. Let Autional handle the identity layer while you focus on what makes your AI app unique." }
     ]
   },
   "roadmap": {
@@ -312,7 +312,7 @@
     },
     "title": "Roadmap",
     "lead": "What we've built, what we're building, and where we're headed. All dates are estimates and subject to change.",
-    "completed": { "period": "Completed", "items": ["Multi-tenant architecture with per-tenant isolation", "SAML 2.0 + OIDC + OAuth 2.1 enterprise SSO", "MFA: TOTP, SMS, Email, WebAuthn/FIDO2/Passkey", "Adaptive MFA — risk-based 7-signal authentication", "NHI (Non-Human Identity) — Agent/Robot/Device lifecycle", "RBAC + ABAC + ReBAC + PIM authorization models", "Merkle hash chain audit with GDPR DSAR automation", "15 compliance frameworks (GDPR/SOX/PCI/HIPAA/ISO/Dengbao)", "National Cryptography: SM2/SM3/SM4, Ed25519", "1,400+ REST API endpoints across 27 microservices", "npm SDK and design system packages published (@autional/react, @autional/ui, and more)", "Webhook event system with 600+ event types", "gRPC service mesh for internal communication", "Password transmission encryption (ECDH/RSA/hash/plain)", "Field-level AES-256-GCM encryption with key rotation", "IPv6 dual-stack support for identity APIs"] },
+    "completed": { "period": "Completed", "items": ["Multi-tenant architecture with per-tenant isolation", "SAML 2.0 + OIDC + OAuth 2.1 enterprise SSO", "MFA: TOTP, SMS, Email, WebAuthn/FIDO2/Passkey", "Adaptive MFA — risk-based 7-signal authentication", "NHI (Non-Human Identity) — Agent/Robot/Device lifecycle", "RBAC + ABAC + ReBAC + PIM authorization models", "Merkle hash chain audit with GDPR DSAR automation", "8 compliance frameworks (GDPR/SOX/PCI/HIPAA/ISO/Dengbao/PIPL/PSD2)", "National Cryptography: SM2/SM3/SM4, Ed25519", "1,400+ REST API endpoints across 27 microservices", "npm SDK and design system packages published (@autional/react, @autional/ui, and more)", "Webhook event system with 600+ event types", "gRPC service mesh for internal communication", "Password transmission encryption (ECDH/RSA/hash/plain)", "Field-level AES-256-GCM encryption with key rotation", "IPv6 dual-stack support for identity APIs"] },
     "future": {
       "q4_2026": { "period": "2026 Q4", "items": ["Autional Cloud public beta (coming soon)", "React SDK v1.0 stable", "Vue and Next.js SDKs", "Admin Console redesign"] },
       "h1_2027": { "period": "2027 H1", "items": ["SOC 2 Type II audit", "Multi-region cloud deployment", "WebAuthn passkey pass-through", "Enterprise audit archive"] },
@@ -484,7 +484,7 @@
       { "title": "Project Launch", "desc": "Core authentication engine development begins. Autional is born from the need for a modern identity platform built in Go." },
       { "title": "Alpha Release", "desc": "First public release with SSO, MFA, and RBAC. 14 microservices covering the core identity lifecycle." },
       { "title": "Open Source Launch", "desc": "Portals, design system, and SDKs open-sourced under AGPL-3.0 / MIT. Community adoption begins." },
-      { "title": "Autional Launch", "desc": "Rebranded as Autional — the identity layer for AI-generated applications. 27 services, 1,400+ APIs, full enterprise compliance." }
+      { "title": "Autional Launch", "desc": "Rebranded as Autional — the identity layer for AI-generated applications. 27 services, 1,400+ APIs, enterprise compliance tooling." }
     ],
     "roadmapTitle": "Roadmap"
   },

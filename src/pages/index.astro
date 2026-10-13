@@ -28,8 +28,8 @@ const codeSample = `<span class="text-syntax-comment">// app.tsx</span>
 const overviewStats = [
   { value: `${SITE_FACTS.serviceCount}`, labelKey: 'home.stats.services' },
   { value: '1,400+', labelKey: 'home.stats.endpoints' },
-  { value: '99.95%', labelKey: 'home.stats.sla' },
-  { value: '<150ms', labelKey: 'home.stats.latency' },
+  { value: 'Go / TypeScript', labelKey: 'home.stats.stack' },
+  { value: SITE_FACTS.license, labelKey: 'home.stats.license' },
 ];
 
 const solutionCards = ['auth', 'enterprise', 'observability'];
@@ -93,9 +93,9 @@ const capabilityItems = t('home.capabilities.items', { returnObjects: true }) as
                 </div>
               </div>
               <div class="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
-                <span class="rounded-full bg-primary-50 px-3 py-1 text-primary-700 dark:bg-white/10 dark:text-sky-100">SSO 33%</span>
-                <span class="rounded-full bg-[var(--color-primary-50)] px-3 py-1 text-[var(--color-primary-700)]">Passkey 28%</span>
-                <span class="rounded-full bg-[var(--color-warning-soft)] px-3 py-1 text-[var(--color-warning-text)]">OTP 19%</span>
+                <span class="rounded-full bg-primary-50 px-3 py-1 text-primary-700 dark:bg-white/10 dark:text-sky-100">SSO</span>
+                <span class="rounded-full bg-[var(--color-primary-50)] px-3 py-1 text-[var(--color-primary-700)]">Passkey</span>
+                <span class="rounded-full bg-[var(--color-warning-soft)] px-3 py-1 text-[var(--color-warning-text)]">OTP</span>
               </div>
             </div>
             <div class="rounded-lg border border-primary-100 p-5 dark:border-white/10">
@@ -104,7 +104,6 @@ const capabilityItems = t('home.capabilities.items', { returnObjects: true }) as
                   <div class="text-sm font-semibold text-primary-900 dark:text-white">{t('home.panel.volume')}</div>
                   <div class="mt-1 text-xs text-[var(--color-text-muted)] dark:text-sky-100/70">{t('home.panel.volumeHint')}</div>
                 </div>
-                <div class="rounded-full bg-[var(--color-success-soft)] px-3 py-1 text-xs font-semibold text-[var(--color-success-text)]">+12.5%</div>
               </div>
               <div class="mt-6 flex h-40 items-end gap-3">
                 {[42, 60, 56, 78, 72, 95, 88, 110].map((height, idx) => (
