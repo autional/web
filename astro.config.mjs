@@ -64,12 +64,6 @@ export default defineConfig({
   output: 'static',
   site: SITE,
   base: '/',
-  // 旧 slug（含退役品牌 authms）→ 新 slug，保持既有外链可达（301）
-  redirects: {
-    '/blog/auth0-vs-keycloak-vs-authms': '/blog/auth0-vs-keycloak-vs-autional',
-    '/blog/docker-to-k8s-authms': '/blog/docker-to-k8s-autional',
-    '/blog/engineering-culture-authms': '/blog/engineering-culture-autional',
-  },
   markdown: { shikiConfig: { theme: 'github-dark' } },
   vite: {
     define: {
