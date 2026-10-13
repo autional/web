@@ -284,4 +284,4 @@ OAuth 2.1's PKCE mandate is a late but correct security decision. For mobile and
 
 If you're building a mobile app or SPA that requires OAuth authorization, use Authorization Code + PKCE from day one. If your existing app still uses the Implicit Flow, it's time to migrate — OAuth 2.1 isn't just a best practice, it's the future standard for all identity platforms.
 
-Autional's `oauth-service` has followed the OAuth 2.1 specification since its inception, providing out-of-the-box PKCE support. Visit our documentation and GitHub repository for more implementation details.
+Autional's `oauth-service` has followed the OAuth 2.1 specification since its inception, providing out-of-the-box PKCE support. Visit our documentation and API reference for more implementation details.

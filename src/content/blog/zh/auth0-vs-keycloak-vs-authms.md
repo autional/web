@@ -4,7 +4,7 @@ date: "2026-06-17"
 category: "Product"
 tags: ["竞品分析", "Auth0", "Keycloak"]
 readTime: "12 分钟"
-excerpt: "Auth0、Keycloak 与 Autional 是 2026 年市场上三个有代表性的身份平台，分别代表 SaaS 闭源、社区开源与开放核心（Open Core）三种商业模式。本文不带偏见地从 15 个维度深入对比——每款产品都有其最优场景，而选错的代价往往不是技术性的，而是财务与合规性的。"
+excerpt: "Auth0、Keycloak 与 Autional 是 2026 年市场上三个有代表性的身份平台，分别代表 SaaS 闭源、社区开源与门户/SDK 开源三种路线。本文不带偏见地从 15 个维度深入对比——每款产品都有其最优场景，而选错的代价往往不是技术性的，而是财务与合规性的。"
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -12,7 +12,7 @@ claims_reviewed: true
 
 选择身份平台，可能是创业公司最重要的技术决策之一——甚至比选择编程语言或数据库更重要。原因很简单：**更换数据库很难，更换身份平台更难。** 一旦你的用户数据、认证逻辑、权限模型与 OAuth 集成深度绑定某个平台，单是迁移成本就足以让团队放弃这个念头。
 
-2026 年的身份平台市场有三个代表性产品：**Auth0**（Okta 旗下，SaaS 闭源，全球市场份额领先）、**Keycloak**（Red Hat 赞助，Apache 2.0 开源，Java 生态的宠儿）、**Autional**（国产 Go 微服务架构，开放核心——门户/SDK 开源 + 核心商业授权，面向合规）。它们代表了三种不同的产品哲学：**极致易用 vs 极致可控 vs 合规优先。**
+2026 年的身份平台市场有三个代表性产品：**Auth0**（Okta 旗下，SaaS 闭源，全球市场份额领先）、**Keycloak**（Red Hat 赞助，Apache 2.0 开源，Java 生态的宠儿）、**Autional**（国产 Go 微服务架构，门户/SDK 开源 + 核心商业授权，面向合规）。它们代表了三种不同的产品哲学：**极致易用 vs 极致可控 vs 合规优先。**
 
 本文从 15 个维度做客观对比。免责声明：作者是 Autional 团队成员，但我们力求公平——因为我们相信，帮助用户找到真正适合其场景的产品，比把 Autional 推给所有人更重要。
 
@@ -20,7 +20,7 @@ claims_reviewed: true
 
 | 维度 | Auth0 | Keycloak | Autional |
 |-----------|-------|----------|--------|
-| 许可证 | 闭源 | Apache 2.0 | 开放核心：门户/文档（AGPL-3.0）、SDK（MIT）、核心商业授权 |
+| 许可证 | 闭源 | Apache 2.0 | 门户/文档开源（AGPL-3.0）、SDK（MIT）、核心商业授权 |
 | 部署方式 | 仅 SaaS | 自托管 / 私有云 | 私有化部署（商业授权）；云托管在路线图中 |
 | 语言 | Node.js | Java（WildFly/Quarkus） | Go |
 | 运行内存（空闲） | 不适用（SaaS） | 400-800 MB | 50-80 MB（每服务） |

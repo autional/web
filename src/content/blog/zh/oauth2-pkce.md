@@ -284,4 +284,4 @@ OAuth 2.1 的 PKCE 强制要求是一个迟到但正确的安全决策。对移�
 
 如果你正在构建需要 OAuth 授权的移动应用或 SPA，请从第一天起就使用授权码 + PKCE。如果你现有应用仍在使用 Implicit 流程，是时候迁移了——OAuth 2.1 不只是最佳实践，它是所有身份平台的未来标准。
 
-Autional 的 `oauth-service` 从诞生之初就遵循 OAuth 2.1 规范，提供开箱即用的 PKCE 支持。更多实现细节请访问我们的文档与 GitHub 仓库。
+Autional 的 `oauth-service` 从诞生之初就遵循 OAuth 2.1 规范，提供开箱即用的 PKCE 支持。更多实现细节请访问我们的文档与 API 参考。

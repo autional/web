@@ -38,11 +38,11 @@
   "home": {
     "meta": {
       "title": "Autional — Identity for AI-Generated Applications",
-      "description": "Open-core identity infrastructure. Authentication, accounts, multi-tenancy, and access control — open-source portals and SDKs. Build with AI, ship with confidence.",
-      "keywords": "Autional, identity, authentication, IAM, SSO, MFA, multi-tenant, open core, AI, SaaS, enterprise"
+      "description": "Identity infrastructure with open-source portals and SDKs. Authentication, accounts, multi-tenancy, and access control. Build with AI, ship with confidence.",
+      "keywords": "Autional, identity, authentication, IAM, SSO, MFA, multi-tenant, open source, AI, SaaS, enterprise"
     },
     "hero": {
-      "kicker": "Open Core · AGPL-3.0",
+      "kicker": "Open Source · AGPL-3.0 / MIT",
       "titleLine1": "Your AI App Needs Users.",
       "titleLine2": "Autional Makes It Feel Native.",
       "lead": "Autional gives AI-generated applications a complete identity layer: authentication, organizations, access control, audit, and developer APIs, unified in one coherent system.",
@@ -113,12 +113,12 @@
   "features": {
     "meta": {
       "title": "Features — Autional",
-      "description": "Complete identity platform. Authentication, MFA, SSO, Multi-Tenancy, NHI, Authorization, Audit, Compliance, SM Crypto, SDKs — open core: open-source portals and SDKs, commercial core.",
-      "keywords": "Autional, features, authentication, SSO, MFA, multi-tenant, passkey, audit, compliance, RBAC, SDK, open core"
+      "description": "Complete identity platform. Authentication, MFA, SSO, Multi-Tenancy, NHI, Authorization, Audit, Compliance, SM Crypto, SDKs — open-source portals and SDKs, commercial core.",
+      "keywords": "Autional, features, authentication, SSO, MFA, multi-tenant, passkey, audit, compliance, RBAC, SDK, open source"
     },
     "hero": {
       "titleLine1": "Enterprise Identity Infrastructure.",
-      "titleLine2": "Open Core.",
+      "titleLine2": "Open Source.",
       "lead": "27 microservices, 1,400+ APIs, npm SDK packages, 15+ compliance frameworks — everything your AI-generated app needs for identity."
     },
     "sections": [
@@ -288,7 +288,7 @@
     "meta": {
       "title": "Compare — Autional",
       "description": "See how Autional stacks up against Auth0, Clerk, WorkOS, and building auth in-house.",
-      "keywords": "Autional, compare, Auth0, Clerk, WorkOS, identity, authentication, IAM, open core, pricing"
+      "keywords": "Autional, compare, Auth0, Clerk, WorkOS, identity, authentication, IAM, open source, pricing"
     },
     "title": "How We Compare",
     "lead": "Honest comparisons. No marketing fluff. See where Autional wins — and where we don't.",
@@ -297,9 +297,9 @@
     "verdictLabel": "Verdict:",
     "linkLabels": { "pricing": "View Pricing", "features": "Browse Features", "docs": "Read Docs" },
     "comparisons": [
-      { "name": "vs Auth0", "url": "#auth0", "pros": ["Open core — open-source portals and SDKs, no vendor lock-in", "Transparent pricing, no surprise MAU bills", "AI-native — designed for AI-generated apps", "Commercial licensing available; cloud on the roadmap (coming soon)"], "cons": ["Smaller ecosystem than Auth0", "Fewer third-party integrations", "Younger community"], "verdict": "Auth0 is the incumbent. Autional is the open-core alternative — same enterprise features, zero lock-in, built for the AI era." },
-      { "name": "vs Clerk", "url": "#clerk", "pros": ["Open core — portals and SDKs open source (AGPL-3.0 / MIT)", "Enterprise SSO included (not an add-on)", "Multi-tenant architecture built for B2B SaaS", "27 microservices for true enterprise scale"], "cons": ["Fewer pre-built UI components", "No built-in billing (yet)"], "verdict": "Clerk has beautiful UI. Autional has enterprise depth — and it's open-core." },
-      { "name": "vs WorkOS", "url": "#workos", "pros": ["Complete user system, not just enterprise add-ons", "AI-gen workflow first — Bolt/Lovable/Cursor", "Open core — no per-connection pricing", "Commercial license with source access for compliance"], "cons": ["No FGA (yet)", "Smaller sales/enterprise team"], "verdict": "WorkOS helps you sell to enterprise. Autional helps you build AI apps that have users. Different focus — broader coverage." },
+      { "name": "vs Auth0", "url": "#auth0", "pros": ["Open-source portals and SDKs — no vendor lock-in", "Transparent pricing, no surprise MAU bills", "AI-native — designed for AI-generated apps", "Commercial licensing available; cloud on the roadmap (coming soon)"], "cons": ["Smaller ecosystem than Auth0", "Fewer third-party integrations", "Younger community"], "verdict": "Auth0 is the incumbent. Autional is the open alternative — same enterprise features, zero lock-in, built for the AI era." },
+      { "name": "vs Clerk", "url": "#clerk", "pros": ["Open-source portals and SDKs (AGPL-3.0 / MIT)", "Enterprise SSO included (not an add-on)", "Multi-tenant architecture built for B2B SaaS", "27 microservices for true enterprise scale"], "cons": ["Fewer pre-built UI components", "No built-in billing (yet)"], "verdict": "Clerk has beautiful UI. Autional has enterprise depth — and its portals and SDKs are open source." },
+      { "name": "vs WorkOS", "url": "#workos", "pros": ["Complete user system, not just enterprise add-ons", "AI-gen workflow first — Bolt/Lovable/Cursor", "No vendor lock-in — no per-connection pricing", "Commercial license with source access for compliance"], "cons": ["No FGA (yet)", "Smaller sales/enterprise team"], "verdict": "WorkOS helps you sell to enterprise. Autional helps you build AI apps that have users. Different focus — broader coverage." },
       { "name": "vs Bolt.new Built-in Auth", "url": "#bolt", "pros": ["Goes where Bolt's auth stops — SSO, MFA, RBAC, audit", "Works with any AI tool, not just Bolt", "Scales from MVP to enterprise without migration", "Enterprise features without enterprise pricing"], "cons": ["Not as simple as Bolt's zero-config auth for MVPs", "Requires SDK integration for basic auth"], "verdict": "Bolt.new gives you basic email/password. Autional gives you everything else — when your AI-generated app outgrows Bolt's built-in auth." },
       { "name": "vs Building In-House", "url": "#build", "pros": ["3-6 months of engineering time saved", "Ongoing security maintenance eliminated", "1,400+ APIs built and tested", "Enterprise compliance ready from day one"], "cons": ["Cloud hosting is on the roadmap (coming soon) — private deployment (commercial license) for now", "Dependency on external platform"], "verdict": "Building auth is building a security product. Let Autional handle the identity layer while you focus on what makes your AI app unique." }
     ]
@@ -437,10 +437,10 @@
     "contactEmail": "support@autional.net"
   },
   "faq": {
-    "meta": { "title": "FAQ — Autional", "description": "Frequently asked questions about the Autional identity platform.", "keywords": "Autional, FAQ, identity, IAM, SSO, authentication, open core" },
+    "meta": { "title": "FAQ — Autional", "description": "Frequently asked questions about the Autional identity platform.", "keywords": "Autional, FAQ, identity, IAM, SSO, authentication, open source" },
     "title": "FAQ",
     "items": [
-      { "q": "Is Autional open source?", "a": "Autional is open-core: the portals, design system, and documentation are open source under AGPL-3.0, and SDK packages are MIT — all on GitHub at github.com/autional. The core identity services are proprietary and available under a commercial license (private deployment includes source access). Cloud hosting is on the roadmap (coming soon)." },
+      { "q": "Is Autional open source?", "a": "Autional's portals, design system, and documentation are open source under AGPL-3.0, and SDK packages are MIT — all on GitHub at github.com/autional. The core identity services are proprietary and available under a commercial license (private deployment includes source access). Cloud hosting is on the roadmap (coming soon)." },
       { "q": "What is Autional?", "a": "Autional is the identity layer for AI-generated applications. It provides authentication, authorization, multi-tenancy, enterprise SSO, and compliance — all backed by 27 microservices and 1,400+ APIs." },
       { "q": "How is Autional different from Auth0?", "a": "Auth0 is a closed-source SaaS. Autional open-sources its portals, design system, and SDKs, with the core identity services available under a commercial license for private deployment — and it's designed specifically for AI-generated applications. Our pricing is transparent and there's no per-user or per-connection pricing." },
       { "q": "Can I self-host Autional?", "a": "The open-source components (portals, design system, SDKs) are free to self-host; the core identity services are available under a commercial license for private deployment (supports Docker/Podman compose or Kubernetes, running on PostgreSQL + MongoDB + Redis + RabbitMQ). Cloud hosting is on the roadmap (coming soon)." },
@@ -467,7 +467,7 @@
     ]
   },
   "about": {
-    "meta": { "title": "About — Autional", "description": "Autional is the identity layer for AI-generated applications. Our story, mission, and roadmap.", "keywords": "Autional, about, identity, IAM, open core, mission, team" },
+    "meta": { "title": "About — Autional", "description": "Autional is the identity layer for AI-generated applications. Our story, mission, and roadmap.", "keywords": "Autional, about, identity, IAM, open source, mission, team" },
     "heroTitle": "About Autional",
     "heroLead": "Autional was born from a simple belief: that every AI-generated application deserves a production-ready user system — without building it from scratch, without vendor lock-in, and without enterprise complexity.",
     "missionTitle": "Our Mission",
@@ -491,7 +491,7 @@
   "docs": {
     "meta": { "title": "Documentation — Autional", "description": "Quick start guide and API reference for the Autional identity platform.", "keywords": "Autional, documentation, docs, quickstart, API reference, identity, IAM" },
     "title": "Get Started in 5 Minutes",
-    "lead": "Run 27 microservices, add auth to your app, or deploy to production. Open core — portals, design system, and SDKs are open source; the core is available under a commercial license.",
+    "lead": "Run 27 microservices, add auth to your app, or deploy to production. Portals, design system, and SDKs are open source; the core is available under a commercial license.",
     "steps": [
       { "title": "Run the Platform", "code": "# Full steps in the quickstart guide: {{quickstartUrl}}\ndocker compose -f docker-compose.infra.yml -f docker-compose.monolith.yml up -d\n\n# Wait 2-3 minutes for all 27 services to start" },
       { "title": "Install the SDK", "code": "npm install @autional/react" },

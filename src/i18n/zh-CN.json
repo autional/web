@@ -39,10 +39,10 @@
     "meta": {
       "title": "Autional — 面向 AI 生成应用的身份层",
       "description": "面向 AI 生成应用的身份层。认证、账户、多租户与访问控制，为用 AI 构建产品的团队而设计。",
-      "keywords": "Autional, 身份, 认证, IAM, SSO, MFA, 多租户, 开放核心, AI, SaaS, 企业"
+      "keywords": "Autional, 身份, 认证, IAM, SSO, MFA, 多租户, 开源, AI, SaaS, 企业"
     },
     "hero": {
-      "kicker": "开放核心 · AGPL-3.0",
+      "kicker": "开源 · AGPL-3.0 / MIT",
       "titleLine1": "你的 AI 应用需要用户。",
       "titleLine2": "Autional 让它浑然天成。",
       "lead": "Autional 为 AI 生成应用提供完整的身份层：认证、组织、访问控制、审计与开发者 API，统一在一个连贯的系统中。",
@@ -113,12 +113,12 @@
   "features": {
     "meta": {
       "title": "功能特性 — Autional",
-      "description": "完整的身份平台。认证、MFA、SSO、多租户、NHI、授权、审计、合规、国密、SDK —— 开放核心：门户与 SDK 开源，核心商业授权。",
-      "keywords": "Autional, 功能特性, 认证, SSO, MFA, 多租户, 通行密钥, 审计, 合规, RBAC, SDK, 开放核心"
+      "description": "完整的身份平台。认证、MFA、SSO、多租户、NHI、授权、审计、合规、国密、SDK —— 门户与 SDK 开源，核心商业授权。",
+      "keywords": "Autional, 功能特性, 认证, SSO, MFA, 多租户, 通行密钥, 审计, 合规, RBAC, SDK, 开源"
     },
     "hero": {
       "titleLine1": "企业级身份基础设施。",
-      "titleLine2": "开放核心。",
+      "titleLine2": "开源。",
       "lead": "27 个微服务、1,400+ API、npm SDK 软件包、15+ 个合规框架 —— 你的 AI 生成应用在身份方面需要的一切。"
     },
     "sections": [
@@ -288,7 +288,7 @@
     "meta": {
       "title": "对比 — Autional",
       "description": "看看 Autional 与 Auth0、Clerk、WorkOS 以及自研认证方案的对比。",
-      "keywords": "Autional, 对比, Auth0, Clerk, WorkOS, 身份, 认证, IAM, 开放核心, 定价"
+      "keywords": "Autional, 对比, Auth0, Clerk, WorkOS, 身份, 认证, IAM, 开源, 定价"
     },
     "title": "我们与其他方案的对比",
     "lead": "诚实的对比，没有营销话术。看看 Autional 在哪里胜出 —— 以及哪里不如别人。",
@@ -297,9 +297,9 @@
     "verdictLabel": "结论：",
     "linkLabels": { "pricing": "查看定价", "features": "浏览功能特性", "docs": "阅读文档" },
     "comparisons": [
-      { "name": "对比 Auth0", "url": "#auth0", "pros": ["开放核心 —— 门户与 SDK 开源，无厂商锁定", "定价透明，没有意外的 MAU 账单", "AI 原生 —— 专为 AI 生成的应用设计", "核心身份服务商业授权；云托管在路线图中（即将推出）"], "cons": ["生态规模小于 Auth0", "第三方集成较少", "社区起步较晚"], "verdict": "Auth0 是市场在位者。Autional 是开放核心（Open Core）的替代方案 —— 同样的企业级能力、零锁定，为 AI 时代而构建。" },
-      { "name": "对比 Clerk", "url": "#clerk", "pros": ["开放核心 —— 门户与 SDK 开源（AGPL-3.0 / MIT）", "企业级 SSO 已包含（而非附加项）", "为 B2B SaaS 构建的多租户架构", "27 个微服务，支撑真正的企业级规模"], "cons": ["预置 UI 组件较少", "暂无内置计费"], "verdict": "Clerk 的界面很漂亮。Autional 胜在企业级深度 —— 而且它是开放核心的。" },
-      { "name": "对比 WorkOS", "url": "#workos", "pros": ["完整的用户体系，而不只是企业级附加组件", "AI 生成工作流优先 —— Bolt/Lovable/Cursor", "开放核心 —— 没有按连接数计费", "商业授权含源码访问，满足合规审计"], "cons": ["暂无 FGA", "销售与企业团队规模较小"], "verdict": "WorkOS 帮你把产品卖给企业。Autional 帮你构建真正有用户的 AI 应用。侧重点不同 —— 覆盖面更广。" },
+      { "name": "对比 Auth0", "url": "#auth0", "pros": ["门户与 SDK 开源 —— 无厂商锁定", "定价透明，没有意外的 MAU 账单", "AI 原生 —— 专为 AI 生成的应用设计", "核心身份服务商业授权；云托管在路线图中（即将推出）"], "cons": ["生态规模小于 Auth0", "第三方集成较少", "社区起步较晚"], "verdict": "Auth0 是市场在位者。Autional 是门户与 SDK 开源的替代方案 —— 同样的企业级能力、零锁定，为 AI 时代而构建。" },
+      { "name": "对比 Clerk", "url": "#clerk", "pros": ["门户与 SDK 开源（AGPL-3.0 / MIT）", "企业级 SSO 已包含（而非附加项）", "为 B2B SaaS 构建的多租户架构", "27 个微服务，支撑真正的企业级规模"], "cons": ["预置 UI 组件较少", "暂无内置计费"], "verdict": "Clerk 的界面很漂亮。Autional 胜在企业级深度 —— 而且它的门户与 SDK 是开源的。" },
+      { "name": "对比 WorkOS", "url": "#workos", "pros": ["完整的用户体系，而不只是企业级附加组件", "AI 生成工作流优先 —— Bolt/Lovable/Cursor", "无厂商锁定 —— 没有按连接数计费", "商业授权含源码访问，满足合规审计"], "cons": ["暂无 FGA", "销售与企业团队规模较小"], "verdict": "WorkOS 帮你把产品卖给企业。Autional 帮你构建真正有用户的 AI 应用。侧重点不同 —— 覆盖面更广。" },
       { "name": "对比 Bolt.new 内置认证", "url": "#bolt", "pros": ["覆盖 Bolt 认证止步之处 —— SSO、MFA、RBAC、审计", "适用于任何 AI 工具，不只限于 Bolt", "从 MVP 扩展到企业级，无需迁移", "企业级能力，无需企业级价格"], "cons": ["对 MVP 而言，不如 Bolt 的零配置认证简单", "基础认证也需要集成 SDK"], "verdict": "Bolt.new 给你基础的邮箱/密码认证。Autional 给你其余的一切 —— 当你的 AI 生成应用超出 Bolt 内置认证的能力时。" },
       { "name": "对比自研", "url": "#build", "pros": ["节省 3-6 个月的工程时间", "无需再承担持续的安全维护", "1,400+ 个 API 已构建并经过测试", "从第一天起就具备企业级合规能力"], "cons": ["云托管在路线图中（即将推出），当前为商业授权私有化部署", "依赖外部平台"], "verdict": "自研认证就是在造一个安全产品。让 Autional 承担身份层，你把精力放在让 AI 应用与众不同的地方。" }
     ]
@@ -437,10 +437,10 @@
     "contactEmail": "legal@autional.net"
   },
   "faq": {
-    "meta": { "title": "常见问题 — Autional", "description": "关于 Autional 身份平台的常见问题解答。", "keywords": "Autional, 常见问题, 身份, IAM, SSO, 认证, 开放核心" },
+    "meta": { "title": "常见问题 — Autional", "description": "关于 Autional 身份平台的常见问题解答。", "keywords": "Autional, 常见问题, 身份, IAM, SSO, 认证, 开源" },
     "title": "常见问题",
     "items": [
-      { "q": "Autional 是开源的吗？", "a": "Autional 是开放核心（Open Core）模式：门户、设计系统与文档以 AGPL-3.0 开源，SDK 软件包为 MIT，均在 GitHub 组织页（github.com/autional）。核心身份服务为商业授权（私有化部署含源码访问权）。云托管在路线图中（即将推出）。" },
+      { "q": "Autional 是开源的吗？", "a": "Autional 的门户、设计系统与文档以 AGPL-3.0 开源，SDK 软件包为 MIT，均在 GitHub 组织页（github.com/autional）。核心身份服务为商业授权（私有化部署含源码访问权）。云托管在路线图中（即将推出）。" },
       { "q": "Autional 是什么？", "a": "Autional 是面向 AI 生成应用的身份层。它提供认证、授权、多租户、企业级 SSO 与合规能力 —— 全部由 27 个微服务和 1,400+ API 支撑。" },
       { "q": "Autional 与 Auth0 有什么不同？", "a": "Auth0 是闭源 SaaS，而 Autional 开源其门户、设计系统与 SDK，核心身份服务可商业授权私有化部署，并且专为 AI 生成的应用设计。我们的定价透明，不按用户数或连接数收费。" },
       { "q": "我可以自托管 Autional 吗？", "a": "开源组件（门户、设计系统、SDK）可免费自托管；核心身份服务可商业授权私有化部署（支持 Docker/Podman compose 或 Kubernetes，运行在 PostgreSQL + MongoDB + Redis + RabbitMQ 之上）。云托管在路线图中（即将推出）。" },
@@ -467,7 +467,7 @@
     ]
   },
   "about": {
-    "meta": { "title": "关于 — Autional", "description": "Autional 是面向 AI 生成应用的身份层。了解我们的故事、使命与路线图。", "keywords": "Autional, 关于, 身份, IAM, 开放核心, 使命, 团队" },
+    "meta": { "title": "关于 — Autional", "description": "Autional 是面向 AI 生成应用的身份层。了解我们的故事、使命与路线图。", "keywords": "Autional, 关于, 身份, IAM, 开源, 使命, 团队" },
     "heroTitle": "关于 Autional",
     "heroLead": "Autional 诞生于一个朴素的信念：每个 AI 生成的应用都值得拥有一个可直接上生产的用户体系 —— 无需从零自建，不被厂商锁定，也没有企业级的复杂度。",
     "missionTitle": "我们的使命",
@@ -491,7 +491,7 @@
   "docs": {
     "meta": { "title": "文档 — Autional", "description": "Autional 身份平台的快速开始指南与 API 参考。", "keywords": "Autional, 文档, docs, 快速开始, API 参考, 身份, IAM" },
     "title": "5 分钟快速开始",
-    "lead": "运行 27 个微服务、为你的应用接入认证，或部署到生产环境。开放核心：门户、设计系统与 SDK 开源，核心身份服务为商业授权。",
+    "lead": "运行 27 个微服务、为你的应用接入认证，或部署到生产环境。门户、设计系统与 SDK 开源，核心身份服务为商业授权。",
     "steps": [
       { "title": "启动平台", "code": "# 完整步骤见快速开始指南：{{quickstartUrl}}\ndocker compose -f docker-compose.infra.yml -f docker-compose.monolith.yml up -d\n\n# 等待约 2-3 分钟，全部 27 个服务启动" },
       { "title": "安装 SDK", "code": "npm install @autional/react" },

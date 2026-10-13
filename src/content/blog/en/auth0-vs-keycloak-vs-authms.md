@@ -4,7 +4,7 @@ date: "2026-06-17"
 category: "Product"
 tags: ["Competitive Analysis", "Auth0", "Keycloak"]
 readTime: "12 minutes"
-excerpt: "Auth0, Keycloak, and Autional are three representative identity platforms on the 2026 market, embodying SaaS closed-source, community open-source, and open-core business models respectively. This article provides an in-depth 15-dimension comparison without bias — each product has its optimal use case, and the cost of choosing wrong is often not technical, but financial and compliance-related."
+excerpt: "Auth0, Keycloak, and Autional are three representative identity platforms on the 2026 market, embodying SaaS closed-source, community open-source, and open-source portals/SDKs respectively. This article provides an in-depth 15-dimension comparison without bias — each product has its optimal use case, and the cost of choosing wrong is often not technical, but financial and compliance-related."
 status: verified
 reviewed_by: "butler-exec"
 claims_reviewed: true
@@ -12,7 +12,7 @@ claims_reviewed: true
 
 Choosing an identity platform may be one of the most important technical decisions a startup makes — even more important than choosing a programming language or database. The reason is simple: **changing databases is hard; changing identity platforms is even harder.** Once your user data, authentication logic, permission models, and OAuth integrations are deeply coupled with a platform, the migration cost alone is enough to make teams abandon the idea.
 
-The 2026 identity platform market features three representative products: **Auth0** (Okta, SaaS closed-source, global market share leader), **Keycloak** (Red Hat sponsored, Apache 2.0 open-source, Java ecosystem darling), and **Autional** (China-focused Go microservice architecture, open core — open-source portals and SDKs, commercial core, compliance-oriented). They represent three different product philosophies: **extreme ease-of-use vs extreme controllability vs compliance-first.**
+The 2026 identity platform market features three representative products: **Auth0** (Okta, SaaS closed-source, global market share leader), **Keycloak** (Red Hat sponsored, Apache 2.0 open-source, Java ecosystem darling), and **Autional** (China-focused Go microservice architecture, open-source portals and SDKs, commercial core, compliance-oriented). They represent three different product philosophies: **extreme ease-of-use vs extreme controllability vs compliance-first.**
 
 This article provides an objective comparison across 15 dimensions. Disclaimer: the author is an Autional team member, but we strive to be fair — because we believe helping users find the truly right product for their scenario is more important than pushing Autional on everyone.
 
@@ -20,7 +20,7 @@ This article provides an objective comparison across 15 dimensions. Disclaimer: 
 
 | Dimension | Auth0 | Keycloak | Autional |
 |-----------|-------|----------|--------|
-| License | Closed-source | Apache 2.0 | Open core: portals & docs (AGPL-3.0), SDKs (MIT), commercial core |
+| License | Closed-source | Apache 2.0 | Open-source portals & docs (AGPL-3.0), SDKs (MIT), commercial core |
 | Deployment | SaaS Only | Self-hosted / Private Cloud | Private deployment (commercial license); cloud on the roadmap |
 | Language | Node.js | Java (WildFly/Quarkus) | Go |
 | Runtime Memory (Idle) | N/A (SaaS) | 400-800 MB | 50-80 MB (per service) |

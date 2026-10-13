@@ -43,7 +43,7 @@
 - 24 microservices, 1,400+ REST APIs
 - PostgreSQL, MongoDB, Redis, RabbitMQ
 - Go backend, TypeScript/React frontend
-- Source code and SDKs — github.com/autional
+- Open-source portals, design system, and SDKs — github.com/autional
 
 ## Integrations
 - OAuth 2.1, OIDC, SAML 2.0
