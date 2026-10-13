@@ -9,6 +9,8 @@
  * 分隔符，会解析失败（实测）；zh 全角「；」「：」安全，或改用破折号。
  */
 
+import tokens from '@autional/tokens';
+
 type MermaidApi = typeof import('mermaid')['default'];
 
 const SELECTOR = '.prose pre[data-language="mermaid"]';
@@ -19,52 +21,55 @@ interface Block {
   source: string;
 }
 
-/** 两套配色取自站点 tokens（@autional/tokens）：浅色主色 primary / sky 族，深色用 primary-900 底 + sky 亮线。 */
+const { primary, sky, chart, neutral } = tokens.core.color;
+
+/** 两套配色取自站点 tokens（@autional/tokens）：浅色主色 primary / sky 族，深色用 primary-900 底 + sky 亮线。
+ *  少量非令牌中间色（#0f3348 / #0a2940 / #0a1f30 / #f8fbfe / #ffffff）是手工调过的深浅底，令牌无同值档，保持字面量。 */
 function themeVars(dark: boolean): Record<string, string> {
   const bodyFont = getComputedStyle(document.body).fontFamily;
   const fontFamily = bodyFont && bodyFont !== '' ? bodyFont : 'Inter, sans-serif';
   const base = {
     fontFamily,
     fontSize: '15px',
-    edgeLabelBackground: dark ? '#041d31' : '#fafbfc',
-    clusterBkg: dark ? '#0f3348' : '#f7fafd',
-    clusterBorder: dark ? '#429bc5' : '#a3c7e3',
-    textColor: dark ? '#f8fbfe' : '#041d31',
-    titleColor: dark ? '#f8fbfe' : '#041d31',
-    signalColor: dark ? '#87ceeb' : '#235f84',
-    signalTextColor: dark ? '#f8fbfe' : '#041d31',
-    actorBkg: dark ? '#0a2940' : '#eef9fd',
-    actorBorder: dark ? '#429bc5' : '#a3c7e3',
-    actorTextColor: dark ? '#f8fbfe' : '#041d31',
-    activationBkgColor: dark ? '#0f3348' : '#f7fafd',
-    activationBorderColor: dark ? '#429bc5' : '#a3c7e3',
-    labelBoxBkgColor: dark ? '#0f3348' : '#f7fafd',
-    labelBoxBorderColor: dark ? '#429bc5' : '#a3c7e3',
-    labelTextColor: dark ? '#f8fbfe' : '#041d31',
-    loopTextColor: dark ? '#f8fbfe' : '#041d31',
-    noteBkgColor: dark ? '#0f3348' : '#f7fafd',
-    noteBorderColor: dark ? '#429bc5' : '#a3c7e3',
-    noteTextColor: dark ? '#f8fbfe' : '#041d31',
+    edgeLabelBackground: dark ? primary['900'] : neutral['50'],
+    clusterBkg: dark ? '#0f3348' : neutral['100'],
+    clusterBorder: dark ? chart['3'] : primary['200'],
+    textColor: dark ? '#f8fbfe' : primary['900'],
+    titleColor: dark ? '#f8fbfe' : primary['900'],
+    signalColor: dark ? sky['500'] : chart['2'],
+    signalTextColor: dark ? '#f8fbfe' : primary['900'],
+    actorBkg: dark ? '#0a2940' : sky['100'],
+    actorBorder: dark ? chart['3'] : primary['200'],
+    actorTextColor: dark ? '#f8fbfe' : primary['900'],
+    activationBkgColor: dark ? '#0f3348' : neutral['100'],
+    activationBorderColor: dark ? chart['3'] : primary['200'],
+    labelBoxBkgColor: dark ? '#0f3348' : neutral['100'],
+    labelBoxBorderColor: dark ? chart['3'] : primary['200'],
+    labelTextColor: dark ? '#f8fbfe' : primary['900'],
+    loopTextColor: dark ? '#f8fbfe' : primary['900'],
+    noteBkgColor: dark ? '#0f3348' : neutral['100'],
+    noteBorderColor: dark ? chart['3'] : primary['200'],
+    noteTextColor: dark ? '#f8fbfe' : primary['900'],
   };
   return dark
     ? {
         ...base,
-        background: '#041d31',
+        background: primary['900'],
         primaryColor: '#0a2940',
-        primaryBorderColor: '#429bc5',
+        primaryBorderColor: chart['3'],
         primaryTextColor: '#f8fbfe',
-        lineColor: '#87ceeb',
+        lineColor: sky['500'],
         secondaryColor: '#0f3348',
         tertiaryColor: '#0a1f30',
       }
     : {
         ...base,
-        background: '#fafbfc',
-        primaryColor: '#eef9fd',
-        primaryBorderColor: '#a3c7e3',
-        primaryTextColor: '#041d31',
-        lineColor: '#235f84',
-        secondaryColor: '#f7fafd',
+        background: neutral['50'],
+        primaryColor: sky['100'],
+        primaryBorderColor: primary['200'],
+        primaryTextColor: primary['900'],
+        lineColor: chart['2'],
+        secondaryColor: neutral['100'],
         tertiaryColor: '#ffffff',
       };
 }
