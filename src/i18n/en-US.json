@@ -367,7 +367,7 @@
   "portals": {
     "meta": {
       "title": "All Portals — Autional",
-      "description": "One place for every public Autional site and portal: documentation, developer, API reference, API wiki, status, and trust center.",
+      "description": "One place for every public Autional site and portal: documentation, developer, API reference, API wiki, status, trust center, and the sign-in portals.",
       "keywords": "Autional, portals, site index, documentation, API, status, trust center"
     },
     "title": "All Portals",
@@ -386,7 +386,18 @@
       { "title": "Trust Center", "desc": "Security practices, data protection, and compliance progress." },
       { "title": "Demo Environment", "desc": "Try each service in a live demo environment." }
     ],
-    "footnote": "Sign-in and console portals are not listed here; they are reached after signing in via the organization entry."
+    "orgHeading": "Organization & Sign-in Portals",
+    "brandItem": { "title": "Brand Portal", "desc": "Tenant brand-selection entry: choose your brand, then continue to its sign-in page. Public; no sign-in required." },
+    "loginItems": [
+      { "title": "User Portal", "desc": "Profile, security settings, sessions, and authorized applications." },
+      { "title": "Authenticator", "desc": "Two-step verification built on TOTP and passkeys." },
+      { "title": "Admin Console", "desc": "Central console for tenants, users, applications, and policies." },
+      { "title": "Platform Console", "desc": "Platform-level tenant operations and global configuration." },
+      { "title": "Security Center", "desc": "Risk events, sign-in audit, and a security posture overview." }
+    ],
+    "loginBadge": "Sign-in + tenant slug required",
+    "slugPattern": "{{host}}/<tenant slug>",
+    "footnote": "Sign-in portals are tenant-isolated: their URLs carry a tenant slug and require signing in, so they are described here rather than linked. If you don't know your tenant, start from the Brand Portal."
   },
   "notFound": {
     "meta": { "title": "404 — Page Not Found | Autional", "description": "Page not found" },

@@ -5,18 +5,25 @@ import { brotherUrl } from '../lib/site-env';
 
 // 门户目录（HTML sitemap）：把散落在多个子域的门户集中成一个可索引的入口页。
 // 定位=导航与发现，不作为排名手段（站wide/footer 链接排名价值低，见 SEO 研究结论）。
-// 只收录**公开内容/服务门户**；登录类与后台类（brand/user/authenticator/admin/platform/security）
-// 一律不列——口径：保留门户间适当隔离，营销站不为登录/管理入口做导航（用户 2026-10-13 裁定）。
+// 公开内容/服务门户：超链接收录；组织与登录门户：品牌入口可链接（公开免登录），
+// 其余登录类门户（user/authenticator/admin/platform/security）仅文字说明、不设链接，
+// 并标记「需登录 · 需租户 slug」——口径修订 2026-10-14（原 2026-10-13「登录/后台类一律不列」）。
+// 登录类门户站内自带 noindex,nofollow，链接侧无需再加 nofollow（控制点在目标侧）。
 interface PortalItem { title: string; desc: string }
 
 const contentItems = t('portals.contentItems', { returnObjects: true }) as PortalItem[];
 const serviceItems = t('portals.serviceItems', { returnObjects: true }) as PortalItem[];
+const loginItems = t('portals.loginItems', { returnObjects: true }) as PortalItem[];
 
 // href 与 i18n 条目同序；兄弟站随本区根域派生（W7），站内保持相对路径
 const groups = [
   { heading: t('portals.contentHeading'), items: contentItems, hrefs: ['/', brotherUrl('docs'), brotherUrl('developer'), brotherUrl('reference'), brotherUrl('wiki')] },
   { heading: t('portals.serviceHeading'), items: serviceItems, hrefs: [brotherUrl('status'), brotherUrl('trust'), brotherUrl('demo')] },
 ];
+
+// 登录门户子域与 loginItems 同序：均受租户隔离（<门户>.<域>/<租户 slug>），只说明不设链接
+const brandHref = brotherUrl('brand');
+const loginSubdomains = ['user', 'authenticator', 'admin', 'platform', 'security'];
 
 const hostOf = (href: string) => new URL(href, Astro.site).host;
 ---
@@ -40,6 +47,26 @@ const hostOf = (href: string) => new URL(href, Astro.site).host;
         </div>
       </div>
     ))}
+    <div class="mb-section-gap">
+      <h2 class="text-xl font-bold mb-6">{t('portals.orgHeading')}</h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <a href={brandHref} class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 transition-colors hover:border-primary-400">
+          <h3 class="font-semibold">{t('portals.brandItem.title')}</h3>
+          <p class="mt-1 text-sm text-neutral-500 leading-relaxed">{t('portals.brandItem.desc')}</p>
+          <code class="mt-2 block text-xs text-[var(--color-text-muted)] font-mono">{hostOf(brandHref)}</code>
+        </a>
+        {loginItems.map((item, i) => (
+          <div class="rounded-xl border border-neutral-200 dark:border-neutral-800 p-5">
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 class="font-semibold">{item.title}</h3>
+              <span class="rounded-full border border-neutral-300 px-2 py-0.5 text-[11px] font-normal text-neutral-500 dark:border-neutral-700">{t('portals.loginBadge')}</span>
+            </div>
+            <p class="mt-1 text-sm text-neutral-500 leading-relaxed">{item.desc}</p>
+            <code class="mt-2 block text-xs text-[var(--color-text-muted)] font-mono">{t('portals.slugPattern', { host: hostOf(brotherUrl(loginSubdomains[i])) })}</code>
+          </div>
+        ))}
+      </div>
+    </div>
     <p class="mt-10 text-center text-sm text-neutral-500">{t('portals.footnote')}</p>
   </section>
 </Layout>

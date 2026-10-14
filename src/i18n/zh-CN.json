@@ -367,7 +367,7 @@
   "portals": {
     "meta": {
       "title": "全部门户 — Autional",
-      "description": "Autional 公开站点与门户的总入口：文档、开发者、API 参考、API Wiki、服务状态与信任中心。",
+      "description": "Autional 公开站点与门户的总入口：文档、开发者、API 参考、API Wiki、服务状态与信任中心，以及组织与登录门户说明。",
       "keywords": "Autional, 门户, 站点导航, 文档, API, 服务状态, 信任中心"
     },
     "title": "全部门户",
@@ -386,7 +386,18 @@
       { "title": "信任中心", "desc": "安全实践、数据保护与合规建设进展。" },
       { "title": "演示环境", "desc": "逐一体验各服务的演示环境。" }
     ],
-    "footnote": "登录类与后台类门户不在此列，需经组织入口登录后访问。"
+    "orgHeading": "组织与登录门户",
+    "brandItem": { "title": "品牌入口", "desc": "租户品牌选择入口：选定品牌后进入对应登录页；公开访问，无需登录。" },
+    "loginItems": [
+      { "title": "用户中心", "desc": "个人资料、安全设置、会话与授权管理。" },
+      { "title": "身份验证器", "desc": "基于 TOTP 与通行密钥的两步验证。" },
+      { "title": "管理控制台", "desc": "租户、用户、应用与策略的集中管理后台。" },
+      { "title": "平台控制台", "desc": "平台级租户运营与全局配置。" },
+      { "title": "安全中心", "desc": "风险事件、登录审计与安全态势概览。" }
+    ],
+    "loginBadge": "需登录 · 需租户 slug",
+    "slugPattern": "{{host}}/<租户 slug>",
+    "footnote": "登录类门户受租户隔离：路径携带租户 slug、需登录后访问，故仅作说明、不设链接。不确定租户时，请从品牌入口选定品牌进入。"
   },
   "notFound": {
     "meta": { "title": "404 — 页面未找到 | Autional", "description": "页面未找到" },
