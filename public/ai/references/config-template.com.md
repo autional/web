@@ -1,4 +1,4 @@
-<!-- generated: core@8de9d33f2536 · region: com · lang: en — do not edit directly -->
+<!-- generated: core@3bc775d388f6 · region: com · lang: en — do not edit directly -->
 
 # Configuration Templates
 
@@ -20,7 +20,8 @@ export const autionalConfig = {
   appId: '{APP_ID}',
   issuer: 'https://api.autional.com',
   apiUrl: 'https://api.autional.com/bff',
-  syncTabs: true,
+  tenantSlug: '{TENANT_SLUG}',
+  syncTabs: true, // keep — cross-tab session sync (refresh/logout broadcast)
 };
 
 // Same-origin proxy form (apiUrl on your own origin, e.g. a /bff reverse proxy)?
@@ -43,6 +44,7 @@ Next.js: wrap the root layout with the provider from `@autional/next` and protec
 AUTIONAL_APP_ID={APP_ID}
 AUTIONAL_ISSUER=https://api.autional.com
 AUTIONAL_API_URL=https://api.autional.com/bff
+AUTIONAL_TENANT_SLUG={TENANT_SLUG}   # your tenant slug — portal links & SDK tenantSlug
 ```
 
 Use the framework's public prefix when needed: `VITE_` (Vite), `NEXT_PUBLIC_` (Next.js), `REACT_APP_` (CRA); none for Node.
@@ -65,6 +67,7 @@ Use the framework's public prefix when needed: `VITE_` (Vite), `NEXT_PUBLIC_` (N
 - Date: {DATE}
 - Framework: {FRAMEWORK}
 - Tenant: {TENANT_NAME}
+- Tenant slug: {TENANT_SLUG}
 - Region: .com
 - Environment: {ENVIRONMENT}
 
@@ -93,11 +96,13 @@ Use the framework's public prefix when needed: `VITE_` (Vite), `NEXT_PUBLIC_` (N
 ## Portals
 | Portal | Address | Purpose |
 |---|---|---|
-| Admin | https://admin.autional.com | users / roles / security policy / audit log |
-| User | https://user.autional.com | change password / devices / MFA |
-| Security | https://security.autional.com | anomaly detection / login trends |
-| Developer | https://developer.autional.com | API docs / OAuth clients / app settings |
-| Status | https://status.autional.com | service health |
+| Admin | https://admin.autional.com/{TENANT_SLUG}/ | users / roles / security policy / audit log |
+| User | https://user.autional.com/{TENANT_SLUG}/ | change password / devices / MFA |
+| Security | https://security.autional.com/{TENANT_SLUG}/ | anomaly detection / login trends |
+| Developer | https://developer.autional.com | API docs / OAuth clients / app settings (global) |
+| Status | https://status.autional.com | service health (global) |
+
+> Console portals are tenant-scoped — the slug keeps users on their tenant. A bare root drops them on the tenant picker.
 
 ## Reminders
 1. Admin password stored separately (not in this file)

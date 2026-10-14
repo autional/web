@@ -1,4 +1,4 @@
-<!-- generated: core@8de9d33f2536 · region: cn · lang: zh — do not edit directly -->
+<!-- generated: core@3bc775d388f6 · region: cn · lang: zh — do not edit directly -->
 
 # 配置模板参考
 
@@ -20,7 +20,8 @@ export const autionalConfig = {
   appId: '{APP_ID}',
   issuer: 'https://api.autional.cn',
   apiUrl: 'https://api.autional.cn/bff',
-  syncTabs: true,
+  tenantSlug: '{TENANT_SLUG}',
+  syncTabs: true, // 多标签会话同步——保持默认（刷新/登出跨标签广播）
 };
 
 // 同源代理形态（apiUrl 指向自己的源，如 /bff 反代）？
@@ -42,6 +43,7 @@ Next.js：在根 layout 用 `@autional/next` 的 Provider 包裹，并用其 mid
 AUTIONAL_APP_ID={APP_ID}
 AUTIONAL_ISSUER=https://api.autional.cn
 AUTIONAL_API_URL=https://api.autional.cn/bff
+AUTIONAL_TENANT_SLUG={TENANT_SLUG}   # 租户 slug —— 门户链接与 SDK tenantSlug 均用它
 ```
 
 按框架使用公开前缀：`VITE_`（Vite）、`NEXT_PUBLIC_`（Next.js）、`REACT_APP_`（CRA）；Node 无需前缀。
@@ -64,6 +66,7 @@ AUTIONAL_API_URL=https://api.autional.cn/bff
 - 接入日期: {DATE}
 - 框架: {FRAMEWORK}
 - 租户: {TENANT_NAME}
+- 租户 slug: {TENANT_SLUG}
 - Region: .cn
 - 环境: {ENVIRONMENT}
 
@@ -92,11 +95,13 @@ AUTIONAL_API_URL=https://api.autional.cn/bff
 ## 门户
 | Portal | 地址 | 用途 |
 |---|---|---|
-| 管理后台 | https://admin.autional.cn | 用户/角色/安全策略/审计日志 |
-| 用户门户 | https://user.autional.cn | 修改密码/设备/MFA |
-| 安全仪表盘 | https://security.autional.cn | 异常检测/登录趋势 |
-| 开发者门户 | https://developer.autional.cn | API 文档/OAuth 客户端/应用设置 |
-| 系统状态 | https://status.autional.cn | 服务运行状况 |
+| 管理后台 | https://admin.autional.cn/{TENANT_SLUG}/ | 用户/角色/安全策略/审计日志 |
+| 用户门户 | https://user.autional.cn/{TENANT_SLUG}/ | 修改密码/设备/MFA |
+| 安全仪表盘 | https://security.autional.cn/{TENANT_SLUG}/ | 异常检测/登录趋势 |
+| 开发者门户 | https://developer.autional.cn | API 文档/OAuth 客户端/应用设置（全局） |
+| 系统状态 | https://status.autional.cn | 服务运行状况（全局） |
+
+> 控制台门户按租户路由——带上 slug，用户才不会落到「选择租户」页。
 
 ## 提醒
 1. 管理员密码单独保存（不在此文件）
