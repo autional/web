@@ -20,13 +20,19 @@ claims_reviewed: true
 
 | 项 | 值 |
 | --- | --- |
-| 上游应用 | Novel —— 开源 AI 笔记应用（[steven-tey/novel](https://github.com/steven-tey/novel)） |
+| 上游应用 | Novel —— 开源 AI 笔记应用（Notion 风格编辑器） |
+| 原项目仓库 | [github.com/steven-tey/novel](https://github.com/steven-tey/novel) |
+| 原项目官网 | [novel.sh](https://novel.sh) |
 | 改造结果 | SSO 登录 · 文档按用户隔离并持久化 · AI 能力接平台中转 · 生产部署 |
 | 技术栈 | Next.js 15 · React 18 · Tiptap · Vercel Blob（私有存储） |
 | 部署平台 | Vercel |
 | 用时 | 主改造一个 AI 协作会话内完成，当天上线 |
 | 参考仓库 | [github.com/autional-demo/novel](https://github.com/autional-demo/novel) |
 | 演示环境 | [novel-demo-nine.vercel.app](https://novel-demo-nine.vercel.app) |
+
+## 关于原项目 Novel
+
+Novel 是 Steven Tey 开发的开源「Notion 风格」所见即所得编辑器，基于 Next.js + Tiptap + Vercel AI SDK 构建。核心特性是 AI 自动补全：正文输入 `++` 触发续写建议，斜杠命令插入内容块，选中文本唤起气泡菜单；支持拖拽 / 粘贴上传图片、LaTeX 公式与推文嵌入。编辑器也以 npm 包（`novel`）形式提供给其他应用集成。项目采用 Apache-2.0 许可，截至 2026-10 在 GitHub 上获 1.6 万+ star。
 
 ## 改造前 → 改造后
 

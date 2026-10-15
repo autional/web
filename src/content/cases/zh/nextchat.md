@@ -20,13 +20,19 @@ claims_reviewed: true
 
 | 项 | 值 |
 | --- | --- |
-| 上游应用 | NextChat —— 开源 AI 聊天客户端（[ChatGPTNextWeb/NextChat](https://github.com/ChatGPTNextWeb/NextChat)，MIT） |
+| 上游应用 | NextChat —— 开源 AI 聊天客户端（原名 ChatGPT-Next-Web） |
+| 原项目仓库 | [github.com/ChatGPTNextWeb/NextChat](https://github.com/ChatGPTNextWeb/NextChat) |
+| 原项目官网 | [nextchat.club](https://nextchat.club) |
 | 改造结果 | SSO 登录 · 按用户隔离 · 会话持久化（平台存储）· 服务路由会话门 |
 | 技术栈 | Next.js 14（App Router）· React 18 · Zustand · Vercel Blob（私有存储） |
 | 部署平台 | Vercel |
 | 用时 | 改造 + 上线当天完成（同一 AI 协作会话） |
 | 参考仓库 | [github.com/autional-demo/nextchat](https://github.com/autional-demo/nextchat) |
 | 演示环境 | [nextchat-demo-eight.vercel.app](https://nextchat-demo-eight.vercel.app) |
+
+## 关于原项目 NextChat
+
+NextChat（原名 ChatGPT-Next-Web，2024 年 1 月更名）是跨平台开源 AI 聊天客户端：覆盖 Web / PWA / iOS / Android / 桌面端（Tauri），支持 GPT、Claude、Gemini、DeepSeek 等主流模型，兼容 Azure 与自部署模型；具备 Markdown / LaTeX / Mermaid 渲染、提示词面具、插件、分享为图片等能力。聊天数据默认全部留在浏览器本地，无账号体系——这也正是本次改造的起点。项目采用 MIT 许可，截至 2026-10 在 GitHub 上获 8.8 万+ star。
 
 ## 改造前 → 改造后
 

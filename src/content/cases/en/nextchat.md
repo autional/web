@@ -20,13 +20,19 @@ On 2026-10-15, we ran the same sentence of prompt again — only the repo URL ch
 
 | Item | Value |
 | --- | --- |
-| Upstream app | NextChat — open-source AI chat client ([ChatGPTNextWeb/NextChat](https://github.com/ChatGPTNextWeb/NextChat), MIT) |
+| Upstream app | NextChat — open-source AI chat client (formerly ChatGPT-Next-Web) |
+| Upstream repo | [github.com/ChatGPTNextWeb/NextChat](https://github.com/ChatGPTNextWeb/NextChat) |
+| Upstream website | [nextchat.club](https://nextchat.club) |
 | Result | SSO login · per-user isolation · conversation persistence (platform storage) · session gate on service routes |
 | Stack | Next.js 14 (App Router) · React 18 · Zustand · Vercel Blob (private) |
 | Platform | Vercel |
 | Time | Refactor + go-live the same day (one AI collaboration session) |
 | Reference repo | [github.com/autional-demo/nextchat](https://github.com/autional-demo/nextchat) |
 | Demo | [nextchat-demo-eight.vercel.app](https://nextchat-demo-eight.vercel.app) |
+
+## About the Upstream Project: NextChat
+
+NextChat (renamed from ChatGPT-Next-Web in January 2024) is a cross-platform open-source AI chat client: web, PWA, iOS, Android, and desktop (Tauri). It supports major models such as GPT, Claude, Gemini, and DeepSeek, plus Azure and self-hosted endpoints, and offers Markdown / LaTeX / Mermaid rendering, prompt masks, plugins, and share-as-image. By default, all chat data stays in the browser with no account system — which is exactly where this refactor starts. Licensed under MIT, with 88k+ stars on GitHub as of October 2026.
 
 ## Before and After
 

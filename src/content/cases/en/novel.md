@@ -20,13 +20,19 @@ On 2026-10-13, we took [Novel](https://github.com/steven-tey/novel) — an open-
 
 | Item | Value |
 | --- | --- |
-| Upstream app | Novel — open-source AI notes app ([steven-tey/novel](https://github.com/steven-tey/novel)) |
+| Upstream app | Novel — open-source AI notes app (Notion-style editor) |
+| Upstream repo | [github.com/steven-tey/novel](https://github.com/steven-tey/novel) |
+| Upstream website | [novel.sh](https://novel.sh) |
 | Result | SSO login · per-user document isolation and persistence · platform AI relay · production deployment |
 | Stack | Next.js 15 · React 18 · Tiptap · Vercel Blob (private) |
 | Platform | Vercel |
 | Time | Main refactor in one AI collaboration session; live the same day |
 | Reference repo | [github.com/autional-demo/novel](https://github.com/autional-demo/novel) |
 | Demo | [novel-demo-nine.vercel.app](https://novel-demo-nine.vercel.app) |
+
+## About the Upstream Project: Novel
+
+Novel is a Notion-style WYSIWYG editor by Steven Tey, built on Next.js, Tiptap, and the Vercel AI SDK. Its core feature is AI-powered autocompletion: type `++` in the body to trigger suggestions, use slash commands to insert blocks, and select text for the bubble menu; images can be dragged, dropped, or pasted, and LaTeX and tweet embeds are supported. The editor also ships as the `novel` npm package for other apps to embed. Licensed under Apache-2.0, with 16k+ stars on GitHub as of October 2026.
 
 ## Before and After
 
