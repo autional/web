@@ -77,4 +77,4 @@ Novel 是 Steven Tey 开发的开源「Notion 风格」所见即所得编辑器�
 
 ## 自己试一遍
 
-复制上面的 prompt，把仓库地址换成你的项目，交给 AI 编码助手（Claude Code、Cursor 等）即可。完整方法论（八阶段流程、四条流程规则、分步操作）见博客深文：[《用 AI 改造开源应用：从一段 prompt 和一个 GitHub 地址开始》](/blog/ai-refactor-novel)；想直接开始，看 [AI 接入指南](/ai)。
+复制上面的 prompt，把仓库地址换成你的项目，交给 AI 编码助手（Claude Code、Cursor 等）即可。想直接开始，看 [AI 接入指南](/ai)。

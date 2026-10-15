@@ -77,4 +77,4 @@ Swap the repo URL for your own project and that sentence is your prompt.
 
 ## Try It Yourself
 
-Copy the prompt above, put your own repo URL in place of Novel's, and hand it to your AI coding assistant (Claude Code, Cursor, and others). For the full method — the eight phases, the four ground rules, and step-by-step instructions — see the deep dive: [Refactoring an Open-Source App with AI: One Prompt + One GitHub URL](/blog/ai-refactor-novel). To get started right away, see the [AI onboarding guide](/ai).
+Copy the prompt above, put your own repo URL in place of Novel's, and hand it to your AI coding assistant (Claude Code, Cursor, and others). To get started right away, see the [AI onboarding guide](/ai).
