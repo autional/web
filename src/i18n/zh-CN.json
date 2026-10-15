@@ -615,6 +615,7 @@
     "compare": "对比",
     "roadmap": "路线图",
     "showcase": "演示与展示",
+    "cases": "案例",
     "docs": "文档",
     "sdk": "SDK",
     "ai": "AI 接入",
@@ -656,14 +657,15 @@
     "save": "保存偏好"
   },
   "search": {
-    "placeholder": "搜索页面、博客文章…",
+    "placeholder": "搜索页面、博客文章、案例…",
     "noResults": "未找到与「{{query}}」相关的结果",
     "hotSearches": "热门搜索",
     "resultCount": "{{count}} 条结果",
     "closeHint": "按 ESC 关闭",
     "category": {
       "page": "页面",
-      "blog": "博客"
+      "blog": "博客",
+      "case": "案例"
     },
     "hotTags": ["SSO", "MFA", "通行密钥", "多租户", "API 文档", "部署"],
     "pages": {
@@ -679,6 +681,7 @@
       "sdk": { "title": "SDK", "excerpt": "已发布 npm 软件包与规划中的 SDK" },
       "ai": { "title": "AI 接入", "excerpt": "一句话让 AI 编程助手接入登录与多用户能力" },
       "blog": { "title": "博客", "excerpt": "身份技术、安全与工程实践文章" },
+      "cases": { "title": "案例", "excerpt": "真实改造案例 —— 从一个开源应用到一个多用户产品" },
       "changelog": { "title": "更新日志", "excerpt": "产品版本更新与改进记录" },
       "faq": { "title": "常见问题", "excerpt": "产品、开源、安全与开发者常见问题" },
       "about": { "title": "关于我们", "excerpt": "使命、历程与路线图" },
@@ -716,5 +719,25 @@
     "ctaFeatures": "浏览功能特性",
     "keywordIdentity": "身份",
     "keywordAuth": "认证"
+  },
+  "cases": {
+    "title": "案例",
+    "pageDesc": "真实改造案例 —— 从一个开源应用到一个多用户产品，附验证数字与 prompt 存档。",
+    "subtitle": "从一个开源应用，到一个多用户产品 —— 真实案例，数字与 prompt 全部存档。",
+    "readMore": "查看案例",
+    "facts": {
+      "platform": "部署平台",
+      "framework": "框架",
+      "stack": "技术栈",
+      "repo": "代码仓库",
+      "demo": "演示环境"
+    },
+    "backToList": "返回案例",
+    "backToAll": "返回全部案例",
+    "metaTitleSuffix": "Autional 案例",
+    "breadcrumbHome": "首页",
+    "ctaTitle": "想给自己的项目做同样的改造？",
+    "ctaDesc": "把你的项目交给 AI 编程助手：一句 prompt 接入 Autional 登录与多用户能力，每个阶段先与你确认。",
+    "ctaAI": "开始 AI 接入"
   }
 }

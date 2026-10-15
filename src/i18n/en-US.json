@@ -615,6 +615,7 @@
     "compare": "Compare",
     "roadmap": "Roadmap",
     "showcase": "Customer Stories",
+    "cases": "Cases",
     "docs": "Documentation",
     "sdk": "SDK",
     "ai": "AI Onboarding",
@@ -656,14 +657,15 @@
     "save": "Save Preferences"
   },
   "search": {
-    "placeholder": "Search pages, blog posts...",
+    "placeholder": "Search pages, blog posts, cases...",
     "noResults": "No results found for \"{{query}}\"",
     "hotSearches": "Hot Searches",
     "resultCount": "{{count}} results",
     "closeHint": "Press ESC to close",
     "category": {
       "page": "Page",
-      "blog": "Blog"
+      "blog": "Blog",
+      "case": "Case"
     },
     "hotTags": ["SSO", "MFA", "Passkey", "Multi-Tenant", "API Docs", "Deployment"],
     "pages": {
@@ -679,6 +681,7 @@
       "sdk": { "title": "SDK", "excerpt": "Published npm packages and SDKs in the pipeline" },
       "ai": { "title": "AI Onboarding", "excerpt": "Add login and multi-user support to your AI coding assistant with one prompt" },
       "blog": { "title": "Blog", "excerpt": "Security articles, product updates & best practices" },
+      "cases": { "title": "Cases", "excerpt": "Real refactors — from an open-source app to a multi-user product" },
       "changelog": { "title": "Changelog", "excerpt": "See the latest version updates, features, improvements & fixes" },
       "faq": { "title": "FAQ", "excerpt": "Product, security, developer & technical support FAQs" },
       "about": { "title": "About Us", "excerpt": "Team, vision, mission & milestones" },
@@ -716,5 +719,25 @@
     "ctaFeatures": "Browse Features",
     "keywordIdentity": "identity",
     "keywordAuth": "auth"
+  },
+  "cases": {
+    "title": "Cases",
+    "pageDesc": "Real refactors — from an open-source app to a multi-user product. Verified numbers and the exact prompts, on the record.",
+    "subtitle": "From an open-source app to a multi-user product — real refactors, numbers and prompts on record.",
+    "readMore": "Read the case",
+    "facts": {
+      "platform": "Platform",
+      "framework": "Framework",
+      "stack": "Stack",
+      "repo": "Repository",
+      "demo": "Demo"
+    },
+    "backToList": "Back to Cases",
+    "backToAll": "Back to all cases",
+    "metaTitleSuffix": "Autional Cases",
+    "breadcrumbHome": "Home",
+    "ctaTitle": "Want the same refactor for your project?",
+    "ctaDesc": "Hand your project to an AI coding agent: one prompt adds Autional login and multi-user support, with a confirmation gate at every phase.",
+    "ctaAI": "Start AI onboarding"
   }
 }

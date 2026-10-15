@@ -13,18 +13,23 @@ import { readBuildEnv } from './scripts/env.mjs';
 const { region: ENV_REGION, siteUrl: ENV_SITE_URL, defaultLang: ENV_DEFAULT_LANG, fallbackLang: ENV_FALLBACK_LANG, cdnHost: ENV_CDN_HOST } =
   readBuildEnv();
 
-// 博客 frontmatter 日期（T-01）：sitemap lastmod 用真实发布日期，而非构建时间。
-// B1 §1.3：内容按语言分目录（blog/{en,zh}/），本区只读 DEFAULT_LANG 目录——
-// 同名对（49 对）日期可能不同，必须按本区语言取，否则 lastmod 串区。
-const blogLangDir = ENV_DEFAULT_LANG === 'en' ? 'en' : 'zh';
-const blogDir = fileURLToPath(new URL(`./src/content/blog/${blogLangDir}/`, import.meta.url));
-const blogDates = {};
-for (const file of readdirSync(blogDir)) {
-  if (!file.endsWith('.md')) continue;
-  const src = readFileSync(join(blogDir, file), 'utf8');
-  const m = src.match(/^date:\s*"?(\d{4}-\d{2}-\d{2})"?/m);
-  if (m) blogDates[file.replace(/\.md$/, '')] = m[1];
-}
+// 博客 / 案例 frontmatter 日期（T-01）：sitemap lastmod 用真实发布日期，而非构建时间。
+// B1 §1.3：内容按语言分目录（blog|cases/{en,zh}/），本区只读 DEFAULT_LANG 目录——
+// 同名对日期可能不同，必须按本区语言取，否则 lastmod 串区。
+const contentLangDir = ENV_DEFAULT_LANG === 'en' ? 'en' : 'zh';
+const readContentDates = (collection) => {
+  const dir = fileURLToPath(new URL(`./src/content/${collection}/${contentLangDir}/`, import.meta.url));
+  const dates = {};
+  for (const file of readdirSync(dir)) {
+    if (!file.endsWith('.md')) continue;
+    const src = readFileSync(join(dir, file), 'utf8');
+    const m = src.match(/^date:\s*"?(\d{4}-\d{2}-\d{2})"?/m);
+    if (m) dates[file.replace(/\.md$/, '')] = m[1];
+  }
+  return dates;
+};
+const blogDates = readContentDates('blog');
+const caseDates = readContentDates('cases');
 
 // sitemap serialize 判定点全部由 SITE 派生（原 cn 版 5 处 / com 版 6 处字面量的参数化）。
 const SITE = ENV_SITE_URL;
@@ -46,6 +51,16 @@ export default defineConfig({
         if (url === `${SITE}/blog/`) {
           const latest = Object.values(blogDates).sort().at(-1);
           return { ...item, changefreq: 'weekly', priority: 0.8, ...(latest ? { lastmod: latest } : {}) };
+        }
+        // 案例详情：lastmod = 案例 frontmatter 发布日期（案例迭代低频 → monthly）
+        const caseMatch = url.match(new RegExp(`^${SITE_RE}/cases/([^/]+)/?$`));
+        if (caseMatch && caseDates[caseMatch[1]]) {
+          return { ...item, changefreq: 'monthly', priority: 0.7, lastmod: caseDates[caseMatch[1]] };
+        }
+        // 案例索引：lastmod = 最新一例的日期
+        if (url === `${SITE}/cases/`) {
+          const latestCase = Object.values(caseDates).sort().at(-1);
+          return { ...item, changefreq: 'monthly', priority: 0.8, ...(latestCase ? { lastmod: latestCase } : {}) };
         }
         // 其余页面不写 lastmod（静态内容，构建时间无意义）
         if (url === `${SITE}/`) {

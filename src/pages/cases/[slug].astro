@@ -1,0 +1,114 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/LandingLayout.astro';
+import { t } from '../../i18n';
+import { isRegionPost, postSlug } from '../../lib/content-lang';
+import { SITE_URL } from '../../lib/site-env';
+
+type DataFilter = { data: CollectionEntry<'cases'>['data'] };
+
+export async function getStaticPaths() {
+  const entries = await getCollection('cases', ({ data }: DataFilter) => data.status === 'verified');
+  return entries
+    .filter((entry: CollectionEntry<'cases'>) => isRegionPost(entry.id))
+    .map((entry: CollectionEntry<'cases'>) => ({
+      params: { slug: postSlug(entry.id) },
+      props: { entry },
+    }));
+}
+
+const { entry } = Astro.props as { entry: CollectionEntry<'cases'> };
+const { data } = entry;
+const { Content } = await entry.render();
+
+// 速览清单：字段 → Layout 行（platform/framework 并排，stack/repo/demo 占整行）
+const stripProtocol = (url: string) => url.replace(/^https?:\/\//, '');
+const facts = [
+  { label: t('cases.facts.platform'), value: data.platform },
+  { label: t('cases.facts.framework'), value: data.framework },
+  { label: t('cases.facts.stack'), value: data.stack, wide: true },
+  { label: t('cases.facts.repo'), value: stripProtocol(data.repo), href: data.repo, wide: true },
+  { label: t('cases.facts.demo'), value: stripProtocol(data.demo), href: data.demo, wide: true },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: data.title,
+  description: data.excerpt,
+  datePublished: data.date,
+  author: { '@type': 'Organization', name: 'Autional' },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: t('cases.breadcrumbHome'), item: SITE_URL },
+    { '@type': 'ListItem', position: 2, name: t('cases.title'), item: `${SITE_URL}/cases` },
+    { '@type': 'ListItem', position: 3, name: data.title },
+  ],
+};
+
+const keywords = ['Autional', data.platform, data.framework, ...data.tags].join(', ');
+---
+
+<Layout
+  title={`${data.title} — ${t('cases.metaTitleSuffix')}`}
+  description={data.excerpt}
+  ogType="article"
+  keywords={keywords}
+  jsonLd={[articleJsonLd, breadcrumbJsonLd]}
+>
+  <article class="mx-auto max-w-3xl px-4 py-12">
+    <nav class="mb-8 flex flex-wrap items-center gap-2 text-sm text-neutral-500 dark:text-[var(--color-text-muted)]" aria-label={t('a11y.breadcrumb')}>
+      <a href="/cases" class="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 font-medium text-neutral-700 transition-colors hover:border-primary-200 hover:text-primary-700 dark:border-neutral-800 dark:bg-surface dark:text-neutral-300 dark:hover:border-primary-700 dark:hover:text-white">
+        <span aria-hidden="true">&larr;</span>
+        {t('cases.backToList')}
+      </a>
+      <span>/</span>
+      <a href="/cases" class="hover:text-primary-600">{t('cases.title')}</a>
+      <span>/</span>
+      <span>{data.platform}</span>
+    </nav>
+    <div class="flex flex-wrap items-center gap-3 text-sm text-neutral-500">
+      <span class="rounded-full bg-primary-50 dark:bg-primary-900/30 px-3 py-1 text-xs font-medium text-primary-700">{data.platform}</span>
+      <time datetime={data.date}>{data.date}</time>
+      <span>{data.readTime}</span>
+      {data.tags.map((tag: string) => <span>#{tag}</span>)}
+    </div>
+    <h1 class="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">{data.title}</h1>
+
+    <section class="mt-8 rounded-xl border border-neutral-200 bg-neutral-50/60 p-5 dark:border-neutral-800 dark:bg-surface">
+      <dl class="grid gap-x-6 gap-y-3 sm:grid-cols-2">
+        {facts.map((fact) => (
+          <div class={`flex items-baseline gap-2 text-sm${fact.wide ? ' sm:col-span-2' : ''}`}>
+            <dt class="shrink-0 text-neutral-500 dark:text-[var(--color-text-muted)]">{fact.label}</dt>
+            <dd class="font-medium">
+              {fact.href
+                ? <a href={fact.href} class="text-primary-600 hover:text-primary-700" target="_blank" rel="noopener noreferrer">{fact.value}</a>
+                : fact.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <div class="mt-8 prose prose-lg dark:prose-invert max-w-none"><Content /></div>
+
+    <section class="mt-12 rounded-md bg-primary-900 px-8 py-10 text-white">
+      <h2 class="text-2xl font-bold">{t('cases.ctaTitle')}</h2>
+      <p class="mt-3 text-sm leading-7 text-sky-100/82">{t('cases.ctaDesc')}</p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="/ai" class="inline-flex items-center justify-center rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-primary-700 transition hover:bg-sky-50">{t('cases.ctaAI')}</a>
+      </div>
+    </section>
+
+    <div class="mt-12 border-t border-neutral-200 pt-6 dark:border-neutral-800">
+      <a href="/cases" class="inline-flex items-center gap-2 text-sm font-medium text-primary-600 transition-colors hover:text-primary-700">
+        <span aria-hidden="true">&larr;</span>
+        {t('cases.backToAll')}
+      </a>
+    </div>
+  </article>
+</Layout>

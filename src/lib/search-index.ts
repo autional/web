@@ -1,10 +1,11 @@
 // 站内搜索索引 — 单源双区（B1 §6-B1 行 3，W10 键化边界）：
 // - 静态页条目只登记**文案键**（search.pages.*），客户端按当前语言解析 → 语言切换联动（B1-5）；
-// - 博客条目携带区域语言内容原文（文章本体不随 chrome 切换翻译，分类走 blog.categories.* 键）；
-// - 构建期由 LandingLayout 调用，入参已按本区语言目录过滤（见 lib/blog-lang.ts）。
+// - 博客 / 案例条目携带区域语言内容原文（本体不随 chrome 切换翻译，分类走 blog.categories.* /
+//   search.category.case 键）；
+// - 构建期由 LandingLayout 调用，入参已按本区语言目录过滤（见 lib/content-lang.ts）。
 // 反模式警示：历史实现为 SearchModal.tsx 内 17 路径硬编码（覆盖 25%），本文件取代之。
 
-import { postSlug } from './blog-lang';
+import { postSlug } from './content-lang';
 
 export interface SearchItem {
   path: string;
@@ -26,6 +27,7 @@ export const STATIC_PAGE_DEFS: readonly { path: string; key: string }[] = [
   { path: '/compare', key: 'compare' },
   { path: '/roadmap', key: 'roadmap' },
   { path: '/showcase', key: 'showcase' },
+  { path: '/cases', key: 'cases' },
   { path: '/portals', key: 'portals' },
   { path: '/trust', key: 'trust' },
   { path: '/docs', key: 'docs' },
@@ -45,8 +47,13 @@ interface BlogLike {
   data: { title: string; category: string; excerpt: string };
 }
 
-/** 静态页 + 本区全量博客文章（构建期调用；顺序稳定：页面在前，博文按传入顺序）。 */
-export function buildSearchIndex(posts: BlogLike[]): SearchItem[] {
+interface CaseLike {
+  id: string;
+  data: { title: string; excerpt: string };
+}
+
+/** 静态页 + 本区全量博客文章 + 本区案例（构建期调用；顺序稳定：页面在前，博文次之，案例殿后）。 */
+export function buildSearchIndex(posts: BlogLike[], cases: CaseLike[] = []): SearchItem[] {
   return [
     ...STATIC_PAGE_DEFS.map(({ path, key }) => ({
       path,
@@ -59,6 +66,12 @@ export function buildSearchIndex(posts: BlogLike[]): SearchItem[] {
       title: post.data.title,
       excerpt: post.data.excerpt,
       categoryKey: `blog.categories.${post.data.category.toLowerCase()}`,
+    })),
+    ...cases.map((entry) => ({
+      path: `/cases/${postSlug(entry.id)}/`,
+      title: entry.data.title,
+      excerpt: entry.data.excerpt,
+      categoryKey: 'search.category.case',
     })),
   ];
 }

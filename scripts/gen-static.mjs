@@ -77,7 +77,8 @@ const LLMS_STRINGS = {
   },
 };
 const blogCount = readdirSync(join(root, 'src', 'content', 'blog', defaultLang)).filter((f) => f.endsWith('.md')).length;
-const llmsVars = { ...LLMS_STRINGS[defaultLang], SITE_URL: siteUrl, CDN_HOST: cdnHost, BLOG_COUNT: String(blogCount) };
+const caseCount = readdirSync(join(root, 'src', 'content', 'cases', defaultLang)).filter((f) => f.endsWith('.md')).length;
+const llmsVars = { ...LLMS_STRINGS[defaultLang], SITE_URL: siteUrl, CDN_HOST: cdnHost, BLOG_COUNT: String(blogCount), CASE_COUNT: String(caseCount) };
 let llms = tpl('llms.txt');
 for (const [k, v] of Object.entries(llmsVars)) llms = llms.replaceAll(`{{${k}}}`, v);
 if (/\{\{[A-Z_]+\}\}/.test(llms)) throw new Error(`llms.txt 模板存在未替换变量：${llms.match(/\{\{[A-Z_]+\}\}/g)}`);
@@ -124,5 +125,5 @@ const blogCards = await generateBlogCards({ root, host, defaultLang });
 
 console.log(
   `[gen-static] region=${region} defaultLang=${defaultLang} site=${siteUrl}\n` +
-    `  robots.txt / llms.txt (blog=${blogCount}) / ai/skill.md(< skill.${defaultLang}.md) + .sha256 / ai/references/*.md(< *.${region}.md ×${refMirrors.length}) / og-default.svg+png (host=${host}) / og/blog/*.png (${blogCards} 篇)`,
+    `  robots.txt / llms.txt (blog=${blogCount} cases=${caseCount}) / ai/skill.md(< skill.${defaultLang}.md) + .sha256 / ai/references/*.md(< *.${region}.md ×${refMirrors.length}) / og-default.svg+png (host=${host}) / og/blog/*.png (${blogCards} 篇)`,
 );

@@ -2,7 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/LandingLayout.astro';
 import { t } from '../../i18n';
-import { isRegionPost, postSlug } from '../../lib/blog-lang';
+import { isRegionPost, postSlug } from '../../lib/content-lang';
 
 const posts = await getCollection('blog', ({ data }: { data: CollectionEntry<'blog'>['data'] }) => data.status === 'verified');
 const regionPosts = posts.filter((post: CollectionEntry<'blog'>) => isRegionPost(post.id));

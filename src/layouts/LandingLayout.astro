@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import ClientShell from '../components/ClientShell.tsx';
 // CookieConsent 已下架 (2026-09-29)：站点零 cookie、无追踪脚本，文案与事实不符；组件文件保留待将来接入分析时恢复
 import { buildSearchIndex } from '../lib/search-index';
-import { isRegionPost } from '../lib/blog-lang';
+import { isRegionPost } from '../lib/content-lang';
 import { t } from '../i18n';
 import { LOCALE, brotherUrl, cdnAsset, GITHUB_ORG_URL } from '../lib/site-env';
 import '../styles/global.css';
@@ -57,9 +57,13 @@ const defaultJsonLd = {
 
 const allJsonLd = [defaultJsonLd, ...jsonLd];
 
-// 站内搜索索引：构建期生成（静态页键 + 本区全量博客文章）——单一来源，见 src/lib/search-index.ts
+// 站内搜索索引：构建期生成（静态页键 + 本区全量博客文章 + 本区案例）——单一来源，见 src/lib/search-index.ts
 const blogPosts = await getCollection('blog', ({ data }) => data.status === 'verified');
-const searchIndex = buildSearchIndex(blogPosts.filter((post) => isRegionPost(post.id)));
+const cases = await getCollection('cases', ({ data }) => data.status === 'verified');
+const searchIndex = buildSearchIndex(
+  blogPosts.filter((post) => isRegionPost(post.id)),
+  cases.filter((entry) => isRegionPost(entry.id)),
+);
 
 const year = new Date().getFullYear();
 // px-3.5（14px）为 1280 边界的宽度预算让位——英文区该档仅剩 ~7px 余量，组间加间距须从这里回收，勿改回 px-4
@@ -163,6 +167,7 @@ const quickstartUrl = `${brotherUrl('developer')}/quickstart`;
           <li><a href="/compare" class={footerLinkClass} data-i18n="footer.compare">{t('footer.compare')}</a></li>
           <li><a href="/roadmap" class={footerLinkClass} data-i18n="footer.roadmap">{t('footer.roadmap')}</a></li>
           <li><a href="/showcase" class={footerLinkClass} data-i18n="footer.showcase">{t('footer.showcase')}</a></li>
+          <li><a href="/cases" class={footerLinkClass} data-i18n="footer.cases">{t('footer.cases')}</a></li>
         </ul></div>
         <div><h3 class="text-sm font-semibold text-white" data-i18n="footer.developers">{t('footer.developers')}</h3><ul class="mt-4 space-y-3">
           <li><a href="/docs" class={footerLinkClass} data-i18n="footer.docs">{t('footer.docs')}</a></li>

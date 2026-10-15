@@ -24,6 +24,9 @@
 ## Blog ({{BLOG_COUNT}} articles)
 - {{SITE_URL}}/blog
 
+## Cases ({{CASE_COUNT}})
+- {{SITE_URL}}/cases
+
 ## SDK Packages (31)
 - @autional/core — npm install @autional/core
 - @autional/react — npm install @autional/react @autional/core

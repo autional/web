@@ -1,7 +1,7 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 import { t } from '../i18n';
-import { isRegionPost, postSlug } from '../lib/blog-lang';
+import { isRegionPost, postSlug } from '../lib/content-lang';
 import { LOCALE } from '../lib/site-env';
 
 export async function GET(context: { site: URL }) {

@@ -1,6 +1,6 @@
 /**
- * blog 内容集合分语言目录工具（B1 §6-B1 行 4 链式清单单点）：
- * 文章按 `src/content/blog/{en,zh}/` 一等化后，集合 id 形如 `<lang>/<slug>`；
+ * 内容集合分语言目录工具（B1 §6-B1 行 4 链式清单单点；blog 与 cases 共用）：
+ * 内容按 `src/content/<集合>/{en,zh}/` 一等化后，集合 id 形如 `<lang>/<slug>`；
  * 每区产物只消费本区 DEFAULT_LANG 目录（plan §7 期望差异 ⑤），slug 需去语言前缀。
  */
 import { DEFAULT_LANG } from './site-env';
