@@ -1,6 +1,6 @@
 # Autional Website (web)
 
-**Stack**: Astro 5 SSG + React 19 + Tailwind 3.4
+**Stack**: Astro 7 SSG + React 19 + Tailwind 4
 **Regions**: `www.autional.cn`（zh）/ `www.autional.com`（en）——**同一份源代码、两个 Vercel 项目**，差异全部由构建期区域环境注入（B1 单源双区）。
 
 ## Region env (build-time)
@@ -33,6 +33,20 @@ pnpm typecheck
 - 守卫脚本：`node scripts/check-i18n.mjs`（G1 嵌套键 / G2 键集对称 / G3 递归非空 / G4 形状对称）；
 - 各页面渲染语言 = 本区 `DEFAULT_LANG`；顶栏/页脚 chrome 支持就地语言切换（同一份资源）。
 
+## Content collections
+
+`blog` 与 `cases` 都走 Astro Content Layer（`src/content.config.ts` + `glob()` loader）。条目 id 形如 `<lang>/<slug>`（如 `zh/novel`），页面用 `render(entry)` 渲染。
+
+| 规则 | 说明 |
+|---|---|
+| 只用 `glob()` loader | **禁止 `type: 'content'`**（旧式集合） |
+| 语言分目录 | `src/content/<集合>/{zh,en}/`；本区只读 `DEFAULT_LANG` 目录 |
+| id → 路由 | `postSlug(id)` 去掉语言前缀（`src/lib/content-lang.ts`） |
+
+> ⚠️ **旧式集合在 Astro 7 静默失效**：`type: 'content'` 集合被跳过（`legacy.collectionsBackwardsCompat` 默认 `false`）。构建**不报错**，只打 `[WARN] [content] The collection "x" does not exist or is empty`。结果列表空、`getStaticPaths` 0 条 ⇒ 详情页 404。2026-10-22 `/cases` 全空即此原因（见 `docs/vercel-deployment-notes.md`）。
+
 ## Deploy
 
 Push 后由 Vercel 构建（cn / com 两项目共用本仓，靠上表 env 区分）；构建期生成物（`robots.txt` / `llms.txt` / `ai/skill.md` / og 图）由 `scripts/gen-static.mjs` 按本区 env 落进 `public/`，不入库。
+
+**构建后必查**：`[WARN] [content]` 应为 0 条；页数为 76（新增集合条目时同步核数）。

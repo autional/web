@@ -30,6 +30,41 @@ ERR_PNPM_NO_LOCKFILE Cannot install with "frozen-lockfile" because pnpm-lock.yam
 **修复**: 执行 `git rm -r docs-site dev-site` + commit push。
 **状态**: ✅ 已修复
 
+### F3: /cases 空列表 + 详情页 404（Astro 7 旧式集合静默失效）
+
+**时间**: 2026-10-22（`6aa144a` 升级当天暴露，`1bd91bc` 修复）
+**症状**:
+
+- `https://www.autional.cn/cases` 列表 0 张卡；
+- `/cases/nextchat/`、`/cases/novel/` 返回 404；
+- sitemap 与站内搜索索引没有案例条目；
+- `.cn` 与 `.com` 同源同坏。
+
+**根因**: Astro 5→7 升级只把 `blog` 迁到 `glob()` loader，`cases` 仍是旧式 `type: 'content'`。Astro 7 在 `legacy.collectionsBackwardsCompat=false`（默认）时直接跳过旧式集合（`astro/dist/content/content-layer.js`），`getCollection('cases')` 返回空数组。
+
+**为什么没被发现**: 构建退出码 0，只有 WARN：
+
+```
+[WARN] [content] The collection "cases" does not exist or is empty.
+```
+
+页数 74（正确值 76）。页面照建，只是空。
+
+**修复**:
+
+1. `src/content.config.ts`：`cases` 改 `glob({ pattern: '**/*.md', base: './src/content/cases' })`；
+2. `src/pages/cases/[slug].astro`：`entry.render()` → `render(entry)`。
+
+**验证**: CN / COM 各 76 页；`[WARN] [content]` 0 条；两区 `/cases` 各 2 张卡；两个详情页正文与速览表格正常；sitemap 含两条案例 URL。
+
+**预防**:
+
+| 措施 | 做法 |
+|---|---|
+| 升级后查告警 | 构建日志搜 `[WARN] [content]`，必须 0 条 |
+| 升级后查页数 | 与升级前比对；`/cases`、`/blog` 各详情页逐条可达 |
+| 新集合写法 | 一律 `glob()` loader；禁止 `type: 'content'` |
+
 ---
 
 ## docs 构建故障
