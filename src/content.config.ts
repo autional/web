@@ -20,7 +20,7 @@ const blog = defineCollection({
 // 案例：与 blog 同构的 editorial 字段（status/reviewed_by/claims_reviewed），
 // 速览字段 platform/framework/stack/repo/demo 与详情页清单一一对应（多平台可扩）。
 const cases = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/cases' }),
   schema: z.object({
     title: z.string(),
     date: z.string(),

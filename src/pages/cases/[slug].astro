@@ -1,5 +1,5 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/LandingLayout.astro';
 import { t } from '../../i18n';
 import { isRegionPost, postSlug } from '../../lib/content-lang';
@@ -19,7 +19,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props as { entry: CollectionEntry<'cases'> };
 const { data } = entry;
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 
 // 速览清单：字段 → Layout 行（platform/framework 并排，stack/repo/demo 占整行）
 const stripProtocol = (url: string) => url.replace(/^https?:\/\//, '');
