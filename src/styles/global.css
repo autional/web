@@ -24,8 +24,7 @@
    preflight 的 body { line-height: inherit } 反过来盖掉 primitives 的 body { line-height: var(--line-height-body-md) }，
    实测整页偏移：developer-home 3.025% / docs 3.035% / wiki 4.478%。
    所以它继续走 bundler @import，让 Tailwind 按它本来的语义安放。详见 scripts/build-cdn.mjs 的摊平说明。 */
+@import 'tailwindcss';
 @import '@autional/tokens/primitives.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@config '../../tailwind.config.cjs';

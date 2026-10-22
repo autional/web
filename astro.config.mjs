@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
+import tailwindcss from '@tailwindcss/vite';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -37,7 +37,6 @@ const SITE_RE = SITE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export default defineConfig({
   integrations: [
-    tailwind(),
     react(),
     sitemap({
       serialize(item) {
@@ -81,6 +80,7 @@ export default defineConfig({
   base: '/',
   markdown: { shikiConfig: { theme: 'github-dark' } },
   vite: {
+    plugins: [tailwindcss()],
     define: {
       'import.meta.env.PUBLIC_REGION': JSON.stringify(ENV_REGION),
       'import.meta.env.PUBLIC_SITE_URL': JSON.stringify(ENV_SITE_URL),
