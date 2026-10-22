@@ -5,7 +5,7 @@
 
 ## Region env (build-time)
 
-Vercel 项目侧注入，`astro.config.mjs` 经 `vite.define` 内联为 `PUBLIC_*`（读取单点：`src/lib/site-env.ts`；落点表见 `docs/positioning/22-b1-execution-card.md` §4.1）：
+Vercel 项目侧注入，`astro.config.mjs` 经 `vite.define` 内联为 `PUBLIC_*`（读取单点：`src/lib/site-env.ts`；落点表见**工作区仓** `workspace/docs/positioning/22-b1-execution-card.md` §4.1 —— 该文档不在本仓，代码注释里的 `docs/positioning/22` 均为该文件的简写）：
 
 | Var | cn 项目 | com 项目 |
 | --- | --- | --- |
@@ -49,4 +49,12 @@ pnpm typecheck
 
 Push 后由 Vercel 构建（cn / com 两项目共用本仓，靠上表 env 区分）；构建期生成物（`robots.txt` / `llms.txt` / `ai/skill.md` / og 图）由 `scripts/gen-static.mjs` 按本区 env 落进 `public/`，不入库。
 
-**构建后必查**：`[WARN] [content]` 应为 0 条；页数为 76（新增集合条目时同步核数）。
+**构建后守卫**（`postbuild` → `scripts/check-build.mjs`，失败即构建失败，Vercel 不发布）：
+
+| 断言 | 防的是什么 |
+|---|---|
+| 拒绝旧式 `type: 'content'` | 根因：Astro 7 静默跳过该集合 |
+| 每个 verified 条目有详情页 + 被列表页链接 | 症状：列表空、详情 404 |
+| sitemap 每个 URL 有产物文件 | 页面整体丢失 |
+
+构建日志另需人工确认 `[WARN] [content]` 为 0 条（postbuild 读不到 build 的 stdout）。

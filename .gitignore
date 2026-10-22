@@ -40,6 +40,3 @@ public/ai/references/*.md
 !public/ai/references/*.cn.md
 !public/ai/references/*.com.md
 
-# Local dual-region build outputs (sequence C: dist-cn / dist-com)
-/dist-cn/
-/dist-com/
