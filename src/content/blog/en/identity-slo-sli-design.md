@@ -171,4 +171,4 @@ Combined with Kubernetes rolling update strategy (`maxUnavailable: 0`, `maxSurge
 
 ---
 
-*All Autional services have built-in dual-probe health checks and Prometheus metrics exposure. Refer to the [architecture documentation](/developer/docs) for more details.*
+*All Autional services have built-in dual-probe health checks and Prometheus metrics exposure. Refer to the [architecture documentation](https://docs.autional.com/architecture/) for more details.*

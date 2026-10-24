@@ -6,6 +6,10 @@
   "cleanUrls": false,
   "redirects": [
     { "source": "/sitemap.xml", "destination": "/sitemap-index.xml", "permanent": true },
-    { "source": "/blog/ai-refactor-novel", "destination": "/cases/novel", "permanent": true }
+    { "source": "/blog/ai-refactor-novel", "destination": "/cases/novel", "permanent": true },
+    { "source": "/ai/en", "destination": "/ai/", "permanent": true },
+    { "source": "/ai/en/", "destination": "/ai/", "permanent": true },
+    { "source": "/ai/zh", "destination": "/ai/", "permanent": true },
+    { "source": "/ai/zh/", "destination": "/ai/", "permanent": true }
   ]
 }

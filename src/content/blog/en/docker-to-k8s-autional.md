@@ -310,4 +310,4 @@ Containerization is not the goal — it's a means. Whether running single-machin
 
 ---
 
-*Autional offers three deployment methods: Docker Compose, Kubernetes Helm Chart, and one-click cloud marketplace deployment. Get started by visiting the [Quick Start guide](/developer/docs/getting-started).*
+*Autional offers three deployment methods: Docker Compose, Kubernetes Helm Chart, and one-click cloud marketplace deployment. Get started by visiting the [Quick Start guide](https://developer.autional.com/quickstart).*

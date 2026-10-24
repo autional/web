@@ -163,4 +163,4 @@ Observability is not a set of tools — it is a culture: "How can I know what's 
 
 ---
 
-*All 15 Autional microservices have built-in OpenTelemetry support, ready to use out of the box. Learn how to integrate Autional authentication into your application in the [developer documentation](/developer/docs).*
+*All 15 Autional microservices have built-in OpenTelemetry support, ready to use out of the box. Learn how to integrate Autional authentication into your application in the [developer documentation](https://developer.autional.com/).*

@@ -9,7 +9,7 @@ interface ShowcaseEntry { title: string; desc: string; label: string }
 const stats = t('showcase.stats', { returnObjects: true }) as ShowcaseStat[];
 const entries = t('showcase.entries', { returnObjects: true }) as ShowcaseEntry[];
 // 条目 href：兄弟站随本区根域派生（W7）；站内链接保持相对路径
-const entryHrefs = [brotherUrl('demo'), brotherUrl('docs'), `${brotherUrl('developer')}/quickstart`, brotherUrl('reference'), '/features', '/sdk'];
+const entryHrefs = [brotherUrl('docs'), `${brotherUrl('developer')}/quickstart`, brotherUrl('reference'), '/features', '/sdk'];
 ---
 <Layout title={t('showcase.meta.title')} description={t('showcase.meta.description')} keywords={t('showcase.meta.keywords')}>
   <section class="mx-auto max-w-5xl px-4 py-20 text-center">

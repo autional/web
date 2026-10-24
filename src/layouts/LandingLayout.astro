@@ -5,7 +5,7 @@ import ClientShell from '../components/ClientShell.tsx';
 import { buildSearchIndex } from '../lib/search-index';
 import { isRegionPost } from '../lib/content-lang';
 import { t } from '../i18n';
-import { LOCALE, brotherUrl, cdnAsset, GITHUB_ORG_URL } from '../lib/site-env';
+import { LOCALE, brotherUrl, cdnAsset, GITHUB_ORG_URL, OTHER_REGION_SITE_URL } from '../lib/site-env';
 import '../styles/global.css';
 export interface Props {
   title: string;
@@ -36,9 +36,16 @@ const siteUrl = Astro.site!;
 const ogImage = image || '/og-default.png';
 const fullImageUrl = new URL(ogImage, siteUrl).href;
 
+// 跨区语言对（B1 单源双区）：两区路由集合逐条对齐（sitemap 实测 75/75 一致），
+// 故同路径在对侧必存在。x-default 固定指 .com（英文区），两区输出一致——
+// 原实现两区各指自己，等于给出冲突信号。显式传入 alternates 的特例页不受影响。
+const otherRegionCanonical = new URL(Astro.url.pathname, OTHER_REGION_SITE_URL).href;
+const enCanonical = LOCALE === 'en-US' ? canonical.href : otherRegionCanonical;
+const zhCanonical = LOCALE === 'zh-CN' ? canonical.href : otherRegionCanonical;
 const hreflangLinks = alternates ?? [
-  { hreflang: LOCALE, href: canonical.href },
-  { hreflang: 'x-default', href: canonical.href },
+  { hreflang: 'en-US', href: enCanonical },
+  { hreflang: 'zh-CN', href: zhCanonical },
+  { hreflang: 'x-default', href: enCanonical },
 ];
 
 const defaultJsonLd = {

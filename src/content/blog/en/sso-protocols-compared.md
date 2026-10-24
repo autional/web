@@ -269,4 +269,4 @@ All protocols share the same user source (`identity-service`), the same MFA poli
 
 Protocols are means, not ends. Choose SAML not because XML is elegant, choose OIDC not because JWT is cool. Choose the protocol that best fits your users' tech stack, your compliance requirements, and your engineering capabilities — and if your users need multiple protocols, choose a platform that supports them all. Autional unifies all four protocols in `oauth-service`, so you don't need to maintain a separate identity system for each protocol.
 
-*Autional oauth-service provides complete OAuth 2.0, OIDC, SAML 2.0, and CAS protocol support for enterprise customers. [View developer documentation](/developer/docs/oauth-service) for integration guides.*
+*Autional oauth-service provides complete OAuth 2.0, OIDC, SAML 2.0, and CAS protocol support for enterprise customers. [View developer documentation](https://docs.autional.com/auth-concepts/) for integration guides.*

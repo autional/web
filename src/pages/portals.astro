@@ -18,7 +18,7 @@ const loginItems = t('portals.loginItems', { returnObjects: true }) as PortalIte
 // href 与 i18n 条目同序；兄弟站随本区根域派生（W7），站内保持相对路径
 const groups = [
   { heading: t('portals.contentHeading'), items: contentItems, hrefs: ['/', brotherUrl('docs'), brotherUrl('developer'), brotherUrl('reference'), brotherUrl('wiki')] },
-  { heading: t('portals.serviceHeading'), items: serviceItems, hrefs: [brotherUrl('status'), brotherUrl('trust'), brotherUrl('demo')] },
+  { heading: t('portals.serviceHeading'), items: serviceItems, hrefs: [brotherUrl('status'), brotherUrl('trust')] },
 ];
 
 // 登录门户子域与 loginItems 同序：均受租户隔离（<门户>.<域>/<租户 slug>），只说明不设链接

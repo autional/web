@@ -356,7 +356,6 @@
       { "value": "AGPL-3.0 / MIT", "label": "Open Components" }
     ],
     "entries": [
-      { "title": "Full-Service Demo Hub", "desc": "Try each service's demo environment one by one — authentication, enterprise access, audit, and more.", "label": "Open Demo Portal" },
       { "title": "Platform Docs Portal", "desc": "Complete documentation covering deployment topology, configuration mechanisms, and operations guides.", "label": "Visit Docs Portal" },
       { "title": "Developer Quickstart", "desc": "A complete integration guide from install to your first sign-in flow.", "label": "View Quickstart" },
       { "title": "API Reference", "desc": "1,400+ REST API endpoints with interactive Swagger/OpenAPI documentation.", "label": "Browse API Reference" },
@@ -383,8 +382,7 @@
     ],
     "serviceItems": [
       { "title": "Service Status", "desc": "Live availability and incident history for every microservice." },
-      { "title": "Trust Center", "desc": "Security practices, data protection, and compliance progress." },
-      { "title": "Demo Environment", "desc": "Try each service in a live demo environment." }
+      { "title": "Trust Center", "desc": "Security practices, data protection, and compliance progress." }
     ],
     "orgHeading": "Organization & Sign-in Portals",
     "brandItem": { "title": "Brand Portal", "desc": "Tenant brand-selection entry: choose your brand, then continue to its sign-in page. Public; no sign-in required." },
