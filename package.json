@@ -13,7 +13,8 @@
     "predev": "pnpm run gen-static && pnpm run check-i18n",
     "dev": "astro dev --port 13118",
     "build": "astro build",
-    "postbuild": "node scripts/check-build.mjs && node scripts/check-links.mjs",
+    "check-layers": "node scripts/check-layers.mjs",
+    "postbuild": "node scripts/check-build.mjs && node scripts/check-links.mjs && node scripts/check-layers.mjs",
     "preview": "astro preview --port 13118",
     "typecheck": "astro check",
     "clean": "rimraf dist"
