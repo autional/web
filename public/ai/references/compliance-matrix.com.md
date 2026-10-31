@@ -1,4 +1,4 @@
-<!-- generated: core@c12dbd7f72ba · region: com · lang: en — do not edit directly -->
+<!-- generated: core@952f0b50f0bc · region: com · lang: en — do not edit directly -->
 
 # Autional Compliance Matrix
 
