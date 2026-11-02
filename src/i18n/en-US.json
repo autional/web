@@ -395,14 +395,15 @@
     ],
     "loginBadge": "Sign-in + tenant slug required",
     "slugPattern": "{{host}}/<tenant slug>",
-    "footnote": "Sign-in portals are tenant-isolated: their URLs carry a tenant slug and require signing in, so they are described here rather than linked. If you don't know your tenant, start from the Brand Portal."
+    "footnote": "Sign-in portals are tenant-isolated: their URLs carry a tenant slug and require signing in, so they are described here rather than linked. If you don't know your tenant, start from the Brand Portal. Already signed in? Use the sign-in link in the header of any site."
   },
   "notFound": {
     "meta": { "title": "404 — Page Not Found | Autional", "description": "Page not found" },
     "title": "Page Not Found",
     "body": "The page you are looking for does not exist or has been moved.",
     "goHome": "Go Home",
-    "browseBlog": "Browse Blog"
+    "browseBlog": "Browse Blog",
+    "allPortals": "All Portals"
   },
   "contact": {
     "meta": { "title": "Contact — Autional", "description": "Get in touch with the Autional team.", "keywords": "Autional, contact, sales, support, enterprise, identity" },

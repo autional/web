@@ -395,14 +395,15 @@
     ],
     "loginBadge": "需登录 · 需租户 slug",
     "slugPattern": "{{host}}/<租户 slug>",
-    "footnote": "登录类门户受租户隔离：路径携带租户 slug、需登录后访问，故仅作说明、不设链接。不确定租户时，请从品牌入口选定品牌进入。"
+    "footnote": "登录类门户受租户隔离：路径携带租户 slug、需登录后访问，故仅作说明、不设链接。不确定租户时，请从品牌入口选定品牌进入。已登录用户可直接使用各站右上角「登录」。"
   },
   "notFound": {
     "meta": { "title": "404 — 页面未找到 | Autional", "description": "页面未找到" },
     "title": "页面未找到",
     "body": "你访问的页面不存在，或已被移动。",
     "goHome": "返回首页",
-    "browseBlog": "浏览博客"
+    "browseBlog": "浏览博客",
+    "allPortals": "全部门户"
   },
   "contact": {
     "meta": { "title": "联系我们 — Autional", "description": "与 Autional 团队取得联系。", "keywords": "Autional, 联系, 销售, 支持, 企业, 身份" },

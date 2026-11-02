@@ -25,6 +25,8 @@ const externalLinks = [{ href: GITHUB_ORG_URL, label: 'GitHub' }];
 
 // 移动菜单 CTA 落点与布局层头部 CTA 同源（developer 门户 quickstart）
 const quickstartUrl = `${brotherUrl('developer')}/quickstart`;
+// 登录入口（2026-11-02）：桌面档在布局层头部，移动/平板档收进本菜单。
+const signInUrl = `${brotherUrl('auth')}/`;
 
 export default function ClientShell({ searchIndex, currentPath }: { searchIndex: SearchItem[]; currentPath: string }) {
   const { t } = useTranslation();
@@ -80,6 +82,14 @@ export default function ClientShell({ searchIndex, currentPath }: { searchIndex:
           <a href={quickstartUrl} onClick={() => setMobileOpen(false)}
             className="brand-button-primary mt-2 w-full"
           >{t('nav.getStarted')}</a>
+          <div className="mt-3 flex items-center justify-between gap-3 border-t border-primary-100/70 pt-3 dark:border-white/10">
+            <a href={signInUrl} onClick={() => setMobileOpen(false)}
+              className="rounded-md px-3 py-2 text-sm font-medium text-primary-700 hover:bg-sky-50 dark:text-sky-100 dark:hover:bg-white/10"
+            >{t('nav.login')}</a>
+            <a href="/portals" onClick={() => setMobileOpen(false)}
+              className="rounded-md px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-sky-50 hover:text-primary-700 dark:text-neutral-300 dark:hover:bg-white/10"
+            >{t('footer.allPortals')}</a>
+          </div>
         </div>
       </div>
       <div className="ml-3 flex items-center gap-2 xl:hidden">
