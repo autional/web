@@ -395,7 +395,7 @@
     ],
     "loginBadge": "Sign-in + tenant slug required",
     "slugPattern": "{{host}}/<tenant slug>",
-    "footnote": "Sign-in portals are tenant-isolated: their URLs carry a tenant slug and require signing in, so they are described here rather than linked. If you don't know your tenant, start from the Brand Portal. Already signed in? Use the sign-in link in the header of any site."
+    "footnote": "Sign-in portals are tenant-isolated: their URLs carry a tenant slug and require signing in, so they are described here rather than linked. If you don't know your tenant, start from the Brand Portal. Already signed in? Look for the sign-in link in the header or footer of any public site."
   },
   "notFound": {
     "meta": { "title": "404 — Page Not Found | Autional", "description": "Page not found" },
