@@ -24,7 +24,7 @@
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
     "@autional/tailwind-preset": "0.1.0-rc.10",
-    "@autional/tokens": "0.1.0-rc.16",
+    "@autional/tokens": "0.1.0-rc.18",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.4.2",
     "i18next": "^26.0.10",

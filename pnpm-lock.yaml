@@ -21,8 +21,8 @@ importers:
         specifier: 0.1.0-rc.10
         version: 0.1.0-rc.10(tailwindcss@4.3.3)
       '@autional/tokens':
-        specifier: 0.1.0-rc.16
-        version: 0.1.0-rc.16
+        specifier: 0.1.0-rc.18
+        version: 0.1.0-rc.18
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.5(@types/node@24.13.2)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.9.1))
@@ -219,6 +219,9 @@ packages:
 
   '@autional/tokens@0.1.0-rc.16':
     resolution: {integrity: sha512-P72sxNVfCfdrcxAHlP4NDvYokIN4WECKpBHvgVWJ1JuWIkh57jEV+ze+Os4wUU+jAQh+HZ9/mG4RexwXH25nwg==}
+
+  '@autional/tokens@0.1.0-rc.18':
+    resolution: {integrity: sha512-zNBZ9s6j04p7SSFi83UepIUAbKAgALpxRnXfrxahTqoZIHf1gavJw32L8IS74JZo+Pxdjnx0LOuYfiEktUfOQQ==}
 
   '@babel/helper-string-parser@7.29.7':
     resolution: {integrity: sha512-Pb5ijPrZ89GDH8223L4UP8i6QApWxs04RbPQJTeWDV0/keR2E36MeKnyr6LYmUUvqRRI+Iv87SuF1W6ErINzYw==}
@@ -2840,6 +2843,8 @@ snapshots:
       tailwindcss: 4.3.3
 
   '@autional/tokens@0.1.0-rc.16': {}
+
+  '@autional/tokens@0.1.0-rc.18': {}
 
   '@babel/helper-string-parser@7.29.7': {}
 
