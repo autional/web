@@ -1,4 +1,4 @@
-<!-- generated: core@1ad71c67fc69 · region: com · lang: en — do not edit directly -->
+<!-- generated: core@acc04bbf46f0 · region: com · lang: en — do not edit directly -->
 
 # Configuration Templates
 
