@@ -1,4 +1,4 @@
-<!-- generated: core@23aef5aa3d26 · region: cn · lang: zh — do not edit directly -->
+<!-- generated: core@d8b11f5407f6 · region: cn · lang: zh — do not edit directly -->
 
 # 标识符与账号找回
 

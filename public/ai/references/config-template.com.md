@@ -1,4 +1,4 @@
-<!-- generated: core@23aef5aa3d26 · region: com · lang: en — do not edit directly -->
+<!-- generated: core@d8b11f5407f6 · region: com · lang: en — do not edit directly -->
 
 # Configuration Templates
 
@@ -85,13 +85,13 @@ Use the framework's public prefix when needed: `VITE_` (Vite), `NEXT_PUBLIC_` (N
 - Breached-password check: {BREACHED_CHECK_STATUS}
 
 ## Test accounts
-| Account | Password | Role |
-|---|---|---|
-| {TEST1_EMAIL} | {TEST1_PASSWORD} | test user 1 |
-| {TEST2_EMAIL} | {TEST2_PASSWORD} | test user 2 |
-| {TEST3_EMAIL} | {TEST3_PASSWORD} | test user 3 |
+| Account | Role |
+|---|---|
+| {TEST1_EMAIL} | test user 1 |
+| {TEST2_EMAIL} | test user 2 |
+| {TEST3_EMAIL} | test user 3 |
 
-> Test passwords are shown once; reset them in the admin portal afterwards.
+> Passwords are shown once at creation and are **not** written to this file. Store them in a password manager; reset them in the admin portal if lost.
 
 ## Portals
 | Portal | Address | Purpose |
