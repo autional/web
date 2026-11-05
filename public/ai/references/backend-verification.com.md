@@ -1,4 +1,4 @@
-<!-- generated: core@acc04bbf46f0 · region: com · lang: en — do not edit directly -->
+<!-- generated: core@23aef5aa3d26 · region: com · lang: en — do not edit directly -->
 
 # Backend request verification
 
@@ -26,11 +26,11 @@ On 401 refresh once (single-flight, Web Lock) and retry; on 403 do not retry.
 Access tokens have no `kid`, and their signing key is not the one published at
 `https://api.autional.com/.well-known/jwks.json` (that key serves id_tokens).
 JWKS verification therefore fails for real access tokens.
-RS256 key distribution is still pending; until it ships, the supported server-side
-paths are `/me`, `userinfo`, or `introspect`.
+RS256 signing is live (2026-11-05), but kid/JWKS distribution for access tokens is still pending;
+until it ships, the supported server-side paths are `/me`, `userinfo`, or `introspect`.
 
-Do not hard-code `iss`: it varies by flow (SAML uses the SP EntityID).
-Validate through `/me` or `userinfo` instead.
+Do not hard-code `iss`: it can vary by region/flow (SAML now unifies to identity-service,
+2026-11-05). Validate through `/me` or `userinfo` instead of pinning it.
 
 ## Owner key
 

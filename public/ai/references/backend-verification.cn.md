@@ -1,4 +1,4 @@
-<!-- generated: core@acc04bbf46f0 · region: cn · lang: zh — do not edit directly -->
+<!-- generated: core@23aef5aa3d26 · region: cn · lang: zh — do not edit directly -->
 
 # 服务端请求认证
 
@@ -26,10 +26,11 @@
 Access token 没有 `kid`，签名密钥也不在
 `https://api.autional.cn/.well-known/jwks.json`（那个密钥服务的是 id_token）。
 用 JWKS 验真实 access token 会失败。
-RS256 密钥分发尚未上线；在此之前，服务端可用路径是 `/me`、`userinfo` 或 `introspect`。
+RS256 签发已于 2026-11-05 上线，但 access token 的 kid/JWKS 分发仍未上线；
+在此之前，服务端可用路径是 `/me`、`userinfo` 或 `introspect`。
 
-不要写死 `iss`：不同流程会变（SAML 用 SP EntityID）。
-用 `/me` 或 `userinfo` 做校验。
+不要写死 `iss`：它会随区域/流程变化（SAML 已于 2026-11-05 统一到 identity-service）。
+用 `/me` 或 `userinfo` 做校验，不要 pin 死。
 
 ## Owner key
 
