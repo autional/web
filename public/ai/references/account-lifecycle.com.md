@@ -1,4 +1,4 @@
-<!-- generated: core@a8bcf8f2d714 · region: com · lang: en — do not edit directly -->
+<!-- generated: core@889ab9186b36 · region: com · lang: en — do not edit directly -->
 
 # Account lifecycle: join, link, recover
 
@@ -53,6 +53,14 @@ create table external_identities (
   unique (provider, issuer, subject)
 );
 
+create table recovery_codes (
+  id text primary key,
+  app_user_id text not null references app_users(id) on delete cascade,
+  code_hash text not null,
+  used_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
 create table mfa_factors (
   id text primary key,
   app_user_id text not null references app_users(id) on delete cascade,
@@ -68,9 +76,9 @@ Business rows reference `app_users.id`; never email, never the IdP subject.
 ## TOTP and recovery
 
 - TOTP is a **second factor**, not a recovery channel.
-- Enable it only after an email/phone account recovery path exists.
-- On enable: show the secret once and verify one code. MFA backup codes (if the app supports them) are a second-factor fallback, not account recovery.
-- Lost authenticator: recover the account via email/phone or admin, then disable TOTP and re-enrol.
+- Enable it only after a recovery code (or a verified delivery channel) exists.
+- On enable: show the secret once, verify one code, then generate 10 single-use recovery codes (shown once).
+- Lost authenticator: sign in with a recovery code → disable TOTP → re-enrol.
 - SSO users recover at the IdP; the app does not reset an SSO password.
 - If the app does not need its own MFA, use the Autional account MFA instead.
 
@@ -82,6 +90,6 @@ Copy into `AUTIONAL_SETUP.md`:
 Join confirmation: yes/no (default checked)
 Identity key: (provider, issuer, subject)
 Account merge: explicit link only (no email auto-merge)
-Recovery: email/phone OTP / recovery contact / admin / none
-TOTP: off by default; requires email/phone recovery first
+Recovery: app-side recovery code / admin / none
+TOTP: off by default; requires a recovery code first
 ```
