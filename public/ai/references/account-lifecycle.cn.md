@@ -1,4 +1,4 @@
-<!-- generated: core@d8b11f5407f6 · region: cn · lang: zh — do not edit directly -->
+<!-- generated: core@a8bcf8f2d714 · region: cn · lang: zh — do not edit directly -->
 
 # 账号生命周期：加入、绑定、找回
 
@@ -53,14 +53,6 @@ create table external_identities (
   unique (provider, issuer, subject)
 );
 
-create table recovery_codes (
-  id text primary key,
-  app_user_id text not null references app_users(id) on delete cascade,
-  code_hash text not null,
-  used_at timestamptz,
-  created_at timestamptz not null default now()
-);
-
 create table mfa_factors (
   id text primary key,
   app_user_id text not null references app_users(id) on delete cascade,
@@ -76,9 +68,9 @@ create table mfa_factors (
 ## TOTP 与找回
 
 - TOTP 是**第二因素**，不是找回通道。
-- 只有在已有恢复码（或已验证邮箱）后才允许启用。
-- 启用时：密钥只显示一次 → 验证一次验证码 → 生成 10 个一次性恢复码（只显示一次）。
-- 丢失 authenticator：用恢复码登录 → 关闭 TOTP → 重新绑定。
+- 只有在已有邮箱/手机账号找回通道后才允许启用。
+- 启用时：密钥只显示一次 → 验证一次验证码。MFA 备份码（若应用支持）是第二因素兜底，不是账号找回。
+- 丢失 authenticator：先走邮箱/手机或管理员找回账号，再关闭 TOTP 并重新绑定。
 - SSO 用户在 IdP 找回；应用不重置 SSO 密码。
 - 应用不需要独立 MFA 时，优先用 Autional 账号自身的 MFA。
 
@@ -90,6 +82,6 @@ create table mfa_factors (
 加入确认：是/否（默认勾选）
 身份键：(provider, issuer, subject)
 账号合并：仅显式绑定（不按邮箱自动合并）
-找回：恢复码 / 可选邮箱 / 管理员 / 不支持
-TOTP：默认关闭；启用前必须有恢复码
+找回：邮箱/手机验证码 / 恢复联系人 / 管理员 / 不支持
+TOTP：默认关闭；启用前必须有邮箱/手机找回通道
 ```

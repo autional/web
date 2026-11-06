@@ -1,4 +1,4 @@
-<!-- generated: core@d8b11f5407f6 · region: cn · lang: zh — do not edit directly -->
+<!-- generated: core@a8bcf8f2d714 · region: cn · lang: zh — do not edit directly -->
 
 # 服务端请求认证
 
@@ -43,9 +43,11 @@ RS256 签发已于 2026-11-05 上线，但 access token 的 kid/JWKS 分发仍�
 ```ts
 // lib/server/caller.ts
 import { decodeJwt } from "jose";
+import { createHash } from "node:crypto";
 
 const ME = `${process.env.AUTIONAL_API_URL}/identity/api/v1/auth/me`;
 const cache = new Map<string, { id: string; exp: number }>();
+const cacheKey = (token: string) => createHash("sha256").update(token).digest("hex").slice(0, 16);
 
 export async function requireCaller(req: Request) {
   const token = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
@@ -54,7 +56,8 @@ export async function requireCaller(req: Request) {
   const { exp = 0, sub } = decodeJwt(token);
   if (exp * 1000 < Date.now()) throw new Response("expired", { status: 401 });
 
-  const hit = cache.get(token);
+  const key = cacheKey(token);
+  const hit = cache.get(key);
   if (hit && hit.exp > Date.now()) return hit.id;
 
   const res = await fetch(ME, {
@@ -73,7 +76,7 @@ export async function requireCaller(req: Request) {
   if (sub && sub !== id) throw new Response("unauthorized", { status: 401 });
 
   if (cache.size >= 500) cache.delete(cache.keys().next().value!);
-  cache.set(token, { id, exp: Date.now() + 60_000 });
+  cache.set(key, { id, exp: Date.now() + 60_000 });
   return id;
 }
 
@@ -92,8 +95,13 @@ app.use(async (req, res, next) => {
   try {
     req.userId = await requireCaller(req);
     next();
-  } catch {
-    res.status(401).json({ error: "unauthorized" });
+  } catch (err) {
+    if (err instanceof Response) {
+      const status = err.status === 503 ? 503 : 401;
+      res.status(status).json({ error: status === 503 ? "auth unavailable" : "unauthorized" });
+      return;
+    }
+    res.status(500).json({ error: "internal error" });
   }
 });
 ```

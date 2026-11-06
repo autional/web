@@ -1,42 +1,47 @@
-<!-- generated: core@d8b11f5407f6 · region: com · lang: en — do not edit directly -->
+<!-- generated: core@a8bcf8f2d714 · region: com · lang: en — do not edit directly -->
 
 # Identifier and account recovery
 
 > Reference file for the Autional Onboarding skill.
-> Use it to pick an identifier strategy and a recovery path.
+> Registration requires email or phone; username is only a login alias.
 > Both answers are required before signup is considered complete.
 
 ## Identifier matrix
 
 | Identifier | Friction | Recovery | Anti-abuse |
 |---|---|---|---|
-| username + password | lowest | recovery code / admin | CAPTCHA + rate limit |
-| username + optional email | low | email hint / code / admin | CAPTCHA + rate limit |
-| email + verification | medium | email reset | CAPTCHA + rate limit |
-| phone + SMS | medium | SMS reset | SMS cost + rate limit |
+| email + password (default) | low | code to the same email | CAPTCHA + rate limit |
+| phone + password / SMS | medium | code to the same phone | SMS cost + rate limit |
+| email + phone (dual) | high | either channel | both channels |
+| SSO only | depends on IdP | at the IdP | IdP policy |
+
+Registration without email or phone is rejected (`email or phone is required`).
+An optional username (3–32 chars) can sign in, but cannot replace email/phone at signup.
+Email verification is optional for login; it is required for email-based recovery.
 
 ## Recovery options
 
-| Option | Works without email/phone | User loses it → | Notes |
+| Option | Requires | If the user loses it | Notes |
 |---|---|---|---|
-| recovery code | yes | account unrecoverable | generate at signup, show once |
-| optional email | yes (unverified) | no recovery | only a hint, not proof |
-| admin reset | yes | requires operator | document the process |
-| none | yes | account unrecoverable | must be recorded in AUTIONAL_SETUP.md |
+| code to the account's own email/phone | email or phone on file | unrecoverable unless another channel exists | `/auth/recovery/request`, `/verify`, `/complete` |
+| recovery contact | a contact bound in settings | contact must still be reachable | `/auth/me/recovery-contacts`; `/auth/recover-account`, `/reset` |
+| admin reset | an operator | requires an operator | audited runbook |
+| none | — | account is unrecoverable | record it in `AUTIONAL_SETUP.md` |
 
-Limits: recovery codes are single-use (10 per batch; 5 attempts/hour); email links expire in 15–30 minutes; admin resets must be audited.
+There is no user-facing account recovery code. MFA backup codes are a separate second-factor mechanism, not an account recovery channel.
+Codes expire and requests are rate-limited; admin resets must be audited.
 
 ## Decision → implementation
 
 | Decision | Where to apply | How to verify |
 |---|---|---|
-| Identifier | tenant auth policy / `login_methods` | open the login page; the chosen field renders |
-| Recovery code | app-side table + settings page | generate once, redeem once, reject reuse |
-| Optional email | profile + verification flow | send a test email; only verified emails can reset |
-| Admin reset | operator runbook | one test account reset, audited |
+| Identifier | registration form (`email` or `phone`) + tenant `login_methods` | submit each chosen identifier; a missing email/phone returns 400 |
+| Email/phone recovery | identity `/auth/recovery/*` | request a code, receive it, complete the reset |
+| Recovery contact | `/auth/me/recovery-contacts` | bind a contact, run `/auth/recover-account` |
+| Admin reset | operator runbook | reset one test account and check the audit log |
 | Registration protection | CAPTCHA + rate limit | 3 failures → challenge; per-IP limit trips |
 
-Exact portal field names vary by region and version; verify behaviour instead of trusting a 200.
+Field names vary by region and version; verify behaviour instead of trusting a 200.
 
 ## SSO users
 
@@ -48,7 +53,7 @@ If a user has both password and SSO, define the linking rule before enabling bot
 Copy this into `AUTIONAL_SETUP.md`:
 
 ```
-Identifier: <username | email | phone>
-Recovery: <code | email hint | admin | none>
+Identifier: email | phone | email+phone | SSO only
+Recovery: email/phone OTP | recovery contact | admin | none
 If none: account is unrecoverable (accepted by <user> on <date>)
 ```
