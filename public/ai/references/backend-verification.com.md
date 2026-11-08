@@ -1,4 +1,4 @@
-<!-- generated: core@889ab9186b36 · region: com · lang: en — do not edit directly -->
+<!-- generated: core@1229279235b2 · region: com · lang: en — do not edit directly -->
 
 # Backend request verification
 
@@ -12,7 +12,7 @@
 
 1. Read `Authorization: Bearer <token>`.
 2. Decode `exp`; reject expired tokens without a network call.
-3. Validate with `GET https://api.autional.com/bff/identity/api/v1/auth/me` → `{ data: { id } }` (or `userinfo` → `sub`).
+3. Validate with `GET https://api.autional.com/bff/identity/api/v1/auth/me` → `{ data: { id } }` (or `userinfo` → `sub`). High-traffic resource servers may instead use `@autional/node` `verify: 'jwks'` (optional, conditional — see below).
 4. Owner key: the app's own user id (linked via `external_identities`), or `data.id` when there is no user table. Never email.
 5. Invalid/expired → 401 · `entry_plane`/claims mismatch → 403 (do not refresh) · 5xx → 503.
 6. Cache positive results ≤60s; clear on logout/delete.
@@ -21,16 +21,39 @@
 
 On 401 refresh once (single-flight, Web Lock) and retry; on 403 do not retry.
 
-## Why not JWKS
+## JWKS verification (optional, conditional)
 
-Access tokens have no `kid`, and their signing key is not the one published at
-`https://api.autional.com/.well-known/jwks.json` (that key serves id_tokens).
-JWKS verification therefore fails for real access tokens.
-RS256 signing is live (2026-11-05), but kid/JWKS distribution for access tokens is still pending;
-until it ships, the supported server-side paths are `/me`, `userinfo`, or `introspect`.
+Since 2026-11-07 access tokens carry `kid`, and `https://api.autional.com/.well-known/jwks.json` publishes
+the signing keys. JWKS is therefore usable — as an **optional high-performance path**, not the
+default. The default stays `userinfo`; `introspect` and `/me` remain authoritative for revocation.
 
-Do not hard-code `iss`: it can vary by region/flow (SAML now unifies to identity-service,
-2026-11-05). Validate through `/me` or `userinfo` instead of pinning it.
+Use `@autional/node` `verify: 'jwks'` (≥0.5) if you need local verification: it does RS256
+verification plus a `/.well-known/jwt-status.json` revocation check. Pass `appId` (audience) and
+keep `issuer`; the JWKS/status URLs hang off the API **origin** (`/bff` prefixes are stripped).
+Key rotation is server-side (platform `reload`); clients need no redeploy — an unknown `kid`
+triggers a refetch.
+
+If you verify JWTs yourself, enforce **all** of:
+
+1. `alg` allowlist = `RS256` (never `none`; never HS256 with a public key).
+2. Select the key by `kid` from the fixed JWKS URL; an unknown `kid` → refetch once (rate-limited),
+   then fail closed. Tokens without `kid` are only acceptable while the status document allows it.
+3. `type === 'access'` (reject id_token / refresh_token confusion).
+4. `iss` ∈ an explicit allowlist taken from discovery; `aud` contains your app id; header `typ` ∈
+   {`JWT`, `at+jwt`}; `exp` valid (and `nbf` with small skew).
+5. Cache the key set (≤5 min) and verification results (≤15 s); never share a cache across
+   issuers/apps. Do not trust `jku` / `x5u` / embedded keys, and never hard-code a public key.
+
+Sensitive operations (account deletion, password/credential change, admin or payment actions) must
+still call `/me` or introspect on every request — local verification cannot see a token/session
+revocation immediately.
+
+Do not hard-code `iss`: it can vary by region/flow (SAML unifies to identity-service). Take it from
+discovery or the region config and validate it, instead of assuming another region's value.
+
+**Revocation SLO**: internal verifiers ≤60 s; official SDK worst case ≈55 s (oauth keyset 30 s +
+jwt-status 10 s + result cache 15 s); external apps are bounded by their own cache — keep it short
+for sensitive paths.
 
 ## Owner key
 
@@ -110,11 +133,14 @@ app.use(async (req, res, next) => {
 
 If you use `@autional/node`, the middleware verifies by default:
 
-- `verify: 'userinfo'` (default) — calls the OAuth userinfo endpoint;
+- `verify: 'userinfo'` (default) — calls the OAuth userinfo endpoint; simplest and always correct;
 - `verify: 'introspect'` — requires `clientId` / `clientSecret`, returns scope;
+- `verify: 'jwks'` — local RS256 verification + `jwt-status` revocation check; optional path for
+  high-traffic resource servers (configure `appId` / `issuer`; unknown `kid` triggers a refetch);
 - `verify: 'decode-only'` — local debugging only; the injected user is marked `verified: false`.
 
-Do not enable `decode-only` on protected routes.
+Do not enable `decode-only` on protected routes — it is not a security boundary. Sensitive
+operations stay on `/me` or `introspect` even when reads use `jwks`.
 
 ## `useCookie` / BFF
 
@@ -134,3 +160,5 @@ Without this, a page refresh logs the user out.
 - Clear on logout and account deletion; do not wait for the TTL.
 - Serverless instances each keep their own cache; a logout on one instance does not clear the others, so keep the TTL short.
 - Revocation and logout can therefore lag up to 60s. For immediate revocation, query `/me` on every request or use Redis-backed introspection.
+- Revocation SLO by verification path: internal verifiers ≤60s; official SDK (`jwks`) worst case ≈55s (oauth keyset 30s + jwt-status 10s + result cache 15s); external apps are bounded by their own cache. Keep caches short on sensitive routes.
+- `jwks` mode adds its own caches: key set (default 5 min, with unknown-`kid` refetch) and jwt-status (10s); do not raise them on sensitive routes.

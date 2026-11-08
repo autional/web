@@ -1,23 +1,23 @@
-<!-- generated: core@889ab9186b36 · region: com · lang: en — do not edit directly -->
+<!-- generated: core@1229279235b2 · region: com · lang: en — do not edit directly -->
 
 # Identifier and account recovery
 
-> Registration requires email or phone (platform `RegisterRequest.Validate`); username is only a login alias.
-> The app does not send email/SMS codes by default.
+> Default registration is username + password.
+> Email/phone are account identifiers only after verification; unverified values are never stored.
 > Recovery uses an app-side recovery code; admin reset is the fallback.
 
 ## Identifier matrix
 
 | Identifier | Friction | Recovery | Anti-abuse |
 |---|---|---|---|
-| email + password (default) | low | app-side recovery code / admin | CAPTCHA + rate limit |
-| phone + password | medium | app-side recovery code / admin | CAPTCHA + rate limit |
-| email + phone (dual) | high | app-side recovery code / admin | both fields |
+| username + password (default) | lowest | app-side recovery code / admin | CAPTCHA + rate limit |
+| verified email + password | medium | recovery code; verified email OTP optional | CAPTCHA + rate limit |
+| verified phone + password | medium | recovery code; verified phone OTP optional | SMS cost + rate limit |
 | SSO only | depends on IdP | at the IdP | IdP policy |
 
-Registration without email or phone is rejected (`email or phone is required`).
-The email/phone is stored unverified; no code is sent. It is a registration identifier, not a recovery channel by itself.
-An optional username (3–32 chars) is the day-to-day login alias.
+Registration without a username is rejected. Email/phone are optional account identifiers, but they must pass a verification code before the account is created or the identifier is attached.
+An unverified email/phone must not be written to the identity table, used for login, recovery, notifications, or uniqueness checks.
+The default login is username + password; email/phone login is allowed only after verification.
 
 ## Recovery options
 
@@ -25,7 +25,7 @@ An optional username (3–32 chars) is the day-to-day login alias.
 |---|---|---|---|
 | app-side recovery code (default) | codes generated at signup / in settings | account unrecoverable | 10 single-use codes, hashed, shown once; verify, never reuse |
 | admin reset | an operator | requires an operator | audited runbook |
-| email/phone OTP (optional) | the app can send email/SMS | unrecoverable unless another channel exists | do not enable without a delivery channel |
+| verified email/phone OTP (optional) | the identifier was verified and the app can send | unrecoverable unless another channel exists | do not enable without a delivery channel |
 | recovery contact (optional) | the app can send | contact must still be reachable | only with a delivery channel |
 | none | — | account unrecoverable | record it in `AUTIONAL_SETUP.md` |
 
@@ -37,7 +37,8 @@ Admin resets must be audited.
 
 | Decision | Where to apply | How to verify |
 |---|---|---|
-| Identifier | registration form (`email` or `phone`) + tenant `login_methods` | submit each chosen identifier; a missing email/phone returns 400 |
+| Identifier | registration form (username) / verified code registration for email/phone | username registration returns 201; email/phone without code returns 400 |
+| Email/phone verification | identity code endpoints; attach only after code success | verify DB has `verified_at`; no unverified identity row |
 | Recovery code | app-side table + settings page | generate once, redeem once, reject reuse |
 | Admin reset | operator runbook | reset one test account and check the audit log |
 | Registration protection | CAPTCHA + rate limit | 3 failures → challenge; per-IP limit trips |
@@ -54,7 +55,7 @@ If a user has both password and SSO, define the linking rule before enabling bot
 Copy this into `AUTIONAL_SETUP.md`:
 
 ```
-Identifier: email | phone | email+phone | SSO only (username is a login alias)
+Identifier: username (default) | verified email | verified phone | SSO only
 Recovery: app-side recovery code | admin | none
 If none: account is unrecoverable (accepted by <user> on <date>)
 ```

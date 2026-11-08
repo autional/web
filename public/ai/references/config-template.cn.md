@@ -1,4 +1,4 @@
-<!-- generated: core@889ab9186b36 · region: cn · lang: zh — do not edit directly -->
+<!-- generated: core@1229279235b2 · region: cn · lang: zh — do not edit directly -->
 
 # 配置模板参考
 
