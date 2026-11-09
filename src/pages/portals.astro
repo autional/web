@@ -13,12 +13,15 @@ interface PortalItem { title: string; desc: string }
 
 const contentItems = t('portals.contentItems', { returnObjects: true }) as PortalItem[];
 const serviceItems = t('portals.serviceItems', { returnObjects: true }) as PortalItem[];
+const centerItems = t('portals.centerItems', { returnObjects: true }) as PortalItem[];
 const loginItems = t('portals.loginItems', { returnObjects: true }) as PortalItem[];
 
 // href 与 i18n 条目同序；兄弟站随本区根域派生（W7），站内保持相对路径
 const groups = [
   { heading: t('portals.contentHeading'), items: contentItems, hrefs: ['/', brotherUrl('docs'), brotherUrl('developer'), brotherUrl('reference'), brotherUrl('wiki')] },
   { heading: t('portals.serviceHeading'), items: serviceItems, hrefs: [brotherUrl('status'), brotherUrl('trust')] },
+  // 中心是域根门户（无租户 slug），登录页公开，可链接
+  { heading: t('portals.centersHeading'), items: centerItems, hrefs: [brotherUrl('config'), brotherUrl('secret')] },
 ];
 
 // 登录门户子域与 loginItems 同序：均受租户隔离（<门户>.<域>/<租户 slug>），只说明不设链接

@@ -384,6 +384,11 @@
       { "title": "Service Status", "desc": "Live availability and incident history for every microservice." },
       { "title": "Trust Center", "desc": "Security practices, data protection, and compliance progress." }
     ],
+    "centersHeading": "Management Consoles",
+    "centerItems": [
+      { "title": "Config Center", "desc": "Domains, groups, items, import/export, and change sets; sign-in required." },
+      { "title": "Secret Center", "desc": "Platform-wide secret lifecycle, rotation, policies, and audit; sign-in required." }
+    ],
     "orgHeading": "Organization & Sign-in Portals",
     "brandItem": { "title": "Brand Portal", "desc": "Tenant brand-selection entry: choose your brand, then continue to its sign-in page. Public; no sign-in required." },
     "loginItems": [
