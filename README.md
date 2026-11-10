@@ -1,11 +1,16 @@
 # Autional Website (web)
 
+> 🚨 **2026-11-10 托管变更**：`*.autional.cn` **已迁出 Vercel** —— 改为 mf01 构建（node:24-alpine + 钉版 pnpm）→ 香港自建托管。
+> `.cn` 的构建 env 由 workspace `shared/infra-ops/sites/sites.manifest.json` 注入；push 后由 mf01 cron（约 10 分钟）构建发布，不经 Vercel。
+> `*.autional.com` 仍在 Vercel —— 本文中涉及 Vercel 的构建/部署描述对 `.com` 仍然成立。
+> 现行口径：workspace `docs/AUTIONAL-CN-SITES-SELF-HOST.md`。
+
 **Stack**: Astro 7 SSG + React 19 + Tailwind 4
-**Regions**: `www.autional.cn`（zh）/ `www.autional.com`（en）——**同一份源代码、两个 Vercel 项目**，差异全部由构建期区域环境注入（B1 单源双区）。
+**Regions**: `www.autional.cn`（zh）/ `www.autional.com`（en）——**同一份源代码、两个区域项目**（`.com` = Vercel，`.cn` = 香港自建），差异全部由构建期区域环境注入（B1 单源双区）。
 
 ## Region env (build-time)
 
-Vercel 项目侧注入，`astro.config.mjs` 经 `vite.define` 内联为 `PUBLIC_*`（读取单点：`src/lib/site-env.ts`；落点表见**工作区仓** `workspace/docs/positioning/22-b1-execution-card.md` §4.1 —— 该文档不在本仓，代码注释里的 `docs/positioning/22` 均为该文件的简写）：
+**构建期环境变量**注入（`.com` 由 Vercel 项目 env；`.cn` 由 `shared/infra-ops/sites/sites.manifest.json`），`astro.config.mjs` 经 `vite.define` 内联为 `PUBLIC_*`（读取单点：`src/lib/site-env.ts`；落点表见**工作区仓** `workspace/docs/positioning/22-b1-execution-card.md` §4.1 —— 该文档不在本仓，代码注释里的 `docs/positioning/22` 均为该文件的简写）：
 
 | Var | cn 项目 | com 项目 |
 | --- | --- | --- |
@@ -47,9 +52,9 @@ pnpm typecheck
 
 ## Deploy
 
-Push 后由 Vercel 构建（cn / com 两项目共用本仓，靠上表 env 区分）；构建期生成物（`robots.txt` / `llms.txt` / `ai/skill.md` / og 图）由 `scripts/gen-static.mjs` 按本区 env 落进 `public/`，不入库。
+push 后：`.cn` 由 mf01 自动构建发布（约 10 分钟），`.com` 仍由 Vercel 构建（两项目共用本仓，靠上表 env 区分）；构建期生成物（`robots.txt` / `llms.txt` / `ai/skill.md` / og 图）由 `scripts/gen-static.mjs` 按本区 env 落进 `public/`，不入库。
 
-**构建后守卫**（`postbuild` → `scripts/check-build.mjs`，失败即构建失败，Vercel 不发布）：
+**构建后守卫**（`postbuild` → `scripts/check-build.mjs`，失败即构建失败，不发布）：
 
 | 断言 | 防的是什么 |
 |---|---|
