@@ -6,9 +6,10 @@ interface PrivacyItem { label: string; value: string }
 
 const s1Items = t('privacy.s1.items', { returnObjects: true }) as PrivacyItem[];
 const s2Items = t('privacy.s2.items', { returnObjects: true }) as string[];
+const s5Items = t('privacy.s5.items', { returnObjects: true }) as string[];
 const contactEmail = t('privacy.contactEmail');
 // 政策修订日期（语言中立事实；标签按语言渲染）
-const updated = '2026-10-05';
+const updated = '2026-11-21';
 ---
 <Layout title={t('privacy.meta.title')} description={t('privacy.meta.description')} keywords={t('privacy.meta.keywords')}>
   <section class="mx-auto max-w-3xl px-4 py-20">
@@ -25,7 +26,9 @@ const updated = '2026-10-05';
       <h2>{t('privacy.s4.title')}</h2>
       <p>{t('privacy.s4.body', { email: contactEmail })}</p>
       <h2>{t('privacy.s5.title')}</h2>
-      <p>{t('privacy.s5.label')} <a href={`mailto:${contactEmail}`}>{contactEmail}</a></p>
+      <ul>{s5Items.map(i => <li>{i}</li>)}</ul>
+      <h2>{t('privacy.s6.title')}</h2>
+      <p>{t('privacy.s6.label')} <a href={`mailto:${contactEmail}`}>{contactEmail}</a></p>
     </div>
   </section>
 </Layout>

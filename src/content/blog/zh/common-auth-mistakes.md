@@ -106,7 +106,7 @@ hash = argon2id(password, time=3, memory=65536, parallelism=4)  // Best choice
 2. 用户下次登录时：用旧算法校验 → 通过后用新算法重新哈希 → 更新数据库
 3. 标记已迁移用户；仍在旧哈希上的用户，在 N 个月后要求重置密码
 
-**Autional 如何防范**：identity-service 默认使用 bcrypt（cost 因子=12），随机盐已内建于哈希中。同时预留 Argon2id 接口，支持透明迁移。CI 禁止在密码相关代码中使用任何 MD5/SHA-1。
+**Autional 如何防范**：identity-service 默认使用 argon2id，随机盐已内建于哈希中。保留 bcrypt 接口用于历史校验与透明迁移。CI 禁止在密码相关代码中使用任何 MD5/SHA-1。
 
 ## 错误 4：JWT 没有过期时间
 

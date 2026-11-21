@@ -212,7 +212,7 @@ flowchart LR
 
 **On-site check**: Assessors check how sensitive database fields (passwords, phone numbers, national IDs, tokens) are stored — plaintext or ciphertext.
 
-**How Autional meets it**: Passwords are bcrypt-hashed (irreversible, not encryption), API Keys use SHA-256 hash storage. PII fields (phone numbers, email, national IDs) use AES-256-GCM field-level encryption. Encryption keys are managed by cloud KMS and only exist in process memory as plaintext.
+**How Autional meets it**: Passwords are argon2id-hashed (irreversible, not encryption), API Keys use SHA-256 hash storage. PII fields (phone numbers, email, national IDs) use AES-256-GCM field-level encryption. Encryption keys are managed by cloud KMS and only exist in process memory as plaintext.
 
 ### 19. Data-in-Transit Encryption
 

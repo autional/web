@@ -46,15 +46,13 @@ RTX 4090 的 SHA-256 速率 ≈ 8 × 10^9 次哈希/秒
 | Go 标准库支持 | 无（需 `golang.org/x/crypto`） | 无（需第三方） | 无（需第三方） |
 | AES 加速 | 无（GPU 抗性有限） | 有（XOR + Salsa20 核心） | 有（Blake2b） |
 
-**Autional 默认使用 bcrypt（cost 因子 12）。** 理由很直接：
+**Autional 默认使用 argon2id（内存硬，参数按服务端容量调优）。** 理由很直接：
 
-1. **久经考验**：bcrypt 经历了 20 多年的安全审计与真实攻击，至今没有公开已知的 bcrypt 弱点。
-2. **Go 生态成熟**：`golang.org/x/crypto/bcrypt` 是 Go 官方扩展库，拥有最好的代码审查与长期支持保障。
-3. **实现简单、可调参数少**：bcrypt 只有一个参数——cost 因子。参数越少，配错的概率越低。
+1. **现代 PHC 优胜者**：argon2id 是 2015 年密码哈希竞赛的获胜算法，兼顾时间与内存成本。
+2. **内存硬**：提高 GPU / ASIC 暴力破解的成本，比固定 4KB 内存的 bcrypt 更难被专用硬件摊薄。
+3. **Go 生态可用**：`golang.org/x/crypto/argon2` 提供成熟实现，服务端按并发上限控制内存峰值。
 
-Argon2 在理论上更安全（通过内存硬实现对 ASIC 与 FPGA 的抗性），但其安全优势主要体现在极端场景（拥有定制硬件的国家级别攻击者）。对大多数 SaaS 应用来说，bcrypt 能以更低的运维风险提供 80-90% 的安全收益。
-
-Autional 在设计上为迁移到 argon2id 预留了空间——identity-service 的密码校验接口接受任意 `PasswordHasher` 实现，无需改动业务代码即可切换到新的哈希算法。
+bcrypt 仍然保留在 `PasswordHasher` 接口中，用于历史口令校验与透明迁移；新口令一律用 argon2id。identity-service 的密码校验接口接受任意 `PasswordHasher` 实现，因此不需要改业务代码即可轮换算法。
 
 ## 盐与胡椒：被误解的双重保护
 

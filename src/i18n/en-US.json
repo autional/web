@@ -435,21 +435,30 @@
       ]
     },
     "s2": { "title": "2. How We Use Data", "items": ["Provide and maintain authentication services", "Security monitoring and fraud prevention", "Compliance with legal obligations (GDPR, etc.)", "Service improvement and debugging"] },
-    "s3": { "title": "3. Data Retention", "body": "Authentication data is retained for the duration of the account plus 90 days. Audit logs are retained according to the tenant's retention policy (configurable, default 90 days). Users may request data deletion at any time." },
-    "s4": { "title": "4. Your Rights", "body": "Under GDPR and similar regulations, you have the right to access, rectify, erase, and port your data. Submit requests via the End-User Portal or contact us at {{email}}." },
-    "s5": { "title": "5. Contact", "label": "Questions about this policy:" },
-    "contactEmail": "support@autional.net"
+    "s3": { "title": "3. Data Retention", "body": "Authentication data is retained for the duration of the account plus 90 days. Audit logs follow our Audit Log Retention Statement: 180 days online, then archived for 7 years. Users may request data deletion at any time." },
+    "s4": { "title": "4. Your Rights", "body": "Under GDPR, PIPL, and similar regulations, you have the right to access, rectify, erase, and port your data. Submit requests via the End-User Portal or contact us at {{email}}." },
+    "s5": {
+      "title": "5. Cookies & Storage",
+      "items": [
+        "This website uses no cookies and loads no analytics or advertising scripts.",
+        "Language and theme preferences are stored in browser localStorage.",
+        "The sign-in portals use strictly necessary security cookies (__Host-did, oauth_bind_state). We do not use analytics, advertising, or marketing cookies.",
+        "These security cookies do not require consent; you can delete them through your browser settings."
+      ]
+    },
+    "s6": { "title": "6. Contact", "label": "Operator: Autional (individual operator); further operator details are available to regulators on request. Questions about this policy:" },
+    "contactEmail": "privacy@autional.net"
   },
   "terms": {
     "meta": { "title": "Terms of Service — Autional", "description": "Autional terms of service.", "keywords": "Autional, terms, terms of service, legal, agreement" },
     "title": "Terms of Service",
     "updatedLabel": "Last updated: {{date}}",
-    "s1": { "title": "1. Service Description", "body": "Autional provides identity and access management software. The open-source components — portals, design system, and documentation — are licensed under AGPL-3.0, with SDK packages under MIT. The core identity services are proprietary software offered under a commercial license (private deployment includes source access); cloud services are planned." },
+    "s1": { "title": "1. Service Description", "body": "Autional is an individually operated identity and access management project that provides identity and access management software. The open-source components — portals, design system, and documentation — are licensed under AGPL-3.0, with SDK packages under MIT. The core identity services are proprietary software offered under a commercial license (private deployment includes source access); cloud services are planned." },
     "s2": { "title": "2. License", "body": "The open-source components of Autional are licensed under the GNU Affero General Public License v3 (AGPL-3.0); SDK packages are licensed under MIT. You may use, modify, and distribute these components in compliance with their licenses. The core identity services are proprietary software governed by a separate commercial agreement." },
     "s3": { "title": "3. User Responsibilities", "items": ["Maintain the security of your account credentials", "Comply with applicable laws and regulations", "Not use the service for illegal purposes"] },
-    "s4": { "title": "4. Limitation of Liability", "body": "The software is provided \"as is\" without warranty of any kind. The authors and contributors are not liable for any damages arising from the use of this software." },
-    "s5": { "title": "5. Contact", "label": "For legal inquiries:" },
-    "contactEmail": "support@autional.net"
+    "s4": { "title": "4. Limitation of Liability", "body": "The software is provided \"as is\" without warranty of any kind. The authors and contributors are not liable for any damages arising from the use of this software. These terms are governed by and construed in accordance with the laws of the People's Republic of China." },
+    "s5": { "title": "5. Contact", "label": "Operator: Autional (individual operator). For legal inquiries:" },
+    "contactEmail": "legal@autional.net"
   },
   "faq": {
     "meta": { "title": "FAQ — Autional", "description": "Frequently asked questions about the Autional identity platform.", "keywords": "Autional, FAQ, identity, IAM, SSO, authentication, open source" },
@@ -644,21 +653,6 @@
     "viewPricing": "View Pricing",
     "contactSales": "Contact Sales",
     "requestDemo": "Request Demo"
-  },
-  "cookie": {
-    "title": "We Use Cookies",
-    "description": "We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking \"Accept All\", you consent to our use of cookies",
-    "preferences": "Preferences",
-    "necessaryOnly": "Necessary Only",
-    "acceptAll": "Accept All",
-    "settingsTitle": "Cookie Preferences",
-    "necessary": "Necessary Cookies",
-    "necessaryDesc": "Required for the website to function properly and cannot be disabled",
-    "alwaysOn": "Always On",
-    "analytics": "Analytics Cookies",
-    "analyticsDesc": "Help us understand how visitors interact with the website",
-    "cancel": "Cancel",
-    "save": "Save Preferences"
   },
   "search": {
     "placeholder": "Search pages, blog posts, cases...",

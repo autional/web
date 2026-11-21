@@ -106,7 +106,7 @@ If migrating from an old scheme:
 2. On the user's next login: verify with old algorithm → if passes, rehash with new algorithm → update database
 3. Flag migrated users; those still on old hashes are asked to reset their password after N months
 
-**How Autional prevents this**: The identity-service uses bcrypt by default (cost factor=12) with automatic random salts built into the hash. The Argon2id interface is reserved with support for transparent migration. CI prohibits any MD5/SHA-1 usage in password-related code.
+**How Autional prevents this**: The identity-service uses argon2id by default, with random salts built into the hash. The bcrypt interface remains available for legacy verification and transparent migration. CI prohibits any MD5/SHA-1 usage in password-related code.
 
 ## Mistake 4: JWT Without Expiration
 

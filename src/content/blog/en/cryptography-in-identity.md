@@ -46,15 +46,13 @@ That's the power of **slow hashing** — the computational cost difference is ju
 | Go Standard Library | No (needs `golang.org/x/crypto`) | No (needs third-party) | No (needs third-party) |
 | AES Acceleration | No (limited GPU resistance) | Yes (XOR + Salsa20 core) | Yes (Blake2b) |
 
-**Autional defaults to bcrypt (cost factor 12).** The reasons are straightforward:
+**Autional defaults to argon2id (memory-hard, with parameters tuned to server capacity).** The reasons are straightforward:
 
-1. **Battle-tested**: bcrypt has survived 20+ years of security audits and real-world attacks. No publicly known bcrypt weakness has ever been found.
-2. **Mature Go ecosystem**: `golang.org/x/crypto/bcrypt` is an official Go extension library with the best code review and long-term support guarantees.
-3. **Simple implementation, few knobs**: bcrypt has only one parameter — the cost factor. Fewer parameters means fewer chances for misconfiguration.
+1. **Modern PHC winner**: argon2id won the 2015 Password Hashing Competition and balances time and memory cost.
+2. **Memory-hard**: it raises the cost of GPU / ASIC brute force far more than bcrypt's fixed 4KB memory footprint.
+3. **Available in Go**: `golang.org/x/crypto/argon2` provides a mature implementation; the server caps memory use by concurrency.
 
-Argon2 is theoretically more secure (ASIC and FPGA resistance through memory hardness), but its security advantages mainly matter in extreme scenarios (nation-state attackers with custom hardware). For most SaaS applications, bcrypt provides 80-90% of the security with lower operational risk.
-
-Autional is designed with headroom for migrating to argon2id — the identity-service password verification interface accepts any `PasswordHasher` implementation, allowing a switch to a new hash algorithm without modifying business code.
+bcrypt remains available through the `PasswordHasher` interface for legacy verification and transparent migration; all new passwords use argon2id. The identity-service password verification interface accepts any `PasswordHasher`, so the algorithm can be rotated without changing business code.
 
 ## Salt and Pepper: The Misunderstood Double Protection
 
