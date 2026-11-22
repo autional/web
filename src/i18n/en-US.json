@@ -436,7 +436,7 @@
     },
     "s2": { "title": "2. How We Use Data", "items": ["Provide and maintain authentication services", "Security monitoring and fraud prevention", "Compliance with legal obligations (GDPR, etc.)", "Service improvement and debugging"] },
     "s3": { "title": "3. Data Retention", "body": "Authentication data is retained for the lifetime of the account; after account deletion, it is deleted within 30 days, with backups expiring within 30 days. Audit logs follow our Audit Log Retention Statement: 180 days online, then archived for 7 years. Security event logs are retained for 12 months. Support/privacy emails are retained for 2 years. Users may request data deletion at any time." },
-    "s4": { "title": "4. Your Rights", "body": "Under GDPR, PIPL, and similar regulations, you have the right to access, rectify, erase, and port your data. Submit requests via the End-User Portal or contact us at {{email}}." },
+    "s4": { "title": "4. Your Rights", "body": "Under GDPR, PIPL, and similar regulations, you have the right to access, rectify, erase, and port your data. Submit requests via the End-User Portal or contact us at {{email}}; we respond within 30 days." },
     "s5": {
       "title": "5. Cookies & Storage",
       "items": [
