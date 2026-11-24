@@ -509,6 +509,9 @@ AI 站「注册」→ /api/auth/login
 | SDK `@autional/ai-auth` | `sdk/packages/ai-auth`（新包补丁） | 完成 | 10/10 `node --test`；tsc 0 错 |
 | BFF `/api/auth/*` | `web/server/ai-auth/*` + 香港 `ai-bff-cn/com` 容器 | 完成（香港自托管） | 公网 302 + Cookie 属性；`/api/auth/session` 200；无 Vercel |
 | 静态站部署 | 香港 `sites-static` + `container.conf` `/api/auth/` 反代 | 完成（2026-11-24） | `www.autional.cn/.com/ai/login` 上线；OAuth 按钮可达 `/union/login` |
+| E2E（真实浏览器） | 注册 → 回 authorize → 同意 → callback → session | **PASS 2026-11-24** | 新 union 账号无邮箱也登录成功；BFF session 显示 union sub |
+| B6 撤销实测 | 软删 consent → 65s 后重载 `/ai/login` | **PASS** | 会话失效回登录页（缓存 60s + 检查） |
+| 注册回程 | 登录页注册链接携带 `redirect`；注册成功回 authorize | **PASS** | auth 站已发布，链接含 authorize query |
 | 前端 OAuth 模式 | `web/src/components/ai-login/*`、`ai-auth.ts` | 完成 | i18n 520/520、astro check 0/0/0、build 78 页 |
 | 注册回程 | site-auth 登录→注册透传 `redirect`；注册成功回 authorize | 完成 | auth-pages `tsc --noEmit` 通过 |
 | 生产 client/secret/env | union 租户 + 香港 BFF env | **完成** | `.cn`=`client-5Ssb62kMToQK`，`.com`=`client-7DdSfmWupJgf`；secret 在 `D:\ws\autional\.local\ai-oauth-clients.json`（不入库）；metadata `access_token_format=jwt` 已生效（B1 实测 JWT AT aud=AI 资源） |
