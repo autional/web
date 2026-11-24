@@ -197,6 +197,7 @@ BFF 环境变量（香港机 `/etc/ai-bff/{cn,com}.env`，600，`.cn` / `.com` �
 | `AI_CONSENT_STATUS_URL` | `https://api.<root>/bff/oauth/api/v1/internal/oauth/consent-status`（窄 public 路由，服务侧 API Key） |
 | `AI_INTERNAL_API_KEY` | 调 consent-status 的专用单键（oauth-service 侧变量名 `AI_BFF_API_KEY`，同一值；不是舰队 `INTERNAL_API_KEY`） |
 | `AI_INTERNAL_JWT_*` | 可选：BFF→AI API 的 RS256 私钥/PKID/aud（私钥只进密钥库） |
+| `AI_REQUIRE_EMAIL` | 可选：`1` = 无邮箱拒绝登录（默认 `0`）。union 密码注册可无邮箱；AI 会话以 `sub` 为稳定标识，email 有则展示 |
 
 平台改造与事实：
 

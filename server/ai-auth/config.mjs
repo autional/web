@@ -40,6 +40,8 @@ const config = {
   sessionSecret: env('AI_SESSION_SECRET'),
   cookiePrefix: '__Host-ai',
   secureCookies: true,
+  // 公开 AI 允许 username-only 账号（union 密码注册无邮箱）；置 1 可强制邮箱。
+  requireEmail: process.env.AI_REQUIRE_EMAIL === '1',
   allowedNextPrefixes: ['/ai'],
   consentStatus: {
     endpoint: consentEndpoint,
