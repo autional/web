@@ -35,6 +35,12 @@ const caseDates = readContentDates('cases');
 const SITE = ENV_SITE_URL;
 const SITE_RE = SITE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+// AI 登录 direct 预览模式的本地代理：/bff → 本区网关。
+// 生产不经过这里（站点直接调 api.<root>/bff，CORS 已放行 *.autional.cn/.com）。
+const API_PROXY_TARGET = ENV_SITE_URL.endsWith('.com')
+  ? 'https://api.autional.com'
+  : 'https://api.autional.cn';
+
 export default defineConfig({
   integrations: [
     react(),
@@ -80,6 +86,11 @@ export default defineConfig({
   base: '/',
   markdown: { shikiConfig: { theme: 'github-dark' } },
   vite: {
+    server: {
+      proxy: {
+        '/bff': { target: API_PROXY_TARGET, changeOrigin: true },
+      },
+    },
     plugins: [tailwindcss()],
     define: {
       'import.meta.env.PUBLIC_REGION': JSON.stringify(ENV_REGION),

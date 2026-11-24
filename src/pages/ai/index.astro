@@ -55,6 +55,10 @@ const checklist = t('ai.checklist', { returnObjects: true }) as string[];
     <div class="text-center mb-12">
       <h1 class="text-4xl font-bold sm:text-5xl">{t('ai.heroTitle')}</h1>
       <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-500">{t('ai.heroLead')}</p>
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <a href="/ai/login" class="brand-button-primary">{t('ai.loginCta')}</a>
+        <span class="text-sm text-neutral-500">{t('ai.loginCtaHint')}</span>
+      </div>
     </div>
 
     <!-- 主 prompt + 复制 -->
