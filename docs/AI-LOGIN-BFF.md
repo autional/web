@@ -2,12 +2,35 @@
 
 > 目标：`/ai` 下的网页登录不出现密码；浏览器不持有 identity 令牌。
 > 前端实现：`src/components/ai-login/*`、`src/lib/ai-auth.ts`。
-> 生产默认 `PUBLIC_AI_AUTH_MODE=bff`（未配置时生产也是 bff）。
+> 生产默认 `PUBLIC_AI_AUTH_MODE` 未设 → `embedded`（2026-11-24 起）。
 
-## 0. 生产口径（2026-11-23 用户确认）
+## 0.0 内嵌登录（2026-11-24 起为默认）
+
+**客户页面在自己的域名内完成登录，不跳转 `autional.cn`，任何形式都不出现密码。**
+
+| 端点（同源 `/api/auth`） | 作用 |
+|---|---|
+| `POST /embed/qr/initiate` | BFF 向 identity 申请二维码会话；返回 `sessionToken` / `numberMatching` / `expiresIn` |
+| `GET /embed/qr/status?token=` | 轮询扫码状态；`confirmed` 时 BFF 用 identity token 换 BFF 会话并 `Set-Cookie` |
+| `POST /embed/qr/revoke` | 取消二维码 |
+| `POST /embed/email/send` | 发送 6 位邮箱验证码（identity `send-verification-email`） |
+| `POST /embed/email/login` | 邮箱码登录；成功写 `__Host-ai-session` |
+| `GET /session` / `POST /logout` | 会话读取 / 登出（与 OAuth 模式共用） |
+
+安全要点（已实现并实测）：
+
+- identity access token 只在 BFF 进程内短暂存在；浏览器只拿到加密 HttpOnly `__Host-ai-session`。
+- 登录成功时 BFF 调内部 `POST /bff/oauth/api/v1/internal/oauth/consents`（`AI_BFF_API_KEY` + `X-Tenant-ID`），写 consent（`grant_method=embedded_bff`）；浏览器不接触 OAuth token。
+- `GET /session` 复用 B6 consent-status 检查：撤销后 **≤60s 缓存 TTL** 内会话失效（实测 65s → `authenticated:false, error:consent_revoked`）。
+- 双区 BFF：`.cn` / `.com` 各自 env、client、issuer；容器 `ai-bff-cn:8090` / `ai-bff-com:8091`，nginx `/api/auth/` 同源反代。
+- 客户站点接入时由 SDK `@autional/ai-auth` 的 embedded 模式指向客户自己的 BFF 同源路径（待 SDK 发布）。
+
+## 0. 生产口径（2026-11-23 用户确认 · OAuth 回退模式）
+
+> 本节描述显式设置 `PUBLIC_AI_AUTH_MODE=oauth` 时的链路，保留为可选/回退；默认内嵌流程见 §0.0。
 
 AI 站只需要「登录 + 读取少量授权个人信息」，且 token 必须限制适用范围。
-因此生产必须走 **OAuth 2.0 Authorization Code + PKCE（OIDC）**，不是 identity 直连：
+该模式走 **OAuth 2.0 Authorization Code + PKCE（OIDC）**，不是 identity 直连：
 
 | 控制 | 生产要求 |
 |---|---|
@@ -23,8 +46,9 @@ AI 站只需要「登录 + 读取少量授权个人信息」，且 token 必须�
 | 撤销 | **consent-status/epoch（平台 OP 未实现 backchannel，discovery=false）**；≤5 分钟 |
 | BFF→AI API | 内部 JWT 独立 `iss/sub/tenant_id/aud=AI API/client_id` + TTL≤60s + RS256/kid + 私网/mTLS + 剥离入站 `X-User-*`/`X-Tenant-*`/`X-Entry-Plane` |
 
-> 本文件 §2–§4 的 identity QR/邮箱码直连只作**第一方预览**：它发的是平台 identity token，
-> 没有 client/scope 限制，**不能作为生产登录**。生产流程见 §7。
+> 本文件 §2–§4 的 identity QR/邮箱码直连只作**本地预览**（`PUBLIC_AI_AUTH_MODE=direct`）：
+> 它发的是平台 identity token，没有 client/scope 限制，**不能作为生产登录**。
+> 生产过程默认走 §0.0 内嵌 BFF（identity token 不下发浏览器）；OAuth 回退见 §7。
 
 ## 1. 为什么必须 BFF
 

@@ -29,6 +29,10 @@ const consentKey = env('AI_INTERNAL_API_KEY');
 
 const internalKey = optionalEnv('AI_INTERNAL_JWT_PRIVATE_KEY');
 
+const identityApi = env('AI_IDENTITY_API');
+const identityTenantId = env('AI_IDENTITY_TENANT_ID');
+const consentCreateUrl = env('AI_CONSENT_CREATE_URL');
+
 const config = {
   issuer: env('AI_OAUTH_ISSUER'),
   clientId: env('AI_OAUTH_CLIENT_ID'),
@@ -48,6 +52,11 @@ const config = {
     apiKey: consentKey,
     cacheTtlSeconds: 60,
   },
+  identityApi,
+  identityTenantId,
+  consentCreateUrl,
+  internalApiKey: consentKey,
+  embedScopes: ['openid', 'email'],
   ...(internalKey
     ? {
         internalJwt: {
@@ -60,6 +69,8 @@ const config = {
       }
     : {}),
 };
+
+export { config as aiConfig };
 
 export const auth = createAiAuth(config, {
   onError(error, context) {

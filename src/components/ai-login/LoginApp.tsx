@@ -12,9 +12,12 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+// 副作用导入：确保 i18next 实例在本 island hydrate 前完成初始化（否则首渲取不到实例 → React #418）。
+import '../../i18n';
 import {
   AI_TENANT_ID,
   IS_DIRECT_PREVIEW,
+  IS_EMBEDDED,
   IS_OAUTH,
   authApi,
   fetchAuthConfig,
@@ -343,13 +346,19 @@ export default function LoginApp() {
                   ) : (
                     <EmailCodeForm onSuccess={onSuccess} registerUrl={registerUrl} />
                   )}
+
+                  {IS_EMBEDDED && (
+                    <p className="text-center text-xs leading-5 text-neutral-500 dark:text-neutral-400">
+                      {t('aiLogin.embedConsent')}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
 
             {!session && (
               <div className="mt-5 border-t border-neutral-200 pt-4 dark:border-white/10">
-                {!IS_OAUTH && (
+                {!IS_OAUTH && !IS_EMBEDDED && (
                   <>
                     <a
                       href={loginUrl}

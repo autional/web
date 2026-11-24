@@ -42,6 +42,9 @@ export const i18nReady = i18next.use(initReactI18next).init({
   fallbackLng: langToLocale(envFallbackLang),
   interpolation: { escapeValue: false },
   react: { useSuspense: false },
+  // 资源全部内联，同步初始化（i18next 26 `initAsync: false`）；默认异步 init 会让
+  // 首屏 island 在 i18next 就绪前 hydrate —— SSR 文案 vs 客户端键名不一致，React #418。
+  initAsync: false,
 });
 
 /** 取词单点：.astro frontmatter（构建期）与 React 组件（客户端）共用。 */

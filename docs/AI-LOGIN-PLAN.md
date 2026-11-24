@@ -1,11 +1,28 @@
 # Autional AI 登录 · 完整实施方案（v3 · 规范长期版）
 
-> 状态：**实施中**（2026-11-23）：平台 B1/B2/B6 补丁 + SDK/BFF/前端已完成并通过单测；待应用补丁、创建 client、部署验证
+> 状态：**已上线（2026-11-24）**：内嵌免密登录（扫码 + 邮箱码）在 `www.autional.cn/ai/login`、`www.autional.com/ai/login` 可用；双区 BFF 自托管于香港；撤销 ≤65s 实测通过。
 > 需求源：用户 2026-11-23 —— **仅登录、仅读取部分授权个人信息、token 必须限制适用范围**
-> 拍板：**B1+B2 平台改造纳入本期**；**撤销 ≤5 分钟**；**固定 `union` 租户 + 跨租户用户（family-domain federation）；不做每应用租户**
+> 拍板：**B1+B2 平台改造纳入本期**；**撤销 ≤5 分钟**；**固定 `union` 租户 + 跨租户用户（family-domain federation），不做应用专属租户**
 > 关联契约：`docs/AI-LOGIN-BFF.md`
-> 当前实现：`src/pages/ai/login.astro`、`src/components/ai-login/*`、`src/lib/ai-auth.ts`（生产 `oauth` 模式）；BFF `api/auth/*` + `server/ai-auth/*`；SDK `packages/ai-auth`（补丁）
+> 当前实现：`src/pages/ai/login.astro`、`src/components/ai-login/*`、`src/lib/ai-auth.ts`（生产默认 `embedded`）；BFF `api/auth/*` + `server/ai-auth/*`；SDK `packages/ai-auth`（补丁）
 > 交付补丁：`.tmp/patches/{service-oauth-b1b2b6.git,infra-ops-gateway-ai-consent,infra-ops-oauth-env-ai,sdk-ai-auth}.patch`（相对各仓根目录）
+
+---
+
+## 0.0 2026-11-24 方向更新（覆盖下文「OAuth 为主」的旧表述）
+
+**用户最终拍板：登录内嵌在客户自己的域名页面（如 `https://marktext.denglu.dev/login`），不跳转 `autional.cn`，任何形式都不出现密码。**
+
+| 维度 | 现行（embedded，默认） | OAuth 授权码（保留为可选/回退） |
+|---|---|---|
+| 入口 | 客户页面 → BFF `/api/auth/embed/*` | 客户页面 → `/api/auth/login` → 平台授权页 → `/api/auth/callback` |
+| 凭据到达浏览器 | 只有 `__Host-ai-session`（加密 HttpOnly） | 同左 |
+| identity token | BFF 短暂持有，不落地、不下发 | BFF 换码后立即丢弃 |
+| 授权记录 | BFF 调内部 `POST /internal/oauth/consents`（`grant_method=embedded_bff`） | 用户点同意页，平台写 consent |
+| 默认开关 | `PUBLIC_AI_AUTH_MODE` 未设 → `embedded` | `oauth`（显式配置才启用） |
+| 现状 | **已上线并 E2E 通过**（扫码 / 邮箱码 / 撤销） | 已实现，保留回退 |
+
+下文 §0–§7 描述 OAuth 链的细节仍有效，但生产默认路径以本节为准；内嵌流程的契约见 `AI-LOGIN-BFF.md` §0.0。
 
 ---
 

@@ -9,9 +9,24 @@
  */
 import http from 'node:http';
 import { createNodeHandler } from './sdk/index.js';
-import { auth } from './config.mjs';
+import { aiConfig, auth } from './config.mjs';
+import { createEmbedHandlers } from './embed.mjs';
 
-const handler = createNodeHandler(auth);
+const embed = createEmbedHandlers(aiConfig);
+
+const app = {
+  async route(request) {
+    const pathname = new URL(request.url).pathname.replace(/\/+$/u, '');
+    if (pathname === '/api/auth/embed/email/send') return embed.sendEmail(request);
+    if (pathname === '/api/auth/embed/email/login') return embed.loginEmail(request);
+    if (pathname === '/api/auth/embed/qr/initiate') return embed.qrInitiate(request);
+    if (pathname === '/api/auth/embed/qr/status') return embed.qrStatus(request);
+    if (pathname === '/api/auth/embed/qr/revoke') return embed.qrRevoke(request);
+    return auth.route(request);
+  },
+};
+
+const handler = createNodeHandler(app);
 const host = process.env.AI_BFF_HOST || '127.0.0.1';
 const port = Number(process.env.AI_BFF_PORT || 8090);
 

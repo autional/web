@@ -28,8 +28,9 @@ const env = import.meta.env as unknown as {
 
 const isDev = Boolean(env.DEV);
 
-/** AI 空间的租户 ULID。空串 → 使用 public auth-config/default。 */
-export const AI_TENANT_ID = (env.PUBLIC_AUTIONAL_TENANT_ID ?? '').trim();
+/** AI 空间固定使用 union 租户；PUBLIC_AUTIONAL_TENANT_ID 可覆盖（预览/调试）。 */
+export const AI_TENANT_ID =
+  (env.PUBLIC_AUTIONAL_TENANT_ID ?? '').trim() || '01M60J7J1WZRC0K3BSSVS5J6S1';
 
 /**
  * direct 模式的 API 基址。
@@ -48,24 +49,26 @@ export const AUTH_PORTAL_URL = (
   env.PUBLIC_AUTH_PORTAL_URL ?? `https://auth.${SITE_ROOT_DOMAIN}`
 ).replace(/\/$/, '');
 
-export type AuthMode = 'oauth' | 'bff' | 'direct';
+export type AuthMode = 'embedded' | 'oauth' | 'bff' | 'direct';
 
 /**
- * oauth = 生产默认：同源 /api/auth/login → 平台 OAuth（PKCE）→ BFF 会话。
- * bff   = 旧预览（QR/邮箱码直连 BFF，未实现服务端）；direct = 仅本地预览。
- * 显式 PUBLIC_AI_AUTH_MODE 可覆盖；dev 默认 direct（无服务端运行时）。
+ * embedded = 生产默认：客户域内嵌扫码 / 邮箱验证码，BFF 后台校验并建会话。
+ * oauth    = 标准 OAuth 整页跳转（保留为回退）。
+ * bff      = 旧预览（QR/邮箱码直连 BFF）；direct = 仅本地预览。
  */
 export const AUTH_MODE: AuthMode =
+  env.PUBLIC_AI_AUTH_MODE === 'embedded' ||
   env.PUBLIC_AI_AUTH_MODE === 'oauth' ||
   env.PUBLIC_AI_AUTH_MODE === 'bff' ||
   env.PUBLIC_AI_AUTH_MODE === 'direct'
     ? env.PUBLIC_AI_AUTH_MODE
     : isDev
       ? 'direct'
-      : 'oauth';
+      : 'embedded';
 
 export const IS_DIRECT_PREVIEW = AUTH_MODE === 'direct';
 export const IS_OAUTH = AUTH_MODE === 'oauth';
+export const IS_EMBEDDED = AUTH_MODE === 'embedded';
 
 /* ------------------------------------------------------------------ */
 /* 类型                                                                */
@@ -556,4 +559,103 @@ const oauthApi: LoginApi = {
   },
 };
 
-export const authApi: LoginApi = AUTH_MODE === 'oauth' ? oauthApi : AUTH_MODE === 'direct' ? directApi : bffApi;
+/* ------------------------------------------------------------------ */
+/* embedded：客户域内嵌扫码 / 邮箱验证码（无跳转、无密码）              */
+/* ------------------------------------------------------------------ */
+
+function normalizeEmbeddedUser(raw: unknown): SessionUser | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const u = raw as Record<string, unknown>;
+  const id = String(u.sub ?? u.id ?? u.user_id ?? '');
+  if (!id) return null;
+  return {
+    id,
+    email: typeof u.email === 'string' && u.email ? u.email : undefined,
+    tenantId: typeof u.tenantId === 'string' ? u.tenantId : typeof u.tenant_id === 'string' ? u.tenant_id : undefined,
+  };
+}
+
+const embeddedApi: LoginApi = {
+  async initiate() {
+    const data = await request<Record<string, unknown>>('/api/auth/embed/qr/initiate', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: '{}',
+    });
+    return {
+      sessionToken: String(data.sessionToken ?? data.session_token ?? ''),
+      numberMatching: String(data.numberMatching ?? data.number_matching ?? ''),
+      expiresIn: Number(data.expiresIn ?? data.expires_in ?? 300),
+    };
+  },
+
+  async status(sessionToken) {
+    const data = await request<Record<string, unknown>>(
+      `/api/auth/embed/qr/status?token=${encodeURIComponent(sessionToken)}`,
+    );
+    return {
+      status: String(data.status ?? 'pending') as QrStatusValue,
+      numberMatching:
+        typeof data.numberMatching === 'string'
+          ? data.numberMatching
+          : typeof data.number_matching === 'string'
+            ? data.number_matching
+            : undefined,
+      superseded: data.superseded === true,
+      user: normalizeEmbeddedUser(data.user) ?? undefined,
+    };
+  },
+
+  async revoke(sessionToken) {
+    await request('/api/auth/embed/qr/revoke', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ token: sessionToken }),
+    });
+  },
+
+  async sendEmailCode(email) {
+    await request('/api/auth/embed/email/send', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+  },
+
+  async loginEmailCode(email, code) {
+    const data = await request<Record<string, unknown>>('/api/auth/embed/email/login', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, code }),
+    });
+    return { user: normalizeEmbeddedUser(data.user) ?? undefined };
+  },
+
+  async getSession() {
+    try {
+      const data = await request<Record<string, unknown>>('/api/auth/session');
+      if (data.authenticated !== true) return null;
+      const user = normalizeUser(data.user);
+      return user ? { user } : null;
+    } catch {
+      return null;
+    }
+  },
+
+  async logout() {
+    try {
+      await request('/api/auth/logout', { method: 'POST' });
+    } catch {
+      /* 会话已失效也回到未登录态 */
+    }
+  },
+};
+
+export const authApi: LoginApi =
+  AUTH_MODE === 'embedded'
+    ? embeddedApi
+    : AUTH_MODE === 'oauth'
+      ? oauthApi
+      : AUTH_MODE === 'direct'
+        ? directApi
+        : bffApi;

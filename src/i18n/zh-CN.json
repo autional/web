@@ -660,6 +660,7 @@
     "oauthErrorEmailRequired": "该账号没有可用邮箱，无法登录 Autional AI。请先在账号中心补充邮箱。",
     "oauthErrorConsentRevoked": "授权已撤销，请重新登录并同意授权。",
     "oauthErrorLoginUnavailable": "登录服务暂时不可用，请稍后再试。",
+    "embedConsent": "登录即表示同意 Autional AI 读取你的基本身份与邮箱地址；可随时在 Autional 用户门户撤销授权。",
     "qrGet": "获取二维码",
     "qrLoading": "正在生成…",
     "qrAlt": "登录二维码",

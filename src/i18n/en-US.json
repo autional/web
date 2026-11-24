@@ -660,6 +660,7 @@
     "oauthErrorEmailRequired": "This account has no usable email, so it cannot sign in to Autional AI. Add an email in the account center first.",
     "oauthErrorConsentRevoked": "Authorization was revoked. Sign in again and approve access.",
     "oauthErrorLoginUnavailable": "Sign-in is temporarily unavailable. Please try later.",
+    "embedConsent": "By signing in you allow Autional AI to read your basic identity and email address. You can revoke access anytime in the Autional user portal.",
     "qrGet": "Get QR code",
     "qrLoading": "Generating…",
     "qrAlt": "Sign-in QR code",
